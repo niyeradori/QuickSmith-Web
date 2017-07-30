@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Example: Large-Signal Amplifier Design</title>
+<meta name="MS-HKWD" content="Amplifier" />
+<meta name="MS-HKWD" content="Transistors" />
+<meta name="MS-HKWD" content="Large-Signa" />
+<meta name="MS-HKWD" content="Input matchl" />
+<meta name="generator" content="Adobe RoboHelp 2017" />
+<script language="JavaScript" title="BSSC Special Effects" src="../ehlpdhtm.js" type="text/javascript">
+</script>
+</head>
+<body style="font-family:'Helv'; font-size:10pt; background-color:white;" bgcolor="white">
+<h1 style="font-size:12pt;margin-top:0.00pt;margin-bottom:12.00pt;"><img src="../image/QSmith.gif" border="0" height="82" width="82" alt="image\QSmith.gif" /> <b><font face="MS Sans Serif" style="font-family:'MS Sans Serif'; font-weight:bold;">Example: Large Signal Amplifier Design</font></b></h1>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">This example refers to section 4.2 in Motorola's application note AN721. Here Sm</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">ith chart is used to design an input/output matching network for a RF power transistor.</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Problem:</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Design a network to match 2N5642 to deliver 20W between 50 ohms source and load at 175 MHz. Available supply voltage is 28 Volts. Design for a maximum input Q of 10.</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Solution:</font></b></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">i) Input Match:</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">The data sheets for the 2N5642 transistor provide input impedance information. The series input impedance for the required operating conditions is 1.94 ohm in series with a reactance of 1.1 ohm. This value is assigne</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">d as the load so that it becomes our starting point. The frequency is set to 175 MHz using the "Assign Values" menu in the schematic window. Draw a Q circle of 10 from the chart window. In the schematic window we start with a series inductor to the load.</font> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Since the input Q is specified at 10 we increase the inductance until the Q value of 10 is reached, the next step is to add parallel capacitor and determine its value so that it meets the 50 ohms constant resistance circle. Finally we cancel out the remai</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">ni</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">ng inductance by adding a series capacitor to get to the center of the chart. The figure below illustrated the transformations.</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
+<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><img src="../image/ebd_6.gif" border="0" height="182" width="172" alt="image\ebd_6.gif" /></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Frequency = 175 MHz</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Load = 1.94 + j 1.1 ohms</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">L2 = 16.8 nh</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">C3 = 38.12 pf</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">C4 = 10</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">.52 pf</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><a href="OUTPUT_MATCH.htm"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Output match</font></a></p>
+</body>
+</html>

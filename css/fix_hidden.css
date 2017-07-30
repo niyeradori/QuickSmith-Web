@@ -1,0 +1,53 @@
+.visible-xs,
+.visible-sm,
+.visible-md,
+.visible-lg {
+  .responsive-invisibility();
+}
+.visible-xs {
+  @media (max-width: @screen-tablet) {
+    .responsive-visibility();
+  }
+}
+.visible-sm {
+  @media (min-width: @screen-tablet) and (max-width: @screen-tablet-max) {
+    .responsive-visibility();
+  }
+}
+.visible-md {
+  @media (min-width: @screen-desktop) and (max-width: @screen-desktop-max) {
+    .responsive-visibility();
+  }
+}
+.visible-lg {
+  @media (min-width: @screen-large-desktop) {
+    .responsive-visibility();
+  }
+}
+
+.hidden-xs,
+.hidden-sm,
+.hidden-md,
+.hidden-lg {
+  .responsive-visibility();
+}
+.hidden-xs {
+  @media (max-width: @screen-tablet) {
+    .responsive-invisibility();
+  }
+}
+.hidden-sm {
+  @media (min-width: @screen-tablet) and (max-width: @screen-tablet-max) {
+    .responsive-invisibility();
+  }
+}
+.hidden-md {
+  @media (min-width: @screen-desktop) and (max-width: @screen-desktop-max) {
+    .responsive-invisibility();
+  }
+}
+.hidden-lg {
+  @media (min-width: @screen-large-desktop) {
+    .responsive-invisibility();
+  }
+}

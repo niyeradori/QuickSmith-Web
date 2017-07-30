@@ -1,0 +1,1060 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6.0, minimum-scale=.25, user-scalable=yes"/>
+  <title>QuickSmith- Amplifier Design</title>
+  <link href="img/smith.ico" rel="icon" >
+  <link href="css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
+  <link href="css/jquery.bootstrap-touchspin.css" rel="stylesheet" type="text/css" media="all"/>
+  <link href="css/jquery.contextMenu.css" rel="stylesheet" type="text/css" media="screen">
+  <link href="css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css" />
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <script src="js/bootstrap3.min.js"></script>
+  <script src="js/math.min.js"></script>
+  <script src="js/jquery.bootstrap-touchspin_ni.js"></script>
+  <script src="js/jquery.ui.position.js"></script>
+  <script src="js/jquery.contextMenu.js"></script>
+  <script src="js/DragDropTouch.js"></script>   
+  <script src="js/bootstrap-dialog.min.js"></script>
+  <script src="common.js"></script>
+  <script src="smith.js"></script>
+  <script src="amp.js"></script>
+  <style>
+    /*body {
+    padding: 20px;
+    }*/
+
+   body {
+            -webkit-touch-callout: none;                
+            -webkit-text-size-adjust: none;            
+            -webkit-user-select: none;                  
+        } 
+   /* makes readonly input background white */
+  input[readonly].form-control {
+          background-color: #FFF;
+      } 
+/* makes disabled links grey */
+.disabled,
+.disabled:visited ,
+.disabled:active,
+.disabled:hover {
+    background-color:#d9d9d9 !important;
+    color:#aaa !important;
+}
+
+  </style>
+</head>
+<body>
+    <!-- ********************************NAV BAR************************************************* -->  
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+       <!-- <a class="navbar-brand" href="#"><img src="img/smith.ico">QuickSmith</a>  -->
+       <a class="navbar-brand" href="#" onclick ="back_click()">
+          <img src="img/smith.ico" style="display: inline-block; margin-top:-7px; width:32px; height:32px">  
+        <span style="display: inline-block; color:blue">QuickSmith</span>
+       </a> 
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <!-- <li class="active"><a href="#">Home</a></li> -->
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Enter Parameters<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+             <li><a href="#" onclick ="stability_dialog()">S-Parameters</a></li>
+            <li><a href="#" onclick ="noise_dialog()" >Noise-Parameters</a></li>
+            <!-- <li><a href="#" onclick ="get_click()" >Get</a></li>     -->
+            <!-- <div class="hidden-xs"> -->
+                <!-- <li class="hidden-xs"><a href="#" onclick ="load_click()" >Load</a></li> 
+                <li class="hidden-xs" ><a href="#" onclick ="save_click()" >Save</a></li> -->
+                <!-- <li class="hidden-xs"><a href="#">Import</a></li>
+                <li class="hidden-xs" ><a href="#">Export</a></li> -->
+            <!-- </div> -->
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle"  data-toggle="dropdown" href="#">Circles<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+             <li class='disabled' id="SC"><a href="#" onclick=StabilityCircles_click() >Stability Circles</a></li>
+             <li class='disabled' id="AC"><a href="#" onclick=AvailableGCircles_click() >Available Gain Circles </a></li> 
+             <li class='disabled' id="OC"><a href="#" onclick=OperatingGCircles_click()>Operating Gain Circles </a></li> 
+             <li class='disabled' id="NC"><a href="#" onclick=NoiseCircles_click() >Noise Circles </a></li> 
+          </ul>
+        </li>
+        <!-- document.getElementById("SCC").checked = true; -->
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Transfer<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+             <li id="TS"><a href="#" onclick=TransferSourceImpedance_click()>Source Impedance</a></li>
+             <li id="TL"><a href="#" onclick=TransferLoadImpedance_click() >Load Impedance</a></li>
+          </ul>
+        </li> 
+        <li><a href="#" onclick=redrawSmith()>Redraw</a></li> 
+      </ul>
+       <!-- <button class="btn btn-default navbar-btn" onclick= smithObj.drawAdmitanceCircles() >Admittance</button>   -->
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="#"  onclick ="back_click()"><span class="glyphicon glyphicon-backward"></span>Back</a></li>
+        <li><a href="qsmithfaq.html"><span class="glyphicon glyphicon-book"></span> FAQ</a></li>
+        <li><a href="#" data-toggle="modal" data-target="#optionsModal" onclick ="options_click()"><span class="glyphicon glyphicon-list-alt"></span> Options</a></li> 
+      </ul>
+    </div>
+  </div>
+</nav>
+
+ <!-- ********************************SOURCE PLANE WINDOW************************************************* -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-8 col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: 0px">
+            <table>
+                <tr>
+                     <td><label  for="GS" > <font size="1"> Gs: </font> </label> </td>
+                    <td><input id="GS" type="text" value="0" name="spin4"  style="width: 100%" class="form-control input-sm" onchange="spin_changeAV(this.id)"  readonly /></td>
+                    <td> &nbsp</td> 
+                     <td><label  for="GA" > <font size="1"> Ga[dB]: </font> </label> </td>
+                    <td><input id="GA" type="text" value="0" name="spin3"  style="width: 64px" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  /></td>
+                    <td> &nbsp</td> 
+                    </td>
+                </tr>
+                <tr>
+                    <td><label  for="ZS" > <font size="1"> Zs: </font> </label> </td>
+                    <td><input id="ZS" type="text" value="0" name="spin4"  style="width: 100%" class="form-control input-sm" onchange="spin_changeAV(this.id)" readonly /></td>
+                    <td> &nbsp</td>
+                    <td><label  for="FI" > <font size="1"> Fi[dB]: </font> </label> </td>
+                    <td><input id="FI" type="text" value="0" name="spin3"  style="width: 64px" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" /></td>
+                    <td> &nbsp</td>
+                    <!-- <td><button type="button" class="btn btn-default btn-sm" style="height:27px" onclick= test() > Test </button></td> -->
+                    <!-- <td> <input type="text" id="Z1" value="Z:" class="form-control input-sm " style="width: 100%; color:blue; " /></td> -->
+                </tr>
+            </table>
+            <!--<div id='parent_div_5'  >-->
+            <canvas id="smithSource"  style="float: left; margin-top: 5px;margin-bottom: 5px;"></canvas>
+            <!--</div>-->
+        </div>
+                 <!-- ********************************LOAD PLANE WINDOW ************************************************* -->
+        <div class="col-xl-8 col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: 0px">
+            <table>
+                <tr>
+                    <td><label  for="GL" > <font size="1"> Gl: </font> </label> </td>
+                    <td><input id="GL" type="text" value="0" name="spin4"  style="width: 100%" class="form-control input-sm"  onchange="spin_changeOP(this.id)" readonly /></td>
+                    <td> &nbsp</td>
+                    <td><label  for="SWR" > <font size="1"> SWR: </font> </label> </td>
+                    <td><input id="SWR" type="text" value="1.0" name="spin3"  style="width: 64px" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" /></td>
+                    <td> &nbsp</td>
+                </tr>
+                <tr>
+                    <td><label  for="ZL" > <font size="1"> Zl: </font> </label> </td>
+                    <td><input id="ZL" type="text" value="0" name="spin4"  style="width: 100%" class="form-control input-sm"  onchange="spin_changeOP(this.id)" readonly /></td>
+                    <td> &nbsp</td>
+                </tr>
+            </table>
+            <!--<div id='parent_div_5'  >-->
+            <canvas id="smithLoad"  style="float: left; margin-top: 5px;margin-bottom: 5px;"></canvas>
+            <!--</div>-->
+        </div>
+    </div> 
+
+    <audio id="audio" src="img/button-3.wav" autostart="false"> </audio>
+ <!-- ************************MODAL OPTION DIALOG BEGINS************************************************************************************** -->
+  <div id="optionsModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-sm">
+
+      <!-- Options/Settings Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Settings</h4>
+        </div>
+        <div class="modal-body">
+          <br />
+          <label for="Z0">Ch. Impedance [Ohms]: <input type="text" id="Z0" value="" style="width:64px" /></label><br />
+          <br />
+          <label for="AVST" >AV Gain Circle Step Size [degree]: <input type="text" id="AVST" value="0.1" style="width:64px" /></label><br />
+          <label for="OPST" >OP Gain Circle Step Size [degree]: <input type="text" id="OPST" value="0.1" style="width:64px" /></label><br />
+ 
+          <div class="checkbox">
+            <label><input type="checkbox" id="show_message" value="">Show Message Prompt</label>
+          </div>
+          <br /> 
+          <div class="form-group">
+                <label for="stabilityColor">Stability Circles Color:</label>
+                <input type="color" id="stabilityColor">
+          </div>
+
+          <div class="form-group">
+                <label for="gainColor">Gain Circles Color:</label>
+                <input type="color" id="gainColor">
+          </div>
+
+          <div class="form-group">
+                <label for="noiseColor">Noise Circles Color:</label>
+                <input type="color" id="noiseColor">
+          </div>
+          <br /> 
+</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" onclick="optionValidate()" > OK </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <input id="file-input" type="file" name="name" style="display: none;" />     <!-- this for helping with file load -->
+<script>
+/************************* SCRIPT STARTS HERE********************************************************************************/
+var img = new Image();
+var up;
+img.src = "img/sphere.png";  
+const AXIS_RANGE = 1000;
+var resize_done = false;  // this is to avoid half shape canvas draw sometime when an attempt is made to draw with out scaling first
+var chart= {"width": 300, "height" : 300,  "currentDevicePixelRatio" : 1, "devicePixelRatio" : 1 };
+ //var smithSourceObj = new smithObj;
+var smithSourceObj = {
+              "ctx" : null,
+              "title": 'Source Plane',
+              "showAdmittace": false,  // DrawAdmittance
+               drawAdmitanceCircles: function() { drawAdmitanceCircles(this)},
+              //drawAdmitanceCircles: drawAdmitanceCircles,
+              "vswrCircle": 0.0, // draw VSWR circle
+              drawVSWRCircles:  function() { drawVSWRCircles(this)},
+              "qCircle": 0.0, // draw Q circle
+              drawQCircles: function() { drawQCircles(this)},
+              "dataM": 0.0, // refection Coeffi Magnitude - to plot the sprite
+              "dataQ": 0.0, // refection Coeffi Angle - to plot the sprite
+              drawdataSprite: function() { drawdataSprite (this)},
+              dataReset: function() { dataReset (this)}, // Resets dataM/dataQ and all Circles to 0
+              resetAll: function() { resetAll (this)}, // Resets all properties to its default values
+              redrawSmith: redrawSmith, // repaints smithChart with the current values
+              "markerM": 0.1, // Place Marker corresponding to markerM and markerQ values
+              "markerQ": 30.0, //
+              "showMarker": false, // turn marker ON/OFF
+              drawMarker: function() { drawMarker (this)},
+              "Z0": 50.0, // Z0 value = 0  does not diaplay char impedance, anything greater than that is dislayed on the bottom right side
+              drawGainCircles: function() { drawGainCircles (this);},
+              "circleM": [0.2, 0.1, 0.7],
+              "circleQ": [20, 140, 235],
+              "circleR": [0,0,0],//circleR: [0.1, 0.2, 0.3, 0.4,0.5, 0.6], //atleast one value will draw circle
+              "circleShow":[false,false,false],
+              "circleColor": [
+                      '#800080',
+                      '#00FF00',
+                      '#800000'
+                ],
+              "sweep":false, //
+              drawSweep: function() { drawSweep(this)},
+              "sweepDatasets" : [
+                          {
+                            "label": "Frequency Sweep",
+                            "color" : "#0000FF",
+                            "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8],
+                            "dataQ" : [10,20,30,40,50,60,70,80]
+                          },
+                          {
+                            "label": "Component Sweep",
+                            "color" : "#00FF00",
+                            "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9],
+                            "dataQ" : [90,100,110,120,130,140,150,160,170]
+                          }
+                    ],
+              "data":false, // to display imported data
+              dataPlot: function() { dataPlot(this)},
+              "plotDatasets" : [
+                          {
+                            "label": "Data PLot",
+                            "color" : "#000000",
+                            "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8],
+                            "dataQ" : [10,20,30,40,50,60,70,80]
+                          }
+                     ],
+               drawSmith: function() { drawSmith(this)},
+               test: function() { test(this)},
+          };
+
+var smithLoadObj = {
+              "ctx" : null,
+              "title": 'Load Plane',
+              "showAdmittace": false,  // DrawAdmittance
+               drawAdmitanceCircles: function() { drawAdmitanceCircles(this)},
+              //drawAdmitanceCircles: drawAdmitanceCircles,
+              "vswrCircle": 0.0, // draw VSWR circle
+              drawVSWRCircles:  function() { drawVSWRCircles(this)},
+              "qCircle": 0.0, // draw Q circle
+              drawQCircles: function() { drawQCircles(this)},
+              "dataM": 0.0, // refection Coeffi Magnitude - to plot the sprite
+              "dataQ": 0.0, // refection Coeffi Angle - to plot the sprite
+              drawdataSprite: function() { drawdataSprite (this)},
+              dataReset: function() { dataReset (this)}, // Resets dataM/dataQ and all Circles to 0
+              resetAll: function() { resetAll (this)}, // Resets all properties to its default values
+              redrawSmith: redrawSmith, // repaints smithChart with the current values
+              "markerM": 0.1, // Place Marker corresponding to markerM and markerQ values
+              "markerQ": 30.0, //
+              "showMarker": false, // turn marker ON/OFF
+              drawMarker: function() { drawMarker (this)},
+              "Z0": 50.0, // Z0 value = 0  does not diaplay char impedance, anything greater than that is dislayed on the bottom right side
+              drawGainCircles: function() { drawGainCircles (this);},
+              "circleM": [0.2, 0.1, 0.7],
+              "circleQ": [20, 140, 235],
+              "circleR": [0,0,0],//circleR: [0.1, 0.2, 0.3, 0.4,0.5, 0.6], //atleast one value will draw circle
+              "circleShow": [false,false,false],
+              "circleColor": [
+                      '#800080',
+                      '#00FF00',
+                      '#800000'
+                ],
+              "sweep":false, //
+              drawSweep: function() { drawSweep(this)},
+              "sweepDatasets" : [
+                          {
+                            "label": "Frequency Sweep",
+                            "color" : "#0000FF",
+                            "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8],
+                            "dataQ" : [10,20,30,40,50,60,70,80]
+                          },
+                          {
+                            "label": "Component Sweep",
+                            "color" : "#00FF00",
+                            "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9],
+                            "dataQ" : [90,100,110,120,130,140,150,160,170]
+                          }
+                    ],
+              "data":false, // to display imported data
+              dataPlot: function() { dataPlot(this)},
+              "plotDatasets" : [
+                          {
+                            "label": "Data PLot",
+                            "color" : "#000000",
+                            "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8],
+                            "dataQ" : [10,20,30,40,50,60,70,80]
+                          }
+                     ],
+               drawSmith: function() { drawSmith(this)},
+               test: function() { test(this)},
+          };
+smithSourceObj.ctx = document.getElementById("smithSource").getContext('2d');
+smithLoadObj.ctx = document.getElementById("smithLoad").getContext('2d');
+
+ $('document').ready(function () {
+      console.log("init")
+      $('input[type=text]').bind('copy paste', function (e) {
+         e.preventDefault();
+      });   // this prenvents the copy/paste menu popping up in IOS when you touch the step box
+      
+     redrawSmith ();
+ })
+
+
+
+ // called by redrawSmith function
+function resize(canvas) {
+    var ht =  getMaximumHeight (canvas);
+    var wd =  getMaximumWidth (canvas);
+    const aspectRatio = true;
+    var width = Math.max(0, Math.floor(wd));
+    var height = Math.max(0, Math.floor(aspectRatio ? width / aspectRatio : ht));
+    console.log( "NewWidth = " + width);
+    console.log( "NewHeight = " + height);
+    chart.width= width;
+    chart.height = height;
+    resize_done = true;
+}
+
+
+function redrawSmith () {
+    console.log("Redrawing smith Start");
+    //if(ctx==null) return;
+    if(smithSourceObj.ctx ==null) return;
+    resize(smithSourceObj.ctx.canvas)
+    smithSourceObj.ctx.canvas.width = chart.width;
+    smithSourceObj.ctx.canvas.height =chart.height ;
+    smithSourceObj.ctx.canvas.style.width = chart.width+'px';
+    smithSourceObj.ctx.canvas.style.height = chart.height+'px';
+    retinaScale(chart, smithSourceObj);
+    smithSourceObj.drawSmith(); // clears canvas too
+    if(smithLoadObj.ctx ==null) return;
+    smithLoadObj.ctx.canvas.width = chart.width;
+    smithLoadObj.ctx.canvas.height =chart.height ;
+    smithLoadObj.ctx.canvas.style.width = chart.width+'px';
+    smithLoadObj.ctx.canvas.style.height = chart.height+'px';
+    retinaScale(chart, smithLoadObj);
+    smithLoadObj.drawSmith(); // clears canvas too
+    console.log("Redrawing smith  End");
+}
+
+window.addEventListener('resize',redrawSmith, false); // resize,clear and redraw
+// touch
+$('input[name="spin3"]').taphold(function (e) {
+               step_change($(e.target).attr("id"))  },
+               1200);
+
+$('input[name="spin3"]').TouchSpin({
+        min: 0,
+        max: 10000000,
+        step: 0.1,
+        decimals: 2,
+        boostat: 5,
+        maxboostedstep: 10,
+        verticalbuttons: false
+  });
+
+
+  $('input[name="spin4"]').TouchSpin({
+        min: -100000000,
+        max: 1000000000,
+        step: 1,
+        decimals: 2,
+        booster: false,
+        maxboostedstep: false,
+        mousewheel: false,
+        verticalbuttons: false
+  });
+
+// $('input[name="spin4"]').TouchSpin({
+//         //min: 0,
+//         //max: 0,
+//         //initval: 0.0,
+//         step: 0,
+//         decimals: 3,
+//         //boostat: 50000000,
+//         booster: false,
+//         maxboostedstep: false,
+//         mousewheel: false,
+//         verticalbuttons: false
+//   });
+
+// this is updating the touchspin value when the buttons are continiously spun
+// $('#GS, #ZS').on('touchspin.on.stopspin', function ()  {
+//     if($(AC).hasClass("active")) CircleGamma(ampObj.AVCenterR, ampObj.AVCenterI, ampObj.Again_r, ampObj.AVLoadAngle, false);  // Available == false
+// });
+// $('#GL, #ZL').on('touchspin.on.stopspin', function ()  {
+//     if($(OC).hasClass("active")) CircleGamma(ampObj.AVCenterR, ampObj.AVCenterI, ampObj.Again_r, ampObj.AVLoadAngle, false);  // Available == false
+     
+//   });
+
+
+
+// $('#GS, #ZS').on('touchspin.on.startupspin', function ()  // Available gain up
+//   {
+//    // up=true;
+//   if($(AC).hasClass("active")) {
+//     ampObj.AVLoadAngle =   ampObj.AVLoadAngle + ampObj.AVStepAngle;
+//     CircleGamma(ampObj.AVCenterR, ampObj.AVCenterI, ampObj.Again_r, ampObj.AVLoadAngle, false);  // Available == false
+//     smithSourceObj.dataM = ampObj.DataSM;
+//     smithSourceObj.dataQ = ampObj.DataSQ;
+//     smithSourceObj.redrawSmith();
+//   }
+// });
+// $('#GS, #ZS').on('touchspin.on.startdownspin', function () { // Available gain down
+//   if($(AC).hasClass("active")) {
+//     //up=false;
+//     ampObj.AVLoadAngle =   ampObj.AVLoadAngle - ampObj.AVStepAngle;
+//     CircleGamma(ampObj.AVCenterR, ampObj.AVCenterI, ampObj.Again_r, ampObj.AVLoadAngle, false);  // Available == false
+//     smithSourceObj.dataM = ampObj.DataSM;
+//     smithSourceObj.dataQ = ampObj.DataSQ;
+//     smithSourceObj.redrawSmith();
+//   }
+// });
+
+
+// $('#GL, #ZL').on('touchspin.on.startupspin', function ()  // Operation gain up
+//   {
+//   if($(OC).hasClass("active")) {
+//     ampObj.OPLoadAngle =   ampObj.OPLoadAngle + ampObj.OPStepAngle;
+//     CircleGamma(ampObj.OPCenterR,ampObj.OPCenterI, ampObj.Ogain_r,ampObj.OPLoadAngle, true);// operation == true
+//   }
+// });
+
+// $('#GS, #ZS').on('change', function (event) {
+//   var $this = $(this);
+
+//   //if($this.has('GS'))  alert('GS');
+// console.log("ttttAAA" );
+// if ($this.hasClass('bootstrap-touchspin-down')) {
+//     console.log("down");
+//   } else if ($this.hasClass('bootstrap-touchspin-up')) {
+//    console.log("up");
+//   }
+
+// });
+
+
+// $('[class*="bootstrap-touchspin-"]').click(function(event) {
+//   var $this = $(this);
+//   console.log("tttt");
+//   // if($this.has('GS'))  alert('GS');
+//   if ($this.hasClass('bootstrap-touchspin-down')) {
+//     //alert('down');
+//     up = true;
+//   } else if ($this.hasClass('bootstrap-touchspin-up')) {
+//    // alert('up');
+//    up = false;
+//   }
+// });
+
+
+function spin_changeAV(id1){
+  var element = document.getElementById(id1);
+  var up = $(element).triggerHandler("touchspin.getspin", { dummy: 1 });
+  if($(AC).hasClass("active")) {
+    if(up)ampObj.AVLoadAngle =   ampObj.AVLoadAngle + ampObj.AVStepAngle; else ampObj.AVLoadAngle =   ampObj.AVLoadAngle - ampObj.AVStepAngle;  
+      CircleGamma(ampObj.AVCenterR, ampObj.AVCenterI, ampObj.Again_r, ampObj.AVLoadAngle, false);  // Available == false
+      updateUI_Z_G();
+      smithSourceObj.redrawSmith();
+  }
+}
+
+function spin_changeOP(id1){
+  var element = document.getElementById(id1);
+  var up = $(element).triggerHandler("touchspin.getspin", { dummy: 1 });
+  if($(OC).hasClass("active")) {
+    if(up)ampObj.OPLoadAngle =   ampObj.OPLoadAngle + ampObj.OPStepAngle; else ampObj.OPLoadAngle =   ampObj.OPLoadAngle - ampObj.OPStepAngle;  
+      CircleGamma(ampObj.OPCenterR,ampObj.OPCenterI, ampObj.Ogain_r,ampObj.OPLoadAngle, true);// operation == true
+       updateUI_Z_G();
+      smithSourceObj.redrawSmith();
+  }
+}
+
+
+function spin_change(id1) {
+        var spin_element = document.getElementById(id1);
+        if (id1 == "SWR") {  
+              ampObj.swr= smithSourceObj.vswrCircle =smithLoadObj.vswrCircle= spin_element.value;
+              smithSourceObj.drawVSWRCircles();
+              smithLoadObj.drawVSWRCircles();
+        }  
+        if (id1 == "FI" &&  $(NC).hasClass("active")) {  
+              
+              ampObj.Fi= spin_element.value;
+              ampObj.calculateNoiseCircles();
+              smithSourceObj.circleM[2]= ampObj.noise_m;
+              smithSourceObj.circleQ[2] = ampObj.noise_q;
+              smithSourceObj.circleR[2] = ampObj.noise_r;
+              smithSourceObj.circleShow[2] = true;
+              smithSourceObj.drawGainCircles();
+        } 
+        
+        if (id1 == "GA" &&  ( $(AC).hasClass("active") || $(OC).hasClass("active")) ) {  
+              //console.log(" in GA");
+              if( spin_element.value > ampObj.GPMAX )  spin_element.value =  ampObj.GPMAX;
+              if(  $(AC).hasClass("active")) {
+                  ampObj.AvG= spin_element.value;
+                  ampObj.calculateAVGainCircles();
+                  smithSourceObj.circleM[1]= ampObj.Again_m;
+                  smithSourceObj.circleQ[1] = ampObj.Again_q;
+                  smithSourceObj.circleR[1] = ampObj.Again_r;
+                  updateUI_Z_G();
+                  smithSourceObj.circleShow[1] = true;
+                  smithSourceObj.drawGainCircles();
+                  //smithSourceObj.drawdataSprite();
+                 // smithSourceObj.redrawSmith();
+              }
+              if(  $(OC).hasClass("active")) {
+                  ampObj.OpG= spin_element.value;
+                  ampObj.calculateOPGainCircles();
+                  smithLoadObj.circleM[1]= ampObj.Ogain_m;
+                  smithLoadObj.circleQ[1] = ampObj.Ogain_q;
+                  smithLoadObj.circleR[1] = ampObj.Ogain_r;
+                  updateUI_Z_G();
+                  smithLoadObj.circleShow[1] = true;
+                  smithLoadObj.drawGainCircles();
+                  //smithSourceObj.drawdataSprite();
+                 // smithSourceObj.redrawSmith();
+              }
+
+        } 
+        
+}
+
+function back_click()
+{
+  //localStorage.setItem('schDataIL', JSON.stringify(schObj));
+  window.open("index.html","_self");
+}
+
+function step_change(id1) {
+  var element = document.getElementById(id1);
+  var result = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
+  var val = prompt("Enter Step Size", result);
+  if (isNumeric(val) == true) {
+      $(element).trigger("touchspin.updatesettings", { step: val })
+  }
+}
+
+
+function StabilityCircles_click() {
+  console.log(" stability clicked");
+  if( $(SC).hasClass("active")){
+      $(SC).removeClass('active');
+      smithSourceObj.circleShow[0] = false;
+      smithLoadObj.circleShow[0] = false;
+      redrawSmith();
+  }
+  else
+  {
+    $(SC).addClass('active');
+      smithSourceObj.circleM[0]= ampObj.stablityS_m;
+      smithSourceObj.circleQ[0] = ampObj.stablityS_q;
+      smithSourceObj.circleR[0] = ampObj.stablityS_r;
+      smithLoadObj.circleM[0] =   ampObj.stablityL_m;
+      smithLoadObj.circleQ[0] = ampObj.stablityL_q;
+      smithLoadObj.circleR[0] = ampObj.stablityL_r;
+      smithSourceObj.circleShow[0] = true;
+      smithLoadObj.circleShow[0] = true;
+      if (ampObj.show_message==true) {
+        var msg = " Source Plane Magnitude = " + Number(ampObj.stablityS_m).toFixed(3) + " < " + Number(ampObj.stablityS_q).toFixed(3) + " Radius = " + Number(ampObj.stablityS_r).toFixed(3);
+        var msg1 = "Load Plane Magnitude = " + Number(ampObj.stablityL_m).toFixed(3) + " < " + Number(ampObj.stablityL_q).toFixed(3)   + " Radius = " + Number(ampObj.stablityL_r).toFixed(3);
+        var msg2, msg3;
+        if (parseFloat(ampObj.S11M) < 1) {
+          if (parseFloat(ampObj.stablityS_m) > parseFloat(ampObj.stablityS_r))  msg2 = "The Stability Region is Outside the Circle"; else msg2 = "The Stability Region is Inside the Circle";
+          if (parseFloat(ampObj.stablityL_m) > parseFloat(ampObj.stablityL_r))  msg3 = "The Stability Region is Outside the Circle"; else msg3 = "The Stability Region is Inside the Circle";
+        }
+        else{
+          if (parseFloat(ampObj.stablityS_m) > parseFloat(ampObj.stablityS_r))  msg2 = "The Stability Region is Inside the Circle"; else  msg2 = "The Stability Region is Outside the Circle";
+          if (parseFloat(ampObj.stablityL_m) > parseFloat(ampObj.stablityL_r))  msg3 = "The Stability Region is Inside the Circle"; else msg3 = "The Stability Region is Outside the Circle";
+        }
+        //  MsgBox "SOURCE PLANE : " & str1 & Chr$(13) & Chr$(13) & "LOAD PLANE : " & Str2, 0, "QuickSmith    
+        ShowMessage("QuickSmith",msg+'\n'+msg1+'\n Source Plane:'+msg2+'\n Load Plane:'+msg3);
+    }
+  }  
+
+}
+
+function OperatingGCircles_click() {
+  if( $(OC).hasClass("active")){
+     $(OC).removeClass('active');
+     smithLoadObj.circleShow[1] = false;
+    updateUI_Zl_Gl_0();
+    smithLoadObj.redrawSmith();
+  }
+  else
+  {
+    $(OC).addClass('active');
+    smithLoadObj.circleShow[1] = true;
+    OperatingCirclesDialog();
+  }
+  
+}
+
+function AvailableGCircles_click() {
+  if( $(AC).hasClass("active")){
+      $(AC).removeClass('active');
+      smithSourceObj.circleShow[1] = false
+      updateUI_Zs_Gs_0();
+      smithSourceObj.redrawSmith();
+  }
+  else
+  {
+    $(AC).addClass('active');
+    // smithSourceObj.circleShow[1] = true;
+    smithSourceObj.circleShow[1] = true;
+    AvailableCirclesDialog();
+  }
+  
+}
+
+function NoiseCircles_click() {
+  if( $(NC).hasClass("active")){
+     $(NC).removeClass('active');
+     smithSourceObj.circleShow[2] = false;
+     redrawSmith();
+  }
+  else
+  {
+    $(NC).addClass('active');
+    smithSourceObj.circleShow[2] = true;
+    NoiseDialog (); // updates ampObj.fi;
+  }  
+
+
+}
+
+function  NoiseDialog (){  
+    var pc = parseFloat(math.add(ampObj.Fmin,1.1));
+    var $content = $('<div><label for="FMin">Minimum Noise Figure [dB]: <input type="text" id="FMmin" value='+ampObj.Fmin+' readonly style="width:64px; border: 0"  /> \
+      <div><label for="FI">Enter Noise Figure in dB: <input type="text" id="FI"  value='+pc+'  style="width:64px" /> \
+        </label><br /></div>');
+    var fi;
+    BootstrapDialog.show({
+    size: BootstrapDialog.SIZE_SMALL,
+    title: "QuickSmith",
+    message: $content,
+        buttons: [{
+            label: 'OK',
+            cssClass: 'btn-success',
+            action: function(dialogRef){
+                dialogRef.setClosable(true);
+                fi = dialogRef.getModalBody().find('#FI').val();
+                if (isNumeric(fi)) // validation
+                  {
+                    if(ampObj.Fmin > ampObj.fi)  ampObj.fi = ampObj.Fmin; else  ampObj.fi = fi;
+                      document.getElementById("FI").value = Number(ampObj.fi).toFixed(2);
+                      $(NC).addClass('active');
+
+                      ampObj.calculateNoiseCircles(); // updates noise circles in ampObj
+                      // next draw noise circle
+                      smithSourceObj.circleM[2]= ampObj.noise_m;
+                      smithSourceObj.circleQ[2] = ampObj.noise_q;
+                      smithSourceObj.circleR[2] = ampObj.noise_r;
+                      console.log(smithSourceObj.circleM[2]+" "+smithSourceObj.circleQ[2] + " " +smithSourceObj.circleR[2] )
+                      smithSourceObj.circleShow[2] = true;
+                      smithSourceObj.drawGainCircles();
+                      dialogRef.close();
+                  }
+                else{
+                      document.getElementById("FI").value = "";
+                      $(NC).removeClass('active');
+
+                  }
+                       
+            }
+        }, 
+    ]}
+    );
+} ;
+
+function  AvailableCirclesDialog (){  
+    var GPMAX =  Number(ampObj.GPMAX).toFixed(2)
+    var pc = parseFloat(10.0);
+    var $content = $('<div><label for="AVG">Maximum Gain [dB]: <input type="text" id="AVG" value='+GPMAX+' readonly style="width:64px; border: 0"  /> \
+      <div><label for="AVG1">Enter Gain in dB: <input type="text" id="AVG1"  value='+pc+'  style="width:64px" /> \
+        </label><br /></div>');
+    var AvG;
+    BootstrapDialog.show({
+    size: BootstrapDialog.SIZE_SMALL,
+    title: "QuickSmith",
+    message: $content,
+        buttons: [{
+            label: 'OK',
+            cssClass: 'btn-success',
+            action: function(dialogRef){
+                dialogRef.setClosable(true);
+                AvG = dialogRef.getModalBody().find('#AVG1').val();
+                if (isNumeric(AvG)) // validation
+                  {
+                    if(AvG > GPMAX) AvG = GPMAX; 
+                      ampObj.AvG = AvG;
+                      document.getElementById("GA").value = Number(ampObj.AvG).toFixed(2);
+                      $(AC).addClass('active');
+                      ampObj.calculateAVGainCircles(); // updates noise circles in ampObj
+                      smithSourceObj.circleM[1]= ampObj.Again_m;
+                      smithSourceObj.circleQ[1] = ampObj.Again_q;
+                      smithSourceObj.circleR[1] = ampObj.Again_r;
+                      updateUI_Z_G();
+                      smithSourceObj.circleShow[1] = true;
+                      smithSourceObj.redrawSmith();
+                      dialogRef.close();
+                  }
+                else{
+                      document.getElementById("GA").value = "";
+                      $(AC).removeClass('active');
+
+                  }
+                         
+            }
+        }, 
+    ]}
+    );
+} ;
+
+
+function  OperatingCirclesDialog (){  
+    var GPMAX =  Number(ampObj.GPMAX).toFixed(2)
+    var pc = parseFloat(10.0);
+    var $content = $('<div><label for="OPG">Maximum Gain [dB]: <input type="text" id="OPG" value='+GPMAX+' readonly style="width:64px; border: 0"  /> \
+      <div><label for="OPG1">Enter Gain in dB: <input type="text" id="OPG1"  value='+pc+'  style="width:64px" /> \
+        </label><br /></div>');
+    var OpG;
+    BootstrapDialog.show({
+    size: BootstrapDialog.SIZE_SMALL,
+    title: "QuickSmith",
+    message: $content,
+        buttons: [{
+            label: 'OK',
+            cssClass: 'btn-success',
+            action: function(dialogRef){
+                dialogRef.setClosable(true);
+                OpG = dialogRef.getModalBody().find('#OPG1').val();
+                if (isNumeric(OpG)) // validation
+                  {
+                    if(OpG > GPMAX) OpG = GPMAX; 
+                      ampObj.OpG = OpG;
+                    //  document.getElementById("GL").value = Number(ampObj.OpG).toFixed(2);
+                      $(OC).addClass('active');
+
+                      ampObj.calculateOPGainCircles(); // updates noise circles in ampObj
+                      smithLoadObj.circleM[1]= ampObj.Ogain_m;
+                      smithLoadObj.circleQ[1] = ampObj.Ogain_q;
+                      smithLoadObj.circleR[1] = ampObj.Ogain_r;
+                      updateUI_Z_G();
+                      smithLoadObj.circleShow[1] = true;
+                      smithSourceObj.redrawSmith();
+                      dialogRef.close();
+                  }
+                else{
+                     // document.getElementById("GL").value = "";
+                      $(OC).removeClass('active');
+
+                  }
+                         
+            }
+        }, 
+    ]}
+    );
+} ;
+
+
+ /***************OPTIONS MODAL****************************/
+
+    function options_click() {
+      console.log("options.click");
+        $(".modal-body #Z0").val(ampObj.Z0);
+        $(".modal-body #AVST").val(ampObj.AVStepAngle);
+        $(".modal-body #OPST").val(ampObj.OPStepAngle);
+        $(".modal-body #show_message").prop("checked",ampObj.show_message);
+        
+        $(".modal-body #stabilityColor").val(ampObj.stabilityColor);
+        $(".modal-body #gainColor").val(ampObj.gainColor);
+        $(".modal-body #noiseColor").val(ampObj.noiseColor);
+    }
+
+    function optionValidate() {
+        val = $(".modal-body #Z0").val();
+        if (isNumeric(val) && val > 0)  ampObj.Z0 = smithSourceObj.Z0 = smithLoadObj.Z0 = parseFloat(val) 
+        val = $(".modal-body #AVST").val();
+        if (isNumeric(val) && val > 0)  ampObj.AVStepAngle = parseFloat(val) ;
+        val = $(".modal-body #OPST").val();
+        if (isNumeric(val) && val > 0)  ampObj.OPStepAngle = parseFloat(val) ;
+        if(document.getElementById("show_message").checked == true) ampObj.show_message = true;
+        else ampObj.show_message = false;
+        val = $(".modal-body #stabilityColor").val();
+        ampObj.stabilityColor = smithSourceObj.circleColor[0]= smithLoadObj.circleColor[0] = val;
+        val = $(".modal-body #gainColor").val();
+        ampObj.gainColor = smithSourceObj.circleColor[1]= smithLoadObj.circleColor[1] = val;
+        val = $(".modal-body #noiseColor").val();
+        ampObj.noiseColor = smithSourceObj.circleColor[2]= smithLoadObj.circleColor[2] = val;
+         smithSourceObj.drawSmith(); smithLoadObj.drawSmith(); // clears canvas too
+    }
+
+
+function stability_dialog()
+{  
+    var S11m = ampObj.S11M;
+    var S11a = ampObj.S11A;
+    var S21m = ampObj.S21M;
+    var S21a = ampObj.S21A;
+    var S12m = ampObj.S12M;
+    var S12a = ampObj.S12A;
+    var S22m = ampObj.S22M;
+    var S22a = ampObj.S22A;
+    var $content = $('<div>\
+        <label for="S11M">S11 [Mag/A]: <input type="number" id="S11M" value='+S11m+'  style="width:85px"/><input type="number" id="S11A" value='+S11a+' style="width:85px"/></label>\
+        <br /><label for="S21M">S21 [Mag/A]: <input type="number" id="S21M" value='+S21m+' style="width:85px" /><input type="number" id="S21A" value='+S21a+' style="width:85px"</label>\
+        <br /><label for="S12M">S12 [Mag/A]: <input type="number" id="S12M" value='+S12m+' style="width:85px" /><input type="number" id="S12A" value='+S12a+' style="width:85px" /></label>\
+        <br /><label for="S22M">S22 [Mag/A]: <input type="number" id="S22M" value='+S22m+' style="width:85px;" /><input type="number" id="S22A" value='+S22a+' style="width:85px;" /></label>\
+        <br /><label for="K">K : <input type="text" id="K" readonly  style="width:110px; color:blue" /></label>\
+        <br /><label for="DELTA">DELTA: <input type="text" id="DELTA"  readonly style="width:110px; color:blue"/>\
+          <br />\
+        <br /><label for="RESULT">RESULT:<input type="text" id="RESULT"  readonly style="width:220px;  color:red"/>\
+        </div>');
+    BootstrapDialog.show({
+    size: BootstrapDialog.SIZE_SMALL,
+    title: 'Noise Parmeters Entry',
+    message: $content,
+        buttons: [{
+            label: 'Calculate Stability',
+            cssClass: 'btn-success',
+            action: function(dialogRef){
+                //dialogRef.setClosable(false);
+                var val0 = dialogRef.getModalBody().find('#S11M').val();
+                var val1 = dialogRef.getModalBody().find('#S11A').val();
+                var val2 = dialogRef.getModalBody().find('#S21M').val();
+                var val3 = dialogRef.getModalBody().find('#S21A').val();
+                var val4 = dialogRef.getModalBody().find('#S12M').val();
+                var val5 = dialogRef.getModalBody().find('#S12A').val();
+                var val6 = dialogRef.getModalBody().find('#S22M').val();
+                var val7 = dialogRef.getModalBody().find('#S22A').val();
+                if (isNumeric(val0)  && isNumeric(val1)  && isNumeric(val2)  && isNumeric(val3) && isNumeric(val4) 
+                 && isNumeric(val5)  && isNumeric(val6)  && isNumeric(val7)) // validation
+                {
+                        ampObj.S11M = val0;
+                        ampObj.S11A = val1;
+                        ampObj.S21M = val2;
+                        ampObj.S21A = val3;
+                        ampObj.S12M = val4;
+                        ampObj.S12A = val5;
+                        ampObj.S22M = val6;
+                        ampObj.S22A = val7;
+                        ampObj.calculateStabilityCircles();
+                        dialogRef.getModalBody().find('#K').val(ampObj.k);
+                        dialogRef.getModalBody().find('#DELTA').val(ampObj.delta);
+                        dialogRef.getModalBody().find('#RESULT').val(ampObj.stability_msg);
+                        
+                        dialogRef.setClosable(false);
+                        $(SC).removeClass('disabled'); // enable the circle menus
+                        $(OC).removeClass('disabled');
+                        $(AC).removeClass('disabled');
+                        // dialogRef.close();
+                }
+                else {
+                        $(SC).addClass('disabled');
+                        $(OC).addClass('disabled');
+                        $(AC).addClass('disabled');
+                }
+            }
+        }, 
+            {
+             label: 'OK',
+             cssClass: 'btn-success',
+             action: function(dialogRef){
+                //smithSourceObj.redrawSmith();
+                //smithSourceObj.redrawSmith();
+                dialogRef.close();
+             }
+            }
+    ]
+    });
+}
+
+
+
+function noise_dialog()
+{  
+    var Fmin = ampObj.Fmin;
+    var G0M = ampObj.G0M;
+    var G0A = ampObj.G0A;
+    var RN = ampObj.RN;
+    var $content = $('<div><label for="FM">Fmin [dB]: <input type="number" id="FM" value='+Fmin+'  style="width:100px" /> \
+        </label><br /><label for="GM">G0 [Mag]: <input type="number" id="GM" value='+G0M+' style="width:100px" />\
+        </label><br /><label for="GA">G0 [Ang]: <input type="number" id="GA" value='+G0A+' style="width:100px" />\
+        </label><br /><label for="RN">RN [Ohms]: <input type="number" id="RN" value='+RN+' style="width:100px" />\
+        </label><br /></div>');
+    BootstrapDialog.show({
+    size: BootstrapDialog.SIZE_SMALL,
+    title: 'Noise Parmeters Entry',
+    message: $content,
+        buttons: [{
+            label: 'OK',
+            cssClass: 'btn-success',
+            action: function(dialogRef){
+                dialogRef.setClosable(true);
+                var val0 = dialogRef.getModalBody().find('#FM').val();
+                var val1 = dialogRef.getModalBody().find('#GM').val();
+                var val2 = dialogRef.getModalBody().find('#GA').val();
+                var val3 = dialogRef.getModalBody().find('#RN').val();
+                if (isNumeric(val0)  && isNumeric(val1)  && isNumeric(val2)  && isNumeric(val3)) // validation
+                {
+                        ampObj.Fmin = val0;
+                        ampObj.G0M = val1;
+                        ampObj.G0A = val2;
+                        ampObj.RN = val3;
+                        //ampObj.NoiseCircles();
+                        //dialogRef.setClosable(true);
+                        $(NC).removeClass('disabled');
+                        dialogRef.close();
+                }
+                else {
+                        //alert(val);
+                    // dialogRef.setClosable(false);
+                }
+            }
+        }, 
+            // {
+            //  label: 'Reset',
+            //  cssClass: 'btn-success',
+            //  action: function(dialogRef){
+            //     smithObj.showMarker=false;
+            //     smithObj.redrawSmith();
+            //     dialogRef.close();
+            //  }
+            //}
+    ]
+    });
+}
+
+function TransferSourceImpedance_click() {
+if( $(TS).hasClass("active")){
+     $(TS).removeClass('active');
+     localStorage.setItem("transferFlag", 'false');
+  }
+  else
+  {
+    $(TS).addClass('active');
+    var DataM = ampObj.DataSM;
+    var DataQ = ampObj.DataSQ;
+    var SourceReal = GToZRZ(DataM, DataQ, ampObj.Z0);
+    var SourceImag = GToZIZ(DataM, DataQ, ampObj.Z0);
+    SourceReal =  Number(SourceReal).toFixed(2);
+    SourceImag = -Number(SourceImag).toFixed(2); // take conjugate
+    SourceImag = - SourceImag; // take conjugate
+    localStorage.setItem("transferFlag", 'true');
+    localStorage.setItem("R1", SourceReal);
+    localStorage.setItem("Z1", SourceImag);
+    var msg = "Schematic Load Impedance will be set to:" +"\n" + "R1= " + SourceReal + "\n" + "Z1= " + SourceImag ;
+    ShowMessage("QuickSmith",msg)
+  }  
+}
+
+function TransferLoadImpedance_click() {
+  if( $(TL).hasClass("active")){
+     $(TL).removeClass('active');
+     localStorage.setItem("transferFlag", 'false');
+  }
+  else
+  {
+    $(TL).addClass('active');
+    var DataM = ampObj.DataLM;
+    var DataQ = ampObj.DataLQ;
+    var LoadReal = GToZRZ(DataM, DataQ, ampObj.Z0);
+    var LoadImag = GToZIZ(DataM, DataQ, ampObj.Z0);
+    LoadReal =  Number(LoadReal).toFixed(2);
+    LoadImag = -Number(LoadImag).toFixed(2); // take conjugate
+    localStorage.setItem("transferFlag", 'true');
+    localStorage.setItem("R1", LoadReal);
+    localStorage.setItem("Z1", LoadImag);
+    var msg = "Schematic Load Impedance will be set to:" +"\n" + "R1= " + LoadReal + "\n" + "Z1= " + LoadImag ;
+    ShowMessage("QuickSmith",msg)
+  }  
+
+}
+
+function updateUI_Zs_Gs_0() {
+  var DataM= 0;
+  var DataQ = 0;
+  document.getElementById("GS").value = Number(DataM).toFixed(3) + "  < " + Number(DataQ).toFixed(3);
+  var SourceReal = GToZRZ(DataM, DataQ, ampObj.Z0);
+  var SourceImag = GToZIZ(DataM, DataQ, ampObj.Z0);
+  document.getElementById("ZS").value = Number(SourceReal).toFixed(3) + getSign(Number(SourceImag).toFixed(3)) + Math.abs(Number(SourceImag).toFixed(3)) +'i';
+}
+
+function updateUI_Zl_Gl_0() {
+  var DataM= 0;
+  var DataQ = 0;
+  document.getElementById("GL").value = Number(DataM).toFixed(3) + "  < " + Number(DataQ).toFixed(3);
+  var LoadReal = GToZRZ(DataM, DataQ, ampObj.Z0);
+  var LoadImag = GToZIZ(DataM, DataQ, ampObj.Z0);
+  document.getElementById("ZL").value = Number(LoadReal).toFixed(3) + getSign(Number(LoadImag).toFixed(3)) + Math.abs(Number(LoadImag).toFixed(3)) +'i';
+}
+
+function updateUI_Z_G() {
+  var DataM= smithSourceObj.dataM = ampObj.DataSM;
+  var DataQ = smithSourceObj.dataQ = ampObj.DataSQ;
+  document.getElementById("GS").value = Number(DataM).toFixed(3) + "  < " + Number(DataQ).toFixed(3);
+  var SourceReal = GToZRZ(DataM, DataQ, ampObj.Z0);
+  var SourceImag = GToZIZ(DataM, DataQ, ampObj.Z0);
+  document.getElementById("ZS").value = Number(SourceReal).toFixed(3) + getSign(Number(SourceImag).toFixed(3)) + Math.abs(Number(SourceImag).toFixed(3)) +'i';
+  var DataM= smithLoadObj.dataM = ampObj.DataLM;
+  var DataQ = smithLoadObj.dataQ = ampObj.DataLQ;
+  document.getElementById("GL").value = Number(DataM).toFixed(3) + "  < " + Number(DataQ).toFixed(3);
+  var LoadReal = GToZRZ(DataM, DataQ, ampObj.Z0);
+  var LoadImag = GToZIZ(DataM, DataQ, ampObj.Z0);
+  document.getElementById("ZL").value = Number(LoadReal).toFixed(3) + getSign(Number(LoadImag).toFixed(3)) + Math.abs(Number(LoadImag).toFixed(3)) +'i';
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Example: Wide Band Matching Network</title>
+<meta name="MS-HKWD" content="Wide Band" />
+<meta name="MS-HKWD" content="Sweep" />
+<meta name="MS-HKWD" content="VSWR" />
+<meta name="generator" content="Adobe RoboHelp 2017" />
+<script language="JavaScript" title="BSSC Special Effects" src="../ehlpdhtm.js" type="text/javascript">
+</script>
+</head>
+<body style="font-family:'Helv'; font-size:10pt; background-color:white;" bgcolor="white">
+<h1 style="font-size:12pt;margin-top:0.00pt;margin-bottom:12.00pt;"><img src="../image/QSmith.gif" border="0" height="82" width="82" alt="image\QSmith.gif" /> <b><font face="MS Sans Serif" style="font-family:'MS Sans Serif'; font-weight:bold;">Example: Wide Band Matching Network</font></b></h1>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">The examples considered so far have been examined at single frequency. We will now consider impedance matching network for a range of frequencies. One of the interesting aspects of wide band networks is the introduction of a new variable which is the term</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">ination itself. In many practical situations the wide band "load" is a frequency dependent antenna. QuickSmith takes this into account by allowing the user to link the frequency-dependent termination to the program. The impedances corresponding to the int</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">er</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">mediate frequencies are computed using interpolation algorithms. Since it is not possible to match a band of frequencies to an VSWR of 1:1, we try to design a network such that our bandwidth of interest falls within a specified VSWR circle. Wide band netw</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">orks are usually realized after numerous experiments with mutipole networks. The user is urged to explore different wide band topologies.</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Problem :</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">The reflection coefficients of a dipole antenna operating between 100 to 200 MHz has been saved in file ca</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">lled "Dipole.Gam". Design a matching network such that VSWR is 2.0 to 1 or better.</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Solution:</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">In the Schematic window open a new file and link "Dipole.Gam" using the multiple item of the termination menu. From the chart window draw a 2:1 VSWR circle and perform a frequency sweep as shown in trace-a.</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">From the Schematic menu add 32 ohm inductance reactance in series to the load to move the impedance curve more towards the center. The curve is then folded with a 95 degree, 25 ohm short-circuited stub line r</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">eferenced at 150 MHz. The final result is shown in trace-b</font></p>
+<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><img src="../image/ebd_4.gif" border="0" height="172" width="172" alt="image\ebd_4.gif" /></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Start Freq. = 100 MHz</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Stop Freq. = 200 MHz</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Load = Multiple termination with 12 data points</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">L2 = 32 nh</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">S3 = 25 Ohms, 95 degrees</font></p>
+</body>
+</html>

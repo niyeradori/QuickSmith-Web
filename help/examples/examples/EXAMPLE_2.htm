@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Example: Inductance and Capacitance</title>
+<meta name="MS-HKWD" content="Inductance" />
+<meta name="MS-HKWD" content="Capacitance" />
+<meta name="generator" content="Adobe RoboHelp 2017" />
+<script language="JavaScript" title="BSSC Special Effects" src="../ehlpdhtm.js" type="text/javascript">
+</script>
+</head>
+<body style="font-family:'Helv'; font-size:10pt; background-color:white;" bgcolor="white">
+<h1 style="font-size:12pt;margin-top:0.00pt;margin-bottom:12.00pt;"><img src="../image/QSmith.gif" border="0" height="82" width="82" alt="image\QSmith.gif" /> <b><font face="MS Sans Serif" style="font-family:'MS Sans Serif'; font-weight:bold;">Example: Inductance and Capacitance</font></b></h1>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Perhaps the most common impedance matching network used is the L- network. It consists of two elements connected in series and shunt. Invariably a capacitor and an inductor is used in R.F. designs.</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Problem:</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Design an L network to match a pure resistance of 500 ohms to 50 ohms at operating frequency of 100 MHz.</font></p>
+<p style="margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Solution:</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Since our goal is to match a 500 ohms termination to 50 ohms. We start with assigning the load resistan</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">ce to 500 ohms. Next a shunt capacitance of 0 pf is placed across the termination. The capacitance is increased until the real part of Z-in is 50 ohms this happens when the 50 ohms constant R-circle is reached. The next task is to cancel or "tune out" the</font> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">reactive part, which is done by adding a series inductor and increasing its value until the center of the chart is reached. The same is illustrated in the figure below with a blue trace.</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">If the designer chooses to, the above match could also be done wit</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">h shunt L and series C which will also decouple the DC.</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Note: The step size can be changed by double clicking on the corresponding number.</font></p>
+<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
+<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><img src="../image/ebd_2.gif" border="0" height="188" width="180" alt="image\ebd_2.gif" /></p>
+<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
+<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Load = 500 ohms</font></p>
+<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Shunt C3 = 9.5 pf</font></p>
+<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Series L4 = 240 nh</font></p>
+</body>
+</html>

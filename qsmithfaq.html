@@ -1,0 +1,141 @@
+<html>
+<head>
+<title>QuickSmith FAQ</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+ <link href="css/bootstrapL.min.css" rel="stylesheet" type="text/css" media="all"/>
+ <script src="js/jquery-3.2.1.min.js"></script>
+  <script src="js/bootstrapL.min.js"></script>
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#274d99" vlink="#5a83d7" alink="#5a83d7">
+<basefont size=2>
+<table width="100%" border="0" cellpadding="5" cellspacing="0">
+   <tr>
+   <td   align=center bgcolor="#264b99"><font face="verdana,arial" size=6 color="#FFFFFF"><b>QuickSmith Web Version 1.0.0</b></font> <br>
+    <button style="float: left; "   class="btn btn-info btn-lg" onclick="window.location.href='index.html'">Home</button>
+    <font 
+       face="verdana,arial" size=4 color="#FFFFFF"><b>Frequently Asked Questions</b><br>
+    </font>
+  </td>
+  </tr>
+</table>
+<font face="verdana,arial" size=2>
+<!-- <p><i>Last Updated: 6-14-2014</i> -->
+<p>Following are answers to some of the top questions I receive regarding QuickSmith.
+<ul>
+<li><a href="#lang">What is QuickSmith ?</a>
+<li><a href="#mbcs">How do I get started ?</a>
+<li><a href="#setupicon">How to change step size ?</a>
+<li><a href="#silent">What does the Load in the schematic represent ? </a>
+<li><a href="#units">What are the default units ? </a>
+<li><a href="#components">How can I change load resistance and reactance ?</a>
+<li><a href="#conditional">Why does the menu change ?</a>
+<li><a href="#match">How do I match my circuit to 50 (or Char. impedance) ohms ?</a>
+<li><a href="#match1">How do I match to impedance other that 50 ohms ?</a>
+<li><a href="#amplifier">What is the Amplifier Design window all about ?</a>
+<li><a href="#s21">What does S21 window do?</a>
+<li><a href="#sweep">How to Sweep Frequency or Component values?</a>
+<li><a href="#back">How do I get to the main window from S21 or Amplifier Design window?</a>
+<li><a href="#vswr">How do I get VSWR/Return Loss at any point on the Smith chart?</a>
+<li><a href="#q">How do I include Q information?</a>
+<li><a href="#latestversion">Where can I get the latest version from ?</a>
+</ul>
+
+
+<h4><a name="lang">About QuickSmith </a></h4>
+<blockquote>
+QuickSmith is a Smith Chart based linear circuit simulation program.<BR>
+Some of the features offered by this program are listed below:<BR>
+  - Ladder network, elements are loaded using drag drop method.<BR>
+  - Open and Save functions for schematic files<BR>
+  - Impedance matching<BR>
+  - Frequency/component sweep<BR>
+  - Load impedance interpolation/extrapolation for frequency dependent loads<BR>
+  - Q factors taken into account for network components<BR>
+  - Amplifier design/analysis using gain/noise circles<BR>
+  - Insertion loss and S21 graphs<BR>
+  - Transmission line parameter calculations<BR>
+  - Constant Conductance, VSWR and Q circles<BR>
+  - Import and Export of data files<BR>
+  - Help files with solved examples of network matching and amplifier design<BR>
+</blockquote>
+<h4><a name="mbcs">Getting started</a></h4>
+<blockquote>
+First you will notice there are two windows one on the left is the <B>Smithchart</B> window another and on the right is <B>Schematic</B><BR>
+In the Schematic window, click on the resistor <IMG SRC="img/r.bmp" WIDTH=61 HEIGHT=20 BORDER=0> icon and drag and drop it in the white slot in the ladder above, a Message box will pop up and enter a number and hit return<BR>
+Notice that the blue dot on the Smith chart moves to an appropriate location. Now you can you use spin(up/down) button to navigate on the Smith chart<BR>
+</blockquote>
+<h4><a name="setupicon">Step Size</a></h4>
+<blockquote>
+To change the step size double click on the <B>component value</B> in the schematic window.
+</blockquote>
+<h4><a name="silent">Load in the schematic</a></h4>
+<blockquote>
+The <B>load (L)</B> on the left side of the Schematic window is the device you are looking into. It is very similar to a Network analyser with the Port 1 cable connected to a device.
+The display end of the network analyzer is the right side <B>(Zin)</B>
+</blockquote>
+<h4><a name="units">Default Units</a></h4>
+<blockquote>
+Frequency <B>MHz</B>, Resistor <B>Ohms</B>, Inductor <B>nH</B>, Capacitor <B>pH</B>.
+</blockquote>
+<h4><a name="components">Load Resistance/Reactance</a></h4>
+<blockquote>
+To change the load resistance or reactance drag the resistor icon<IMG SRC="img/r.bmp" WIDTH=61 HEIGHT=20 BORDER=0> or the reactance <IMG SRC="img/x.bmp" WIDTH=61 HEIGHT=20 BORDER=0> icon on load (L) slot and enter the value in the message box .
+</blockquote>
+<h4><a name="conditional">Menus</a></h4>
+<blockquote>
+In the interest of giving user many options there are two menus one when the Smithchart window in focus another when the Schematic window is in focus.
+To change menus click on the appropriate window or on the icon in the top left side of the window.
+</blockquote>
+<h4><a name="match">To Match to 50 Ohms (or Char. impedance)</a></h4>
+<blockquote>
+In the Schematic window enter the Load resistance and reactance. Next enter the operating frequency in the <B>"Assign values" </B>Menu
+or hit "Ctrl F" with the schematic window on focus. Depending upon your Load location use the Matching aid shown below
+to determine the network to get to 50 Ohms.  The goal it to navigate the blue dot on the Smith chart to the circle going through the  center
+and then use the last component to bring to the 50 Ohm point. See the Large Signal Amplifier Design Example in the help section.
+<br> <br><br> <br>
+<center><IMG SRC="img/match.jpg" WIDTH=700 HEIGHT=694 BORDER=1></center>
+<br> <br> <br> <br>
+</blockquote>
+<h4><a name="match1">To Match to other impedance</a></h4>
+<blockquote>
+Use the Marker in the SmithChart window display menu to set a target marker.
+</blockquote>
+<h4><a name="amplifier">Amplifier Design and Analysis</a></h4>
+<blockquote>
+ To get to the Amplifier design window click on the Amplifier design menu or the "Chart icon".
+ You will see two Smith charts. One for the source plane and another for the load plane.
+ You can use this to optimize Gain and noise trade offs. See the "Small Signal Amplifier Design" Example in the Help section.
+</blockquote>
+<h4><a name="s21">S21 Window</a></h4>
+<blockquote>
+S21 window gives you the insertion loss of the network. It assume load and source impedance is 50 (characteristic) Ohms.
+To set frequency sweep parameters, use "Sweep Setup" menu in Schematic window.
+</blockquote>
+<h4><a name="sweep">Sweep Frequency or component</a></h4>
+<blockquote>
+First set frequency/component sweep parameters, use "Sweep Setup" menu in Schematic window. Click on Smithchart
+window "Sweep" menu "Generate Sweep" item to sweep.
+</blockquote>
+<h4><a name="back">Close S21 or Amplifier Design window </a></h4>
+<blockquote>
+On the menu of S21 or Amplifier Design window click on <B>Back</B>.
+</blockquote>
+<h4><a name="vswr">VSWR /Return Loss etc.</a></h4>
+<blockquote>
+Move you mouse pointer to the Smith chart and double click your right mouse button.
+</blockquote>
+<h4><a name="q">Include Q values</a></h4>
+<blockquote>
+To include Q values in the Schematic window, click on <B>"Assign Values"</B> menu you will <B>"Element 2:Q"</B>  through <B>"Element 10:Q"</B> items.
+The default value is 1000000.
+</blockquote>
+<h4><a name="latestversion">Available on Git.</a></h4>
+<blockquote>
+Email Nathan Iyer <BR>
+niyer@sbcglobal.net<BR>
+</blockquote>
+<script>
+
+</script>
+</body>
+</html>

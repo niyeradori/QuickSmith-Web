@@ -1,0 +1,1753 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6.0, minimum-scale=.25, user-scalable=yes"/>
+  <title>QuickSmith- Smith Chart</title>
+  <link href="img/smith.ico" rel="icon" >
+  <link href="css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
+  <link href="css/jquery.bootstrap-touchspin.css" rel="stylesheet" type="text/css" media="all"/>
+  <link href="css/jquery.contextMenu.css" rel="stylesheet" type="text/css" media="screen">
+  <link href="css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css" />
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <script src="js/bootstrap3.min.js"></script>
+  <script src="js/math.min.js"></script>
+  <script src="js/jquery.bootstrap-touchspin_ni.js"></script>
+  <script src="common.js"></script>
+  <script src="smith.js"></script>
+  <script src="sch.js"></script>
+  <script src="js/jquery.contextMenu.js"></script>
+  <script src="js/DragDropTouch.js"></script>    
+  <script src="js/bootstrap-dialog.min.js"></script>
+>
+   <!-- ios-drag-drop.js does not trigger end ? -->
+    <!-- <script src="js/ios-drag-drop.js"></script>   -->
+  <!-- <script src="js/jquery.longclick-1.0.min.js"></script> -->
+  <style>
+    /*body {
+    padding: 20px;
+    }*/
+
+
+/*canvas {
+  width: 100%;
+  height: auto;
+}*/
+
+  /*canvas {
+    image-rendering: -moz-crisp-edges;     Firefox
+    image-rendering: -webkit-crisp-edges;  Webkit (Safari)
+    image-rendering: pixelated;            Chrome
+  }*/
+/* prevent callout to copy image, etc when tap to hold */
+/*  prevent webkit from resizing text to fit  */
+/* prevent copy paste, to allow, change 'none' to 'text' */
+   body {
+            -webkit-touch-callout: none;                
+            -webkit-text-size-adjust: none;            
+            -webkit-user-select: none;                  
+        }  
+
+    /* disables save menu on mobile */
+      /* img{
+        -webkit-user-select:none;
+        -webkit-touch-callout:none;
+        }  */
+
+  
+      th {
+          text-align: center;
+      }
+
+        .dropzoneh {
+          width: 25%;  /* 81px;  */
+          height: 27px;   /*27px;   */
+          /* padding-top: 3.3334%; */
+          margin-left: 0px;
+          border: 1px solid #D3D3D3;
+          float: left;
+          position: relative;
+          z-index: 1;
+      }
+
+      .dropzonehimg {
+          width: 61px;  /* 61px;  */
+          height: 20px;  /* 20px;  */
+          z-index: 10;
+      }
+
+      .dropzonev {
+          width: 8.3334%;     /* 27px;  */
+          height: 91px;    /* 91px;  */
+            /* padding-top: 3.744%; */
+          margin-left: 0px;
+          border: 1px solid #D3D3D3;
+          float: left;
+          z-index: 1;
+          position: relative;
+      }
+
+      .dropzonevimg {
+          width: 20px;     /* 20px;  */
+          height: 70px;     /* 70px;  */
+          z-index: 10;
+       
+       }
+
+    .dragable{
+       padding: 0.75%; 
+    }
+     /* .input-sm {
+        height: 12px
+        }  */
+
+      input[readonly].form-control {
+          background-color: #FFF;
+      }
+     
+
+
+/* this removes padding and margin for drawing images */
+ .nopadding {
+   padding: 0 !important;
+   margin: 0 !important;
+}
+
+.widthdemo {
+    width:20px;
+}
+.widthdemo .bootstrap-touchspin input {
+    text-align: center;
+}
+
+ /* input[type=text] { width: 100%; box-sizing: border-box; height: 32px; }  */
+ /* this is center the component images in the  */
+ #component-container {
+   padding-left:1%;
+  padding-right:1%; 
+  text-align: justify;
+  -ms-text-justify: distribute-all-lines;
+  /* text-justify: distribute-all-lines */
+  /* just for demo */
+  /* min-width: 612px; */
+} 
+
+   /* .draggable {
+   width: 150px;
+  height: 125px; 
+  vertical-align: top;
+  display: inline-block;
+  *display: inline;
+}    */
+
+/* img ~ .content {
+  display:none;
+}
+
+img:hover ~ .content {
+  display:block;
+}
+
+a:hover {
+    background-color: yellow;
+} */
+  </style>
+</head>
+<body>
+    <!-- ********************************NAV BAR************************************************* -->  
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+       <!-- <a class="navbar-brand" href="#"><img src="img/smith.ico">QuickSmith</a>  -->
+       <a class="navbar-brand" href="#" onclick ="redrawSmith()">
+          <img src="img/smith.ico" style="display: inline-block; margin-top:-7px; width:32px; height:32px">  
+        <span style="display: inline-block; color:blue">QuickSmith</span>
+     </a> 
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <!-- <li class="active"><a href="#">Home</a></li> -->
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">File<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#" onclick ="new_click()">New Session</a></li>
+            <li><a href="#" onclick ="set_click()" >Save Session</a></li>
+            <li><a href="#" onclick ="get_click()" >Restore Session</a></li>   
+            <!-- <div class="hidden-xs"> -->
+                <li class="hidden-xs"><a href="#" onclick ="load_click()" >Load File</a></li> 
+                <li class="hidden-xs" ><a href="#" onclick ="save_click()" >Save File</a></li>
+                <!-- <li class="hidden-xs"><a href="#">Import</a></li>
+                <li class="hidden-xs" ><a href="#">Export</a></li> -->
+            <!-- </div> -->
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Show<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#" onclick=showMarkerDialog()>Marker</a></li>
+            <li><a href="#"onclick=showTxEquivalents()>Equivalents </a></li>
+            <!-- <li><a href="#">Parallel Eq.</a></li>
+            <li><a href="#">Series Eq</a></li> -->
+          </ul>
+        </li>
+        <!-- <li><a href="#" onclick= smithObj.drawSweep >Show Sweep</a></li> -->
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Show Sweep<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+             <li><a href="#" onclick=generateSweep() >Generate</a></li>
+            <li><a href="#"  onclick=clearSweep() >Clear</a></li>
+            <!-- <li><a><input type="checkbox" name="checkbox1" style="float: right;">Show Sweep</a></li> -->
+          </ul>
+        </li> 
+
+        <li class="dropdown hidden-xs hidden-sm ">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Data<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+             <li><a href="#"  onclick=export_click()>Export</a></li>
+             <li><a href="#"  onclick=import_click()>Import</a></li>
+             <li><a href="#"  onclick=clear_import_click()>Clear</a></li>
+            <!-- <li><a><input type="checkbox" name="checkbox1" style="float: right;">Show Sweep</a></li> -->
+          </ul>
+        </li> 
+
+        <li><a href="#" onclick= smithObj.drawAdmitanceCircles() >Admittance Circles</a></li>
+      </ul>
+       <!-- <button class="btn btn-default navbar-btn" onclick= smithObj.drawAdmitanceCircles() >Admittance</button>   -->
+      <ul class="nav navbar-nav navbar-right">
+         <li class="hidden-xs" ><a href="#" onclick=IL_open_click() ><span class="glyphicon glyphicon-stats"></span> Insertion Loss</a></li>
+        <li  ><a href="#" onclick=AMP_open_click()><span class="glyphicon glyphicon-pencil"></span> Amp. Design</a></li>
+        <li><a href="qsmithfaq.html"><span class="glyphicon glyphicon-book"></span> FAQ</a></li>
+        <li><a href="#" data-toggle="modal" data-target="#optionsModal" onclick ="options_click()"><span class="glyphicon glyphicon-list-alt"></span></a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+ <!-- ********************************SMITH WINDOW************************************************* -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-8 col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: 0px">
+                    <!-- <h4 style = "font-weight:bold" >Smith Chart</h4> -->
+            <table>
+                <tr>
+                    <td><label  for="SM0" > <font size="1"> SWR: </font> </label> </td>
+                    <td><input id="SM0" type="text" value="0" name="spin1"  style="width: 100%" class="form-control input-sm" onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false"/></td>
+                    <td> &nbsp</td>
+                    <div>
+                        <td><label  for="SM1" class="hidden-xs" > <font size="1"> Q: </font> </label> </td>
+                        <td  class="hidden-xs"  ><input id="SM1" type="text" value="0" name="spin1" style="width: 100%"  class="form-control input-sm " onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false"/></td>  
+                    </div>
+                    <td> &nbsp</td>
+                    <!-- <td><button type="button" class="btn btn-default btn-sm" style="height:27px" onclick= test() > Test </button></td> -->
+                    <td> <input type="text" id="Z1" value="Z:" class="form-control input-sm " style="width: 100%; color:blue; " /></td>
+                </tr>
+            </table>
+            <!--<div id='parent_div_5'  >-->
+            <canvas id="smithMain"  style="float: left; margin-top: 5px;margin-bottom: 5px;"></canvas>
+            <!--</div>-->
+        </div>
+                 <!-- ********************************SCHEMATIC WINDOW ************************************************* -->
+        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-xs-12 " > 
+                    <!-- ********************************SCHEMATIC WINDOW  ROW 1************************************************* -->
+            <div nopadding style="margin-left: -13px;  margin-bottom: 5px;">
+                <table  >
+                    <tr>
+                        <td><label  for="E0" > <font size="1">Freq.MHz: </font> </label> </td>
+                        <td><input id="E0" type="text" value="100" name="spin2"  style="width: 100%;" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td> 
+                        <td> &nbsp</td>
+                        <td><label  for="ZO" > <font size="1">Zin.&#937:</font> </label> </td>
+                        <td><input id="ZO" type="text" value="0.0"  readonly class="form-control input-sm " /></td>
+                        <td> &nbsp</td>
+                        <td><label  class="hidden-xs" for="IL" > <font size="1">IL.dB:</font> </label> </td>
+                        <td><input  class="hidden-xs" id="IL" type="text" value="0.0" style="width: 50%;" readonly class="form-control input-sm " /></td>
+                        <!-- <td><label  for="ZIO" > <font size="1"> X: </font> </label> </td>
+                        <td><input id="ZIO" type="text" value="0" readonly class="form-control  input-sm" /></td>  -->
+                    </tr>
+                </table>
+            </div>
+            <!-- ********************************SCHEMATIC WINDOW ROW 1 END************************************************* -->  
+            <!--width:527px-->
+            <div class="row"> 
+                <!-- Dropzone1 -->
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 nopadding" style="background-color:white;">
+                    <!-- <div class="spinzone" >  -->
+                        <table style=" margin-left: 0px;  margin-bottom: 0px; width:100%;">  
+                            <!-- <tr>
+                                <th>W2</th>
+                                <th>W4</th>
+                                <th>W6</th>
+                            </tr> -->
+                            <tr>
+                                <td><input id="E2" type="text" value="0" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td>
+                                <td><input id="E4" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false"/></td>
+                                <td><input id="E6" type="text" value="0" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false" /></td>
+                            </tr>
+                        </table>
+                    <!-- </div>  -->
+                    <!--<br />-->
+                    <div class="dropzone"  style=" overflow: hidden;margin-left: 0px; margin-top: 5px;">
+                         
+                        <div id="V1" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)">
+                            <svg style=" position: absolute; height:100%; width:100%;">
+                                    <line id="line1" x1=50% y1=14% x2=100% y2=14% style="stroke:black;stroke-width:4px" />
+                                    <line id="line1a" x1=50% y1=13% x2=50% y2=100% style="stroke:black;stroke-width:4px" />
+                            </svg  >  
+                            <img id="D1" src="img/rxv.bmp"  class="dropzonevimg"  >
+                        </div>
+                        <div id="H2" class="dropzoneh"  draggable="false"   ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  > 
+                             <svg style=" position: absolute; height:100%; width:100%;">
+                                    <line id="line2" x1=0 y1=49% x2=100% y2=49% style="stroke:black;stroke-width:4px" />
+                            </svg  >  
+                            <img id="D2" src="img/w.bmp"  class="dropzonehimg" >
+                        </div>
+                                                          
+                        <div id="V3" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
+                            <img id="D3" src="img/wv.bmp"  class="dropzonevimg"  >
+                            <svg style=" position: absolute; height:100%; width:100%;">
+                                    <line id="line3" x1=0% y1=14% x2=100% y2=14% style="stroke:black;stroke-width:4px" />
+                                    <line id="line3a" x1=50% y1=14% x2=50% y2=100% style="stroke:black;stroke-width:4px" />
+                            </svg  >  
+                        </div>
+                        <div id="H4" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
+                            <img id="D4" src="img/w.bmp"  class="dropzonehimg"  >
+                            <svg style="  position: absolute; height:100%; width:100%;">
+                                    <line id="line4" x1=0 y1=49% x2=100% y2=49% style="stroke:black;stroke-width:4px" />
+                            </svg  >
+                        </div>
+                        <div id="V5" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" > 
+                            <img id="D5" src="img/wv.bmp" class="dropzonevimg" >
+                            <svg style=" position: absolute; height:100%; width:100%;">
+                                    <line id="line5" x1=0% y1=14% x2=100% y2=14% style="stroke:black;stroke-width:4px" />
+                                    <line id="line5a" x1=50% y1=14% x2=50% y2=100% style="stroke:black;stroke-width:4px" />
+                            </svg  > 
+                        </div>
+                        <div id="H6" class="dropzoneh"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
+                            <img id="D6" src="img/w.bmp" class="dropzonehimg" >
+                            <svg style="  position: absolute; height:100%; width:100%;">
+                                    <line id="line6" x1=0 y1=49% x2=100% y2=49% style="stroke:black;stroke-width:4px" />
+                            </svg  >
+                        </div>
+                           <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>    -->
+                    </div> 
+    
+                                    <!--ground line div--> 
+                      <div 
+                        class="block_1 hline-bottom" style="width: calc(100% - 12px);  margin-left: 12px; padding-bottom: 0px; border-bottom: 3px solid #000; margin-bottom: 0px; z-index: 10;"> 
+                    </div>   
+                            <!--<br />-->  
+                            <!--width:527px-->
+                      <!-- <div class="spinzone" style=" margin-left: 0px;  margin-top: 50px;" >   -->
+                        <table style=" margin-left: 0px;  margin-top: 5px; width:100%;">
+                            <tr>
+                                <td><input id="E1" type="text" value="50" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td>
+                                <td><input id="E3" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                                <td><input id="E5" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            </tr>
+
+                            <tr>
+                                <td><input id="E11" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" readonly /></td>  <!--made name=spin3 to remove rightclick menu-->
+                                <!-- <th>W3</th>
+                                <th>W5</th> -->
+                            </tr>
+                        </table>
+                      <!-- </div>      -->
+                </div>   <!--dropzone div 1 end--> 
+                    
+                <!-- Dropzone2 begin -->
+                <div class=" hidden-xs col-sm-12 col-md-6 col-lg-6 col-xl-6 nopadding " style="background-color:white; margin-left: 8px;  ">
+                    <table style=" width:66.667%;">  
+                        <!-- <tr>
+                            <th>W8</th>
+                            <th>W10</th>
+                        </tr> -->
+                        <tr>
+                            <td><input id="E8" type="text" value="0" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td><input id="E10" type="text" value="0" name="spin2"class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                        </tr>
+                    </table>
+                    <!--<br />-->
+                    <div class="dropzone"  style= "overflow: hidden; margin-top: 5px; margin-left: 0px;">
+                         <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   -->
+                        <div id="V7" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
+                            <img id="D7" src="img/wv.bmp" class="dropzonevimg">
+                            <svg style=" position: absolute; height:100%; width:100%;">
+                                    <line id="line7" x1=0% y1=14% x2=100% y2=14% style="stroke:black;stroke-width:4px" />
+                                    <line id="line7a" x1=50% y1=14% x2=50% y2=100% style="stroke:black;stroke-width:4px" />
+                            </svg  > 
+                        </div>
+                        <div id="H8" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  onDrop="return false"> 
+                            <img id="D8" src="img/w.bmp" class="dropzonehimg">
+                            <svg style="  position: absolute; height:100%; width:100%;">
+                                    <line id="line8" x1=0 y1=49% x2=100% y2=49% style="stroke:black;stroke-width:4px" />
+                            </svg  >
+                        </div>
+                        <div id="V9" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
+                            <img id="D9" src="img/wv.bmp" class="dropzonevimg">
+                            <svg style=" position: absolute; height:100%; width:100%;">
+                                    <line id="line9" x1=0% y1=14% x2=100% y2=14% style="stroke:black;stroke-width:4px" />
+                                    <line id="line9a" x1=50% y1=14% x2=50% y2=100% style="stroke:black;stroke-width:4px" />
+                            </svg  > 
+                        </div>
+                        <div id="H10"  src="img/w.bmp" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
+                            <img id="D10"src="img/w.bmp" class="dropzonehimg">
+                            <svg style="  position: absolute; height:100%; width:100%;">
+                                    <line id="line10" x1=0 y1=49% x2=100% y2=49% style="stroke:black;stroke-width:4px" />
+                            </svg  >
+                        </div>
+                         <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   -->
+                    </div> 
+    
+                                        <!--"width: 513px padding-bottom: 90px  border-bottom: 3px -->  <!--ground line div--> 
+                    <div 
+                        class="block_1 hline-bottom" style="width: 66.667%; margin-left: 0px; padding-bottom: 0px; border-bottom: 3px solid #000; margin-bottom: 0px; z-index: 100;"> 
+                    </div>
+                            <!--<br />-->  
+                            <!--width:527px-->
+                    <table style=" margin-top: 5px;  margin-left: 0px; width:66.667%">
+                        <tr>
+                            <td><input id="E7" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td><input id="E9" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                        </tr>
+                        <tr>
+                              <!-- <td><input id="E11" type="text" value="0" name="spin2" style="display: none" class="form-control" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" readonly /></td>     -->
+                              <!-- need to set this height so that the component layer does not slide -->
+                             <!-- <th height="32px">W7 </th>  
+                            <th height="32px">W9</th> -->
+                        </tr>
+                    </table>
+                        <br />
+                </div>   <!--dropzone div 2 end-->  
+                    <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span> -->
+                    <br style="clear: both;" />
+                    <!--Component Zone Begin--> 
+                    <div id="component-container" class="component col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" style="margin-top:10px">
+                        <!-- Note that here we are only storing the default values, the actual user input values are stored in the schObj JSON -->                  
+                        <!-- Component Zone 1 begin -->
+                        <div  style="background-color:white; clear: both; margin-top:10px; padding-left:5%;padding-right:5% ">
+                            <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
+                                <img id="w" class="dragable" data-value1="0" data-unit1="" data-q="100000" data-img="img/w.bmp" data-imgv="img/wv.bmp" class="icon" src="img/w.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="80" height="27"> 
+                                <img id="f"  data-value1="100" data-unit1="MHz" style="display:none;">
+                                <img id="g"  class="dragable" data-value1="0.1" data-unit1="Mag." data-value2="10" data-unit2="Deg." data-q="1000000" data-step="1" data-img="img/g.bmp"  data-imgv="img/gv.bmp" class="icon" src="img/gv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
+                                <img id="rx" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="0" data-unit2="Reactance [Ohms]:" data-q="1000000" data-step="1" data-img="img/rx.bmp" data-imgv="img/rxv.bmp" class="icon" src="img/rxv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
+                                <img id="r"  class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-q="1000000" data-step="1"  data-img="img/r.bmp" data-imgv="img/rv.bmp" class="icon" src="img/rv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
+                                <img id="c"  class="dragable"  data-value1="1" data-unit1="Capacitance [pF]:" data-q="1000000" data-step="1" data-img="img/c.bmp" data-imgv="img/cv.bmp" class="icon" src="img/cv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
+                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>    
+                        </div> 
+                            <!--Component Zone 1 End-->
+                            <!-- Component Zone 2 begin -->
+                        <div  style="background-color:white; clear: both;padding-left:5%;padding-right:5%" >
+                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
+                                <img id="t"  class="dragable"data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="10" data-unit2="Length [" data-q="1000000" data-step="1" data-img="img/t.bmp" data-imgv="img/t.bmp" class="icon" src="img/t.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="80" height="27">
+                                <img id="o" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="4" data-unit2="Length [" data-q="1000000" data-step="1" data-img="img/o.bmp" data-imgv="img/o.bmp" class="icon" src="img/o.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
+                                <img id="s" class="dragable" data-value1="51" data-unit1="Char. Imp. [Ohms]:" data-value2="5" data-unit2="Length [" data-q="1000000" data-step="1" data-img="img/s.bmp" data-imgv="img/s.bmp" class="icon" src="img/s.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
+                                <img id="l"  class="dragable" data-value1="1" data-unit1="Indutance nH:" data-q="1000000" data-step="1" data-img="img/l.bmp" data-imgv="img/lv.bmp" class="icon" src="img/lv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
+                                <img id="x"  class="dragable" data-value1="50" data-unit1="Reactance [Ohms]:" data-q="1000000" data-step="1" data-img="img/x.bmp" data-imgv="img/xv.bmp" class="icon" src="img/xv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">                          
+                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
+                        </div> 
+                            <!-- Component Zone 2 end -->
+                            <!-- Component Zone 3 begin -->
+                        <div style="background-color:white;  clear: both;padding-left:5%;padding-right:5%" >
+                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
+                                    <img id="slc" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" data-img="img/slc.bmp" data-imgv="img/slcv.bmp" class="icon" src="img/slc.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="80" height="27">
+                                <img id="plc" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" data-img="img/plc.bmp" data-imgv="img/plcv.bmp" class="icon" src="img/plc.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="80" height="27">
+                                <img id="src" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" data-img="img/src.bmp" data-imgv="img/srcv.bmp" class="icon" src="img/src.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="80" height="27">                        
+                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
+                        </div> 
+                            <!--Component Zone 3 End-->
+                             <!-- Component Zone 4 begin -->
+                        <div style="background-color:white; clear: both;padding-left:5%;padding-right:5%" >
+                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
+                                <img id="prc" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" data-img="img/prc.bmp"  data-imgv="img/prcv.bmp" class="icon" src="img/prc.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="80" height="27">                           
+                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
+                        </div> 
+                            <!--Component Zone 4 End-->
+                    </div>   <!--Component Zone End--> 
+            </div>  <!--schematic row div--> 
+        </div>   <!--schematic window div-->       
+                        <p>Drag and Drop</p>
+    </div> <!--container row div--> 
+</div>  <!--container --> 
+
+
+    <audio id="audio" src="img/button-3.wav" autostart="false"> </audio>
+ <!-- ************************MODAL OPTION DIALOG BEGINS************************************************************************************** -->
+  <div id="optionsModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-sm">
+
+      <!-- Options/Settings Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Settings</h4>
+        </div>
+        <div class="modal-body">
+          <br />
+          <label for="VF">Velocity Factor: <input type="text" id="VF" value="" style="width:100px" /></label><br />
+          <label for="Z0">Ch. Impedance [Ohms]: <input type="text" id="Z0" value="" style="width:100px" /></label><br />
+          <label for="FREQ">Frequency [MHz]: <input type="text" id="FREQ" value="" style="width:100px" /></label><br />
+          <label for="TDF">Tr. Design Freq.[MHz]:<input type="text" id="TDF" value="" style="width:100px" /></label> <br />
+          <label for="SS"> Sweep Start: <input type="text" id="SS" value="" style="width:100px" /></label><br />
+          <label for="ST">Sweep Stop: <input type="text" id="ST" value="" style="width:100px" /></label> <br />
+          <label for="SST">Sweep Step: <input type="text" id="SST" value="" style="width:100px" /></label> <br />
+           <!--<br />
+           <label for="radio-inline">Load type:
+            <label class="radio-inline"><input type="radio" name="LOAD" value = "I" checked="checked">Impedance</label>
+            <label class="radio-inline"><input type="radio" name="LOAD" value = "G" >Gamma</label>
+          </label>-->
+
+          <br /> <br />
+          <div class="form-group">
+            <label for="SE">Sweep Variable:</label>
+            <select class="form-control" id="SE">
+              <option>Frequency</option>
+              <option>Element 2</option>
+              <option>Element 3</option>
+              <option>Element 4</option>
+              <option>Element 5</option>
+              <option>Element 6</option>
+              <option>Element 7</option>
+              <option>Element 8</option>
+              <option>Element 9</option>
+              <option>Element 10</option>
+            </select>
+          </div>
+            <br />
+            <div class="form-group">
+                <label for="SE">Sweep Color:</label>
+                <input type="color" id="sweepColor">
+            </div>
+             <br />
+
+            <div class="form-group">
+              <label for="LU">Length Unit:</label>
+              <select class="form-control" id="LU">
+                <option>Inches</option>
+                <option>MilliMeters</option>
+                <option>Degrees</option>
+                <option>Wave Lengths</option>
+              </select>
+            </div>
+          <br /> <br />
+</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" onclick="optionValidate()" > OK </button>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- ************************MODAL OPTION DIALOG ENDS************************************************************************************** -->
+
+<!-- ************************MODAL COMPONENT DIALOG BEGINS************************************************************************************** -->
+    <div id="componentsModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <!-- Options/Settings Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <div> <br />
+                        <h4 style="text-align:left;float:left;color:blue;">Ele. Num:&nbsp;</h4>
+                        <h4 id="cmodalEnum" style="text-align:right;float:left;color:red;">1</h4>
+                        <h4 id="cmodalType" style="text-align:right;float:right;color:red;">R&nbsp;&nbsp;&nbsp;&nbsp;</h4>
+                        <h4 style="text-align:left;float:right;color:blue;">Type:&nbsp;</h4>
+                        <h4 style="clear:both;" />
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <br />
+                        <label id="imgLabel" for="IMG">SomeText</label>
+                        <img src="img/qsmith.bmp" id="IMG" class="img-thumbnail float-left" /><br /><br />
+                        <label id="V1Label" for="V1">Value2: </label>
+                        <input type="text" id="V1" value="" style="width:100px" /><br />
+                        <label id="V2Label" for="V2">Value2: </label>
+                        <input type="text" id="V2" value="" style="width:100px" /><br />
+                        <label id="QLabel" for="Q">Element Q: </label>
+                        <input type="text" id="Q" value="" style="width:100px" /><br /> <br />
+                        <label for="Q" hidden >Step Size: </label >
+                        <input type="text" id="STEP" value="" style="width:100px" hidden /><br /> <br />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" onclick="componentValidate()"> OK </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ************************MODAL COMPONENT DIALOG ENDS************************************************************************************** -->
+  <input id="file-input" type="file" name="name" style="display: none;" />     <!-- this for helping with file load -->
+  <input id="file-input1" type="file" name="name" style="display: none;" />     <!-- this for helping with gam export -->
+  <!-- <a href="https://www.w3schools.com">w3schools.com</a> -->
+<!-- <img src="img/qsmith.png">
+<div class="content">This is an awesome picture of qsmith</div> -->
+<script>
+/*************************SMITH CHART********************************************************************************/
+var img = new Image();
+img.src = "img/sphere.png";  
+const AXIS_RANGE = 1000;
+var resize_done = false;  // this is to avoid half shape canvas draw sometime when an attempt is made to draw with out scaling first
+var chart= {"width": 300, "height" : 300,  "currentDevicePixelRatio" : 1, "devicePixelRatio" : 1 };
+// schObj is used to save schematic - for load file to work it needs to be less the 1024 bytes and the first key should be "ver"
+
+var smithObj = {
+              "ctx" : null,
+              "title": '',
+              "showAdmittace": false,  // DrawAdmittance
+               drawAdmitanceCircles: function() { drawAdmitanceCircles(this);},
+              //drawAdmitanceCircles: drawAdmitanceCircles,
+              "vswrCircle": 2.0, // draw VSWR circle
+              drawVSWRCircles:  function() { drawVSWRCircles(this);},
+              "qCircle": 1.0, // draw Q circle
+              drawQCircles: function() { drawQCircles(this);},
+              "dataM": 0.0, // refection Coeffi Magnitude - to plot the sprite
+              "dataQ": 0.0, // refection Coeffi Angle - to plot the sprite
+              drawdataSprite: function() { drawdataSprite (this);},
+              dataReset: function() { dataReset (this);}, // Resets dataM/dataQ and all Circles to 0
+              resetAll: function() { resetAll (this);}, // Resets all properties to its default values
+              redrawSmith: redrawSmith, // repaints smithChart with the current values
+              "markerM": 0.1, // Place Marker corresponding to markerM and markerQ values
+              "markerQ": 30.0, //
+              "showMarker": false, // turn marker ON/OFF
+              drawMarker: function() { drawMarker (this);},
+              "Z0": 50.0, // Z0 value = 0  does not diaplay char impedance, anything greater than that is dislayed on the bottom right side
+              drawGainCircles: function() { drawGainCircles (this);},
+              "circleM": [0.2, 0.1, 0.7, 0.9, 0.3, 0.6],
+              "circleQ": [20, 140, 235, 134, 35, 276],
+              "circleR": [],//circleR: [0.1, 0.2, 0.3, 0.4,0.5, 0.6], //atleast one value will draw circle
+              "circleColor": [
+                      'rgb(255, 99, 132)',
+                      'rgb(54, 162, 235)',
+                      'rgb(255, 206, 86)',
+                      'rgb(75, 192, 192)',
+                      'rgb(153, 102, 255)',
+                      'rgb(255, 159, 64)'
+                ],
+              "sweep":false, //
+              drawSweep: function() { drawSweep(this);},
+              "sweepDatasets" : [
+                          {
+                            "label": "Frequency Sweep",
+                            "color" : "#0000FF",
+                            "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8],
+                            "dataQ" : [10,20,30,40,50,60,70,80]
+                          },
+                          {
+                            "label": "Component Sweep",
+                            "color" : "#00FF00",
+                            "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9],
+                            "dataQ" : [90,100,110,120,130,140,150,160,170]
+                          }
+                    ],
+              "data":false, // to display imported data
+              dataPlot: function() { dataPlot(this);},
+              "plotDatasets" : [
+                          {
+                            "label": "Data PLot",
+                            "color" : "#000000",
+                            "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8],
+                            "dataQ" : [10,20,30,40,50,60,70,80]
+                          }
+                     ],
+               drawSmith: function() { drawSmith(this);},
+               test: function() { test(this);},
+          };
+
+
+
+smithObj.ctx = document.getElementById("smithMain").getContext('2d');
+
+ function test(context){
+    context.vswrCircle = '3.0';
+    context.drawVSWRCircles;
+     console.log(context.Z0);
+ }
+
+
+
+ $('document').ready(function () {
+        //smithObj.test();
+           console.log("init")
+           //chart.currentDevicePixelRatio = window.devicePixelRatio || 1 ||  window.window.devicePixelRatio;
+      $('input[type=text]').bind('copy paste', function (e) {
+         e.preventDefault();
+      });   // this prenvents the copy/paste menu popping up in IOS when you touch the step box
+           var transferFlag = localStorage.getItem("transferFlag");
+           if(transferFlag == 'true') 
+           {
+            console.log ("Transferflag present"); 
+            schObj.ELEMENT[1].value1 = parseFloat(localStorage.getItem("R1"));
+            schObj.ELEMENT[1].value2 = parseFloat(localStorage.getItem("Z1"));
+            schObj.ELEMENT[11].value1 = parseFloat(localStorage.getItem("Z1"));
+           }
+           else  
+           {
+            console.log ( "Transferflag absent");
+           }
+           resize(smithObj.ctx.canvas)// chart drawn here
+           get(); // restore the lass session if saved earlier
+           updateUI();
+          // Zcalsweep();
+           
+ })
+
+
+
+// ctx.webkitImageSmoothingEnabled = false; // safari
+// ctx.mozImageSmoothingEnabled = false;  // firefox
+// ctx.imageSmoothingEnabled = false;  // chrome
+// ctx.scale((canvas.width/2)/AXIS_RANGE,(canvas.height/2)/AXIS_RANGE);
+
+//  function test() {
+//   $( "#E1" ).contextmenu();
+//  }
+  //  alert("test");
+  //$("#E1").longclick(250, longClickHandler);
+ //}
+// $("#E1").longclick(250, longClickHandler);
+//  function longClickHandler(e){
+//   //e.preventDefault();
+//   //$("body").append("<p>You longclicked. Nice!</p>");
+//   alert("test");
+// }
+
+ //$('#E1').click(250, function(){alert("test"); })//$(this).toggleClass('clicked').find('h2').text('Long clicked!') })
+
+//   $( '#E1').mayTriggerLongClicks( {
+// 	 delay: 600
+//        } ).on( 'longClick', function() {
+//      //$( '#msg').html( 'Long-clicked on button ' + $( this).attr( 'id') );
+//       alert("long clickd");
+//        } )
+    
+//        .on( 'click', function() {
+// 	 $( '#msg').html( 'Short-clicked on button ' + $( this).attr( 'id') );
+//        } );
+    
+
+function onMouseMove(e) {
+       //var mouseX = e.clientX-smithObj.ctx.canvas.offsetLeft;  // this works
+      // var mouseY = e.clientY-smithObj.ctx.canvas.offsetTop ;  // this is off by abouot 80 in the version but works with the stand alone component ?
+       var mouseX = e.layerX; // this seems like working
+       var mouseY = e.layerY; // layerX returns the horizontal coordinate of the event relative to the current layer.
+      // console.log( mouseX+ " , " + mouseY);
+       var descaled = descale(mouseX,mouseY);
+       var x= descaled.x;
+       var y=descaled.y;
+      // const  wby2 = chart.width/2
+      //  const  hby2 = chart.height/2
+      //  const range =AXIS_RANGE;
+      //  var X = parseFloat((mouseX - wby2)*(range/wby2));  // get logical coordinates  for x&y
+      //  var Y = parseFloat((mouseX- hby2)*(range/-hby2));
+      //  X = x;
+      //  Y = y;
+       var r1 = math.sqrt(((x*x)+(y*y))); // convert to polar form
+       var q;
+       if(r1==0) q=0 ; else q= 180*math.asin(y/r1)/Math.PI;
+	     if(x < 0 && y >=0) q= 180-q; if(x<0 && y<0) q= -180-q;  // Adjust for the second and third quadrant
+       r1 = r1/AXIS_RANGE; 
+       var ZR= GToZR(r1,q);
+       var ZI= GToZI(r1,q);
+       var element = document.getElementById("Z1");
+       if (InSmith(x,y) == true) 
+       element.value ="Z:" +Number(ZR).toFixed(2)+getSign(ZI)+Number(Math.abs(ZI)).toFixed(2)+"i";
+       else  element.value ="Z:";
+       //element.value ="G:" +Number(r1).toFixed(2) + " " + Number(q).toFixed(2)+"i";
+       //console.log("move " + mouseX + "," + mouseY);
+    }
+
+// function onMouseClick(e) {
+//        mouseX = e.clientX-smithObj.ctx.canvas.offsetLeft;
+//        mouseY = e.clientY-smithObj.ctx.canvas.offsetTop;
+//        var descaled = descale(mouseX,mouseY);
+//        var x= descaled.x;
+//        var y=descaled.y;
+//        if (InSmith(x,y) == true) 
+//        //console.log("click " + x + "," + y);
+//        alert( x + " ," + y +"i");
+//     }
+
+$("#sweepColor").change(function(){
+  smithObj.sweepDatasets[0].color = $(this).val()
+});
+
+    // called by redrawSmith function
+function resize(canvas) {
+   // Our canvas must cover full height of screen
+   // regardless of the resolution
+  // var ht = window.innerHeight;
+  // var wd = window.innerWidth ;
+   var ht =  getMaximumHeight (canvas);
+   var wd =  getMaximumWidth (canvas);
+   const aspectRatio = true;
+   //var width = Math.max(0, Math.floor(window.innerWidth));
+   //var height = Math.max(0, Math.floor(aspectRatio ? width / aspectRatio : window.innerHeight));
+   var width = Math.max(0, Math.floor(wd));
+   var height = Math.max(0, Math.floor(aspectRatio ? width / aspectRatio : ht));
+  // width = width - 40;
+  // height = height - 40;
+   //var ratio = canvas.width/canvas.height;
+   //ratio =1;
+   //var width = height * ratio;
+    console.log( "NewWidth = " + width);
+    console.log( "NewHeight = " + height);
+    smithObj.ctx.canvas.width =chart.width= width;
+    smithObj.ctx.canvas.height =chart.height = height;
+    smithObj.ctx.canvas.style.width = width+'px';
+    smithObj.ctx.canvas.style.height = height+'px';
+    retinaScale(chart, smithObj);  
+    /* resize schematic elements */
+    // effort to center the schematic image inside each rectangle dropzone area
+    console.log( " schematic element width: " +$(".dropzoneh").width() );
+    var wh = $(".dropzoneh").width();
+    var aspect_ratio = 0.3279;
+    var hh = wh*aspect_ratio;
+    $(".dropzoneh").height(hh);
+    var wv = $(".dropzonev").width();
+    aspect_ratio = 3.5;
+    var hv = wv*aspect_ratio;
+    $(".dropzonev").height(hv);
+
+    var w0 = $(".dropzonehimg").width();
+    var h0 = $(".dropzonehimg").height();
+    var w3 = parseInt(wh/2-w0/2);
+    var h3 = parseInt(hh/2-h0/2);
+    $(".dropzonehimg").parent().css({position: 'relative'});
+    $(".dropzonehimg").css({top: h3+'px', left: w3+'px', position:'absolute'});
+
+
+    var w1 = $(".dropzonevimg").width();
+    var h1 = $(".dropzonevimg").height();
+    var w2 = parseInt(wv/2-w1/2);
+    var h2 = parseInt(hv/2-h1/2);
+    $(".dropzonevimg").parent().css({position: 'relative'});
+    // $(".dropzonevimg").css({top: hh/2-w1/2+'px', left: w2+'px', position:'absolute'});
+    $(".dropzonevimg").css({top: h2+'px', left: w2+'px', position:'absolute'});
+
+        //svg.children[0].x1.baseVal.value = 20;
+    // console.log(" svg2"+ svg.x1.baseVal.value);
+
+    // var line2 = document.getElementById("line2");
+    // console.log(line2);
+    // //line2.setAttribute("style", "x1: 0");
+    // line2.setAttribute("x1", 0);
+    // line2.setAttribute("y1", hh/2);
+    // line2.setAttribute("x2", wh);
+    // line2.setAttribute("y2", hh/2);
+    resize_done = true;
+}
+
+function redrawSmith () {
+    console.log("Redrawing smith1 Begin");
+    //if(ctx==null) return;
+    var ctx = smithObj.ctx;
+    if(ctx ==null) return;
+   
+    resize(ctx.canvas)
+     console.log("Redrawing smith2 End");
+   // ctx.clearRect(0,0,smithObj.ctx.canvas.width,smithObj.ctx.canvas.height);
+    smithObj.drawSmith(); // clears canvas too
+}
+
+
+smithObj.ctx.canvas.addEventListener("mousemove", onMouseMove, false);
+//smithObj.ctx.canvas.addEventListener("click", onMouseClick, false);
+//window.addEventListener('load', smithObj.redrawSmith, false);  //  not necessary duplicates $('document').ready(function () at the top
+window.addEventListener('resize',smithObj.redrawSmith, false); // resize,clear and redraw
+
+
+function step_change1(id1) {
+        var element = document.getElementById(id1);
+        var result = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
+        var val = prompt("Enter Step Size", result);
+        if (isNumeric(val) == true) {
+            $(element).trigger("touchspin.updatesettings", { step: val })
+        }
+    }
+
+function spin_change1(id1) {
+        var spin_element = document.getElementById(id1);
+       // var idNum = Number(id1.substr(1));
+     //   console.log("idNum " + spin_element.value);
+        if (id1 == "SM0") {  
+              smithObj.vswrCircle = spin_element.value;
+              smithObj.drawVSWRCircles();
+        }  
+       if (id1 == "SM1") {  
+              smithObj.qCircle = spin_element.value;
+              smithObj.drawQCircles();
+        }  
+    }
+
+  $('input[name="spin1"]').TouchSpin({
+      min: 0,
+      max: 1000000000,
+      step: 1,
+      decimals: 2,
+      boostat: 5,
+      maxboostedstep: 10,
+      verticalbuttons: false
+  });
+
+/*********************SCHEMATIC SCRIPT********************************************************************/
+
+function set_click() {
+    // save state to local storage
+    localStorage.setItem('schData', JSON.stringify(schObj));
+    // clear off data arrays - no need to save data
+    smithObj.sweepDatasets[0].dataM.splice(0,smithObj.sweepDatasets[0].dataM.length); // clear data
+    smithObj.sweepDatasets[0].dataQ.splice(0,smithObj.sweepDatasets[0].dataQ.length);
+    smithObj.plotDatasets[0].dataM.splice(0,smithObj.plotDatasets[0].dataM.length); // clear data
+    smithObj.plotDatasets[0].dataQ.splice(0,smithObj.plotDatasets[0].dataQ.length);
+    localStorage.setItem('smithData', JSON.stringify(smithObj));
+}
+
+
+
+
+function updateUI() {
+    document.getElementById("SM0").value =  smithObj.vswrCircle;
+    document.getElementById("SM1").value =  smithObj.qCircle;
+    smithObj.drawSmith();
+    
+    for (var i = 0; i < 12; i++)  // 12 so that the Load imaginary spin box e11 is also updated.
+    { 
+        //   var element = "\"E" + i + "\"";
+        //   console.log(element);
+        if(schObj.ELEMENT[i].tune==1)
+        {    
+        document.getElementById("E"+i).value= schObj.ELEMENT[i].value1;
+        }  
+        else
+        {
+        document.getElementById("E"+i).value= schObj.ELEMENT[i].value2;
+        }
+    }
+
+    for (var i = 1; i < 11; i++) 
+    { 
+        var imgv = isEven(i) ? "" :"v";
+        document.getElementById("D"+i).src =  "img/"+schObj.ELEMENT[i].type+imgv+".bmp";
+        // src="img/rxv.bmp"
+    }
+  Zcalsweep();
+}
+
+function get_click()
+    {
+         window.location.reload();
+    }
+
+function get() {
+    // Get from local storage
+    var item = localStorage.getItem('schData');
+    if( item !== null)
+    {
+        var schObj1 =JSON.parse(item);
+        copy_schObj(schObj1);
+    }
+    else { console.log(" schData local storage not set");  };  
+
+    item = localStorage.getItem('smithData');
+    if( item !== null)
+    {
+        var smithObj1 =JSON.parse(item);
+        copy_smithObj(smithObj1);
+    }
+    else { console.log(" smithData local storage not set");  }; 
+    updateUI();
+    
+}
+
+function new_click() {
+    localStorage.removeItem('schData');
+    delete window.localStorage["schData"];
+    localStorage.removeItem('smithData');
+    localStorage.setItem("transferFlag", 'false');
+    delete window.localStorage["smithData"];
+    window.location.reload();
+}
+
+var saveJSONtoFile = (function () {
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+    return function (data, fileName) {
+        var json = JSON.stringify(data),
+            blob = new Blob([json], {type: "octet/stream"}),
+            url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+}());
+
+
+function save_click() {
+    saveJSONtoFile(schObj, "sch.txt");
+}
+
+
+
+// export the sweep data as a gam file 
+function export_click() {
+  var gamObj = {  
+  "name": "QuickSmith GAM",
+  "Z0": 50.0, // characteristic impedance
+  "gamData" : [
+                {
+                "label": "Data Plot",
+                "color" : "#000000",
+                "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8],
+                "dataQ" : [10,20,30,40,50,60,70,80]
+                }
+             ]
+  }
+    gamObj.Z0 = smithObj.Z0;
+    gamObj.gamData[0].dataM = smithObj.sweepDatasets[0].dataM;
+    gamObj.gamData[0].dataQ = smithObj.sweepDatasets[0].dataQ;
+    saveJSONtoFile(gamObj, "out.gam");
+}
+
+
+function handleFileImport(e) {
+    var file = e.target.files[0];
+    //var files = evt.target.files; // FileList object
+    console.log(file);
+    if (!file) {
+        return;
+    }
+    // else if (!file.type.match('/text.*/')) 
+    // {
+	//   alert(file.name + " is not a valid text file");
+    // } 
+    else if(file) 
+    {
+        var reader = new FileReader();
+        reader.onload = function(e)
+             {
+                var contents = reader.result;
+                // alert( "Got the file. " 
+                //         +"name: " + file.name + "\n "
+                //         +"type: " + file.type + "\n "
+                //         +"size: " + file.size + " bytes\n"
+                //         + "starts with: " + contents.substr(9, 14)
+                //     );
+                if( contents.substr(9, 14) == "QuickSmith GAM")
+                   {
+                     //alert (" Verified");
+                     var gamObj =JSON.parse(contents);
+                     smithObj.Z0= gamObj.Z0;
+                     smithObj.plotDatasets[0].dataM = gamObj.gamData[0].dataM ;
+                     smithObj.plotDatasets[0].dataQ = gamObj.gamData[0].dataQ ;
+                    // copy_schObj(schObj1);
+                    // console.log(JSON.stringify(schObj));
+                     updateUI(); // update the ui elements
+                     smithObj.data = true;
+                     smithObj.redrawSmith(); 
+                   }  
+                
+            }
+        reader.readAsText(file); 
+        $('input[type="file"]').val(null); // this clears the file read 
+   }
+   else
+   {
+        alert("Failed to load file");
+   }
+
+}
+
+function clear_import_click() {
+ smithObj.data = false; 
+ smithObj.redrawSmith();  
+}
+
+// export the sweep data as a gam file 
+function import_click() {
+   document.getElementById('file-input1').click();
+}
+document.getElementById('file-input1').addEventListener('change', handleFileImport, false);
+
+
+function myfunc() {
+    console.log("here");
+}
+
+
+
+function handleFileOpen(e) {
+    var file = e.target.files[0];
+    //var files = evt.target.files; // FileList object
+    console.log(file);
+    if (!file) {
+        return;
+    }
+    else if (!file.type.match('text.*')) 
+    {
+	  alert(file.name + " is not a valid text file");
+    } 
+    else if(file) 
+    {
+        var reader = new FileReader();
+        reader.onload = function(e)
+             {
+                var contents = reader.result;
+                // alert( "Got the file. " 
+                //         +"name: " + file.name + "\n "
+                //         +"type: " + file.type + "\n "
+                //         +"size: " + file.size + " bytes\n"
+                //         + "starts with: " + contents.substr(1, contents.indexOf("n"))
+                //         + " " + contents.substr(2, 3)
+                //     );
+                if( file.size < 1024 &&  contents.substr(2, 3) == "ver")
+                   {
+                   //  alert (" Verified");
+                     var schObj1 =JSON.parse(contents);
+                     copy_schObj(schObj1);
+                     console.log(JSON.stringify(schObj));
+                     updateUI(); // update the ui elements
+                   }  
+                
+            }
+        reader.readAsText(file); 
+        $('input[type="file"]').val(null); // this clears the file read 
+   }
+   else
+   {
+        alert("Failed to load file");
+   }
+
+}
+
+function load_click() {
+   document.getElementById('file-input').click();
+}
+document.getElementById('file-input').addEventListener('change', handleFileOpen, false);
+ 
+
+function Zcalsweep() // this function simply calls Zcalsweep with the same arguments, and also updates the output results to the textbox
+    {
+        resultsObj.OUTPUT[0].calculate(); // this will call  Zcalsweep1(); calculate Zcalsweep1
+        var zr =  Number(resultsObj.OUTPUT[0].ZRout).toFixed(3);
+        var sign = getSign(resultsObj.OUTPUT[0].ZIout)
+        var zi =  Number(Math.abs(resultsObj.OUTPUT[0].ZIout)).toFixed(3);
+
+        document.getElementById("ZO").value = zr+sign+zi+"i";
+       // document.getElementById("ZIO").value = Number(resultsObj.OUTPUT[0].ZIout).toFixed(4);
+        resultsObj.OUTPUT[1].calculate(); // calculate Ycal
+        resultsObj.OUTPUT[2].calculate(); // calculate GAMCal
+        resultsObj.OUTPUT[3].calculate(); // calculate VSWRCal
+        resultsObj.OUTPUT[4].calculate(); // calculate RLCal
+        resultsObj.OUTPUT[5].calculate(); // calculate ILCal_wrapper
+        resultsObj.OUTPUT[6].calculate(); // calculate REFCal
+        resultsObj.OUTPUT[7].calculate(); // calculate PRCal
+        resultsObj.OUTPUT[8].calculate(); // calculate TLCal
+        resultsObj.OUTPUT[9].calculate(); // calculate MaxSWRCal
+        resultsObj.OUTPUT[10].calculate(); // calculate MinSWRCal
+        document.getElementById("IL").value =  Number(resultsObj.OUTPUT[5].InsertionLoss).toFixed(3);; // update IL
+        // console.log(JSON.stringify(resultsObj));
+        // update SMITH CHART
+        smithObj.dataM = resultsObj.OUTPUT[2].GAMMag ; 
+        smithObj.dataQ = resultsObj.OUTPUT[2].GAMAng ;
+        smithObj.drawSmith();
+    }
+
+// here target id is the id of the component
+var start = function (e) {
+          e.dataTransfer.effectAllowed = 'copy';
+        e.dataTransfer.setData('iconId', e.target.id);
+        var dropElementType = e.target.id;
+        console.log(" SETTING TARGET" + dropElementType);
+        document.getElementById(e.target.id).style.border="3px solid red";
+        var w = $("#"+dropElementType).width();
+        var h = $("#"+dropElementType).height();
+
+        e.dataTransfer.setDragImage(e.target, w/2, h/2);
+        console.log("start");
+        disableScroll();
+        return true;
+   }
+
+var enter = function (e) {
+        console.log("enter");
+        
+        return true;
+    }
+
+var over = function (e) {
+        e.preventDefault()
+        var iconId = e.dataTransfer.getData('iconId');
+        var targetId = e.target.id;
+        console.log("over "+ targetId);
+       // document.getElementById(e.target.id).style.border="3px solid red";
+        // if (targetId.indexOf('icon') > -1) {
+        //     return true;
+        // }
+        return false;
+    }
+
+var drop = function (e) {   
+       if (e.stopPropagation){ e.stopPropagation(); } // stops the browser from redirecting...why???
+       console.log(e.target.className);
+       if (e.preventDefault) e.preventDefault(); // allows us to drop
+         // silly if could drop on the div above the image we don't want to let that go.
+        if (e.target.className == "dropzoneh" || e.target.className == "dropzonev" || e.target.className == "dropzonehimg" || e.target.className == "dropzonevimg") {
+            var targetId = e.target.id;
+            targetId = "D" + targetId.slice(1); //replace H with D if it is the parent div element, again for the above reason
+            console.log("Its dropping over " + targetId)
+            var targetElement = document.getElementById(targetId);
+            var targetIdNum = Number(targetId.substr(1));  // remove the first character
+            var dropElementType = e.dataTransfer.getData("iconId");
+            var drpEleWLCRX = 0;
+            //console.log("dropElementType " + dropElementType + drpEleWLCRX);
+            if (dropElementType == "w" || dropElementType == "l" || dropElementType == "c"
+                || dropElementType == "plc" || dropElementType == "slc" || dropElementType == "prc"
+                || dropElementType == "src" || dropElementType == "r" || dropElementType == "x") drpEleWLCRX = 1;
+            var drpEleOS = 0; if (dropElementType == "o" || dropElementType == "s") drpEleOS = 1;
+            //var drpEleRX = 0; if (dropElementType == "R" || dropElementType == "X") drpEleRX = 1;
+
+            if ((dropElementType == "g" && targetIdNum == 1) || (drpEleWLCRX == 1 && targetIdNum > 1)
+                || (dropElementType == "t" && isEven(targetIdNum)) || (drpEleOS == 1 && targetIdNum > 1 && !isEven(targetIdNum))
+                || (dropElementType == "rx" && targetIdNum == 1)) {
+                var mySrcElement = document.getElementById(dropElementType);
+                var myCpyElement = document.createElement('img');
+                myCpyElement.src = mySrcElement.src;
+                var imgSrc;
+                imgSrc = isEven(targetIdNum) ? mySrcElement.getAttribute('data-img') : mySrcElement.getAttribute('data-imgv'); // add vertical image if the targetId(slot) is odd
+                console.log("Dropping From " + dropElementType + " To " + targetIdNum) ;
+                console.log(targetElement.src);
+                var ret = showComponentdialog(dropElementType, imgSrc, mySrcElement, targetIdNum);
+                if (ret == true) {
+                    targetElement.src = imgSrc;
+                   // e.target.appendChild(myCpyElement); // no need to append child we are only coping the image
+                }
+            }
+            else { playSound(); }
+            //var IDD = document.getElementById('R');
+            //var value = IDD.getAttribute('data-fruit')
+            //console.log(value);
+
+        }
+        event.stopPropagation();
+        console.log("drop");
+        return false;
+    }
+
+var end = function(e) {
+	   console.log("end");
+       document.getElementById(e.target.id).style.border="0px solid white";
+       console.log("end done" + e.target.id);
+       enableScroll();
+       e.dataTransfer.clearData('iconId'); // this line does not work in Firefox - next line does not reach
+       return true;
+	}
+
+
+    function showComponentdialog(dropElementType, img, mySrcElement, targetIdNum) {
+        var imgElement = document.getElementById("IMG");
+        imgElement.src = img;
+        document.getElementById("cmodalEnum").textContent = targetIdNum;
+        document.getElementById("cmodalType").textContent = dropElementType;
+        document.getElementById("imgLabel").textContent = dropElementType + " [" + getUnits(dropElementType) + "]:";
+
+        var drpEleTOS = 0; if (dropElementType == "t" || dropElementType == "o" || dropElementType == "s") drpEleTOS = 1;
+        var drpEleRXG = 0; if (dropElementType == "r" || dropElementType == "x" || dropElementType == "g" || dropElementType == "rx") drpEleRXG = 1; // for hiding Q label
+
+        $(".modal-body #V1").val(mySrcElement.getAttribute('data-value1')); // value 1 place holder assign
+        document.getElementById("V1Label").textContent = mySrcElement.getAttribute('data-unit1');  // value 1 units display
+
+        var val2 = mySrcElement.getAttribute('data-value2');
+        if (val2 == null) { $(".modal-body #V2").hide(); $(".modal-body #V2Label").hide(); }
+        else {
+            $(".modal-body #V2").show(); $(".modal-body #V2Label").show();    // value 2 show
+            $(".modal-body #V2").val(mySrcElement.getAttribute('data-value2'));   // value 2 place holder assign
+            if (drpEleTOS == 0) document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2'); // value 1 units label
+            else document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2') + schObj.LU + "]:"; // value 2 units display
+        }
+
+        if (drpEleRXG == 1) {
+            $(".modal-body #Q").hide(); $(".modal-body #QLabel").hide();    // Q label and Q value hide for R and X
+        }
+        else {
+            $(".modal-body #Q").show(); $(".modal-body #QLabel").show();    // Q label and Q value show for others
+            $(".modal-body #Q").val(mySrcElement.getAttribute('data-q')); // Q value place holder assign
+        }
+
+        $(".modal-body #STEP").val(mySrcElement.getAttribute('data-step')); // step value place holder assign - hidden for now
+
+        if (dropElementType == "w")  // in case of wire do not show the dialog, just reset values.
+        {
+            $(".modal-body #V1").val(mySrcElement.getAttribute('data-value1'));
+            $(".modal-body #Q").val(mySrcElement.getAttribute('data-q'));
+            componentValidate();
+        }
+        else $("#componentsModal").modal(); // show dialog                       // note that two parameter components can have two step values
+        return true;
+    }
+
+    function componentValidate() {
+        var eleNum = document.getElementById("cmodalEnum").textContent;
+        var eleType = document.getElementById("cmodalType").textContent;
+        schObj.ELEMENT[eleNum].type = eleType;
+        // console.log("\"E" + eleNum +"\"");
+        var spin_element = document.getElementById("E" + eleNum);
+        console.log(spin_element);
+        var val1 = $(".modal-body #V1").val();
+        if (isNumeric(val1)) { schObj.ELEMENT[eleNum].value1 = val1; spin_element.value = Number(val1).toFixed(2); }
+        var val2 = $(".modal-body #V2").val();
+        console.log("val =" + val2);
+        if (val2 == "") { schObj.ELEMENT[eleNum].value2 = 0; }  // value2
+        else if (isNumeric(val2)) {
+            schObj.ELEMENT[eleNum].value2 = val2;
+            if (eleType == "rx" || eleType == "g") // if this is RX or G then display the value2 on  spin_element E11
+                document.getElementById("E11").value = Number(val2).toFixed(2);
+        }
+        var drpEleRXG = 0; if (eleType == "r" || eleType == "x" || eleType == "g" || eleType == "rx") drpEleRXG = 1;
+        if (drpEleRXG == 0) { // no Q for R,X,RX and G
+            var val3 = $(".modal-body #Q").val();
+            if (isNumeric(val3)) schObj.ELEMENT[eleNum].q = val3;
+        }
+        schObj.ELEMENT[eleNum].tune = 1;  // default the tune element to the first variable
+        //console.log(JSON.stringify(schObj));
+        Zcalsweep();
+    }
+
+    function reply_click(clicked_id, value) {
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if (keycode === 3) {
+            alert("Right Clicked " + clicked_id + value);
+            $context_menu();
+        }
+    }
+
+    function step_change(id1) {
+        var element = document.getElementById(id1);
+        var result = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
+        var val = prompt("Enter Step Size", result);
+        if (isNumeric(val) == true) {
+            $(element).trigger("touchspin.updatesettings", { step: val })
+        }
+    }
+
+// touch
+  $('input[name="spin2"]').taphold(function (e) {
+               step_change($(e.target).attr("id"))  },
+               1000);
+  $('input[name="spin1"]').taphold(function (e) {
+               step_change($(e.target).attr("id"))  },
+               1000);
+
+
+    function spin_change(id1) {
+        var spin_element = document.getElementById(id1);
+        // console.log("spin_change " + id1);
+        var idNum = Number(id1.substr(1));
+        //console.log("idNum " + idNum);
+        if (schObj.ELEMENT[idNum].type == "w") return;
+        //// extra check to see if we can fix the effect of the bug of the change event called twice by touchspin
+        //if (idNum == 11 && schObj.ELEMENT[1].value2 !== spin_element.value) { schObj.ELEMENT[1].value2 = spin_element.value; Zcalsweep(schObj, 0, idNum); }// take care of E11 case ( Load Reactance/Angle)
+        //else    {
+        //            if (schObj.ELEMENT[idNum].tune == 2 && schObj.ELEMENT[1].value2 !== spin_element.value) {
+        //            schObj.ELEMENT[idNum].value2 = spin_element.value; Zcalsweep(schObj, 0, idNum);
+        //        }
+        //        else {
+        //            if (schObj.ELEMENT[1].value1 !== spin_element.value) { schObj.ELEMENT[idNum].value1 = spin_element.value; Zcalsweep(schObj, 0, idNum); }
+        //        }
+        //}
+        // THis is support mobile as there is no right click in mobile, so press T to toggle the tune element
+        if( spin_element.value == "S" || spin_element.value == "s" )  { 
+            console.log( " step pressed");
+            if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
+            else spin_element.value=schObj.ELEMENT[idNum].value1;
+           step_change(id1);
+           return;
+        }
+
+        if( (spin_element.value == "T" || spin_element.value == "t")  && is1Component(schObj.ELEMENT[idNum].type)== false)  { 
+            console.log( " Toggel pressed");
+           if (schObj.ELEMENT[idNum].tune == 2)  schObj.ELEMENT[idNum].tune = 1; else schObj.ELEMENT[idNum].tune = 2;
+           return;
+        }
+        if(isNumeric(spin_element.value) == false) {
+             if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
+            else spin_element.value=schObj.ELEMENT[idNum].value1;
+            return;
+        }
+            if (idNum == 11) {  // take care of E11 case ( Load Reactance/Angle)
+                schObj.ELEMENT[1].value2 = spin_element.value;
+                Zcalsweep();
+        }
+        else {
+            if (schObj.ELEMENT[idNum].tune == 2)schObj.ELEMENT[idNum].value2 = spin_element.value; // take care of the tune element for two element components
+            else schObj.ELEMENT[idNum].value1 = spin_element.value;
+            Zcalsweep();
+        }
+        
+    }
+
+
+    $('input[name="spin2"]').TouchSpin({
+        min: -100000000,
+        max: 1000000000,
+        step: 1,
+        decimals: 2,
+        boostat: 5,
+        maxboostedstep: 10,
+        verticalbuttons: false
+    });
+
+    //console.log(JSON.stringify(schObj));
+    /***************OPTIONS MODAL****************************/
+
+    function options_click() {
+        $(".modal-body #VF").val(schObj.VF);
+        $(".modal-body #Z0").val(schObj.Z0);
+        //  $(".modal-body #FREQ").val(schObj.FREQ);
+        $(".modal-body #FREQ").val(schObj.ELEMENT[0].value1);
+        $(".modal-body #TDF").val(schObj.TDF);
+        $(".modal-body #ST").val(schObj.ST);
+        $(".modal-body #SS").val(schObj.SS);
+        $(".modal-body #SST").val(schObj.SST);
+        // $("input[name='LOAD']").val(schObj.ELEMENT[1].type);
+        // var radioValue = $("input[name='optradio']:checked").val();
+        //  if (radioValue) {
+        //   alert("Your are a - " + radioValue);
+        //  }
+        
+        $("#sweepColor").val(smithObj.sweepDatasets[0].color);
+        $("#dataColor").val(smithObj.sweepDatasets[1].color);
+       
+        $("#SE").val(schObj.SE);
+        // var conceptName = $('#aioConceptName').find(":selected").text();
+        $("#LU").val(schObj.LU);
+    }
+
+    function optionValidate() {
+        var val = $(".modal-body #VF").val();
+        if (isNumeric(val) && val > 0 && val <= 1) schObj.VF = val;
+        val = $(".modal-body #Z0").val();
+        if (isNumeric(val) && val > 0)  schObj.Z0 = smithObj.Z0 = parseFloat(val) 
+        val = $(".modal-body #FREQ").val();
+        if (isNumeric(val) && val > 0) { schObj.ELEMENT[0].value1 = val; document.getElementById("E0").value = Number(val).toFixed(2); }
+        val = $(".modal-body #TDF").val();
+        if (isNumeric(val) && val > 0) schObj.TDF = val;
+        val = $(".modal-body #ST").val();
+        if (isNumeric(val) && val > 0) schObj.ST = val;
+        val = $(".modal-body #SS").val();
+        if (isNumeric(val) && val > 0) schObj.SS = val;
+        val = $(".modal-body #SST").val();
+        if (isNumeric(val) && val > 0) schObj.SST = val;
+        // schObj.ELEMENT[1].type=$("input[name='LOAD']:checked").val();
+        schObj.SE = $('#SE').find(":selected").text(); // Sweep element
+        schObj.LU = $('#LU').find(":selected").text(); // Length Units
+        console.log(JSON.stringify(schObj));
+        Zcalsweep();
+        console.log(JSON.stringify(resultsObj));
+        console.log(JSON.stringify(smithObj));
+        //alert("Validate " + $(".modal-body #VF").val());
+    }
+
+
+    var tuneSelector1 = "Radio1"; var tuneSelector2 = "Radio2";
+    var selected_value1 = true; var selected_value2 = false;
+    var radio1_visible = false; var radio2_visible = false; var updateValue_disable = false;
+
+    $(function () {
+        $.contextMenu({
+            selector: "input[name='spin2']",
+            build: function ($trigger, e) {
+                // e.preventDefault(); try this to stop the mobile default menu
+                // this callback is executed every time the menu is to be shown
+                // its results are destroyed every time the menu is hidden
+                // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
+                //console.log($trigger.attr("id") );
+                //var id = $trigger.attr("id") ;
+                var idNum = Number($trigger.attr("id").substr(1));
+                console.log("before showing context menu " + idNum);
+                var elType = schObj.ELEMENT[idNum].type;
+                console.log("elType " + elType);
+                var tune_selected = schObj.ELEMENT[idNum].tune; // which component is currenlty being tuned ?
+                if (tune_selected == 1) { selected_value1 = true; selected_value2 = false }  // removed 0
+                else if (tune_selected == 2) { selected_value1 = false; selected_value2 = true } // 1 means first parameter tuned
+                else { selected_value1 = true; selected_value2 = false}; // single parameter
+
+                switch (elType) {
+                    case "w":
+                        console.log("Switch W ");
+                        radio1_visible = false; radio2_visible = false; updateValue_disable = true;
+                        break;
+                    case "r":
+                    case "l":
+                    case "c":
+                    case "x":
+                    case "f":
+                    case "rx":
+                    case "g":
+                        console.log("Switch RLCXFRXG ");
+                        radio1_visible = false; radio2_visible = false; updateValue_disable = false;
+                        break;
+                    default:
+                        radio1_visible = true; radio2_visible = true; updateValue_disable = false;
+                }
+                if (idNum == 11) { radio1_visible = false; radio2_visible = false; updateValue_disable = true; }
+                if (elType == "s" || elType == "o" || elType == "t" || elType == "plc" || elType == "slc" || elType == "prc"
+                    || elType == "src" || elType == "rx" || elType == "g") {
+                    var element1 = document.getElementById(elType);
+                    tuneSelector1 = element1.getAttribute('data-unit1');
+                    if (elType == "t" || elType == "o" || elType == "s")
+                        tuneSelector2 = element1.getAttribute('data-unit2') + schObj.LU + "]"; // length units
+                    else tuneSelector2 = element1.getAttribute('data-unit2');
+                }
+
+                return {
+                    callback: function (key, options) {
+                        //var m = "clicked: " + key;
+                        if (key == "item1") { spinValUpdatePrompt($(this).attr('id')); }
+                        // window.console && console.log(m) || alert(m);
+                    },
+                    items: {
+                        item1: {
+                            name: "Update Value",
+                            disabled: updateValue_disable
+                        },
+                        //bar: { name: "bar", disabled: true, callback: function (key, opt) { alert("Bar!") } },
+                        // sep2: "---------",
+                        radio1: {
+                            name: "Tune " + tuneSelector1,
+                            type: 'radio',
+                            radio: 'radio',
+                            value: '1',
+                            selected: selected_value1,
+                            visible: radio1_visible,
+                            events: {
+                                click: function (e) {
+                                    //console.log('Clicked On' + idNum);
+                                    var val = schObj.ELEMENT[idNum].value1;  // get from main JSON array
+                                    var spin_element = document.getElementById("E" + idNum);
+                                    spin_element.value = Number(val).toFixed(2);
+                                    schObj.ELEMENT[idNum].tune = 1;
+                                }
+                            }
+                        },
+                        radio2: {
+                            name: "Tune " + tuneSelector2,
+                            type: 'radio',
+                            radio: 'radio',
+                            value: '2',
+                            selected: selected_value2,
+                            visible: radio2_visible,
+                            events: {
+                                click: function (e) {
+                                    //console.log('Clicked On');
+                                    var val = schObj.ELEMENT[idNum].value2;  // get from main JSON array
+                                    var spin_element = document.getElementById("E" + idNum);
+                                    spin_element.value = Number(val).toFixed(2);
+                                    schObj.ELEMENT[idNum].tune = 2;
+                                }
+                            }
+                        }
+                    }
+                };
+            }
+        });
+
+    });
+
+
+    function spinValUpdatePrompt(id1) {
+        // force it to Element ID
+        id1 = id1.replaceAt(0, "E");
+        console.log("ID1 " + id1);  // E1,E2 etc.
+        var idNum = Number(id1.substr(1));
+        console.log("idNum " + idNum);
+        var elType = schObj.ELEMENT[idNum].type;
+        console.log("elType " + elType);
+        if (elType == "W") return;
+        var eleVal2 = 1; if (elType == "r" || elType == "l" || elType == "c" || elType == "x" || elType == "f") eleVal2 = 0;
+        var element = document.getElementById(id1); // this gets the spincontrol element
+        var result = parseFloat($(element).triggerHandler("touchspin.getvalue", { dummy: 1 }));
+        console.log("result " + result);
+        var result1 = parseFloat(schObj.ELEMENT[idNum].value1);
+        var result2;
+        if (eleVal2 == 1) result2 = parseFloat(schObj.ELEMENT[idNum].value2); else result2 = null;
+        console.log("result1 " + result1);
+        if (result !== result1) alert("spinvalues and JSON values are not equal");
+        var element1 = document.getElementById(elType);
+        var prompt1 = "Enter " + element1.getAttribute('data-unit1');
+        //console.log("I am here");
+        if (isNumeric(result1) == true) {
+            var val = prompt(prompt1, Number(result1).toFixed(2));
+            if (isNumeric(val)) {
+                schObj.ELEMENT[idNum].value1 = val;  // update the main JSON array
+                element.value = Number(val).toFixed(2);
+            }
+            if (eleVal2 == 1 && isNumeric(result2) == true) {  // case of two parameter components T O S PLC SLC PR SRC RX G
+                var prompt2 = "Enter " + element1.getAttribute('data-unit2'); // units
+                var val2 = prompt(prompt2, Number(result2).toFixed(2));
+                if (isNumeric(val2)) {
+                    schObj.ELEMENT[idNum].value2 = val2;  // update the main JSON array
+                    if (elType == "RX" || elType == "G") document.getElementById("E11").value = Number(val2).toFixed(2); // incase of load element display value 2 in spin_control E11
+                }
+            }
+            Zcalsweep();
+        }
+    }
+
+
+    function playSound() {
+        var sound = document.getElementById("audio");
+        sound.play();
+    }
+
+    function showTxEquivalents() {
+    var msg0 = " ZIN : " +   Number(resultsObj.OUTPUT[0].ZRout).toFixed(3) + " + " +  Number(resultsObj.OUTPUT[0].ZIout).toFixed(3) + "j" + "   " +  Number(resultsObj.OUTPUT[0].MAGout).toFixed(3) + " < " +  Number(resultsObj.OUTPUT[0].ANGout).toFixed(3) + "\n" ;
+    var msg1 =  "YIN(mS) : " +  Number(resultsObj.OUTPUT[1].YRout).toFixed(3) + " + " +  Number(resultsObj.OUTPUT[1].YIout).toFixed(3) + "j" + "   " +  Number(resultsObj.OUTPUT[1].YMag).toFixed(3) + " < " +  Number(resultsObj.OUTPUT[1].YAng).toFixed(3) + "\n" ;
+    var msg2 =  "GAM : " +  Number(resultsObj.OUTPUT[2].GAMRout).toFixed(3) + " + " +  Number(resultsObj.OUTPUT[2].GAMIout).toFixed(3) + "j" + "   " +  Number(resultsObj.OUTPUT[2].GAMMag).toFixed(3) + " < " +  Number(resultsObj.OUTPUT[2].GAMAng).toFixed(3) + "\n" ; 
+    var msg3 = "VSWR : " +  Number(resultsObj.OUTPUT[3].VSWR).toFixed(3) + "\n" ;
+    var msg4 = "Return Loss : " +  Number(resultsObj.OUTPUT[4].ReturnLoss).toFixed(3) + " dB" + "\n" ;
+    var msg5 =  "Insertion Loss : " +  Number(resultsObj.OUTPUT[5].InsertionLoss).toFixed(3) + " dB" + " S21 : " +  Number(resultsObj.OUTPUT[5].S21Mag).toFixed(3) + " dB" + " < " +  Number(resultsObj.OUTPUT[5].S21Ang).toFixed(3) +"\n"; 
+    var msg6 = "Reflection Loss : " +  Number(resultsObj.OUTPUT[6].ReflectionLoss).toFixed(3) + " dB" + "\n" ; 
+    var msg7 = "Power Reflection Coefficient : " +  Number(resultsObj.OUTPUT[7].PowerReflectionCoeff).toFixed(3) + "\n" ;
+    var msg8 =  "Transmission Loss Coefficient : " +   Number(resultsObj.OUTPUT[8].TransmissionLossCoeff).toFixed(3) + "\n" ;
+    var msg9 =  "Maximum Standing Wave: " +  Number(resultsObj.OUTPUT[9].MaximumSWR).toFixed(3) + "\n" ; 
+    var msg10 = "Minimum Standing Wave: " +  Number(resultsObj.OUTPUT[10].MinimumSWR).toFixed(3) + "\n" ;
+     //msg2$ = " Note: S21 vaild only if Z0 = Load "
+    BootstrapDialog.show({
+            //size: BootstrapDialog.SIZE_SMALL,
+            title: 'Tr. Line Equivalents',
+            message: msg0+msg1+msg2+msg3+msg4+msg5+msg6+msg7+msg8+msg9+msg10+seriesEquiv()+ "\n"+ parallelEquiv(),
+            buttons: [{
+   		        label: 'Close',
+                action: function(dialog) {            
+                dialog.close();               
+        }
+    }]
+        });
+    }
+
+    function showMarkerDialog() {
+        var markerM = smithObj.markerM;
+        var markerQ = smithObj.markerQ;
+        var $content = $('<div><label for="MM">Marker Magnitude: <input type="text" id="MM" value='+markerM+'  style="width:100px" />\
+            </label><br /><label for="MA">Marker Angle: <input type="text" id="MA" value='+markerQ+' style="width:100px" /></label><br /></div>');
+            BootstrapDialog.show({
+            size: BootstrapDialog.SIZE_SMALL,
+            title: 'Marker',
+            message: $content,
+            buttons: [{
+                label: 'Set',
+                cssClass: 'btn-success',
+                action: function(dialogRef){
+                    //dialogRef.setClosable(false);
+                    var val = dialogRef.getModalBody().find('#MM').val();
+                    var val1 = dialogRef.getModalBody().find('#MA').val();
+                    if (isNumeric(val) && val >= 0 && val <= 1 && isNumeric(val1) && val1 > 0 && val1 <= 360) 
+                        {
+                            smithObj.markerM = val;
+                            smithObj.markerQ = val1;
+                            smithObj.showMarker=true;
+                            smithObj.redrawSmith();
+                            //dialogRef.setClosable(true);
+                            dialogRef.close();
+                        }
+                        else {
+                            //alert(val);
+                           // dialogRef.setClosable(false);
+                        }
+                    }
+            }, {
+                label: 'Reset',
+                cssClass: 'btn-success',
+                action: function(dialogRef){
+                    smithObj.showMarker=false;
+                    smithObj.redrawSmith();
+                    dialogRef.close();
+                }
+            }]
+        });
+    }
+
+function generateSweep() {
+    // generate sweep data
+     // Sweep Element[ Frequency, Element 2, Element 3, Element 4... Element 12]
+    var sweepElement = schObj.SE;
+    var start = schObj.SS;
+    var stop = schObj.ST;
+    var step = schObj.SST;
+     if(sweepElement == "Frequency") sweepElement = "Element 0";
+    if(sweepElement == "Frequency" && start <0) start =0.000000000000001;
+    var points = Math.abs((stop-start)/step);
+    var elNum = parseInt(sweepElement.split(' ')[1]);
+    var oldValue; 
+    if(schObj.ELEMENT[elNum].tune == 1) oldValue = schObj.ELEMENT[elNum].value1; else oldValue = schObj.ELEMENT[elNum].value2;
+    if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=parseFloat(start) ; else schObj.ELEMENT[elNum].value2= parseFloat(start);
+    //console.log( "points =  " +points);
+    smithObj.sweepDatasets[0].dataM.splice(0,smithObj.sweepDatasets[0].dataM.length); // clear data
+    smithObj.sweepDatasets[0].dataQ.splice(0,smithObj.sweepDatasets[0].dataQ.length);
+    var i;
+    for ( i=0; i <= points; i++) {
+        if(i!==0) {if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=math.add(schObj.ELEMENT[elNum].value1,step) ; else schObj.ELEMENT[elNum].value2=math.add(schObj.ELEMENT[elNum].value2,step);}
+        resultsObj.OUTPUT[0].calculate(); // this will call  Zcalsweep1(); calculate Zcalsweep1
+        resultsObj.OUTPUT[2].calculate(); // calculate gamma
+        smithObj.sweepDatasets[0].dataM[i] = resultsObj.OUTPUT[2].GAMMag ; 
+        smithObj.sweepDatasets[0].dataQ[i] = resultsObj.OUTPUT[2].GAMAng ;
+        //console.log( "next value =  " +schObj.ELEMENT[elNum].value1);
+    }
+    if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=oldValue; else schObj.ELEMENT[elNum].value2=oldValue;
+    smithObj.sweep = true;
+    smithObj.redrawSmith();
+}
+
+function clearSweep() {
+    smithObj.sweep = false;
+    smithObj.sweepDatasets[0].dataM.splice(0,smithObj.sweepDatasets[0].dataM.length);
+    smithObj.sweepDatasets[0].dataQ.splice(0,smithObj.sweepDatasets[0].dataQ.length);
+    smithObj.redrawSmith();
+}
+
+function IL_open_click()
+{
+ localStorage.setItem('schDataIL', JSON.stringify(schObj));
+ window.open("insertionLoss.html","_self");
+
+}
+
+function AMP_open_click(){
+ localStorage.setItem('transferFlag', 'false');
+ window.open("AmplifierDesign.html","_self");
+}
+
+</script>
+
+
+  <!-- Transmission line Equivalents Modal -->
+  <!-- <div class="modal fade" id="ShowEquivalents" role="dialog">
+    <div class="modal-dialog ">
+    
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Tr. Line Equivalents</h4>
+        </div>
+        <div class="modal-body">
+          <p>Some text in the modal: 
+             Some text in the modal  
+             Some text in the modal
+          </p>
+            <label for="VF">Velocity Factor: <input type="text" id="VF" value=schObj.VF style="width:100px" readonly /></label><br />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div> -->
+
+</body>
+</html>
