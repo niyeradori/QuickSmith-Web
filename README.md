@@ -25,7 +25,7 @@ Some of the features offered by this program are listed below:
 
 MIT License
 
-Copyright (c) [2017] [Nathan Iyer]
+Copyright (c) 2017 Nathan Iyer
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
