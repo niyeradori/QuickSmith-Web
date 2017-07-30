@@ -1,5 +1,5 @@
 # QuickSmith-Web
-QuickSmith-Web - Runs on Chrome, Safari and Firefox both in Web and Mobile.
+QuickSmith-Web (https://niyeradori.github.io/QuickSmith-Web/index.html) - Runs on Chrome, Safari and Firefox both in Web and Mobile.
 
 This is a web and mobile version of the MS Windows based QuickSmith - https://github.com/niyeradori/quicksmith.
 The primary motivation of this port is in response to the numerous requests from users, who are unable to run QuickSmith 
