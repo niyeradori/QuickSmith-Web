@@ -15,12 +15,17 @@
   <script src="js/bootstrap3.min.js"></script>
   <script src="js/math.min.js"></script>
   <script src="js/jquery.bootstrap-touchspin_ni.js"></script>
+   <!-- for file and canvas save compatibilty with Safari -->
+  <script src="js/FileSaver.min.js"></script>  
+  <script src="js/canvas-toBlob.js"></script>
   <script src="common.js"></script>
   <script src="smith.js"></script>
   <script src="sch.js"></script>
   <script src="js/jquery.contextMenu.js"></script>
   <script src="js/DragDropTouch.js"></script>    
   <script src="js/bootstrap-dialog.min.js"></script>
+
+  
    <!-- ios-drag-drop.js does not trigger end ? -->
     <!-- <script src="js/ios-drag-drop.js"></script>   -->
   <!-- <script src="js/jquery.longclick-1.0.min.js"></script> -->
@@ -578,8 +583,8 @@ a:hover {
   <input id="file-input" type="file" name="name" style="display: none;" />     <!-- this for helping with file load -->
   <input id="file-input1" type="file" name="name" style="display: none;" />     <!-- this for helping with gam export -->
   <!-- <a href="https://www.w3schools.com">w3schools.com</a> -->
-<!-- <img src="img/qsmith.png">
-<div class="content">This is an awesome picture of qsmith</div> -->
+  <!-- <img src="img/qsmith.png">
+  <div class="content">This is an awesome picture of qsmith</div> -->
 <script>
 /*************************SMITH CHART********************************************************************************/
 var img = new Image();
@@ -588,7 +593,6 @@ const AXIS_RANGE = 1000;
 var resize_done = false;  // this is to avoid half shape canvas draw sometime when an attempt is made to draw with out scaling first
 var chart= {"width": 300, "height" : 300,  "currentDevicePixelRatio" : 1, "devicePixelRatio" : 1 };
 // schObj is used to save schematic - for load file to work it needs to be less the 1024 bytes and the first key should be "ver"
-
 var smithObj = {
               "ctx" : null,
               "title": '',
@@ -661,7 +665,6 @@ smithObj.ctx = document.getElementById("smithMain").getContext('2d');
     context.drawVSWRCircles;
      console.log(context.Z0);
  }
-
 
 
  $('document').ready(function () {
@@ -984,20 +987,8 @@ function new_click() {
     window.location.reload();
 }
 
-var saveJSONtoFile = (function () {
-    var a = document.createElement("a");
-    document.body.appendChild(a);
-    a.style = "display: none";
-    return function (data, fileName) {
-        var json = JSON.stringify(data),
-            blob = new Blob([json], {type: "octet/stream"}),
-            url = window.URL.createObjectURL(blob);
-        a.href = url;
-        a.download = fileName;
-        a.click();
-        window.URL.revokeObjectURL(url);
-    };
-}());
+
+
 
 
 function save_click() {
@@ -1040,6 +1031,7 @@ function export_click() {
         thisStep = step*i;
         gamObj.gamData.dataX[i]=Number(math.add(start,thisStep)).toFixed(4); 
     } 
+    // for Safari compatibility
     saveJSONtoFile(gamObj, "out.gam");
 }
 

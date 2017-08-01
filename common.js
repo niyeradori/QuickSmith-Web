@@ -614,3 +614,30 @@ function phase_unwrap(ys)
    return xs;
 }
 
+// var saveJSONtoFile = (function () {
+//     var a = document.createElement("a");
+//     document.body.appendChild(a);
+//     a.style = "display: none";
+//     return function (data, fileName) {
+//         var json = JSON.stringify(data),
+//             blob = new Blob([json], {type: "octet/stream"}),
+//             url = window.URL.createObjectURL(blob);
+//         a.href = url;
+//         a.download = fileName;
+//         a.click();
+//         window.URL.revokeObjectURL(url);
+//     };
+// }());
+// for Safari compatibility
+// Safari 6.1+
+
+// Blobs may be opened instead of saved sometimes—you may have to direct your Safari users to 
+// manually press ⌘+S to save the file in "Page Source" Format after it is opened. Using the application/octet-stream 
+// MIME type to force downloads can cause issues in Safari. 
+
+function saveJSONtoFile(data,fileName){
+   //var FileSaver = require('file-saver');
+    var json = JSON.stringify(data)
+    var blob = new Blob([json], {type: "text/plain;charset=utf-8"});
+    saveAs(blob, fileName);
+}
