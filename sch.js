@@ -10,6 +10,16 @@ var schObj = {
                 "ST": 100, // Stop Sweep
                 "SST": 1,  // Sweep Step
                 "SE": "Frequency", // Sweep Element[ Frequency, Element 2, Element 3, Element 4... Element 12]
+                "termination": "Single",  //  Single/Multiple is the load single or multiple terminated
+                "gamData":    // gamma Data in case the load has multiple values
+                          {
+                            "label": "",
+                            "color" : "",  // maroon color default
+                            "dataX" : [],
+                            "dataM" : [],
+                            "dataQ" : []
+                          },
+                     
                 "ELEMENT": [     // type W,G,RX,R,X,C,L,T,O,S,SLC,PLC,SRC,PRC
                     { "index": 0, "type": "f", "value1": 100.00,"value2": 0,"tune": 1, assign: updateImpedance }, // uses item 0 for frequency
                     { "index": 1, "type": "rx", "value1": 50, "value2": 0,"tune": 1, assign: updateImpedance },  // type RX/G , this is load so calculating impedance
@@ -73,14 +83,14 @@ function updateImpedance()
 {
     var v1,v2,x,r,ang,rad,den;
     //console.log(" Calculating Impedance Index:" + this.index);
+    var freq = schObj.ELEMENT[0].value1;
     var gamma = { "r": 0, "phi": 0 };
-    var w = 2 * Math.PI * schObj.ELEMENT[0].value1 * 1000000.00;  //  w= 2PIf
-
+    var w = 2 * Math.PI * freq * 1000000.00;  //  w= 2PIf
     var beta = w / ( schObj.VF * C);
     var index = this.index; // this has to be a even number except for RX and G
     v1 = this.value1; v2 = this.value2;
-    if(v1 ==0)  v1 = 1e-16; 
-    if(v2 ==0)  v2 = 1e-16; 
+    if(v1 ==0)  v1 = 1e-14; 
+    if(v2 ==0)  v2 = 1e-14; 
     switch (this.type) {
         case "f":
             break;
@@ -98,17 +108,42 @@ function updateImpedance()
             resultsObj.ELEMENT[index].ZI = v1;
             break;
         case "g":
-            r = v1;
-            ang = v2;
+            if( schObj.termination =="Multiple") {                
+                r =    myInterpolate(freq,schObj.gamData.dataX,schObj.gamData.dataM) ;
+                ang =  myInterpolate(freq,schObj.gamData.dataX,schObj.gamData.dataQ) ;
+            }
+            else {
+                r = v1;
+                ang = v2;
+            }
+            if(isNumeric(ang) == false) ang=0;
+            if(isNumeric(r) == false) r=0;
             if(r>1.0) r = 1.0; if(r<0) r = 0;
-            //gamma.phi = (this.value2 * Math.PI / 180.0);
-            //var c = math.complex(gamma);
-            resultsObj.ELEMENT[index].ZR = GToZR(r,ang);
-            resultsObj.ELEMENT[index].ZI = GToZI(r,ang);
+            var ZR = GToZR(r,ang);
+            var ZI = GToZI(r,ang);
+            resultsObj.ELEMENT[index].ZR = ZR;
+            resultsObj.ELEMENT[index].ZI = ZI;
+            schObj.ELEMENT[1].value1 = resultsObj.ELEMENT[index].ZR;
+            schObj.ELEMENT[11].value1 =schObj.ELEMENT[1].value2 = resultsObj.ELEMENT[index].ZI;
             break;
         case "rx":
-            resultsObj.ELEMENT[index].ZR = v1;
-            resultsObj.ELEMENT[index].ZI = v2;
+           if( schObj.termination =="Multiple" ) {
+                r =    myInterpolate(freq,schObj.gamData.dataX,schObj.gamData.dataM) ;
+                ang =  myInterpolate(freq,schObj.gamData.dataX,schObj.gamData.dataQ) ;
+                if(isNumeric(ang) == false) ang=0;
+                if(isNumeric(r) == false) r=0;
+                if(r>1.0) r = 1.0; if(r<0) r = 0;
+                ZR = GToZR(r,ang);
+                ZI = GToZI(r,ang);
+                resultsObj.ELEMENT[index].ZR = ZR;
+                resultsObj.ELEMENT[index].ZI = ZI;
+            }
+            else {
+                resultsObj.ELEMENT[index].ZR = v1;
+                resultsObj.ELEMENT[index].ZI = v2;               
+            }
+            schObj.ELEMENT[1].value1 = resultsObj.ELEMENT[index].ZR;
+            schObj.ELEMENT[11].value1 =schObj.ELEMENT[1].value2 = resultsObj.ELEMENT[index].ZI;
             break;
         case "c":
             resultsObj.ELEMENT[index].ZI = -1 / (w * v1 * 0.000000000001);
@@ -383,14 +418,15 @@ function updateAdmittance() {
     }
 }
 /**
- * scObj JSON, sweep = false => spot sweep=true = sweep mode
- * idNum same as index so tha only one(the changed) index is calculated
- * if idNum is zero then the whole network will be calulated
  * @param {*} value
  */
-function Zcalsweep1() // scObj JSON,  // idNum same as index so tha only one(the changed) index is calculated 
+function Zcalsweep1() // scObj JSON, 
 {
-    for (var i = 0; i < 11; i++)  schObj.ELEMENT[i].assign(); // better to calculate all for elements, because T is dependent on the previous elements.
+    for (var i = 0; i < 11; i++) 
+        {
+        //console.log("i =" + i);
+        schObj.ELEMENT[i].assign(); // better to calculate all for elements, because T is dependent on the previous elements.
+        }
      //console.log(JSON.stringify(resultsObj));
     var ZR0 = math.add(resultsObj.ELEMENT[2].ZR,resultsObj.ELEMENT[1].ZR);
     var ZI0 = math.add(resultsObj.ELEMENT[2].ZI,resultsObj.ELEMENT[1].ZI);
@@ -698,8 +734,182 @@ function is1Component (elType){
 }
 
 
+function myInterpolate(X, xa, ya) {
+    //console.log ("interpolate: freq " + X + " xa length" + xa + " ya length " + ya );
+    var f = createInterpolant(xa, ya);
+    return f(X);
+}
+
+//Neville-Aitken interpolation Algorithm
+//xa and ya are global arrays, needs number of points not greater than 200 ad x Value to interpolate
+//column number decides the coulmns 1 for first, 2 for second
+//n is usually 4
+//for proper interpolation phase values needs to be unwrapped, phase is unwrapped in Link_item_click()
+
+function interpolate( X,n,xa,ya ) 
+{
+    var C=[0,0,0,0,0];
+    var D=[0,0,0,0,0];
+    var i, m, ns;
+    var den, dif, dift, ho, hp, w, Y, dy;
+    if (n > 10) return;
+    ns = 1;
+    xa[0] = 0;
+    //x = 23
+    dif = Math.abs(X - xa[1]);    // find the index ns closest to the entry
+    for(i = 1; i<n; i = i+1) {
+        dift = Math.abs(X - xa[i]);
+        if (dift < dif) {
+            ns = i;
+            dif = dift;
+        }
+        C[i] = ya[i];
+        D[i] = ya[i];
+
+    }
+    Y = ya[ns]; 
+    ns = ns - 1;
+    for (m = 1; m < (n - 1); m = m+1) {
+        for(i = 1; i < (n - m); i = i+1) {
+            ho = xa[i] - X;
+            hp = xa[i + m] - X;
+            w = C[i + 1] - D[i];
+            den = ho - hp;
+            if (den == 0) return [];
+            den = w / den;
+            D[i] = hp * den;
+            C[i] = ho * den;
+        }
+        if (2 * ns < (n - m))  dy = C[ns + 1];
+        else {
+            dy = D[ns];
+            ns = ns - 1;
+        }
+        Y = Y + dy;
+    }
+    return Y;
+}
 
 
+
+// 'Neville-Aitken interpolation Algorithm
+// 'xa and ya are global arrays, needs number of points not greater than 200 ad x Value to interpolate
+// 'column number decides the coulmns 1 for first, 2 for second
+// 'n is usually 4
+// 'for proper interpolation phase values needs to be unwrapped, phase is unwrapped in Link_item_click()
+// '
+// Function interpolate(ByVal X As Double, ByVal n As Integer, ByVal column As Integer) As Double
+
+// Static C(5), D(5)
+// Dim I, m, ns As Integer
+// Dim den, dif, dift, ho, hp, w, Y, dy As Double
+// If (n > 10) Then GoTo endinter
+// ns = 1
+// xa(0) = 0
+// 'x = 23
+// dif = Abs(X - xa(1))    ' find the index ns closest to the entry
+// For I = 1 To n Step 1
+//  dift = Abs(X - xa(I))
+//     If (dift < dif) Then
+//         ns = I
+//         dif = dift
+//     End If
+//  If (column = 1) Then
+//  C(I) = y1a(I)
+//  D(I) = y1a(I)
+//  Else
+//  C(I) = y2a(I)
+//  D(I) = y2a(I)
+//  End If
+// Next I
+//    If (column = 1) Then Y = y1a(ns) Else Y = y2a(ns)
+   
+//    ns = ns - 1
+// For m = 1 To (n - 1) Step 1
+//      For I = 1 To (n - m) Step 1
+//        ho = xa(I) - X
+//        hp = xa(I + m) - X
+//        w = C(I + 1) - D(I)
+//        den = ho - hp
+//        If (den = 0) Then GoTo endinter
+//        den = w / den
+//        D(I) = hp * den
+//        C(I) = ho * den
+//        Next I
+//    If (2 * ns < (n - m)) Then
+//    dy = C(ns + 1)
+//    Else
+   
+//    dy = D(ns)
+//    ns = ns - 1
+//    End If
+//    Y = Y + dy
+// Next m
+// interpolate = Y
+// Exit Function
+
+// endinter:
+//        Beep
+//        MsgBox "Interpolation Error", 0, "QuickSmith"
+
+// End Function
+
+// If (MULTITER = 1) Then ' for mutilple termination interpolate Load
+
+//     n = npoints ' tolal number of data available
+//     X = freq ' locate index j closest to x use the xa Array for this
+//     jl = 0      ' initialize lower and upper limits
+//     ju = n + 1
+//     While ((ju - jl) > 1) 'if we are not done yet
+//         jm = (ju + jl) / 2    'compute mid point first
+//         If (X > xatemp(jm)) Then jl = jm Else ju = jm
+//     Wend
+//     j = jl  ' returns index j such as j < x < J+1
+
+//     ' get the leftmost index of a point m such that j is at the center
+//     m = 4 ' number of sample points
+//     k = min(max(j - (m - 1) / 2, 1), n + 1 - m) ' find midpoint offset
+//     If m >= n Then
+//         k = 1
+//         m = n
+//     End If
+//     ' Assign Values for interpolating
+//     For I = 1 To m Step 1
+//         xa(I) = xatemp(k - 1 + I)
+//         y1a(I) = y1atemp(k - 1 + I)
+//         y2a(I) = y2atemp(k - 1 + I)
+//     Next I
+//     Ri = interpolate(X, m, 1)
+//     Qi = interpolate(X, m, 2)
+
+//     ZR(1) = GToZR(CSng(Ri), CSng(Qi))
+//     ZI(1) = GToZI(CSng(Ri), CSng(Qi))
+//     gammaM = Ri
+//     GammaA = Qi
+ // unwrap phase
+    // Input #1, temp ' Z0
+    // n = 0
+    // prevphase = 0
+    // offset = 0
+
+    // Do While Not EOF(1)
+         
+    //      Input #1, Filedata0, Filedata1, Filedata2
+    //         If (Filedata0 <> 0) Then
+    //             n = n + 1
+    //             If gmah = 1 Then Filedata0 = Filedata0 / 1000000#
+    //             xatemp(n) = Filedata0   'freq
+    //             y1atemp(n) = Filedata1 ' mag
+    //             'y2atemp(n) = filedata2 ' phase
+            
+    //             ' code written to unwrap phase
+    //             phase = Filedata2
+    //             If (Abs(phase - prevphase) > 180) Then offset = offset - 360 * Sgn(phase - prevphase)
+    //             prevphase = phase
+    //             y2atemp(n) = phase + offset
+    //         End If
+    //         If (n > 1000) Then Exit Do
+    // Loop
 //Notes:
 //var testjson = { name: "asd", tall: 123 };
 //e.dataTransfer.setData("text/plain", JSON.stringify(testjson));

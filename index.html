@@ -477,70 +477,67 @@ a:hover {
 
     <audio id="audio" src="img/button-3.wav" autostart="false"> </audio>
  <!-- ************************MODAL OPTION DIALOG BEGINS************************************************************************************** -->
-  <div id="optionsModal" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-sm">
-
-      <!-- Options/Settings Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Settings</h4>
-        </div>
-        <div class="modal-body">
-          <br />
-          <label for="VF">Velocity Factor: <input type="text" id="VF" value="" style="width:100px" /></label><br />
-          <label for="Z0">Ch. Impedance [Ohms]: <input type="text" id="Z0" value="" style="width:100px" /></label><br />
-          <label for="FREQ">Frequency [MHz]: <input type="text" id="FREQ" value="" style="width:100px" /></label><br />
-          <label for="TDF">Tr. Design Freq.[MHz]:<input type="text" id="TDF" value="" style="width:100px" /></label> <br />
-          <label for="SS"> Sweep Start: <input type="text" id="SS" value="" style="width:100px" /></label><br />
-          <label for="ST">Sweep Stop: <input type="text" id="ST" value="" style="width:100px" /></label> <br />
-          <label for="SST">Sweep Step: <input type="text" id="SST" value="" style="width:100px" /></label> <br />
-           <!--<br />
-           <label for="radio-inline">Load type:
-            <label class="radio-inline"><input type="radio" name="LOAD" value = "I" checked="checked">Impedance</label>
-            <label class="radio-inline"><input type="radio" name="LOAD" value = "G" >Gamma</label>
-          </label>-->
-
-          <br /> <br />
-          <div class="form-group">
-            <label for="SE">Sweep Variable:</label>
-            <select class="form-control" id="SE">
-              <option>Frequency</option>
-              <option>Element 2</option>
-              <option>Element 3</option>
-              <option>Element 4</option>
-              <option>Element 5</option>
-              <option>Element 6</option>
-              <option>Element 7</option>
-              <option>Element 8</option>
-              <option>Element 9</option>
-              <option>Element 10</option>
-            </select>
-          </div>
-            <br />
-            <div class="form-group">
-                <label for="SE">Sweep Color:</label>
-                <input type="color" id="sweepColor">
+    <div id="optionsModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <!-- Options/Settings Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Settings</h4>
+                </div>
+                <div class="modal-body">
+                    <label for="VF">Velocity Factor: <input type="text" id="VF" value="" style="width:100px" /></label><br />
+                    <label for="Z0">Ch. Impedance [Ohms]: <input type="text" id="Z0" value="" style="width:100px" /></label><br />
+                    <label for="FREQ">Frequency [MHz]: <input type="text" id="FREQ" value="" style="width:100px" /></label><br />
+                    <label for="TDF">Tr. Design Freq.[MHz]:<input type="text" id="TDF" value="" style="width:100px" /></label> <br />
+                    <label for="SS"> Sweep Start: <input type="text" id="SS" value="" style="width:100px" /></label><br />
+                    <label for="ST">Sweep Stop: <input type="text" id="ST" value="" style="width:100px" /></label> <br />
+                    <label for="SST">Sweep Step: <input type="text" id="SST" value="" style="width:100px" /></label> <br />
+                    <div class="form-group">
+                        <label for="SE">Sweep Color:</label>
+                        <input type="color" id="sweepColor">
+                    </div>
+                    <div class="form-group">
+                        <label for="SE">Sweep Variable:</label>
+                        <select class="form-control" id="SE">
+                            <option>Frequency</option>
+                            <option>Element 2</option>
+                            <option>Element 3</option>
+                            <option>Element 4</option>
+                            <option>Element 5</option>
+                            <option>Element 6</option>
+                            <option>Element 7</option>
+                            <option>Element 8</option>
+                            <option>Element 9</option>
+                            <option>Element 10</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="LU">Length Unit:</label>
+                        <select class="form-control" id="LU">
+                            <option>Inches</option>
+                            <option>MilliMeters</option>
+                            <option>Degrees</option>
+                            <option>Wave Lengths</option>
+                        </select>
+                    </div>
+                    <div class="form-group hidden-xs hidden-sm"  >
+                        <label for="TER">Termination:</label>
+                        <select class="form-control" id="TER" onclick="javascript:yesnoFileDialog();">
+                            <option>Single</option>
+                            <option>Multiple</option>
+                        </select>
+                        <br /> 
+                        <input type="file" id="TER_FILE" style="display:none">
+                    </div>
+                    <br /> 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" onclick="optionValidate()" > OK </button>
+                </div>
             </div>
-             <br />
-
-            <div class="form-group">
-              <label for="LU">Length Unit:</label>
-              <select class="form-control" id="LU">
-                <option>Inches</option>
-                <option>MilliMeters</option>
-                <option>Degrees</option>
-                <option>Wave Lengths</option>
-              </select>
-            </div>
-          <br /> <br />
-</div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" onclick="optionValidate()" > OK </button>
         </div>
-      </div>
     </div>
-  </div>
 <!-- ************************MODAL OPTION DIALOG ENDS************************************************************************************** -->
 
 <!-- ************************MODAL COMPONENT DIALOG BEGINS************************************************************************************** -->
@@ -631,24 +628,24 @@ var smithObj = {
                           {
                             "label": "Frequency Sweep",
                             "color" : "#0000FF",
-                            "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8],
-                            "dataQ" : [10,20,30,40,50,60,70,80]
+                            "dataM" : [],
+                            "dataQ" : []
                           },
                           {
                             "label": "Component Sweep",
                             "color" : "#00FF00",
-                            "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9],
-                            "dataQ" : [90,100,110,120,130,140,150,160,170]
+                            "dataM" : [],
+                            "dataQ" : []
                           }
                     ],
               "data":false, // to display imported data
               dataPlot: function() { dataPlot(this);},
               "plotDatasets" : [
                           {
-                            "label": "Data PLot",
+                            "label": "Data Plot",
                             "color" : "#000000",
-                            "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8],
-                            "dataQ" : [10,20,30,40,50,60,70,80]
+                            "dataM" : [],
+                            "dataQ" : []
                           }
                      ],
                drawSmith: function() { drawSmith(this);},
@@ -686,10 +683,18 @@ smithObj.ctx = document.getElementById("smithMain").getContext('2d');
            {
             console.log ( "Transferflag absent");
            }
-           resize(smithObj.ctx.canvas)// chart drawn here
-           get(); // restore the lass session if saved earlier
+           resize(smithObj.ctx.canvas)// Smith chart drawn here
+           get(); // restore the last session if saved earlier
            updateUI();
-          // Zcalsweep();
+           // Zcalsweep();
+        //    	var f = createInterpolant([0, 1, 2, 3, 4], [0, 1, 4, 9, 16]);
+        //     var message = '';
+        //     //for (var x = 0; x <= 4; x += 0.5) {
+        //         var x = 50;
+        //         var xSquared = f(x);
+        //         message += x + ' squared is about ' + xSquared + '\n';
+        //    // }
+        //     alert(message);
            
  })
 
@@ -896,12 +901,14 @@ function spin_change1(id1) {
 function set_click() {
     // save state to local storage
     localStorage.setItem('schData', JSON.stringify(schObj));
+    //console.log(JSON.stringify(schObj));
     // clear off data arrays - no need to save data
-    smithObj.sweepDatasets[0].dataM.splice(0,smithObj.sweepDatasets[0].dataM.length); // clear data
+    smithObj.sweepDatasets[0].dataM.splice(0,smithObj.sweepDatasets[0].dataM.length); // clear Sweep data
     smithObj.sweepDatasets[0].dataQ.splice(0,smithObj.sweepDatasets[0].dataQ.length);
-    smithObj.plotDatasets[0].dataM.splice(0,smithObj.plotDatasets[0].dataM.length); // clear data
+    smithObj.plotDatasets[0].dataM.splice(0,smithObj.plotDatasets[0].dataM.length); // clear Plot data
     smithObj.plotDatasets[0].dataQ.splice(0,smithObj.plotDatasets[0].dataQ.length);
     localStorage.setItem('smithData', JSON.stringify(smithObj));
+    //console.log(JSON.stringify(smithObj));
 }
 
 
@@ -911,7 +918,7 @@ function updateUI() {
     document.getElementById("SM0").value =  smithObj.vswrCircle;
     document.getElementById("SM1").value =  smithObj.qCircle;
     smithObj.drawSmith();
-    
+
     for (var i = 0; i < 12; i++)  // 12 so that the Load imaginary spin box e11 is also updated.
     { 
         //   var element = "\"E" + i + "\"";
@@ -932,7 +939,11 @@ function updateUI() {
         document.getElementById("D"+i).src =  "img/"+schObj.ELEMENT[i].type+imgv+".bmp";
         // src="img/rxv.bmp"
     }
-  Zcalsweep();
+    if(schObj.termination == 'Single') document.getElementById('V1').style.borderColor='#D3D3D3';
+    else  document.getElementById('V1').style.borderColor='red';
+    Zcalsweep();
+
+
 }
 
 function get_click()
@@ -946,7 +957,10 @@ function get() {
     if( item !== null)
     {
         var schObj1 =JSON.parse(item);
+        //console.log(schObj);
         copy_schObj(schObj1);
+        //console.log("After copying");
+        //console.log(schObj);
     }
     else { console.log(" schData local storage not set");  };  
 
@@ -992,23 +1006,40 @@ function save_click() {
 
 
 
-// export the sweep data as a gam file 
+// export the last sweep data as a gam file 
 function export_click() {
   var gamObj = {  
   "name": "QuickSmith GAM",
   "Z0": 50.0, // characteristic impedance
-  "gamData" : [
-                {
+  "gamData" : {
                 "label": "Data Plot",
                 "color" : "#000000",
-                "dataM" : [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8],
-                "dataQ" : [10,20,30,40,50,60,70,80]
-                }
-             ]
+                "dataX"  : [],
+                "dataM" : [],
+                "dataQ" : []
+               }
   }
     gamObj.Z0 = smithObj.Z0;
-    gamObj.gamData[0].dataM = smithObj.sweepDatasets[0].dataM;
-    gamObj.gamData[0].dataQ = smithObj.sweepDatasets[0].dataQ;
+    // var start = parseFloat(schObj.SS);
+    // var stop = parseFloat(schObj.ST);
+    // var step = parseFloat(schObj.SST);
+    // var points = Math.abs((stop-start)/step)+1;
+    // var i; var thisStep;
+    // var points = Math.abs((stop-start)/step)+1; // eg: start=1, stop=100, step=1; number of points = 99+1=100 0-99 values from 1, 2, 3, .. 100
+    // for ( i=0; i < points; i++) {
+    //     thisStep = step*i;
+    //     gamObj.gamData.dataX=Number(math.add(start,thisStep)).toFixed(4); 
+    // } 
+    gamObj.gamData.dataM = smithObj.sweepDatasets[0].dataM;
+    gamObj.gamData.dataQ = smithObj.sweepDatasets[0].dataQ;
+    var start = parseFloat(schObj.SS);
+    var step = parseFloat(schObj.SST);
+    var points = smithObj.sweepDatasets[0].dataM.length; // if a sweep was performed then we use its length to store the length data, if not it is zero
+    console.log(" Number of Points= "+points);
+    for ( i=0; i < points; i++) {
+        thisStep = step*i;
+        gamObj.gamData.dataX[i]=Number(math.add(start,thisStep)).toFixed(4); 
+    } 
     saveJSONtoFile(gamObj, "out.gam");
 }
 
@@ -1041,18 +1072,22 @@ function handleFileImport(e) {
                      //alert (" Verified");
                      var gamObj =JSON.parse(contents);
                      smithObj.Z0= gamObj.Z0;
-                     smithObj.plotDatasets[0].dataM = gamObj.gamData[0].dataM ;
-                     smithObj.plotDatasets[0].dataQ = gamObj.gamData[0].dataQ ;
-                    // copy_schObj(schObj1);
-                    // console.log(JSON.stringify(schObj));
+                     var points = gamObj.gamData.dataX.length;
+                     if(points > 0){
+                     schObj.SS =  parseFloat(gamObj.gamData.dataX[0]);
+                     schObj.ST =  parseFloat(gamObj.gamData.dataX[points-1]);
+                     schObj.SST = math.subtract(schObj.ST,schObj.SS)/(points-1);
+                     smithObj.plotDatasets[0].dataM = gamObj.gamData.dataM ;
+                     smithObj.plotDatasets[0].dataQ = gamObj.gamData.dataQ ;
                      updateUI(); // update the ui elements
                      smithObj.data = true;
                      smithObj.redrawSmith(); 
+                     }
                    }  
                 
             }
         reader.readAsText(file); 
-        $('input[type="file"]').val(null); // this clears the file read 
+        $("#file-input1").val(null); // this clears the file read 
    }
    else
    {
@@ -1103,7 +1138,7 @@ function handleFileOpen(e) {
                 //         + "starts with: " + contents.substr(1, contents.indexOf("n"))
                 //         + " " + contents.substr(2, 3)
                 //     );
-                if( file.size < 1024 &&  contents.substr(2, 3) == "ver")
+                if( file.size < 65536 &&  contents.substr(2, 3) == "ver")  // added a 64K requirement- to have some bounds
                    {
                    //  alert (" Verified");
                      var schObj1 =JSON.parse(contents);
@@ -1111,6 +1146,7 @@ function handleFileOpen(e) {
                      console.log(JSON.stringify(schObj));
                      updateUI(); // update the ui elements
                    }  
+                else ShowMessage_sm("QuickSmith","File too long (>64K) or the of the wrong format")
                 
             }
         reader.readAsText(file); 
@@ -1131,7 +1167,8 @@ document.getElementById('file-input').addEventListener('change', handleFileOpen,
 
 function Zcalsweep() // this function simply calls Zcalsweep with the same arguments, and also updates the output results to the textbox
     {
-        resultsObj.OUTPUT[0].calculate(); // this will call  Zcalsweep1(); calculate Zcalsweep1
+        //resultsObj.OUTPUT[0].calculate(); // this will call  Zcalsweep1(); calculate Zcalsweep1
+        Zcalsweep1(); // call assign amd caculate the ladder network.
         var zr =  Number(resultsObj.OUTPUT[0].ZRout).toFixed(3);
         var sign = getSign(resultsObj.OUTPUT[0].ZIout)
         var zi =  Number(Math.abs(resultsObj.OUTPUT[0].ZIout)).toFixed(3);
@@ -1149,6 +1186,16 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         resultsObj.OUTPUT[9].calculate(); // calculate MaxSWRCal
         resultsObj.OUTPUT[10].calculate(); // calculate MinSWRCal
         document.getElementById("IL").value =  Number(resultsObj.OUTPUT[5].InsertionLoss).toFixed(3);; // update IL
+        // incase of multiple terminations update the spinnertext of E1/E11 ( real/Imag M/Ang)
+       // if(schObj.termination == 'Multiple') {
+        document.getElementById("E1").value= Number(schObj.ELEMENT[1].value1).toFixed(2);
+        document.getElementById("E11").value= Number(schObj.ELEMENT[11].value1).toFixed(2);
+        //console.log( "UPDATING DATA ELEMENT :  " +Number(schObj.ELEMENT[1].value1).toFixed(2) + " " + Number(schObj.ELEMENT[11].value1).toFixed(2) );
+        //}
+        //else 
+        //{
+
+       // }
         // console.log(JSON.stringify(resultsObj));
         // update SMITH CHART
         smithObj.dataM = resultsObj.OUTPUT[2].GAMMag ; 
@@ -1424,6 +1471,24 @@ var end = function(e) {
         $("#SE").val(schObj.SE);
         // var conceptName = $('#aioConceptName').find(":selected").text();
         $("#LU").val(schObj.LU);
+        $("#TER").val(schObj.termination);
+        if (schObj.termination == "Multiple")  document.getElementById('TER_FILE').style.display = 'block';
+        else document.getElementById('TER_FILE').style.display = 'none';       
+    }
+
+    // this function shows hides the file dialog depending on Multi/Single termination
+    function yesnoFileDialog() {
+        if ($(".modal-body #TER").val() == "Multiple")  document.getElementById('TER_FILE').style.display = 'block';
+        else 
+        {  
+            document.getElementById('TER_FILE').style.display = 'none';
+            document.getElementById("E1").value=  50.00; // default values if you are going back to single.
+            document.getElementById("E11").value= 0.00;
+            schObj.ELEMENT[1].value1 = 50.00;
+            schObj.ELEMENT[1].value2 = 0.00;
+            //$("#E11").val("0.00");
+            //console.log( "UPDATED");
+        }
     }
 
     function optionValidate() {
@@ -1444,8 +1509,66 @@ var end = function(e) {
         // schObj.ELEMENT[1].type=$("input[name='LOAD']:checked").val();
         schObj.SE = $('#SE').find(":selected").text(); // Sweep element
         schObj.LU = $('#LU').find(":selected").text(); // Length Units
+        if ($(".modal-body #TER").val() == "Multiple") {
+            var selectedFile = document.getElementById('TER_FILE').files[0];
+            console.log(selectedFile);
+            // if (!selectedFile) {
+            //        // schObj.termination = "Multiple";
+            //     }
+            if(selectedFile) 
+            {
+                var reader = new FileReader();
+                reader.onload = function(e)
+                    {
+                        var contents = reader.result;
+                        if( contents.substr(9, 14) == "QuickSmith GAM")
+                        {
+                            //console.log (" Verified");
+                            //ShowMessage_sm("QuickSmith","File Verified");
+                            var gamObj =JSON.parse(contents);
+                            //console.log(gamObj);
+                            smithObj.Z0= schObj.Z0=gamObj.Z0;
+                            schObj.gamData.label = gamObj.gamData.label;
+                            schObj.gamData.color = gamObj.gamData.color;
+                            schObj.gamData.dataX = gamObj.gamData.dataX; // X axis data, could be Frequency or swept element values
+                            schObj.gamData.dataM = gamObj.gamData.dataM;
+                            schObj.gamData.dataQ = phase_unwrap(gamObj.gamData.dataQ); // phase unwrap before entering - helps with interpolation
+                            if(schObj.gamData.dataX.length > 1){   // check if the data is more than 1 before setting to interpolation mode
+                                schObj.termination = "Multiple";      // we can check again before calculation
+                                document.getElementById('V1').style.borderColor='red';
+                            }
+                            else 
+                            {
+                                schObj.termination = "Single";
+                                document.getElementById('V1').style.borderColor= '#D3D3D3';   
+                            }
+
+                        }
+                        else {
+                            schObj.termination = "Single";
+                            document.getElementById('V1').style.borderColor= '#D3D3D3';
+                            ShowMessage_sm("QuickSmith","Failed to verify file");
+                        }
+                        Zcalsweep(); 
+                    }
+                    
+                reader.readAsText(selectedFile); 
+                $("#file-input1").val(null); // this clears the file read 
+            }
+        }
+        else {
+            schObj.termination = "Single";
+            schObj.gamData.label = "";
+            schObj.gamData.color = "";
+            schObj.gamData.dataX = []; // X axis data, could be Frequency or swept element values
+            schObj.gamData.dataM = [];
+            schObj.gamData.dataQ = [];
+            // ShowMessage_sm("QuickSmith"," Termination Single");
+            document.getElementById('V1').style.borderColor= '#D3D3D3';
+            Zcalsweep();
+        }
+       
         console.log(JSON.stringify(schObj));
-        Zcalsweep();
         console.log(JSON.stringify(resultsObj));
         console.log(JSON.stringify(smithObj));
         //alert("Validate " + $(".modal-body #VF").val());
@@ -1673,28 +1796,32 @@ var end = function(e) {
 
 function generateSweep() {
     // generate sweep data
-     // Sweep Element[ Frequency, Element 2, Element 3, Element 4... Element 12]
+     // sweepElement : [ Frequency, Element 2, Element 3, Element 4... Element 12]
     var sweepElement = schObj.SE;
-    var start = schObj.SS;
-    var stop = schObj.ST;
-    var step = schObj.SST;
-     if(sweepElement == "Frequency") sweepElement = "Element 0";
+    var start = parseFloat(schObj.SS);
+    var stop = parseFloat(schObj.ST);
+    var step = parseFloat(schObj.SST);
     if(sweepElement == "Frequency" && start <0) start =0.000000000000001;
-    var points = Math.abs((stop-start)/step);
+    if(sweepElement == "Frequency") sweepElement = "Element 0";
+    
     var elNum = parseInt(sweepElement.split(' ')[1]);
     var oldValue; 
-    if(schObj.ELEMENT[elNum].tune == 1) oldValue = schObj.ELEMENT[elNum].value1; else oldValue = schObj.ELEMENT[elNum].value2;
-    if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=parseFloat(start) ; else schObj.ELEMENT[elNum].value2= parseFloat(start);
-    //console.log( "points =  " +points);
+    if(schObj.ELEMENT[elNum].tune == 1) oldValue = schObj.ELEMENT[elNum].value1; else oldValue = schObj.ELEMENT[elNum].value2;   // save the current value
+    if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1 = start; else schObj.ELEMENT[elNum].value2 = start ;  //  place the start value there
     smithObj.sweepDatasets[0].dataM.splice(0,smithObj.sweepDatasets[0].dataM.length); // clear data
     smithObj.sweepDatasets[0].dataQ.splice(0,smithObj.sweepDatasets[0].dataQ.length);
-    var i;
-    for ( i=0; i <= points; i++) {
-        if(i!==0) {if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=math.add(schObj.ELEMENT[elNum].value1,step) ; else schObj.ELEMENT[elNum].value2=math.add(schObj.ELEMENT[elNum].value2,step);}
-        resultsObj.OUTPUT[0].calculate(); // this will call  Zcalsweep1(); calculate Zcalsweep1
-        resultsObj.OUTPUT[2].calculate(); // calculate gamma
-        smithObj.sweepDatasets[0].dataM[i] = resultsObj.OUTPUT[2].GAMMag ; 
-        smithObj.sweepDatasets[0].dataQ[i] = resultsObj.OUTPUT[2].GAMAng ;
+    var i; var thisStep;
+    var points = Math.abs((stop-start)/step)+1; // eg: start=1, stop=100, step=1; number of points = 99+1=100 0-99 values from 1, 2, 3, .. 100
+    //console.log( " SweepElement = " +sweepElement + " points =  " +points + " oldValue =  " +oldValue + " elNum =  " +elNum + " start =  " +start);
+    for ( i=0; i < points; i++) {
+        thisStep = step*i;
+        if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=math.add(start,thisStep) ; 
+        else schObj.ELEMENT[elNum].value2=math.add(start,thisStep);
+        //console.log( " schObj.ELEMENT[elNum].value1 = " +schObj.ELEMENT[elNum].value1 + " thisStep =  " +thisStep)
+        Zcalsweep1(); // assign and calculate network impedances
+        resultsObj.OUTPUT[2].calculate(); // calculate gamma Number(ZR).toFixed(2)
+        smithObj.sweepDatasets[0].dataM[i] = Number(resultsObj.OUTPUT[2].GAMMag).toFixed(4) ; // update property value to the main JSON
+        smithObj.sweepDatasets[0].dataQ[i] = Number(resultsObj.OUTPUT[2].GAMAng).toFixed(4) ;
         //console.log( "next value =  " +schObj.ELEMENT[elNum].value1);
     }
     if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=oldValue; else schObj.ELEMENT[elNum].value2=oldValue;
@@ -1704,8 +1831,9 @@ function generateSweep() {
 
 function clearSweep() {
     smithObj.sweep = false;
-    smithObj.sweepDatasets[0].dataM.splice(0,smithObj.sweepDatasets[0].dataM.length);
-    smithObj.sweepDatasets[0].dataQ.splice(0,smithObj.sweepDatasets[0].dataQ.length);
+    // should we clear the data from memory here ? - implication can be used when we export data
+    //smithObj.sweepDatasets[0].dataM.splice(0,smithObj.sweepDatasets[0].dataM.length);
+    //smithObj.sweepDatasets[0].dataQ.splice(0,smithObj.sweepDatasets[0].dataQ.length);
     smithObj.redrawSmith();
 }
 
@@ -1720,6 +1848,8 @@ function AMP_open_click(){
  localStorage.setItem('transferFlag', 'false');
  window.open("AmplifierDesign.html","_self");
 }
+
+
 
 </script>
 
