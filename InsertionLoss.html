@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"> -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6.0, minimum-scale=.25, user-scalable=yes"/>
-  <title>QuickSmith- Amplifier Design</title>
+  <title>QuickSmith-Insertion Loss</title>
   <link href="img/smith.ico" rel="icon" >
   <link href="css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
   <script src="js/jquery-3.2.1.min.js"></script>
@@ -52,7 +52,7 @@ td {
         <span class="icon-bar"></span>                        
       </button>
        <!-- <a class="navbar-brand" href="#"><img src="img/smith.ico">QuickSmith</a>  -->
-       <a class="navbar-brand" href="index.html">
+       <a class="navbar-brand" href="#" onclick=goBack_click()>
           <img src="img/smith.ico" style="display: inline-block; margin-top:-7px; width:32px; height:32px">  
         <span style="display: inline-block; color:blue">QuickSmith</span>
      </a> 
@@ -62,7 +62,7 @@ td {
       </ul>
         <button class="btn btn-default navbar-btn" onclick=runILsweep() >Run Sweep</button>   
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="index.html"><span class="glyphicon glyphicon-backward"></span>Back</a></li>
+        <li><a href="#"  onclick=goBack_click() ><span class="glyphicon glyphicon-backward"></span>Back</a></li>
         <li><a href="qsmithfaq.html"><span class="glyphicon glyphicon-book"></span> FAQ</a></li>
         <!-- <li><a href="#" data-toggle="modal" data-target="#optionsModal" onclick ="options_click()"><span class="glyphicon glyphicon-list-alt"></span> Options</a></li> -->
       </ul>
@@ -119,6 +119,7 @@ td {
  $('document').ready(function () {
            console.log("init")
            get();
+           runILsweep();
  })
 
 
@@ -352,6 +353,17 @@ function runILsweep()
     if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=oldValue; else schObj.ELEMENT[elNum].value2=oldValue;
     myChart.update();
 }
+
+function goBack_click() {
+ //window.history.back();
+ event.preventDefault();
+ var goBack = window.open('', 'parent');
+ goBack.focus();
+ //window.parent.focus()
+ //return false;
+
+}
+
 
 </script>
 </body>

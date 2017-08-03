@@ -64,15 +64,14 @@
       th {
           text-align: center;
       }
-
+        /* the issue with max-height is that the image is no longer in the center */
         .dropzoneh {
           width: 25%;  /* 81px;  */
           height: 27px;   /*27px;   */
-          /* padding-top: 3.3334%; */
-          margin-left: 0px;
+          max-height : 54px;
           border: 1px solid #D3D3D3;
           float: left;
-          position: relative;
+           position: relative;   /* for SVG */
           z-index: 1;
       }
 
@@ -83,21 +82,19 @@
       }
 
       .dropzonev {
-          width: 8.3334%;     /* 27px;  */
+          width: 8.23%;     /* 27px;  */
           height: 91px;    /* 91px;  */
-            /* padding-top: 3.744%; */
-          margin-left: 0px;
+          max-height : 182px;
           border: 1px solid #D3D3D3;
           float: left;
           z-index: 1;
-          position: relative;
+          position: relative;   /* for SVG */
       }
 
       .dropzonevimg {
           width: 20px;     /* 20px;  */
           height: 70px;     /* 70px;  */
           z-index: 10;
-       
        }
 
     .dragable{
@@ -187,7 +184,7 @@ a:hover {
             <!-- <div class="hidden-xs"> -->
                 <li class="hidden-xs"><a href="#" onclick ="load_click()" >Load File</a></li> 
                 <li class="hidden-xs" ><a href="#" onclick ="save_click()" >Save File</a></li>
-                <li class="hidden-xs"><a href="#" onclick ="saveCanvas_click()" > Save Chart</a></li> 
+                <li class="hidden-xs"><a href="#" onclick ="saveCanvas_click()" >Save Chart</a></li> 
                 <!-- <li class="hidden-xs"><a href="#">Import</a></li>
                 <li class="hidden-xs" ><a href="#">Export</a></li> -->
             <!-- </div> -->
@@ -349,7 +346,7 @@ a:hover {
                             <!--<br />-->  
                             <!--width:527px-->
                       <!-- <div class="spinzone" style=" margin-left: 0px;  margin-top: 50px;" >   -->
-                        <table style=" margin-left: 0px;  margin-top: 5px; width:100%;">
+                        <table style=" margin-left: 0px;  margin-top: 5px; width:100%; margin-bottom: 6px;">
                             <tr>
                                 <td><input id="E1" type="text" value="50" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td>
                                 <td><input id="E3" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
@@ -432,7 +429,7 @@ a:hover {
                     <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span> -->
                     <br style="clear: both;" />
                     <!--Component Zone Begin--> 
-                    <div id="component-container" class="component col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" style="margin-top:10px">
+                    <div id="component-container" class="component col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" style="margin-top:0px">
                         <!-- Note that here we are only storing the default values, the actual user input values are stored in the schObj JSON -->                  
                         <!-- Component Zone 1 begin -->
                         <div  style="background-color:white; clear: both; margin-top:10px; padding-left:5%;padding-right:5% ">
@@ -671,6 +668,7 @@ smithObj.ctx = document.getElementById("smithMain").getContext('2d');
  $('document').ready(function () {
         //smithObj.test();
            console.log("init")
+           window.name = "parent";
            //chart.currentDevicePixelRatio = window.devicePixelRatio || 1 ||  window.window.devicePixelRatio;
       $('input[type=text]').bind('copy paste', function (e) {
          e.preventDefault();
@@ -1837,13 +1835,24 @@ function clearSweep() {
 function IL_open_click()
 {
  localStorage.setItem('schDataIL', JSON.stringify(schObj));
- window.open("InsertionLoss.html","_self");
-
+ //window.open("InsertionLoss.html","_top");
+ //window.open('InsertionLoss.html','window name','width=250,height=600,screenX=25,screenY=25,resizable=yes,scrollbars=yes ',false); return false
+ //function openInNewTab(url) {
+  event.preventDefault();
+  var win = window.open("InsertionLoss.html");
+  return false;
+  //ShowPopup('InsertionLoss.html');
+  //win.focus();
 }
+
+
 
 function AMP_open_click(){
  localStorage.setItem('transferFlag', 'false');
- window.open("AmplifierDesign.html","_self");
+ //window.open("AmplifierDesign.html","_self");
+ event.preventDefault();
+ var win = window.open("AmplifierDesign.html");
+ return false;
 }
 
 

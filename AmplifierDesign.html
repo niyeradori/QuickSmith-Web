@@ -570,11 +570,7 @@ function spin_change(id1) {
         
 }
 
-function back_click()
-{
-  //localStorage.setItem('schDataIL', JSON.stringify(schObj));
-  window.open("index.html","_self");
-}
+
 
 function step_change(id1) {
   var element = document.getElementById(id1);
@@ -1053,6 +1049,14 @@ function updateUI_Z_G() {
   var LoadReal = GToZRZ(DataM, DataQ, ampObj.Z0);
   var LoadImag = GToZIZ(DataM, DataQ, ampObj.Z0);
   document.getElementById("ZL").value = Number(LoadReal).toFixed(3) + getSign(Number(LoadImag).toFixed(3)) + Math.abs(Number(LoadImag).toFixed(3)) +'i';
+}
+
+function back_click()
+{
+  //localStorage.setItem('schDataIL', JSON.stringify(schObj));
+ event.preventDefault();
+ var goBack = window.open('', 'parent');
+ goBack.focus();
 }
 
 </script>
