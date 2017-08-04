@@ -1376,14 +1376,14 @@ var end = function(e) {
     }
 
 // touch
-//   $('input[name="spin2"]').taphold(function (e) {
-//                step_change($(e.target).attr("id"))  },
-//                1000);
-  $('input[name="spin1"]','input[name="spin2"]').taphold(function (e) {
+  $('input[name="spin2"]').taphold(function (e) {
+               step_change($(e.target).attr("id"))  },
+               1000);
+  $('input[name="spin1"]').taphold(function (e) {
                step_change($(e.target).attr("id"))  },
                1000);
 
-$('input[name="spin1"]','input[name="spin2"]').on("keypress", function (e) {
+$('input[name="spin1"]').on("keypress", function (e) {
     // use e.which
     if(e.which == 83 || e.which == 115) {  // s or S
         console.log( " step pressed");
