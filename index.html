@@ -1385,26 +1385,18 @@ var end = function(e) {
 
 $('input[name="spin2"]').on("keypress", function (e) {
     // use e.which
-    console.log( " key pressed");
+    var id1 = event.target.id;
+    var spin_element = document.getElementById(id1);
+    //console.log("spin_change " + id1);
+    var idNum = Number(id1.substr(1));
     if(e.which == 83 || e.which == 115) {  // s or S
-        console.log( " step pressed");
-        var id1 = event.target.id;
-        var spin_element = document.getElementById(id1);
-        console.log("spin_change " + id1);
-        var idNum = Number(id1.substr(1));
         if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
         else spin_element.value=schObj.ELEMENT[idNum].value1;
         step_change(id1);
         return;
     }
-
     if( (e.which =='84' || e.which =='116')  && is1Component(schObj.ELEMENT[idNum].type)== false)  { // t or T
-        console.log( " Toggel pressed");
-        var id1 = event.target.id;
-        var spin_element = document.getElementById(id1);
-        console.log("spin_change " + id1);
-        var idNum = Number(id1.substr(1));
-        if (schObj.ELEMENT[idNum].tune == 2)  schObj.ELEMENT[idNum].tune = 1; else schObj.ELEMENT[idNum].tune = 2;
+         if (schObj.ELEMENT[idNum].tune == 2)  schObj.ELEMENT[idNum].tune = 1; else schObj.ELEMENT[idNum].tune = 2;
         if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
         else spin_element.value=schObj.ELEMENT[idNum].value1;
         return;
