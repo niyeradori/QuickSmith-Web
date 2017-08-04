@@ -1392,7 +1392,13 @@ $('input[name="spin2"]').on("keypress", function (e) {
     if(e.which == 83 || e.which == 115) {  // s or S
         if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
         else spin_element.value=schObj.ELEMENT[idNum].value1;
-        step_change(id1);
+       // step_change(id1);
+       var current_value = $(spin_element).triggerHandler("touchspin.getstep", { dummy: 1 });
+      var val = prompt("Enter Step Size", current_val);
+      if (isNumeric(val) == true) {
+        $(element).trigger("touchspin.updatesettings", { step: val })
+      }
+
         return;
     }
     if( (e.which =='84' || e.which =='116')  && is1Component(schObj.ELEMENT[idNum].type)== false)  { // t or T
