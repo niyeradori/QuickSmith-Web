@@ -121,10 +121,10 @@ function updateImpedance()
             if(r>1.0) r = 1.0; if(r<0) r = 0;
             var ZR = GToZR(r,ang);
             var ZI = GToZI(r,ang);
-            resultsObj.ELEMENT[index].ZR = ZR;
+            resultsObj.ELEMENT[index].ZR = ZR;  // here store the it in impedance
             resultsObj.ELEMENT[index].ZI = ZI;
-            schObj.ELEMENT[1].value1 = resultsObj.ELEMENT[index].ZR;
-            schObj.ELEMENT[11].value1 =schObj.ELEMENT[1].value2 = resultsObj.ELEMENT[index].ZI;
+            schObj.ELEMENT[1].value1 = r;
+            schObj.ELEMENT[11].value1 =schObj.ELEMENT[1].value2 = ang;
             break;
         case "rx":
            if( schObj.termination =="Multiple" ) {

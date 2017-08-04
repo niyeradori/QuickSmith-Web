@@ -495,6 +495,21 @@ function ShowMessage_sm(title,msg) {
     });
 }
 
+function updateStepSize_prompt(current_val,element)
+{
+    bootbox.prompt({
+    size: "small",
+    title: "Enter Step Size", 
+    inputType: "text",
+    value: current_val,
+    callback: function(result) {
+        if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
+            $(element).trigger("touchspin.updatesettings", { step: result });
+        }
+    }
+    });
+}
+
 /* Monotone cubic spline interpolation
    Usage example:
 	var f = createInterpolant([0, 1, 2, 3, 4], [0, 1, 4, 9, 16]);

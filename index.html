@@ -24,6 +24,7 @@
   <script src="js/jquery.contextMenu.js"></script>
   <script src="js/DragDropTouch.js"></script>    
   <script src="js/bootstrap-dialog.min.js"></script>
+  <script src="js/bootbox.min.js"></script>
 
   
    <!-- ios-drag-drop.js does not trigger end ? -->
@@ -688,6 +689,7 @@ smithObj.ctx = document.getElementById("smithMain").getContext('2d');
            resize(smithObj.ctx.canvas)// Smith chart drawn here
            get(); // restore the last session if saved earlier
            updateUI();
+           $(E1).trigger("touchspin.updatesettings", { step: 0.1 }); // make load element(RX(R)/G(Mag)) step size 0.1
            // Zcalsweep();
         //    	var f = createInterpolant([0, 1, 2, 3, 4], [0, 1, 4, 9, 16]);
         //     var message = '';
@@ -866,13 +868,14 @@ window.addEventListener('resize',smithObj.redrawSmith, false); // resize,clear a
 
 
 function step_change1(id1) {
-        var element = document.getElementById(id1);
-        var result = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
-        var val = prompt("Enter Step Size", result);
-        if (isNumeric(val) == true) {
-            $(element).trigger("touchspin.updatesettings", { step: val })
-        }
-    }
+    var element = document.getElementById(id1);
+    var current_val = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
+    // // var val = prompt("Enter Step Size", current_val);
+    // // if (isNumeric(val) == true) {
+    // //     $(element).trigger("touchspin.updatesettings", { step: val })
+    // // }
+    updateStepSize_prompt(current_val,element);
+}
 
 function spin_change1(id1) {
         var spin_element = document.getElementById(id1);
@@ -1335,13 +1338,13 @@ var end = function(e) {
         var eleNum = document.getElementById("cmodalEnum").textContent;
         var eleType = document.getElementById("cmodalType").textContent;
         schObj.ELEMENT[eleNum].type = eleType;
-        // console.log("\"E" + eleNum +"\"");
+         console.log("\"E" + eleNum +"\"");
         var spin_element = document.getElementById("E" + eleNum);
         console.log(spin_element);
         var val1 = $(".modal-body #V1").val();
         if (isNumeric(val1)) { schObj.ELEMENT[eleNum].value1 = val1; spin_element.value = Number(val1).toFixed(2); }
         var val2 = $(".modal-body #V2").val();
-        console.log("val =" + val2);
+        console.log("val1 =" + val1 + " val2 =" + val2);
         if (val2 == "") { schObj.ELEMENT[eleNum].value2 = 0; }  // value2
         else if (isNumeric(val2)) {
             schObj.ELEMENT[eleNum].value2 = val2;
@@ -1368,21 +1371,37 @@ var end = function(e) {
 
     function step_change(id1) {
         var element = document.getElementById(id1);
-        var result = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
-        var val = prompt("Enter Step Size", result);
-        if (isNumeric(val) == true) {
-            $(element).trigger("touchspin.updatesettings", { step: val })
-        }
+        var current_value = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
+        updateStepSize_prompt(current_value,element);
     }
 
 // touch
-  $('input[name="spin2"]').taphold(function (e) {
-               step_change($(e.target).attr("id"))  },
-               1000);
-  $('input[name="spin1"]').taphold(function (e) {
+//   $('input[name="spin2"]').taphold(function (e) {
+//                step_change($(e.target).attr("id"))  },
+//                1000);
+  $('input[name="spin1"]','input[name="spin2"]').taphold(function (e) {
                step_change($(e.target).attr("id"))  },
                1000);
 
+$('input[name="spin1"]','input[name="spin2"]').on("keypress", function (e) {
+    // use e.which
+    if(e.which == 83 || e.which == 115) {  // s or S
+        console.log( " step pressed");
+        if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
+        else spin_element.value=schObj.ELEMENT[idNum].value1;
+        step_change(id1);
+        return;
+    }
+
+        // if( (spin_element.value == "T" || spin_element.value == "t")  && is1Component(schObj.ELEMENT[idNum].type)== false)  { 
+        //     console.log( " Toggel pressed");
+        //    if (schObj.ELEMENT[idNum].tune == 2)  schObj.ELEMENT[idNum].tune = 1; else schObj.ELEMENT[idNum].tune = 2;
+        //     if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
+        //     else spin_element.value=schObj.ELEMENT[idNum].value1;
+        //    return;
+        // }
+
+});
 
     function spin_change(id1) {
         var spin_element = document.getElementById(id1);
@@ -1401,17 +1420,19 @@ var end = function(e) {
         //        }
         //}
         // THis is support mobile as there is no right click in mobile, so press T to toggle the tune element
-        if( spin_element.value == "S" || spin_element.value == "s" )  { 
-            console.log( " step pressed");
-            if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
-            else spin_element.value=schObj.ELEMENT[idNum].value1;
-           step_change(id1);
-           return;
-        }
+        // if( spin_element.value == "S" || spin_element.value == "s" )  { 
+        //     console.log( " step pressed");
+        //     if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
+        //     else spin_element.value=schObj.ELEMENT[idNum].value1;
+        //    step_change(id1);
+        //    return;
+        // }
 
         if( (spin_element.value == "T" || spin_element.value == "t")  && is1Component(schObj.ELEMENT[idNum].type)== false)  { 
             console.log( " Toggel pressed");
            if (schObj.ELEMENT[idNum].tune == 2)  schObj.ELEMENT[idNum].tune = 1; else schObj.ELEMENT[idNum].tune = 2;
+            if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
+            else spin_element.value=schObj.ELEMENT[idNum].value1;
            return;
         }
         if(isNumeric(spin_element.value) == false) {
@@ -1476,11 +1497,20 @@ var end = function(e) {
         if ($(".modal-body #TER").val() == "Multiple")  document.getElementById('TER_FILE').style.display = 'block';
         else 
         {  
+      
             document.getElementById('TER_FILE').style.display = 'none';
+            if(schObj.ELEMENT[1].type =="rx") {
             document.getElementById("E1").value=  50.00; // default values if you are going back to single.
             document.getElementById("E11").value= 0.00;
             schObj.ELEMENT[1].value1 = 50.00;
             schObj.ELEMENT[1].value2 = 0.00;
+            }
+            else {
+            document.getElementById("E1").value=  0.01; // default values if you are going back to single.
+            document.getElementById("E11").value= 0.10;
+            schObj.ELEMENT[1].value1 = 0.1;
+            schObj.ELEMENT[1].value2 = 10.0;
+            }
             //$("#E11").val("0.00");
             //console.log( "UPDATED");
         }
@@ -1697,19 +1727,47 @@ var end = function(e) {
         var element1 = document.getElementById(elType);
         var prompt1 = "Enter " + element1.getAttribute('data-unit1');
         //console.log("I am here");
+        var current_val;
         if (isNumeric(result1) == true) {
             var val = prompt(prompt1, Number(result1).toFixed(2));
             if (isNumeric(val)) {
-                schObj.ELEMENT[idNum].value1 = val;  // update the main JSON array
-                element.value = Number(val).toFixed(2);
-            }
+                    schObj.ELEMENT[idNum].value1 = val;  // update the main JSON array
+                    element.value = Number(val).toFixed(2);
+                }
+            // current_val =  Number(result1).toFixed(2);
+            // bootbox.prompt({
+            // size: "small",
+            // title: prompt1, 
+            // inputType: "text",
+            // value: current_val,
+            // callback: function(result) {
+            //     if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
+            //          schObj.ELEMENT[idNum].value1 = result;  // update the main JSON array
+            //          element.value = Number(result).toFixed(2);
+            //     }
+            // }
+            // });
+
             if (eleVal2 == 1 && isNumeric(result2) == true) {  // case of two parameter components T O S PLC SLC PR SRC RX G
-                var prompt2 = "Enter " + element1.getAttribute('data-unit2'); // units
+                 var prompt2 = "Enter " + element1.getAttribute('data-unit2'); // units
                 var val2 = prompt(prompt2, Number(result2).toFixed(2));
                 if (isNumeric(val2)) {
                     schObj.ELEMENT[idNum].value2 = val2;  // update the main JSON array
                     if (elType == "RX" || elType == "G") document.getElementById("E11").value = Number(val2).toFixed(2); // incase of load element display value 2 in spin_control E11
                 }
+                // current_val =  Number(result2).toFixed(2);
+                // bootbox.prompt({
+                // size: "small",
+                // title: prompt2, 
+                // inputType: "text",
+                // value: current_val,
+                // callback: function(result) {
+                //     if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
+                //         schObj.ELEMENT[idNum].value2 = result;  // update the main JSON array
+                //         if (elType == "RX" || elType == "G") document.getElementById("E11").value = Number(result).toFixed(2); // incase of load element display value 2 in spin_control E11
+                //     }
+                // }
+                // });
             }
             Zcalsweep();
         }
