@@ -1396,7 +1396,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
        var current_value = $(spin_element).triggerHandler("touchspin.getstep", { dummy: 1 });
       var val = prompt("Enter Step Size", current_val);
       if (isNumeric(val) == true) {
-        $(element).trigger("touchspin.updatesettings", { step: val })
+        $(spin_element).trigger("touchspin.updatesettings", { step: val })
       }
 
         return;
