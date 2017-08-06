@@ -1378,6 +1378,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
     //   if (isNumeric(val) == true) {
     //     $(spin_element).trigger("touchspin.updatesettings", { step: val })
     //   }
+     spin_element.blur();
      updateStepSize_prompt(current_value,spin_element);
 
         return;
