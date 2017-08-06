@@ -32,7 +32,9 @@ var schObj = {
                     { "index": 8, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, assign: updateImpedance },
                     { "index": 9, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, assign: updateAdmittance },
                     { "index": 10, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, assign: updateImpedance },
-                    { "index": 11, "type": "rx", "value1": 0, "value2": 0, "q": 1000000,"tune": 1, assign: dummy }    // one extra for the E11 spin place holder - dummy
+                    { "index": 11, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, assign: updateAdmittance },
+                    { "index": 12, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, assign: updateImpedance },
+                    { "index": 13, "type": "rx", "value1": 0, "value2": 0, "q": 1000000,"tune": 1, assign: dummy }    // one extra for the E13 spin place holder - dummy
                 ]   // tune values 0,1,2  0 for singel element, 1 for tuning value1 2 for tuning value2
             };
 
@@ -50,10 +52,11 @@ resultsObj = {
         { "index": 8, "ZR": 0, "ZI": 0 },
         { "index": 9, "YR": 0, "YI": 0 },
         { "index": 10, "ZR": 0, "ZI": 0},
-        { "index": 11, "YR": 0, "YI": 0 },  // place holders for ILCal calculations ???
+        { "index": 11, "YR": 0, "YI": 0 },  
         { "index": 12, "ZR": 0, "ZI": 0},
         { "index": 13, "YR": 0, "YI": 0 },
-        { "index": 14, "ZR": 0, "ZI": 0}
+        { "index": 14, "ZR": 0, "ZI": 0},
+        { "index": 15, "YR": 0, "YI": 0 },  // place holders for ILCal calculations ???
     ], 
     "OUTPUT":[
         { "ZRout": 0, "unit1": "Ohms", "ZIout": 0, "unit2": "Ohms", "MAGout": 0, "unit3": "Ohms", "ANGout": 0, "unit4": "Degrees", calculate: Zcalsweep1 },
@@ -124,7 +127,7 @@ function updateImpedance()
             resultsObj.ELEMENT[index].ZR = ZR;  // here store the it in impedance
             resultsObj.ELEMENT[index].ZI = ZI;
             schObj.ELEMENT[1].value1 = r;
-            schObj.ELEMENT[11].value1 =schObj.ELEMENT[1].value2 = ang;
+            schObj.ELEMENT[13].value1 =schObj.ELEMENT[1].value2 = ang;
             break;
         case "rx":
            if( schObj.termination =="Multiple" ) {
@@ -143,7 +146,7 @@ function updateImpedance()
                 resultsObj.ELEMENT[index].ZI = v2;               
             }
             schObj.ELEMENT[1].value1 = resultsObj.ELEMENT[index].ZR;
-            schObj.ELEMENT[11].value1 =schObj.ELEMENT[1].value2 = resultsObj.ELEMENT[index].ZI;
+            schObj.ELEMENT[13].value1 =schObj.ELEMENT[1].value2 = resultsObj.ELEMENT[index].ZI;
             break;
         case "c":
             resultsObj.ELEMENT[index].ZI = -1 / (w * v1 * 0.000000000001);
@@ -220,7 +223,7 @@ function updateImpedance()
             //LI! = -YI(6) / (YR(6) ^ 2 + YI(6) ^ 2)
             }
           
-            if(index == 10) {
+            if(index >= 10) {
             den = math.add((math.pow(YR0, 2)), (math.pow(YI0, 2)));
             ZR0 = math.add(resultsObj.ELEMENT[8].ZR, (YR0 /den));
             ZI0 = math.subtract(resultsObj.ELEMENT[8].ZI , (YI0 / den));
@@ -236,14 +239,30 @@ function updateImpedance()
             //LI! = -YI(8) / (YR(8) ^ 2 + YI(8) ^ 2)
             }
           
+            if(index == 12) {
+            den = math.add((math.pow(YR0, 2)), (math.pow(YI0, 2)));
+            ZR0 = math.add(resultsObj.ELEMENT[10].ZR, (YR0 /den));
+            ZI0 = math.subtract(resultsObj.ELEMENT[10].ZI , (YI0 / den));
+            YR0 = math.add(resultsObj.ELEMENT[11].YR , (ZR0 / (math.pow(ZR0, 2) + math.pow(ZI0, 2))));
+            YI0 = math.subtract(resultsObj.ELEMENT[11].YI, (ZI0 / (math.pow(ZR0, 2) + math.pow(ZI0, 2))));
+            LR = YR0 / (YR0 * YR0 + YI0 * YI0);
+            LI = -YI0 / (YR0 * YR0 + YI0 * YI0);        
+            //ZR(7) = ZR(8) + YR(6) / (YR(6) ^ 2 + YI(6) ^ 2)
+            //ZI(7) = ZI(8) - YI(6) / (YR(6) ^ 2 + YI(6) ^ 2)
+            //YR(8) = YR(9) + ZR(7) / (ZR(7) ^ 2 + ZI(7) ^ 2)
+            //YI(8) = YI(9) - ZI(7) / (ZR(7) ^ 2 + ZI(7) ^ 2)
+            //LR! = YR(8) / (YR(8) ^ 2 + YI(8) ^ 2)
+            //LI! = -YI(8) / (YR(8) ^ 2 + YI(8) ^ 2)
+            }
+
             //If z(i %) = 0 Then z(i %) = 0.000000000001
             v1 = Math.abs(v1);
             var A = LR * Math.cos(rad); // EA
             var B = v1 * Math.sin(rad) + (LI * Math.cos(rad)); //B+ FA
             var Cd = v1 * Math.cos(rad) - (LI * Math.sin(rad)); // C-FD
             var Dd = LR * Math.sin(rad); //ED
-            resultsObj.ELEMENT[index].ZR = v1 * divRe(A, B, Cd, Dd) - LR;
-            resultsObj.ELEMENT[index].ZI = v1 * divIm(A, B, Cd, Dd) - LI;
+            resultsObj.ELEMENT[index].ZR = v1 * DivRe(A, B, Cd, Dd) - LR;
+            resultsObj.ELEMENT[index].ZI = v1 * DivIm(A, B, Cd, Dd) - LI;
             break;
          case "src":
             //v1 -> r, v2 ->c
@@ -422,7 +441,7 @@ function updateAdmittance() {
  */
 function Zcalsweep1() // scObj JSON, 
 {
-    for (var i = 0; i < 11; i++) 
+    for (var i = 0; i < 13; i++) 
         {
         //console.log("i =" + i);
         schObj.ELEMENT[i].assign(); // better to calculate all for elements, because T is dependent on the previous elements.
@@ -436,7 +455,7 @@ function Zcalsweep1() // scObj JSON,
    //  YI2 = YI(3) - ZI(0) / (ZR(0) ^ 2 + ZI(0) ^ 2)
     var YI0 = math.subtract(resultsObj.ELEMENT[3].YI, (ZI0 / (math.pow(ZR0, 2) + math.pow(ZI0, 2))));
     var ZR1; var ZI1;
-    for (var j = 3; j <= 7; j += 2) { 
+    for (var j = 3; j <= 9; j += 2) { 
         //ZR(j %) = ZR(j % + 1) + YR(j % - 1) / (YR(j % - 1) ^ 2 + YI(j % - 1) ^ 2)
        // ZR1 = math.add(resultsObj.ELEMENT[j + 1].ZR , (YR[j - 1] / math.add((math.pow(YR[j - 1],2), math.pow(YI[j-1],2)))));
         var den = math.add((math.pow(YR0, 2)), (math.pow(YI0, 2)));
@@ -450,8 +469,8 @@ function Zcalsweep1() // scObj JSON,
         YI0 = math.subtract(resultsObj.ELEMENT[j + 2].YI ,(ZI1 /den));
     }
     var den1 = math.add((math.pow(YR0, 2)), (math.pow(YI0, 2)));
-    var ZRout = math.add(resultsObj.ELEMENT[10].ZR, (YR0 / den1));
-    var ZIout = math.subtract(resultsObj.ELEMENT[10].ZI, (YI0 / den1));
+    var ZRout = math.add(resultsObj.ELEMENT[12].ZR, (YR0 / den1));
+    var ZIout = math.subtract(resultsObj.ELEMENT[12].ZI, (YI0 / den1));
     var complexOut = math.complex(ZRout, ZIout);
     var MAGout = complexOut.abs();
     var ANGout = complexOut.arg() * math.divide(180.00,Math.PI);
@@ -472,10 +491,10 @@ function Zcalsweep1() // scObj JSON,
 function ILcal(arg){
 //// 0 means spot, 1 means sweep , >1 means donot call assign
 var f;
-var CR = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; 
-var CI = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; 
-var VR = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var VI = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var CR = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; 
+var CI = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; 
+var VR = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var VI = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 // var YR = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 // var YI = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
@@ -498,12 +517,12 @@ var points, k, j, i, CRA, CIA, C1, dB1;
    var YR1 = 1 / ZR1;
    var YI1 = 0;
 
-   resultsObj.ELEMENT[11].YR = 0;
-   resultsObj.ELEMENT[11].YI = 0;
-   resultsObj.ELEMENT[12].ZR = 0;
-   resultsObj.ELEMENT[12].ZI = 0;
-   resultsObj.ELEMENT[13].YR = YR1;
-   resultsObj.ELEMENT[13].YI = YI1;
+   resultsObj.ELEMENT[13].YR = 0;
+   resultsObj.ELEMENT[13].YI = 0;
+   resultsObj.ELEMENT[14].ZR = 0;
+   resultsObj.ELEMENT[14].ZI = 0;
+   resultsObj.ELEMENT[15].YR = YR1;
+   resultsObj.ELEMENT[15].YI = YI1;
    CR[2] = YR1;
    CI[2] = 0;
    var ZR2= resultsObj.ELEMENT[2].ZR;
@@ -517,7 +536,7 @@ var points, k, j, i, CRA, CIA, C1, dB1;
    CR[3] = VR[3] * YR3 - VI[3] * YI3;
    CI[3] = VR[3] * YI3 + VI[3] * YR3;
    var ZRJ, ZIJ,YRJplus1,YIJplus1;
-   for (j = 4; j <= 12; j = j + 2) {
+   for (j = 4; j <= 14; j = j + 2) {
        CR[j] = CR[j - 2] + CR[j - 1];
        CI[j] = CI[j - 2] + CI[j - 1];
        ZRJ= resultsObj.ELEMENT[j].ZR;
@@ -531,8 +550,8 @@ var points, k, j, i, CRA, CIA, C1, dB1;
        CR[j + 1] = VR[j + 1] * YRJplus1 - VI[j + 1] * YIJplus1;
        CI[j + 1] = VR[j + 1] * YIJplus1 + VI[j + 1] * YRJplus1;
    }
-   CRA = CR[13] + CR[12];
-   CIA = CI[13] + CI[12];
+   CRA = CR[15] + CR[14];
+   CIA = CI[15] + CI[14];
    if (CRA == 0) CRA = 1E-45;
    C1 = math.sqrt(CRA * CRA + CIA *CIA);
    //'S21IM# = C1#    ' store global data

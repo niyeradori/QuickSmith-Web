@@ -70,7 +70,7 @@
           width: 25%;  /* 81px;  */
           height: 27px;   /*27px;   */
           max-height : 54px;
-          border: 1px solid #D3D3D3;
+          border: 1px solid #808080;
           float: left;
           position: relative;   /* for SVG - not being used currently */
           z-index: 1;
@@ -86,7 +86,7 @@
           width: 8.23%;     /* 27px;  */
           height: 91px;    /* 91px;  */
           max-height : 182px;
-          border: 1px solid #D3D3D3;
+          border: 1px solid #808080;
           float: left;
           z-index: 1;
           position: relative;   /* for SVG */
@@ -269,7 +269,7 @@ a:hover {
                         <td><input id="ZO" type="text" value="0.0"  readonly class="form-control input-sm " /></td>
                         <td> &nbsp</td>
                         <td><label  class="hidden-xs" for="IL" > <font size="1">IL.dB:</font> </label> </td>
-                        <td><input  class="hidden-xs" id="IL" type="text" value="0.0" style="width: 50%;" readonly class="form-control input-sm " /></td>
+                        <td><input  class="hidden-xs form-control input-sm " id="IL" type="text" value="0.0" style="width: 100%;" readonly  /></td>
                         <!-- <td><label  for="ZIO" > <font size="1"> X: </font> </label> </td>
                         <td><input id="ZIO" type="text" value="0" readonly class="form-control  input-sm" /></td>  -->
                     </tr>
@@ -305,37 +305,20 @@ a:hover {
                             <img id="D1" src="img/rxv.bmp"  class="dropzonevimg"  >
                         </div>
                         <div id="H2" class="dropzoneh"  draggable="false"   ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  > 
-                             <!-- <svg style=" position: absolute; height:100%; width:100%;">
-                                    <line id="line2" x1=0 y1=49% x2=100% y2=49% style="stroke:black;stroke-width:4px" />
-                            </svg  >   -->
                             <img id="D2" src="img/w.bmp"  class="dropzonehimg" >
                         </div>
                                                           
                         <div id="V3" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
                             <img id="D3" src="img/wv.bmp"  class="dropzonevimg"  >
-                            <!-- <svg style=" position: absolute; height:100%; width:100%;">
-                                    <line id="line3" x1=0% y1=14% x2=100% y2=14% style="stroke:black;stroke-width:4px" />
-                                    <line id="line3a" x1=50% y1=14% x2=50% y2=100% style="stroke:black;stroke-width:4px" />
-                            </svg  >   -->
                         </div>
                         <div id="H4" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
                             <img id="D4" src="img/w.bmp"  class="dropzonehimg"  >
-                            <!-- <svg style="  position: absolute; height:100%; width:100%;">
-                                    <line id="line4" x1=0 y1=49% x2=100% y2=49% style="stroke:black;stroke-width:4px" />
-                            </svg  > -->
                         </div>
                         <div id="V5" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" > 
                             <img id="D5" src="img/wv.bmp" class="dropzonevimg" >
-                            <!-- <svg style=" position: absolute; height:100%; width:100%;">
-                                    <line id="line5" x1=0% y1=14% x2=100% y2=14% style="stroke:black;stroke-width:4px" />
-                                    <line id="line5a" x1=50% y1=14% x2=50% y2=100% style="stroke:black;stroke-width:4px" />
-                            </svg  >  -->
                         </div>
                         <div id="H6" class="dropzoneh"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
                             <img id="D6" src="img/w.bmp" class="dropzonehimg" >
-                            <!-- <svg style="  position: absolute; height:100%; width:100%;">
-                                    <line id="line6" x1=0 y1=49% x2=100% y2=49% style="stroke:black;stroke-width:4px" />
-                            </svg  > -->
                         </div>
                            <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>    -->
                     </div> 
@@ -355,7 +338,7 @@ a:hover {
                             </tr>
 
                             <tr>
-                                <td><input id="E11" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" readonly /></td>  <!--made name=spin3 to remove rightclick menu-->
+                                <td><input id="E13" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" readonly /></td>  <!--made name=spin3 to remove rightclick menu-->
                                 <!-- <th>W3</th>
                                 <th>W5</th> -->
                             </tr>
@@ -365,7 +348,7 @@ a:hover {
                     
                 <!-- Dropzone2 begin -->
                 <div class=" hidden-xs col-sm-12 col-md-6 col-lg-6 col-xl-6 nopadding " style="background-color:white; margin-left: 8px;  ">
-                    <table style=" width:66.667%;">  
+                    <table style=" width:100%;">  
                         <!-- <tr>
                             <th>W8</th>
                             <th>W10</th>
@@ -373,6 +356,7 @@ a:hover {
                         <tr>
                             <td><input id="E8" type="text" value="0" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                             <td><input id="E10" type="text" value="0" name="spin2"class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td><input id="E12" type="text" value="0" name="spin2"class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                         </tr>
                     </table>
                     <!--<br />-->
@@ -380,46 +364,39 @@ a:hover {
                          <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   -->
                         <div id="V7" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
                             <img id="D7" src="img/wv.bmp" class="dropzonevimg">
-                            <!-- <svg style=" position: absolute; height:100%; width:100%;">
-                                    <line id="line7" x1=0% y1=14% x2=100% y2=14% style="stroke:black;stroke-width:4px" />
-                                    <line id="line7a" x1=50% y1=14% x2=50% y2=100% style="stroke:black;stroke-width:4px" />
-                            </svg  >  -->
                         </div>
                         <div id="H8" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  onDrop="return false"> 
                             <img id="D8" src="img/w.bmp" class="dropzonehimg">
-                            <!-- <svg style="  position: absolute; height:100%; width:100%;">
-                                    <line id="line8" x1=0 y1=49% x2=100% y2=49% style="stroke:black;stroke-width:4px" />
-                            </svg  > -->
                         </div>
                         <div id="V9" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
                             <img id="D9" src="img/wv.bmp" class="dropzonevimg">
-                            <!-- <svg style=" position: absolute; height:100%; width:100%;">
-                                    <line id="line9" x1=0% y1=14% x2=100% y2=14% style="stroke:black;stroke-width:4px" />
-                                    <line id="line9a" x1=50% y1=14% x2=50% y2=100% style="stroke:black;stroke-width:4px" />
-                            </svg  >  -->
                         </div>
                         <div id="H10"  src="img/w.bmp" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
                             <img id="D10"src="img/w.bmp" class="dropzonehimg">
-                            <!-- <svg style="  position: absolute; height:100%; width:100%;">
-                                    <line id="line10" x1=0 y1=49% x2=100% y2=49% style="stroke:black;stroke-width:4px" />
-                            </svg  > -->
+                        </div>
+                        <div id="V11" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
+                            <img id="D11" src="img/wv.bmp" class="dropzonevimg">
+                        </div>
+                        <div id="H12"  src="img/w.bmp" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
+                            <img id="D12"src="img/w.bmp" class="dropzonehimg">
                         </div>
                          <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   -->
                     </div> 
     
                                         <!--"width: 513px padding-bottom: 90px  border-bottom: 3px -->  <!--ground line div--> 
                     <div 
-                        class="block_1 hline-bottom" style="width: 66.667%; margin-left: 0px; padding-bottom: 0px; border-bottom: 3px solid #000; margin-bottom: 0px; z-index: 100;"> 
+                        class="block_1 hline-bottom" style="width: 100%; margin-left: 0px; padding-bottom: 0px; border-bottom: 3px solid #000; margin-bottom: 0px; z-index: 100;"> 
                     </div>
                             <!--<br />-->  
                             <!--width:527px-->
-                    <table style=" margin-top: 5px;  margin-left: 0px; width:66.667%">
+                    <table style=" margin-top: 5px;  margin-left: 0px; width:100%">
                         <tr>
                             <td><input id="E7" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                             <td><input id="E9" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td><input id="E11" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                         </tr>
                         <tr>
-                              <!-- <td><input id="E11" type="text" value="0" name="spin2" style="display: none" class="form-control" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" readonly /></td>     -->
+                              <!-- <td><input id="E13" type="text" value="0" name="spin2" style="display: none" class="form-control" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" readonly /></td>     -->
                               <!-- need to set this height so that the component layer does not slide -->
                              <!-- <th height="32px">W7 </th>  
                             <th height="32px">W9</th> -->
@@ -680,7 +657,7 @@ smithObj.ctx = document.getElementById("smithMain").getContext('2d');
             console.log ("Transferflag present"); 
             schObj.ELEMENT[1].value1 = parseFloat(localStorage.getItem("R1"));
             schObj.ELEMENT[1].value2 = parseFloat(localStorage.getItem("Z1"));
-            schObj.ELEMENT[11].value1 = parseFloat(localStorage.getItem("Z1"));
+            schObj.ELEMENT[13].value1 = parseFloat(localStorage.getItem("Z1"));
            }
            else  
            {
@@ -924,7 +901,7 @@ function updateUI() {
     document.getElementById("SM1").value =  smithObj.qCircle;
     smithObj.drawSmith();
 
-    for (var i = 0; i < 12; i++)  // 12 so that the Load imaginary spin box e11 is also updated.
+    for (var i = 0; i < 14; i++)  // 14 so that the Load imaginary spin box E13 is also updated.
     { 
         //   var element = "\"E" + i + "\"";
         //   console.log(element);
@@ -938,13 +915,13 @@ function updateUI() {
         }
     }
 
-    for (var i = 1; i < 11; i++) 
+    for (var i = 1; i < 13; i++) 
     { 
         var imgv = isEven(i) ? "" :"v";
         document.getElementById("D"+i).src =  "img/"+schObj.ELEMENT[i].type+imgv+".bmp";
         // src="img/rxv.bmp"
     }
-    if(schObj.termination == 'Single') document.getElementById('V1').style.borderColor='#D3D3D3';
+    if(schObj.termination == 'Single') document.getElementById('V1').style.borderColor='#808080';
     else  document.getElementById('V1').style.borderColor='red';
     Zcalsweep();
 
@@ -1184,11 +1161,11 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         resultsObj.OUTPUT[9].calculate(); // calculate MaxSWRCal
         resultsObj.OUTPUT[10].calculate(); // calculate MinSWRCal
         document.getElementById("IL").value =  Number(resultsObj.OUTPUT[5].InsertionLoss).toFixed(3);; // update IL
-        // incase of multiple terminations update the spinnertext of E1/E11 ( real/Imag M/Ang)
+        // incase of multiple terminations update the spinnertext of E1/E13 ( real/Imag M/Ang)
        // if(schObj.termination == 'Multiple') {
         document.getElementById("E1").value= Number(schObj.ELEMENT[1].value1).toFixed(2);
-        document.getElementById("E11").value= Number(schObj.ELEMENT[11].value1).toFixed(2);
-        //console.log( "UPDATING DATA ELEMENT :  " +Number(schObj.ELEMENT[1].value1).toFixed(2) + " " + Number(schObj.ELEMENT[11].value1).toFixed(2) );
+        document.getElementById("E13").value= Number(schObj.ELEMENT[13].value1).toFixed(2);
+        //console.log( "UPDATING DATA ELEMENT :  " +Number(schObj.ELEMENT[1].value1).toFixed(2) + " " + Number(schObj.ELEMENT[13].value1).toFixed(2) );
         //}
         //else 
         //{
@@ -1348,8 +1325,8 @@ var end = function(e) {
         if (val2 == "") { schObj.ELEMENT[eleNum].value2 = 0; }  // value2
         else if (isNumeric(val2)) {
             schObj.ELEMENT[eleNum].value2 = val2;
-            if (eleType == "rx" || eleType == "g") // if this is RX or G then display the value2 on  spin_element E11
-                document.getElementById("E11").value = Number(val2).toFixed(2);
+            if (eleType == "rx" || eleType == "g") // if this is RX or G then display the value2 on  spin_element E13
+                document.getElementById("E13").value = Number(val2).toFixed(2);
         }
         var drpEleRXG = 0; if (eleType == "r" || eleType == "x" || eleType == "g" || eleType == "rx") drpEleRXG = 1;
         if (drpEleRXG == 0) { // no Q for R,X,RX and G
@@ -1417,7 +1394,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
         //console.log("idNum " + idNum);
         if (schObj.ELEMENT[idNum].type == "w") return;
         //// extra check to see if we can fix the effect of the bug of the change event called twice by touchspin
-        //if (idNum == 11 && schObj.ELEMENT[1].value2 !== spin_element.value) { schObj.ELEMENT[1].value2 = spin_element.value; Zcalsweep(schObj, 0, idNum); }// take care of E11 case ( Load Reactance/Angle)
+        //if (idNum == 11 && schObj.ELEMENT[1].value2 !== spin_element.value) { schObj.ELEMENT[1].value2 = spin_element.value; Zcalsweep(schObj, 0, idNum); }// take care of E13 case ( Load Reactance/Angle)
         //else    {
         //            if (schObj.ELEMENT[idNum].tune == 2 && schObj.ELEMENT[1].value2 !== spin_element.value) {
         //            schObj.ELEMENT[idNum].value2 = spin_element.value; Zcalsweep(schObj, 0, idNum);
@@ -1447,7 +1424,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
             else spin_element.value=schObj.ELEMENT[idNum].value1;
             return;
         }
-        if (idNum == 11) {  // take care of E11 case ( Load Reactance/Angle)
+        if (idNum == 13) {  // take care of E13 case ( Load Reactance/Angle)
                 schObj.ELEMENT[1].value2 = spin_element.value;
             }
         else {
@@ -1507,17 +1484,17 @@ $('input[name="spin2"]').on("keypress", function (e) {
             document.getElementById('TER_FILE').style.display = 'none';
             if(schObj.ELEMENT[1].type =="rx") {
             document.getElementById("E1").value=  50.00; // default values if you are going back to single.
-            document.getElementById("E11").value= 0.00;
+            document.getElementById("E13").value= 0.00;
             schObj.ELEMENT[1].value1 = 50.00;
             schObj.ELEMENT[1].value2 = 0.00;
             }
             else {
             document.getElementById("E1").value=  0.01; // default values if you are going back to single.
-            document.getElementById("E11").value= 0.10;
+            document.getElementById("E13").value= 0.10;
             schObj.ELEMENT[1].value1 = 0.1;
             schObj.ELEMENT[1].value2 = 10.0;
             }
-            //$("#E11").val("0.00");
+            //$("#E13").val("0.00");
             //console.log( "UPDATED");
         }
     }
@@ -1571,13 +1548,13 @@ $('input[name="spin2"]').on("keypress", function (e) {
                             else 
                             {
                                 schObj.termination = "Single";
-                                document.getElementById('V1').style.borderColor= '#D3D3D3';   
+                                document.getElementById('V1').style.borderColor= '#808080';   
                             }
 
                         }
                         else {
                             schObj.termination = "Single";
-                            document.getElementById('V1').style.borderColor= '#D3D3D3';
+                            document.getElementById('V1').style.borderColor= '#808080';
                             ShowMessage_sm("QuickSmith","Failed to verify file");
                         }
                         Zcalsweep(); 
@@ -1595,7 +1572,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
             schObj.gamData.dataM = [];
             schObj.gamData.dataQ = [];
             // ShowMessage_sm("QuickSmith"," Termination Single");
-            document.getElementById('V1').style.borderColor= '#D3D3D3';
+            document.getElementById('V1').style.borderColor= '#808080';
             Zcalsweep();
         }
        
@@ -1647,7 +1624,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
                     default:
                         radio1_visible = true; radio2_visible = true; updateValue_disable = false;
                 }
-                if (idNum == 11) { radio1_visible = false; radio2_visible = false; updateValue_disable = true; }
+                if (idNum == 13) { radio1_visible = false; radio2_visible = false; updateValue_disable = true; }
                 if (elType == "s" || elType == "o" || elType == "t" || elType == "plc" || elType == "slc" || elType == "prc"
                     || elType == "src" || elType == "rx" || elType == "g") {
                     var element1 = document.getElementById(elType);
@@ -1759,7 +1736,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
                 var val2 = prompt(prompt2, Number(result2).toFixed(2));
                 if (isNumeric(val2)) {
                     schObj.ELEMENT[idNum].value2 = val2;  // update the main JSON array
-                    if (elType == "RX" || elType == "G") document.getElementById("E11").value = Number(val2).toFixed(2); // incase of load element display value 2 in spin_control E11
+                    if (elType == "RX" || elType == "G") document.getElementById("E13").value = Number(val2).toFixed(2); // incase of load element display value 2 in spin_control E13
                 }
                 // current_val =  Number(result2).toFixed(2);
                 // bootbox.prompt({
@@ -1770,7 +1747,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
                 // callback: function(result) {
                 //     if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
                 //         schObj.ELEMENT[idNum].value2 = result;  // update the main JSON array
-                //         if (elType == "RX" || elType == "G") document.getElementById("E11").value = Number(result).toFixed(2); // incase of load element display value 2 in spin_control E11
+                //         if (elType == "RX" || elType == "G") document.getElementById("E13").value = Number(result).toFixed(2); // incase of load element display value 2 in spin_control E13
                 //     }
                 // }
                 // });
