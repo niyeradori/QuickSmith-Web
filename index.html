@@ -740,16 +740,30 @@ function onMouseMove(e) {
        //console.log("move " + mouseX + "," + mouseY);
     }
 
-// function onMouseClick(e) {
-//        mouseX = e.clientX-smithObj.ctx.canvas.offsetLeft;
-//        mouseY = e.clientY-smithObj.ctx.canvas.offsetTop;
-//        var descaled = descale(mouseX,mouseY);
-//        var x= descaled.x;
-//        var y=descaled.y;
-//        if (InSmith(x,y) == true) 
-//        //console.log("click " + x + "," + y);
-//        alert( x + " ," + y +"i");
-//     }
+function onMouseClick(e) {
+    if( isMobile ) return;
+    var mouseX = e.layerX; // this seems like working
+    var mouseY = e.layerY; // layerX returns the horizontal coordinate of the event relative to the current layer.
+    var descaled = descale(mouseX,mouseY);
+    var x= descaled.x;
+    var y=descaled.y;
+    var r1 = math.sqrt(((x*x)+(y*y))); // convert to polar form
+    var q;
+    if(r1==0) q=0 ; else q= 180*math.asin(y/r1)/Math.PI;
+	if(x < 0 && y >=0) q= 180-q; if(x<0 && y<0) q= -180-q;  // Adjust for the second and third quadrant
+    var m = r1/AXIS_RANGE; 
+    var str1;
+    if (InSmith(x,y) == true) {
+       // var msg =  x + " ," + y +"i";
+        if (m == 0)  m = 1e-16;
+        if (m == 1)  m = 0.9999999999;
+        var swr = (1 + m) / (1 - m);
+        var S11 = -20 * (Math.log(m) / Math.log(10));
+        if (S11 >= 720)  str1 = " > "; else str1 = "";
+        var msg = "Gamma [Mag]: " + Number(m).toFixed(2) + "\n" + "Gamma [Ang]: " + Number(q).toFixed(2) + '&#176' + '\n' + "VSWR: " + Number(swr).toFixed(2) + '\n' + "Return Loss: " + str1 + Number(S11).toFixed(2) + " dB" ; 
+        ShowMessage_sm("QuickSmith",msg);
+        }
+    }
 
 $("#sweepColor").change(function(){
   smithObj.sweepDatasets[0].color = $(this).val()
@@ -835,7 +849,7 @@ function redrawSmith () {
 
 
 smithObj.ctx.canvas.addEventListener("mousemove", onMouseMove, false);
-//smithObj.ctx.canvas.addEventListener("click", onMouseClick, false);
+smithObj.ctx.canvas.addEventListener("dblclick", onMouseClick, false);
 //window.addEventListener('load', smithObj.redrawSmith, false);  //  not necessary duplicates $('document').ready(function () at the top
 window.addEventListener('resize',smithObj.redrawSmith, false); // resize,clear and redraw
 
