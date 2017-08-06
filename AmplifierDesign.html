@@ -15,7 +15,7 @@
   <script src="js/bootstrap3.min.js"></script>
   <script src="js/math.min.js"></script>
   <script src="js/jquery.bootstrap-touchspin_ni.js"></script>
-  <script src="js/jquery.ui.position.js"></script>
+  <!-- <script src="js/jquery.ui.position.js"></script> -->
   <script src="js/jquery.contextMenu.js"></script>
   <script src="js/DragDropTouch.js"></script>   
   <script src="js/bootstrap-dialog.min.js"></script>
@@ -102,7 +102,8 @@
       </ul>
        <!-- <button class="btn btn-default navbar-btn" onclick= smithObj.drawAdmitanceCircles() >Admittance</button>   -->
       <ul class="nav navbar-nav navbar-right">
-        <li  ><a href="#"  onclick ="back_click()"><span class="glyphicon glyphicon-backward"></span>Back</a></li>
+        <li class="hidden-xs hidden-sm" ><a href="#"  onclick ="back_click()"><span class="glyphicon glyphicon-backward"></span>Back</a></li>
+        <li class="hidden-md hidden-lg"  ><a href="#"  onclick ="back_mobile_click()"><span class="glyphicon glyphicon-backward"></span>BackM</a></li>
         <li><a href="qsmithfaq.html"><span class="glyphicon glyphicon-book"></span> FAQ</a></li>
         <li><a href="#" data-toggle="modal" data-target="#optionsModal" onclick ="options_click()"><span class="glyphicon glyphicon-list-alt"></span> Options</a></li> 
       </ul>
@@ -1058,9 +1059,47 @@ function back_click()
   //localStorage.setItem('schDataIL', JSON.stringify(schObj));
  event.preventDefault();
  var goBack = window.open('', 'parent');
+//   if(!goBack || goBack == null){
+//    alert(" Failed to open the Parent window")
+//  }
+//  else 
  goBack.focus();
 }
 
+function openInNewTab(url) {
+    $("<a>").attr("href", url).attr("target", "_blank")[0].click();
+}
+
+
+function openOnce(url, target){
+    // open a blank "target" window
+    // or get the reference to the existing "target" window
+    var winref = window.open('', 'parent', '', true);
+
+    // if the "target" window was just opened, change its url
+    if(winref.location.href === 'about:blank'){
+        winref.location.href = url;
+    }
+    return winref;
+}
+function back_mobile_click() {
+    //openInNewTab(index.html);
+    //var redirectWindow = window.open('index.html', '_blank');
+   // redirectWindow.location;
+  // console.log(" back_mobile");
+  // openOnce('index.html', 'MyWindowName');
+  //  driver.switchTo().window(originalHandle);
+    //closePopupIfOpen('index.html');
+    //parent.close();
+   var new_window= window.open('index.html', '_blank');
+   new_window.location;
+}
+
+
+// // Get the user agent string
+// var deviceAgent = navigator.userAgent;
+// // Set var to iOS device name or null
+// var ios = deviceAgent.toLowerCase().match(/(iphone|ipod|ipad)/);
 </script>
 </body>
 </html>
