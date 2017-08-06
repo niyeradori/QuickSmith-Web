@@ -70,7 +70,7 @@
           width: 25%;  /* 81px;  */
           height: 27px;   /*27px;   */
           max-height : 54px;
-          border: 1px solid #D3D3D3;
+          border: 1px solid #808080;
           float: left;
           position: relative;   /* for SVG - not being used currently */
           z-index: 1;
@@ -86,7 +86,7 @@
           width: 8.23%;     /* 27px;  */
           height: 91px;    /* 91px;  */
           max-height : 182px;
-          border: 1px solid #D3D3D3;
+          border: 1px solid #808080;
           float: left;
           z-index: 1;
           position: relative;   /* for SVG */
@@ -944,7 +944,7 @@ function updateUI() {
         document.getElementById("D"+i).src =  "img/"+schObj.ELEMENT[i].type+imgv+".bmp";
         // src="img/rxv.bmp"
     }
-    if(schObj.termination == 'Single') document.getElementById('V1').style.borderColor='#D3D3D3';
+    if(schObj.termination == 'Single') document.getElementById('V1').style.borderColor='#808080';
     else  document.getElementById('V1').style.borderColor='red';
     Zcalsweep();
 
@@ -1571,13 +1571,13 @@ $('input[name="spin2"]').on("keypress", function (e) {
                             else 
                             {
                                 schObj.termination = "Single";
-                                document.getElementById('V1').style.borderColor= '#D3D3D3';   
+                                document.getElementById('V1').style.borderColor= '#808080';   
                             }
 
                         }
                         else {
                             schObj.termination = "Single";
-                            document.getElementById('V1').style.borderColor= '#D3D3D3';
+                            document.getElementById('V1').style.borderColor= '#808080';
                             ShowMessage_sm("QuickSmith","Failed to verify file");
                         }
                         Zcalsweep(); 
@@ -1595,7 +1595,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
             schObj.gamData.dataM = [];
             schObj.gamData.dataQ = [];
             // ShowMessage_sm("QuickSmith"," Termination Single");
-            document.getElementById('V1').style.borderColor= '#D3D3D3';
+            document.getElementById('V1').style.borderColor= '#808080';
             Zcalsweep();
         }
        
