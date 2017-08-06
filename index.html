@@ -1348,13 +1348,19 @@ var end = function(e) {
         var current_value = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
         updateStepSize_prompt(current_value,element);
     }
+    
+    function step_change1(id1) {
+        var element = document.getElementById(id1);
+        var current_value = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
+        updateStepSize_prompt(current_value,element);
+    }
 
 // touch
 //   $('input[name="spin2"]').taphold(function (e) {
 //                step_change($(e.target).attr("id"))  },
 //                1000);
   $('input[name="spin1"]').taphold(function (e) {
-               step_change($(e.target).attr("id"))  },
+               step_change1($(e.target).attr("id"))  },
                1000);
 
 $('input[name="spin2"]').on("keypress", function (e) {
