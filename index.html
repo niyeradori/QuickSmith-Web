@@ -1374,10 +1374,11 @@ $('input[name="spin2"]').on("keypress", function (e) {
         else spin_element.value=schObj.ELEMENT[idNum].value1;
        // step_change(id1);
        var current_value = $(spin_element).triggerHandler("touchspin.getstep", { dummy: 1 });
-      var val = prompt("Enter Step Size", current_value);
-      if (isNumeric(val) == true) {
-        $(spin_element).trigger("touchspin.updatesettings", { step: val })
-      }
+    //   var val = prompt("Enter Step Size", current_value);
+    //   if (isNumeric(val) == true) {
+    //     $(spin_element).trigger("touchspin.updatesettings", { step: val })
+    //   }
+     updateStepSize_prompt(current_value,spin_element);
 
         return;
     }
