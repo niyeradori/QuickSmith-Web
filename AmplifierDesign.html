@@ -677,11 +677,11 @@ function NoiseDialog_prompt(current_val)
     bootbox.prompt({
     size: "small",
     title: "Minimum Noise Figure:"+ ampObj.Fmin +' dB\n' + "Enter Noise Figure in dB:", 
-    inputType: "text",
+    inputType: "number",
     value: current_val,
     callback: function(result) {
       if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
-            if(ampObj.Fmin > ampObj.Fi)  ampObj.Fi = ampObj.Fmin; else  ampObj.Fi = result;
+            if( parseFloat(ampObj.Fmin) > parseFloat(result))  ampObj.Fi = ampObj.Fmin; else  ampObj.Fi =  parseFloat(result);
             document.getElementById("FI").value = Number(ampObj.Fi).toFixed(2);
             $(NC).addClass('active');
             ampObj.calculateNoiseCircles(); // updates noise circles in ampObj
@@ -755,12 +755,13 @@ function AvailableCirclesDialog_prompt(current_val)
     bootbox.prompt({
     size: "small",
     title: "Maximum Av Gain:"+ GPMAX +" dB"+"\n" + "Enter Gain in dB:", 
-    inputType: "text",
+    inputType: "number",
     value: current_val,
     callback: function(result) {
       if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
-          if(result > GPMAX) result = GPMAX; 
-            ampObj.AvG = result;
+          console.log ("result = "+ result);
+            if(parseFloat(result) > parseFloat(GPMAX)) result = GPMAX; 
+            ampObj.AvG = parseFloat(result);
             document.getElementById("GA").value = Number(ampObj.AvG).toFixed(2);
             $(AC).addClass('active');
             ampObj.calculateAVGainCircles(); // updates noise circles in ampObj
@@ -791,12 +792,12 @@ function OperatingCirclesDialog_prompt(current_val)
     bootbox.prompt({
     size: "small",
     title: "Maximum Op Gain:"+ GPMAX +" dB"+"\n" + "Enter Gain in dB:", 
-    inputType: "text",
+    inputType: "number",
     value: current_val,
     callback: function(result) {
       if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
-          if(result > GPMAX) result = GPMAX; 
-            ampObj.OpG = result;
+          if(parseFloat(result) > parseFloat(GPMAX)) result = GPMAX; 
+            ampObj.OpG = parseFloat(result);
           //  document.getElementById("GL").value = Number(ampObj.OpG).toFixed(2);
             $(OC).addClass('active');
             ampObj.calculateOPGainCircles(); // updates noise circles in ampObj
