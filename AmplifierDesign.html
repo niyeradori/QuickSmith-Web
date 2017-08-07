@@ -672,138 +672,192 @@ function NoiseCircles_click() {
 
 }
 
-function  NoiseDialog (){  
-    var pc = parseFloat(math.add(ampObj.Fmin,1.1));
-    var $content = $('<div><label for="FMin">Minimum Noise Figure [dB]: <input type="text" id="FMmin" value='+ampObj.Fmin+' readonly style="width:64px; border: 0"  /> \
-      <div><label for="FI">Enter Noise Figure in dB: <input type="text" id="FI"  value='+pc+'  style="width:64px" /> \
-        </label><br /></div>');
-    var fi;
-    BootstrapDialog.show({
-    size: BootstrapDialog.SIZE_SMALL,
-    title: "QuickSmith",
-    message: $content,
-        buttons: [{
-            label: 'OK',
-            cssClass: 'btn-success',
-            action: function(dialogRef){
-                dialogRef.setClosable(true);
-                fi = dialogRef.getModalBody().find('#FI').val();
-                if (isNumeric(fi)) // validation
-                  {
-                    if(ampObj.Fmin > ampObj.Fi)  ampObj.Fi = ampObj.Fmin; else  ampObj.Fi = fi;
-                      document.getElementById("FI").value = Number(ampObj.Fi).toFixed(2);
-                      $(NC).addClass('active');
+function NoiseDialog_prompt(current_val)
+{
+    bootbox.prompt({
+    size: "small",
+    title: "Minimum Noise Figure:"+ ampObj.Fmin +' dB\n' + "Enter Noise Figure in dB:", 
+    inputType: "text",
+    value: current_val,
+    callback: function(result) {
+      if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
+            if(ampObj.Fmin > ampObj.Fi)  ampObj.Fi = ampObj.Fmin; else  ampObj.Fi = result;
+            document.getElementById("FI").value = Number(ampObj.Fi).toFixed(2);
+            $(NC).addClass('active');
+            ampObj.calculateNoiseCircles(); // updates noise circles in ampObj
+            // next draw noise circle
+            smithSourceObj.circleM[2]= ampObj.noise_m;
+            smithSourceObj.circleQ[2] = ampObj.noise_q;
+            smithSourceObj.circleR[2] = ampObj.noise_r;
+            console.log(smithSourceObj.circleM[2]+" "+smithSourceObj.circleQ[2] + " " +smithSourceObj.circleR[2] )
+            smithSourceObj.circleShow[2] = true;
+            smithSourceObj.drawGainCircles();
+        }
+      else {
+            document.getElementById("FI").value = "";
+            $(NC).removeClass('active');
+      }
+    }
+    });
+}
 
-                      ampObj.calculateNoiseCircles(); // updates noise circles in ampObj
-                      // next draw noise circle
-                      smithSourceObj.circleM[2]= ampObj.noise_m;
-                      smithSourceObj.circleQ[2] = ampObj.noise_q;
-                      smithSourceObj.circleR[2] = ampObj.noise_r;
-                      console.log(smithSourceObj.circleM[2]+" "+smithSourceObj.circleQ[2] + " " +smithSourceObj.circleR[2] )
-                      smithSourceObj.circleShow[2] = true;
-                      smithSourceObj.drawGainCircles();
-                      dialogRef.close();
-                  }
-                else{
-                      document.getElementById("FI").value = "";
-                      $(NC).removeClass('active');
+function NoiseDialog() {
+  var current_val = parseFloat(math.add(ampObj.Fmin,1.1));
+  NoiseDialog_prompt(current_val)
+}
 
-                  }
+// function  NoiseDialog (){  
+//     var pc = parseFloat(math.add(ampObj.Fmin,1.1));
+//     var $content = $('<div><label for="FMin">Minimum Noise Figure [dB]: <input type="text" id="FMmin" value='+ampObj.Fmin+' readonly style="width:64px; border: 0"  /> \
+//       <div><label for="FI">Enter Noise Figure in dB: <input type="text" id="FI"  value='+pc+'  style="width:64px" /> \
+//         </label><br /></div>');
+//     var fi;
+//     BootstrapDialog.show({
+//     size: BootstrapDialog.SIZE_SMALL,
+//     title: "QuickSmith",
+//     message: $content,
+//         buttons: [{
+//             label: 'OK',
+//             cssClass: 'btn-success',
+//             action: function(dialogRef){
+//                 dialogRef.setClosable(true);
+//                 fi = dialogRef.getModalBody().find('#FI').val();
+//                 if (isNumeric(fi)) // validation
+//                   {
+//                     if(ampObj.Fmin > ampObj.Fi)  ampObj.Fi = ampObj.Fmin; else  ampObj.Fi = fi;
+//                       document.getElementById("FI").value = Number(ampObj.Fi).toFixed(2);
+//                       $(NC).addClass('active');
+
+//                       ampObj.calculateNoiseCircles(); // updates noise circles in ampObj
+//                       // next draw noise circle
+//                       smithSourceObj.circleM[2]= ampObj.noise_m;
+//                       smithSourceObj.circleQ[2] = ampObj.noise_q;
+//                       smithSourceObj.circleR[2] = ampObj.noise_r;
+//                       console.log(smithSourceObj.circleM[2]+" "+smithSourceObj.circleQ[2] + " " +smithSourceObj.circleR[2] )
+//                       smithSourceObj.circleShow[2] = true;
+//                       smithSourceObj.drawGainCircles();
+//                       dialogRef.close();
+//                   }
+//                 else{
+//                       document.getElementById("FI").value = "";
+//                       $(NC).removeClass('active');
+//                   }
                        
-            }
-        }, 
-    ]}
-    );
-} ;
+//             }
+//         }, 
+//     ]}
+//     );
+// } ;
+
+function AvailableCirclesDialog_prompt(current_val)
+{
+    var GPMAX =  Number(ampObj.GPMAX).toFixed(2)
+    bootbox.prompt({
+    size: "small",
+    title: "Maximum Av Gain:"+ GPMAX +" dB"+"\n" + "Enter Gain in dB:", 
+    inputType: "text",
+    value: current_val,
+    callback: function(result) {
+      if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
+          if(result > GPMAX) result = GPMAX; 
+            ampObj.AvG = result;
+            document.getElementById("GA").value = Number(ampObj.AvG).toFixed(2);
+            $(AC).addClass('active');
+            ampObj.calculateAVGainCircles(); // updates noise circles in ampObj
+            smithSourceObj.circleM[1]= ampObj.Again_m;
+            smithSourceObj.circleQ[1] = ampObj.Again_q;
+            smithSourceObj.circleR[1] = ampObj.Again_r;
+            updateUI_Z_G();
+            smithSourceObj.circleShow[1] = true;
+            smithSourceObj.redrawSmith();
+        }
+      else {
+            document.getElementById("GA").value = "";
+            $(AC).removeClass('active');
+      }
+    }
+    });
+}
+   
 
 function  AvailableCirclesDialog (){  
+     var current_val = parseFloat(10.0);
+     AvailableCirclesDialog_prompt(current_val);
+   } ;
+
+function OperatingCirclesDialog_prompt(current_val)
+{
     var GPMAX =  Number(ampObj.GPMAX).toFixed(2)
-    var pc = parseFloat(10.0);
-    var $content = $('<div><label for="AVG">Maximum Gain [dB]: <input type="text" id="AVG" value='+GPMAX+' readonly style="width:64px; border: 0"  /> \
-      <div><label for="AVG1">Enter Gain in dB: <input type="text" id="AVG1"  value='+pc+'  style="width:64px" /> \
-        </label><br /></div>');
-    var AvG;
-    BootstrapDialog.show({
-    size: BootstrapDialog.SIZE_SMALL,
-    title: "QuickSmith",
-    message: $content,
-        buttons: [{
-            label: 'OK',
-            cssClass: 'btn-success',
-            action: function(dialogRef){
-                dialogRef.setClosable(true);
-                AvG = dialogRef.getModalBody().find('#AVG1').val();
-                if (isNumeric(AvG)) // validation
-                  {
-                    if(AvG > GPMAX) AvG = GPMAX; 
-                      ampObj.AvG = AvG;
-                      document.getElementById("GA").value = Number(ampObj.AvG).toFixed(2);
-                      $(AC).addClass('active');
-                      ampObj.calculateAVGainCircles(); // updates noise circles in ampObj
-                      smithSourceObj.circleM[1]= ampObj.Again_m;
-                      smithSourceObj.circleQ[1] = ampObj.Again_q;
-                      smithSourceObj.circleR[1] = ampObj.Again_r;
-                      updateUI_Z_G();
-                      smithSourceObj.circleShow[1] = true;
-                      smithSourceObj.redrawSmith();
-                      dialogRef.close();
-                  }
-                else{
-                      document.getElementById("GA").value = "";
-                      $(AC).removeClass('active');
-
-                  }
-                         
-            }
-        }, 
-    ]}
-    );
-} ;
-
-
+    bootbox.prompt({
+    size: "small",
+    title: "Maximum Op Gain:"+ GPMAX +" dB"+"\n" + "Enter Gain in dB:", 
+    inputType: "text",
+    value: current_val,
+    callback: function(result) {
+      if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
+          if(result > GPMAX) result = GPMAX; 
+            ampObj.OpG = result;
+          //  document.getElementById("GL").value = Number(ampObj.OpG).toFixed(2);
+            $(OC).addClass('active');
+            ampObj.calculateOPGainCircles(); // updates noise circles in ampObj
+            smithLoadObj.circleM[1]= ampObj.Ogain_m;
+            smithLoadObj.circleQ[1] = ampObj.Ogain_q;
+            smithLoadObj.circleR[1] = ampObj.Ogain_r;
+            updateUI_Z_G();
+            smithLoadObj.circleShow[1] = true;
+            smithLoadObj.redrawSmith();
+        }
+      else {
+            //document.getElementById("GL").value = "";
+            $(OC).removeClass('active');
+      }
+    }
+    });
+}
 function  OperatingCirclesDialog (){  
-    var GPMAX =  Number(ampObj.GPMAX).toFixed(2)
-    var pc = parseFloat(10.0);
-    var $content = $('<div><label for="OPG">Maximum Gain [dB]: <input type="text" id="OPG" value='+GPMAX+' readonly style="width:64px; border: 0"  /> \
-      <div><label for="OPG1">Enter Gain in dB: <input type="text" id="OPG1"  value='+pc+'  style="width:64px" /> \
-        </label><br /></div>');
-    var OpG;
-    BootstrapDialog.show({
-    size: BootstrapDialog.SIZE_SMALL,
-    title: "QuickSmith",
-    message: $content,
-        buttons: [{
-            label: 'OK',
-            cssClass: 'btn-success',
-            action: function(dialogRef){
-                dialogRef.setClosable(true);
-                OpG = dialogRef.getModalBody().find('#OPG1').val();
-                if (isNumeric(OpG)) // validation
-                  {
-                    if(OpG > GPMAX) OpG = GPMAX; 
-                      ampObj.OpG = OpG;
-                    //  document.getElementById("GL").value = Number(ampObj.OpG).toFixed(2);
-                      $(OC).addClass('active');
+ 
+     var current_val = parseFloat(10.0);
+     OperatingCirclesDialog_prompt(current_val);
+    // var $content = $('<div><label for="OPG">Maximum Gain [dB]: <input type="text" id="OPG" value='+GPMAX+' readonly style="width:64px; border: 0"  /> \
+    //   <div><label for="OPG1">Enter Gain in dB: <input type="text" id="OPG1"  value='+pc+'  style="width:64px" /> \
+    //     </label><br /></div>');
+    // var OpG;
+    // BootstrapDialog.show({
+    // size: BootstrapDialog.SIZE_SMALL,
+    // title: "QuickSmith",
+    // message: $content,
+    //     buttons: [{
+    //         label: 'OK',
+    //         cssClass: 'btn-success',
+    //         action: function(dialogRef){
+    //             dialogRef.setClosable(true);
+    //             OpG = dialogRef.getModalBody().find('#OPG1').val();
+    //             if (isNumeric(OpG)) // validation
+    //               {
+    //                 if(OpG > GPMAX) OpG = GPMAX; 
+    //                   ampObj.OpG = OpG;
+    //                 //  document.getElementById("GL").value = Number(ampObj.OpG).toFixed(2);
+    //                   $(OC).addClass('active');
 
-                      ampObj.calculateOPGainCircles(); // updates noise circles in ampObj
-                      smithLoadObj.circleM[1]= ampObj.Ogain_m;
-                      smithLoadObj.circleQ[1] = ampObj.Ogain_q;
-                      smithLoadObj.circleR[1] = ampObj.Ogain_r;
-                      updateUI_Z_G();
-                      smithLoadObj.circleShow[1] = true;
-                      smithSourceObj.redrawSmith();
-                      dialogRef.close();
-                  }
-                else{
-                     // document.getElementById("GL").value = "";
-                      $(OC).removeClass('active');
+    //                   ampObj.calculateOPGainCircles(); // updates noise circles in ampObj
+    //                   smithLoadObj.circleM[1]= ampObj.Ogain_m;
+    //                   smithLoadObj.circleQ[1] = ampObj.Ogain_q;
+    //                   smithLoadObj.circleR[1] = ampObj.Ogain_r;
+    //                   updateUI_Z_G();
+    //                   smithLoadObj.circleShow[1] = true;
+    //                   smithSourceObj.redrawSmith();
+    //                   dialogRef.close();
+    //               }
+    //             else{
+    //                  // document.getElementById("GL").value = "";
+    //                   $(OC).removeClass('active');
 
-                  }
+    //               }
                          
-            }
-        }, 
-    ]}
-    );
+    //         }
+    //     }, 
+    // ]}
+    // );
 } ;
 
 
