@@ -981,7 +981,7 @@ function new_click() {
 
 
 function save_click() {
-    saveJSONtoFile(schObj, "sch.txt");
+    saveJSONtoFile(schObj, "out.sch");
 }
 
 function saveCanvas_click(){
@@ -1052,23 +1052,26 @@ function handleFileImport(e) {
                 //         +"size: " + file.size + " bytes\n"
                 //         + "starts with: " + contents.substr(9, 14)
                 //     );
-                if( contents.substr(9, 14) == "QuickSmith GAM")
+                var gamObj = tryParseJSON(contents);
+                //if( contents.substr(9, 14) == "QuickSmith GAM")
+                if(gamObj && gamObj.name === "QuickSmith GAM")
                    {
-                     //alert (" Verified");
-                     var gamObj =JSON.parse(contents);
+                    // alert (" Verified");
+                    // var gamObj =JSON.parse(contents);
                      smithObj.Z0= gamObj.Z0;
                      var points = gamObj.gamData.dataX.length;
                      if(points > 0){
                      schObj.SS =  parseFloat(gamObj.gamData.dataX[0]);
                      schObj.ST =  parseFloat(gamObj.gamData.dataX[points-1]);
-                     schObj.SST = math.subtract(schObj.ST,schObj.SS)/(points-1);
+                     schObj.SST = Number(Math.abs(math.subtract(schObj.ST,schObj.SS))/(points-1)).toFixed(3);
                      smithObj.plotDatasets[0].dataM = gamObj.gamData.dataM ;
                      smithObj.plotDatasets[0].dataQ = gamObj.gamData.dataQ ;
                      updateUI(); // update the ui elements
                      smithObj.data = true;
                      smithObj.redrawSmith(); 
                      }
-                   }  
+                   } 
+                else    alert (" File not Verified");
                 
             }
         reader.readAsText(file); 
@@ -1106,10 +1109,10 @@ function handleFileOpen(e) {
     if (!file) {
         return;
     }
-    else if (!file.type.match('text.*')) 
-    {
-	  alert(file.name + " is not a valid text file");
-    } 
+    // else if (!file.type.match('text.*')) 
+    // {
+	//   alert(file.name + " is not a valid text file");
+    // } 
     else if(file) 
     {
         var reader = new FileReader();
@@ -1123,10 +1126,11 @@ function handleFileOpen(e) {
                 //         + "starts with: " + contents.substr(1, contents.indexOf("n"))
                 //         + " " + contents.substr(2, 3)
                 //     );
-                if( file.size < 65536 &&  contents.substr(2, 3) == "ver")  // added a 64K requirement- to have some bounds
+                var schObj1 =tryParseJSON(contents);
+                if( schObj1 && file.size < 65536 &&  schObj1.ver == "5")  // added a 64K requirement- to have some bounds
                    {
-                   //  alert (" Verified");
-                     var schObj1 =JSON.parse(contents);
+                     //alert (" Verified");
+                     //var schObj1 =JSON.parse(contents);
                      copy_schObj(schObj1);
                      console.log(JSON.stringify(schObj));
                      updateUI(); // update the ui elements
@@ -1537,6 +1541,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
         // schObj.ELEMENT[1].type=$("input[name='LOAD']:checked").val();
         schObj.SE = $('#SE').find(":selected").text(); // Sweep element
         schObj.LU = $('#LU').find(":selected").text(); // Length Units
+        //console.log (schObj.LU );
         if ($(".modal-body #TER").val() == "Multiple") {
             var selectedFile = document.getElementById('TER_FILE').files[0];
             console.log(selectedFile);
@@ -1546,29 +1551,37 @@ $('input[name="spin2"]').on("keypress", function (e) {
             if(selectedFile) 
             {
                 var reader = new FileReader();
+                
                 reader.onload = function(e)
                     {
                         var contents = reader.result;
-                        if( contents.substr(9, 14) == "QuickSmith GAM")
+                         var gamObj = tryParseJSON (contents)
+                        if( gamObj && gamObj.name == "QuickSmith GAM")
                         {
                             //console.log (" Verified");
                             //ShowMessage_sm("QuickSmith","File Verified");
-                            var gamObj =JSON.parse(contents);
+                            //var gamObj =JSON.parse(contents);
                             //console.log(gamObj);
-                            smithObj.Z0= schObj.Z0=gamObj.Z0;
-                            schObj.gamData.label = gamObj.gamData.label;
-                            schObj.gamData.color = gamObj.gamData.color;
-                            schObj.gamData.dataX = gamObj.gamData.dataX; // X axis data, could be Frequency or swept element values
-                            schObj.gamData.dataM = gamObj.gamData.dataM;
-                            schObj.gamData.dataQ = phase_unwrap(gamObj.gamData.dataQ); // phase unwrap before entering - helps with interpolation
-                            if(schObj.gamData.dataX.length > 1){   // check if the data is more than 1 before setting to interpolation mode
-                                schObj.termination = "Multiple";      // we can check again before calculation
-                                document.getElementById('V1').style.borderColor='red';
-                            }
-                            else 
-                            {
-                                schObj.termination = "Single";
-                                document.getElementById('V1').style.borderColor= '#808080';   
+                            var points = gamObj.gamData.dataX.length;
+                            if(points > 0){
+                                schObj.SS =  parseFloat(gamObj.gamData.dataX[0]);
+                                schObj.ST =  parseFloat(gamObj.gamData.dataX[points-1]);
+                                //schObj.SST = Number(Math.abs(math.subtract(schObj.ST,schObj.SS))/(points-1)).toFixed(3);
+                                smithObj.Z0= schObj.Z0=gamObj.Z0;
+                                schObj.gamData.label = gamObj.gamData.label;
+                                schObj.gamData.color = gamObj.gamData.color;
+                                schObj.gamData.dataX = gamObj.gamData.dataX; // X axis data, could be Frequency or swept element values
+                                schObj.gamData.dataM = gamObj.gamData.dataM;
+                                schObj.gamData.dataQ = phase_unwrap(gamObj.gamData.dataQ); // phase unwrap before entering - helps with interpolation
+                                if(schObj.gamData.dataX.length > 1){   // check if the data is more than 1 before setting to interpolation mode
+                                    schObj.termination = "Multiple";      // we can check again before calculation
+                                    document.getElementById('V1').style.borderColor='red';
+                                }
+                                else 
+                                {
+                                    schObj.termination = "Single";
+                                    document.getElementById('V1').style.borderColor= '#808080';   
+                                }
                             }
 
                         }
@@ -1717,7 +1730,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
         console.log("idNum " + idNum);
         var elType = schObj.ELEMENT[idNum].type;
         console.log("elType " + elType);
-        if (elType == "W") return;
+        if (elType == "w") return;
         var eleVal2 = 1; if (elType == "r" || elType == "l" || elType == "c" || elType == "x" || elType == "f") eleVal2 = 0;
         var element = document.getElementById(id1); // this gets the spincontrol element
         var result = parseFloat($(element).triggerHandler("touchspin.getvalue", { dummy: 1 }));
@@ -1752,11 +1765,15 @@ $('input[name="spin2"]').on("keypress", function (e) {
             // });
 
             if (eleVal2 == 1 && isNumeric(result2) == true) {  // case of two parameter components T O S PLC SLC PR SRC RX G
-                 var prompt2 = "Enter " + element1.getAttribute('data-unit2'); // units
+
+                var unitfor_t_s_o;
+                if (elType == "t" || elType == "o" || elType == "s") unitfor_t_s_o = schObj.LU + "]"; // length units
+                else unitfor_t_s_o = "";
+                 var prompt2 = "Enter " + element1.getAttribute('data-unit2')+ unitfor_t_s_o; // units
                 var val2 = prompt(prompt2, Number(result2).toFixed(2));
                 if (isNumeric(val2)) {
                     schObj.ELEMENT[idNum].value2 = val2;  // update the main JSON array
-                    if (elType == "RX" || elType == "G") document.getElementById("E13").value = Number(val2).toFixed(2); // incase of load element display value 2 in spin_control E13
+                    if (elType == "rx" || elType == "g") document.getElementById("E13").value = Number(val2).toFixed(2); // incase of load element display value 2 in spin_control E13
                 }
                 // current_val =  Number(result2).toFixed(2);
                 // bootbox.prompt({

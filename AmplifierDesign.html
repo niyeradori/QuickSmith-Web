@@ -690,8 +690,8 @@ function  NoiseDialog (){
                 fi = dialogRef.getModalBody().find('#FI').val();
                 if (isNumeric(fi)) // validation
                   {
-                    if(ampObj.Fmin > ampObj.fi)  ampObj.fi = ampObj.Fmin; else  ampObj.fi = fi;
-                      document.getElementById("FI").value = Number(ampObj.fi).toFixed(2);
+                    if(ampObj.Fmin > ampObj.Fi)  ampObj.Fi = ampObj.Fmin; else  ampObj.Fi = fi;
+                      document.getElementById("FI").value = Number(ampObj.Fi).toFixed(2);
                       $(NC).addClass('active');
 
                       ampObj.calculateNoiseCircles(); // updates noise circles in ampObj

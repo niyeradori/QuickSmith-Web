@@ -1,7 +1,7 @@
 var C = 299800000; // speed of light - 299792458 m/s
 
 var schObj = {
-                "ver":5.0,
+                "ver":5.0,  //if you change this then change the file load verify function- this is used as a check - need a better way to do this
                 "VF": 1,  // velocity factor
                 "Z0": 50.0, // characteristic impedance
                 "TDF": 100, // Transmission design frequency
@@ -382,10 +382,10 @@ function updateAdmittance() {
                     rad = beta * v2 / 1000 ;    // P(I%) in mm
                 break;
                 case "Degrees": 
-                    rad = beta * v2 * VF * C / (schObj.TDF * 1000000 * 360);
+                    rad = beta * v2 * schObj.VF * C / (schObj.TDF * 1000000 * 360);
                 break;
                 case "Wave Lengths": 
-                    rad = beta * v2 * VF * C / (schObj.TDF * 1000000);
+                    rad = beta * v2 * schObj.VF * C / (schObj.TDF * 1000000);
                 break;
                 case "Meters": 
                     rad = beta * v2  ;

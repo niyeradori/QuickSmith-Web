@@ -652,7 +652,41 @@ function phase_unwrap(ys)
 
 function saveJSONtoFile(data,fileName){
    //var FileSaver = require('file-saver');
-    var json = JSON.stringify(data)
+    var json = JSON.stringify(data, null, "\t"); //  beautified JSON
     var blob = new Blob([json], {type: "text/plain;charset=utf-8"});
     saveAs(blob, fileName);
 }
+// not tested
+function isJSON (jsonString){
+    try {
+        var o = JSON.parse(jsonString);
+
+        // Handle non-exception-throwing cases:
+        // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
+        // but... JSON.parse(null) returns null, and typeof null === "object", 
+        // so we must check for that, too. Thankfully, null is falsey, so this suffices:
+        if (o && typeof o === "object") {
+            return true;
+        }
+    }
+    catch (e) {return false; }
+
+    return false;
+}
+
+function tryParseJSON (jsonString){
+    try {
+        var o = JSON.parse(jsonString);
+
+        // Handle non-exception-throwing cases:
+        // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
+        // but... JSON.parse(null) returns null, and typeof null === "object", 
+        // so we must check for that, too. Thankfully, null is falsey, so this suffices:
+        if (o && typeof o === "object") {
+            return o;
+        }
+    }
+    catch (e) { }
+
+    return false;
+};

@@ -81,7 +81,7 @@ td {
                     <td> <input id="START" type="text" value="1" style="width: 100%" class="form-control input-sm" onchange="spin_change1(this.id)"  /></td>
                     <td> &nbsp &nbsp</td>
                     <td> <label  for="STOP"  > <font size="1"> STOP [MHZ]: </font> </label> </td>
-                    <td> <input id="STOP" type="text" value="1000" style="width: 100%"  class="form-control input-sm " onchange="spin_change1(this.id)" /></td>  
+                    <td> <input id="STOP" type="text" value="100" style="width: 100%"  class="form-control input-sm " onchange="spin_change1(this.id)" /></td>  
                     <td> &nbsp &nbsp</td>
                     <td> <label  for="STEP"  > <font size="1"> STEP [MHZ]: </font> </label> </td>
                     <td> <input id="STEP" type="text" value="1" style="width: 100%"  class="form-control input-sm " onchange="spin_change1(this.id)" /></td>
@@ -269,7 +269,7 @@ var myChart = new Chart(ctx, {
           },
           scales: {
             xAxes: [{
-              // type: 'logarithmic',
+              position: 'top',
               ticks: {
                 autoSkip: true,
                 maxTicksLimit: 10,
@@ -347,7 +347,7 @@ function runILsweep()
         }
         resultsObj.OUTPUT[0].calculate(); // this will call  Zcalsweep1(); calculate Zcalsweep1
         resultsObj.OUTPUT[5].calculate(); // calculate Insertion loss
-        myChart.data.datasets[0].data[i] = resultsObj.OUTPUT[5].InsertionLoss ; 
+        myChart.data.datasets[0].data[i] = resultsObj.OUTPUT[5].S21Mag ; 
        //console.log( "next value =  " +schObj.ELEMENT[elNum].value1);
     }
     if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=oldValue; else schObj.ELEMENT[elNum].value2=oldValue;
