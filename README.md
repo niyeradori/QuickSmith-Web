@@ -3,7 +3,7 @@ QuickSmith-Web (https://niyeradori.github.io/QuickSmith-Web/index.html) - Runs o
 
 This is a web and mobile version of the MS Windows based QuickSmith - https://github.com/niyeradori/quicksmith.
 The primary motivation of this port is in response to the numerous requests from users, who are unable to run QuickSmith 
-in the newer Operating Systems. We hope that by making QuickSmith independent of Operating System, it can be "future proofed".
+in the newer Windows Operating Systems. I hope that by making QuickSmith independent of Operating System, it can be "future proofed".
 
 About QuickSmith:
 
@@ -20,6 +20,10 @@ Some of the features offered by this program are listed below:
 - Transmission line parameter calculations
 - Constant Conductance, VSWR and Q circles
 - Import and Export of data files
-- Help files with solved examples of network matching and amplifier design ( to do for web version)
+- Help files with solved examples of network matching and amplifier design
+
+Nathan Iyer
+niyer@sbcglobal.net
+July 31st, 2017
 
 
