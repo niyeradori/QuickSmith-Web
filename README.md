@@ -23,7 +23,9 @@ Some of the features offered by this program are listed below:
 - Help files with solved examples of network matching and amplifier design
 
 Nathan Iyer
-niyer@sbcglobal.net
+
 July 31st, 2017
+
+email: niyer@sbcglobal.net
 
 
