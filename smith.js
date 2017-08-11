@@ -214,7 +214,42 @@ function InSmith(x,y)
 {
     var r;
     r = AXIS_RANGE; 
-    return ((x * x) / (r*r) + (y * y) / (r*r) <= 1);
+    return ((x * x)   + (y * y) <= (r*r));
+}
+
+function InCircleR(x,y,r)
+{ 
+    return ((x * x)  + (y * y) <= (r*r));
+}
+
+
+
+// function inCirclePolar(r,q,radius)
+// { 
+//     var q_rad = q * Math.PI / 180;
+//     var x = r* Math.cos(q_rad);
+//     var y = r* Math.sin(q_rad);
+//     return ((x * x)  + (y * y) <= (radius*radius));
+// }
+
+
+// assuming we are already in Smith chart    3
+//    region                                1 2
+//   region                                  4
+function getRegion(x,y){
+
+    var r= AXIS_RANGE/2;
+    var region = 0;
+    if (InCircleR(x+AXIS_RANGE/2,y-0,r) == true) {
+          region = 1;
+        }
+    else if (InCircleR(x-AXIS_RANGE/2,y-0,r) == true) {
+          region = 2;
+        }
+    else if (region==0 && y >= 0) region = 3;
+    else if (region==0 && y < 0 ) region = 4;
+    //else region = 0;
+    return region;
 }
 
 function scale(x,y,r) {
@@ -327,7 +362,7 @@ function drawSprite(ctx,x,y) {
   var r = 0.06 * chart.width/2 ;
  
   var scaled = scale(x,y,0);
-	ctx.drawImage(img, scaled.X - img.width / 2, scaled.Y - img.height / 2, r, r);
+	ctx.drawImage(sprite, scaled.X - sprite.width / 2, scaled.Y - sprite.height / 2, r, r);
 }
 
 function drawData(ctx,dataM,dataQ,color){
