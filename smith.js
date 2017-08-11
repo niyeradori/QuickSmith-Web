@@ -482,11 +482,43 @@ function getMaximumWidth (domNode) {
 		}
 
 		return valueInPixels;
-	}
-// //		for (; i<ilen; ++i) {
-// 				d = dataset.data[i];
-// 				if (d !== null && d !== undefined && !isNaN(d)) {
-// 					elements[i].draw();
-// 				}
-// 			}
+  }
+  
+  function getMousePosition(evt, chart) {
+      var mouseX, mouseY;
+      var e = evt.originalEvent || evt,
+        canvas = evt.currentTarget || evt.srcElement,
+        boundingRect = canvas.getBoundingClientRect();
+
+      var touches = e.touches;
+      if (touches && touches.length > 0) {
+        mouseX = touches[0].clientX;
+        mouseY = touches[0].clientY;
+
+      } else {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      }
+
+      // Scale mouse coordinates into canvas coordinates
+      // by following the pattern laid out by 'jerryj' in the comments of
+      // http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
+      var paddingLeft =0;
+      var paddingTop = 0;
+      var paddingRight =0;
+      var paddingBottom =0;
+      var width = boundingRect.right - boundingRect.left - paddingLeft - paddingRight;
+      var height = boundingRect.bottom - boundingRect.top - paddingTop - paddingBottom;
+
+      // We divide by the current device pixel ratio, because the canvas is scaled up by that amount in each direction. However
+      // the backend model is in unscaled coordinates. Since we are going to deal with our model coordinates, we go back here
+      mouseX = Math.round((mouseX - boundingRect.left - paddingLeft) / (width) * canvas.width / chart.currentDevicePixelRatio);
+      mouseY = Math.round((mouseY - boundingRect.top - paddingTop) / (height) * canvas.height / chart.currentDevicePixelRatio);
+
+      return {
+        x: mouseX,
+        y: mouseY
+      };
+
+    };
 

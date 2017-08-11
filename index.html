@@ -719,12 +719,16 @@ smithObj.ctx = document.getElementById("smithMain").getContext('2d');
 //        } );
     
 
-function onMouseMove(e) {
-    // var mouseX = e.clientX-smithObj.ctx.canvas.offsetLeft;  // this works
-    // var mouseY = e.clientY-smithObj.ctx.canvas.offsetTop ;  // this is off by abouot 80 in the version but works with the stand alone component ?
-    var mouseX = e.layerX; // this seems like working
-    var mouseY = e.layerY; // layerX returns the horizontal coordinate of the event relative to the current layer.
-    // console.log( mouseX+ " , " + mouseY);
+function onMouseMove(evt) {
+   // var e = evt.originalEvent || evt;
+     //var mouseX = e.clientX-smithObj.ctx.canvas.offsetLeft;  // this works
+     //var mouseY = e.clientY-smithObj.ctx.canvas.offsetTop ;  // this is off by about 80px in this version but works with the stand alone component ?
+     // var mouseX = e.layerX; // this seems like working // does not work well with firefox
+     // var mouseY = e.layerY; // layerX returns the horizontal coordinate of the event relative to the current layer.
+    var m = getMousePosition(evt,chart);
+    var mouseX = m.x;
+    var mouseY  = m.y;
+    //console.log( "mouseX =" + mouseX + " mouseY =" + mouseY  );
     var descaled = descale(mouseX,mouseY);
     var x= descaled.x;
     var y=descaled.y;
@@ -741,11 +745,14 @@ function onMouseMove(e) {
     }
     else  document.getElementById("Z1").value ="Z:";
     if( isMobile ) return;    
+   
     // matching tool tip, when the sprite is hovered depending upon its regions the matching network is shown (see FAQ figure) in the MatchTip area
     var x1 = resultsObj.OUTPUT[2].GAMRout*AXIS_RANGE;
     var y1 = resultsObj.OUTPUT[2].GAMIout*AXIS_RANGE;
+    //console.log ("m = " + m + " InCircleR((x-x1),(y-y1) " + x1  +"  "+ y1 + "  "+ x +"  "+ y +" inSmith " +inSmith + " toolTipShown" + toolTipShown );
     if(m > 0.045 && InCircleR((x-x1),(y-y1),25) && inSmith && !toolTipShown)  {
         var region = getRegion(x1,y1);
+        //console.log ("region = " + region);
         switch(region) {
             case 1:
                 document.getElementById("regions").src = "img/region1.png";
@@ -773,8 +780,11 @@ function onMouseMove(e) {
 
 function onMouseClick(e) {
     if( isMobile ) return;
-    var mouseX = e.layerX; // this seems like working
-    var mouseY = e.layerY; // layerX returns the horizontal coordinate of the event relative to the current layer.
+    // var mouseX = e.layerX; // this seems like working
+    // var mouseY = e.layerY; // layerX returns the horizontal coordinate of the event relative to the current layer.
+    var m = getMousePosition(evt,chart);
+    var mouseX = m.x;
+    var mouseY  = m.y;
     var descaled = descale(mouseX,mouseY);
     var x= descaled.x;
     var y=descaled.y;
