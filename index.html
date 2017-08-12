@@ -783,7 +783,7 @@ function onMouseClick(e) {
     if( isMobile ) return;
     // var mouseX = e.layerX; // this seems like working
     // var mouseY = e.layerY; // layerX returns the horizontal coordinate of the event relative to the current layer.
-    var m = getMousePosition(evt,chart);
+    var m = getMousePosition(e,chart);
     var mouseX = m.x;
     var mouseY  = m.y;
     var descaled = descale(mouseX,mouseY);
