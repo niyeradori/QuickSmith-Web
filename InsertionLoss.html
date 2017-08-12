@@ -69,7 +69,7 @@ td {
     </div>
   </div>
 </nav>
-
+  <!-- onclick=runILsweep() -->
  <!-- ********************************Chart WINDOW************************************************* -->
 <div class="container-fluid">
     <div class="row">
@@ -355,10 +355,15 @@ function runILsweep()
 }
 
 function goBack_click() {
- //window.history.back();
- event.preventDefault();
- var goBack = window.open('', 'parent');
- goBack.focus();
+    var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    if (isFirefox) {   // Firefox does not open the parent window why
+      var new_window= window.open('index.html', '_blank');
+      new_window.location;
+    }
+    else {
+      var goBack = window.open('',  'parent');
+      goBack.focus();
+  }
 }
 
 

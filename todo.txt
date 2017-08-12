@@ -2,3 +2,4 @@ TODO
 1) Add example files - Done!
 2) Figure out how to open the parent window in Mobile mode - currenlty when you click on the back menu item, a new window/tab is opened.
 3) Add one more ladder section, there is space in the second part.- Done!
+4) Firefox does not open the main window back from Insertion loss or Amplifier window. It works with Safari and Chrome. - Need fix

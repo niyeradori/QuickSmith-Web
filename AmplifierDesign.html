@@ -1111,14 +1111,15 @@ function updateUI_Z_G() {
 
 function back_click()
 {
-  //localStorage.setItem('schDataIL', JSON.stringify(schObj));
- event.preventDefault();
- var goBack = window.open('', 'parent');
-//   if(!goBack || goBack == null){
-//    alert(" Failed to open the Parent window")
-//  }
-//  else 
- goBack.focus();
+    var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    if (isFirefox) {   // Firefox does not open the parent window why
+      var new_window= window.open('index.html', '_blank');
+      new_window.location;
+    }
+    else {
+      var goBack = window.open('',  'parent');
+      goBack.focus();
+  }
 }
 
 function openInNewTab(url) {
