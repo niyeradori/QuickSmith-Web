@@ -20,7 +20,7 @@
 		{
 			"index": 0,
 			"type": "f",
-			"value1": "27.00",
+			"value1": "100.00",
 			"value2": 0,
 			"tune": 1
 		},
@@ -28,79 +28,79 @@
 			"index": 1,
 			"type": "rx",
 			"value1": "50.00",
-			"value2": 1e-14,
+			"value2": "25.00",
 			"tune": 1
 		},
 		{
 			"index": 2,
-			"type": "w",
-			"value1": 0,
+			"type": "r",
+			"value1": "10.00",
 			"value2": 0,
 			"q": 1000000,
 			"tune": 1
 		},
 		{
 			"index": 3,
-			"type": "c",
-			"value1": "220",
+			"type": "l",
+			"value1": "20.00",
 			"value2": 0,
-			"q": "800",
+			"q": "1000000",
 			"tune": 1
 		},
 		{
 			"index": 4,
-			"type": "l",
-			"value1": "360",
+			"type": "c",
+			"value1": "30",
 			"value2": 0,
-			"q": "100",
+			"q": "1000000",
 			"tune": 1
 		},
 		{
 			"index": 5,
-			"type": "c",
-			"value1": "220",
+			"type": "x",
+			"value1": "40",
 			"value2": 0,
-			"q": "800",
+			"q": 1000000,
 			"tune": 1
 		},
 		{
 			"index": 6,
-			"type": "l",
-			"value1": "360",
-			"value2": 0,
-			"q": "200",
+			"type": "t",
+			"value1": "50",
+			"value2": "60",
+			"q": "1000000",
 			"tune": 1
 		},
 		{
 			"index": 7,
-			"type": "w",
-			"value1": 0,
-			"value2": 0,
-			"q": 1000000,
+			"type": "o",
+			"value1": "70",
+			"value2": "80",
+			"q": "1000000",
 			"tune": 1
 		},
 		{
 			"index": 8,
-			"type": "w",
-			"value1": 0,
-			"value2": 0,
-			"q": 1000000,
+			"type": "slc",
+			"value1": "90",
+			"value2": "100",
+			"q": "1000000",
 			"tune": 1
 		},
 		{
 			"index": 9,
-			"type": "w",
-			"value1": 0,
-			"value2": 0,
-			"q": 1000000,
+			"type": "plc",
+			"value1": "110",
+			"value2": "120",
+			"q": "1000000",
 			"tune": 1
 		},
 		{
 			"index": 10,
-			"type": "w",
-			"value1": 0,
-			"value2": 0,
-			"q": 1000000,
+			"type": "src",
+			"value1": "130",
+			"value2": "140",
+			"q": "1000000",
 			"tune": 1
 		},
 		{

@@ -689,4 +689,38 @@ function tryParseJSON (jsonString){
     catch (e) { }
 
     return false;
-};
+}
+
+function is1Component (elType){
+    var retval = false;
+    switch (elType) {
+                    case "w":
+                    case "r":
+                    case "l":
+                    case "c":
+                    case "x":
+                    case "f":
+                    retval = true;
+                    break;
+                    default:
+                        retval = false;
+                }
+    return retval;
+}
+
+function is2Component (elType){
+    var retval;
+    switch (elType) {
+                    case "w":
+                    case "r":
+                    case "l":
+                    case "c":
+                    case "x":
+                    case "f":
+                    retval = false;
+                    break;
+                    default:
+                        retval = true;
+                }
+    return retval;
+}

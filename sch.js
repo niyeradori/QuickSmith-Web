@@ -33,11 +33,9 @@ var schObj = {
                     { "index": 9, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, assign: updateAdmittance },
                     { "index": 10, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, assign: updateImpedance },
                     { "index": 11, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, assign: updateAdmittance },
-                    { "index": 12, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, assign: updateImpedance },
-                    { "index": 13, "type": "rx", "value1": 0, "value2": 0, "q": 1000000,"tune": 1, assign: dummy }    // one extra for the E13 spin place holder - dummy
-                ]   // tune values 0,1,2  0 for singel element, 1 for tuning value1 2 for tuning value2
+                    { "index": 12, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, assign: updateImpedance }
+                ]   
             };
-
 
 resultsObj = {
     "ELEMENT": [                                    
@@ -127,7 +125,7 @@ function updateImpedance()
             resultsObj.ELEMENT[index].ZR = ZR;  // here store the it in impedance
             resultsObj.ELEMENT[index].ZI = ZI;
             schObj.ELEMENT[1].value1 = r;
-            schObj.ELEMENT[13].value1 =schObj.ELEMENT[1].value2 = ang;
+            schObj.ELEMENT[1].value2 = ang;
             break;
         case "rx":
            if( schObj.termination =="Multiple" ) {
@@ -146,7 +144,7 @@ function updateImpedance()
                 resultsObj.ELEMENT[index].ZI = v2;               
             }
             schObj.ELEMENT[1].value1 = resultsObj.ELEMENT[index].ZR;
-            schObj.ELEMENT[13].value1 =schObj.ELEMENT[1].value2 = resultsObj.ELEMENT[index].ZI;
+            schObj.ELEMENT[1].value2 = resultsObj.ELEMENT[index].ZI;
             break;
         case "c":
             resultsObj.ELEMENT[index].ZI = -1 / (w * v1 * 0.000000000001);
@@ -733,24 +731,7 @@ function parallelEquiv() {
 }
 
 
-function is1Component (elType){
-    var retval = false;
-    switch (elType) {
-                    case "w":
-                    case "r":
-                    case "l":
-                    case "c":
-                    case "x":
-                    case "f":
-                    case "rx":
-                    case "g":
-                        retval = true;
-                        break;
-                    default:
-                        retval = false;
-                }
-    return retval;
-}
+
 
 
 function myInterpolate(X, xa, ya) {

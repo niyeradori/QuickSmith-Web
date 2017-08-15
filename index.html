@@ -65,6 +65,9 @@
       th {
           text-align: center;
           font-weight: normal;
+          /* font-family: Arial; */
+          font-size: 12px;
+          color: brown;
       }
         /* the issue with max-height is that the image is no longer in the center */
         .dropzoneh {
@@ -286,11 +289,16 @@ a:hover {
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 nopadding" style="background-color:white;">
                     <!-- <div class="spinzone" >  -->
                         <table style=" margin-left: 0px;  margin-bottom: 0px; width:100%;">  
-                             <tr>
-                                <th>S2</th>
-                                <th>S4</th>
-                                <th>S6</th>
-                            </tr> 
+                            <tr class="hidden-xs">
+                                <th id='H2'>W2</th>
+                                <th id='H4'>W4</th>
+                                <th id='H6'>W6</th>
+                            </tr>  
+                            <tr>
+                                <td id="E2at" style = "visibility: hidden"><input id="E2a"  type="text" value="0" name="spin2" class=" form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" / ></td>
+                                <td id="E4at" style = "visibility: hidden"><input id="E4a" type="text" value="0" name="spin2" class=" form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false"/></td>
+                                <td id="E6at" style = "visibility: hidden"><input id="E6a" type="text" value="0" name="spin2" class=" form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false" /></td>
+                            </tr>
                             <tr>
                                 <td><input id="E2" type="text" value="0" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td>
                                 <td><input id="E4" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false"/></td>
@@ -336,16 +344,21 @@ a:hover {
                       <!-- <div class="spinzone" style=" margin-left: 0px;  margin-top: 50px;" >   -->
                         <table style=" margin-left: 0px;  margin-top: 5px; width:100%; margin-bottom: 6px;">
                             <tr>
-                                <td><input id="E1" type="text" value="50" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td>
+                                <td><input id="E1"  type="text" value="50" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false" /></td>
                                 <td><input id="E3" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                                 <td><input id="E5" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                             </tr>
-
                             <tr>
-                                <td><input id="E13" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" readonly /></td>  <!--made name=spin3 to remove rightclick menu-->
-                                <th>S3</th>
-                                <th>S5</th> 
+                                <td id="E1at"  style = "visibility: visible"><input id="E1a" type="text" value="0.00" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td>
+                                <td id="E3at"  style = "visibility: hidden"><input id="E3a"  type="text" value="0" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                                <td id="E5at"  style = "visibility: hidden"><input id="E5a"  type="text" value="0" name="spin2" class=" form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                             </tr>
+
+                            <tr class="hidden-xs">
+                                <th id='H1'>RX1</th>
+                                <th id='H3'>W3</th>
+                                <th id='H5'>W5</th> 
+                            </tr> 
                         </table>
                       <!-- </div>      -->
                 </div>   <!--dropzone div 1 end--> 
@@ -353,11 +366,16 @@ a:hover {
                 <!-- Dropzone2 begin -->
                 <div class=" hidden-xs col-sm-12 col-md-6 col-lg-6 col-xl-6 nopadding " style="background-color:white; margin-left: 8px;  ">
                     <table style=" width:100%;">  
-                         <tr>
-                            <th>S8</th>
-                            <th>S10</th>
-                            <th>S12</th>
-                        </tr> 
+                          <tr class="hidden-xs">
+                            <th id='H8'>W8</th>
+                            <th id='H10'>W10</th>
+                            <th id='H12'>W12</th>
+                        </tr>  
+                        <tr>
+                            <td id="E8at" style = "visibility: hidden"><input id="E8a"  type="text" value="0" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td id="E10at" style = "visibility: hidden"><input id="E10a" type="text" value="0" name="spin2"class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td id="E12at" style = "visibility: hidden"><input id="E12a" type="text" value="0" name="spin2"class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                        </tr>
                         <tr>
                             <td><input id="E8" type="text" value="0" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                             <td><input id="E10" type="text" value="0" name="spin2"class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
@@ -401,10 +419,15 @@ a:hover {
                             <td><input id="E11" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                         </tr>
                         <tr>
-                                <th style="padding-top: 5px" >S7 </th>
-                                <th style="padding-top: 5px" >S9 </th> 
-                                <th style="padding-top: 5px" >S11</th> 
+                            <td id="E7at"  style = "visibility: hidden"><input id="E7a" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td id="E9at"  style = "visibility: hidden"><input id="E9a"  type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td id="E10at" style = "visibility: hidden"><input id="E11a" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                         </tr>
+                         <tr class="hidden-xs">
+                            <th id='H7'>W7 </th>
+                            <th id='H9'>W9 </th> 
+                            <th id='H11'>W11</th> 
+                        </tr> 
                     </table>
                         <br />
                 </div>   <!--dropzone div 2 end-->  
@@ -430,7 +453,7 @@ a:hover {
                                 <img id="o" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="4" data-unit2="Length [" data-q="1000000" data-step="1" data-img="img/o.bmp" data-imgv="img/o.bmp" class="icon" src="img/o.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
                                 <img id="s" class="dragable" data-value1="51" data-unit1="Char. Imp. [Ohms]:" data-value2="5" data-unit2="Length [" data-q="1000000" data-step="1" data-img="img/s.bmp" data-imgv="img/s.bmp" class="icon" src="img/s.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
                                 <img id="g"  class="dragable" data-value1="0.1" data-unit1="Mag." data-value2="10" data-unit2="Deg." data-q="1000000" data-step="1" data-img="img/g.bmp"  data-imgv="img/gv.bmp" class="icon" src="img/gv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
-                                <img id="rx" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="0" data-unit2="Reactance [Ohms]:" data-q="1000000" data-step="1" data-img="img/rx.bmp" data-imgv="img/rxv.bmp" class="icon" src="img/rxv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
+                                <img id="rx" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="0.00" data-unit2="Reactance [Ohms]:" data-q="1000000" data-step="1" data-img="img/rx.bmp" data-imgv="img/rxv.bmp" class="icon" src="img/rxv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
                                 <img id="t"  class="dragable"data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="10" data-unit2="Length [" data-q="1000000" data-step="1" data-img="img/t.bmp" data-imgv="img/t.bmp" class="icon" src="img/t.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="80" height="27">
                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
                         </div> <!-- Component Zone 2 end -->
@@ -490,8 +513,9 @@ a:hover {
                     </div>
                     <div class="form-group">
                         <label for="SE">Sweep Variable:</label>
-                        <select class="form-control" id="SE">
+                        <select class="form-control" id="SE" onclick="OnOptionSweepElemet_click()">
                             <option>Frequency</option>
+                            <option>Element 1</option>
                             <option>Element 2</option>
                             <option>Element 3</option>
                             <option>Element 4</option>
@@ -501,8 +525,17 @@ a:hover {
                             <option>Element 8</option>
                             <option>Element 9</option>
                             <option>Element 10</option>
+                            <option>Element 11</option>
+                            <option>Element 12</option>
                         </select>
                     </div>
+                    <div id="SE_TUNE" class="form-group hidden ">
+                        <div class="radio-inline"><input type="radio" name="optradio" id="TUNE1">
+                        <label id="TUNE1a">Option 1</label> </div>
+                        <div class="radio-inline"><input type="radio" name="optradio" id="TUNE2">
+                        <label id="TUNE2a">Option 2</label> </div>  
+                    </div>
+
                     <div class="form-group">
                         <label for="LU">Length Unit:</label>
                         <select class="form-control" id="LU">
@@ -668,7 +701,7 @@ smithObj.ctx = document.getElementById("smithMain").getContext('2d');
     console.log ("Transferflag present"); 
     schObj.ELEMENT[1].value1 = parseFloat(localStorage.getItem("R1"));
     schObj.ELEMENT[1].value2 = parseFloat(localStorage.getItem("Z1"));
-    schObj.ELEMENT[13].value1 = parseFloat(localStorage.getItem("Z1"));
+    //schObj.ELEMENT[13].value1 = parseFloat(localStorage.getItem("Z1"));
     }
     else  
     {
@@ -948,37 +981,38 @@ function set_click() {
 
 
 
-
+// udates all the input UI elements on the chart
 function updateUI() {
     document.getElementById("SM0").value =  smithObj.vswrCircle;
     document.getElementById("SM1").value =  smithObj.qCircle;
     smithObj.drawSmith();
 
-    for (var i = 0; i < 14; i++)  // 14 so that the Load imaginary spin box E13 is also updated.
+    for (var i = 0; i < 13; i++)  
     { 
-        //   var element = "\"E" + i + "\"";
-        //   console.log(element);
-        if(schObj.ELEMENT[i].tune==1)
-        {    
-        document.getElementById("E"+i).value= schObj.ELEMENT[i].value1;
-        }  
+        // if it is a two component element then update the second touchspin aswell.
+        var id = "E"+i;
+        var id_a = "E"+i +"a"
+        document.getElementById(id).value= schObj.ELEMENT[i].value1;
+        if(is1Component(schObj.ELEMENT[i].type)) 
+        {  
+            if ($("#"+id_a+"t").css('visibility') !== 'hidden')  $("#"+id_a+"t").css({'visibility': 'hidden'});
+        }
         else
         {
-        document.getElementById("E"+i).value= schObj.ELEMENT[i].value2;
+            document.getElementById(id_a).value= schObj.ELEMENT[i].value2;
+            if ($("#"+id_a+"t").css('visibility') == 'hidden')  $("#"+id_a+"t").css({'visibility': 'visible'});
         }
     }
-
     for (var i = 1; i < 13; i++) 
-    { 
-        var imgv = isEven(i) ? "" :"v";
-        document.getElementById("D"+i).src =  "img/"+schObj.ELEMENT[i].type+imgv+".bmp";
-        // src="img/rxv.bmp"
-    }
+        { 
+            var imgv = isEven(i) ? "" :"v";
+            document.getElementById("D"+i).src =  "img/"+schObj.ELEMENT[i].type+imgv+".bmp"; // src="img/rxv.bmp"
+            $("#" + "H" + i).text( schObj.ELEMENT[i].type.toUpperCase() + i);
+        }
     if(schObj.termination == 'Single') document.getElementById('V1').style.borderColor='#808080';
     else  document.getElementById('V1').style.borderColor='red';
+
     Zcalsweep();
-
-
 }
 
 function get_click()
@@ -1218,10 +1252,10 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         resultsObj.OUTPUT[9].calculate(); // calculate MaxSWRCal
         resultsObj.OUTPUT[10].calculate(); // calculate MinSWRCal
         document.getElementById("IL").value =  Number(resultsObj.OUTPUT[5].InsertionLoss).toFixed(3);; // update IL
-        // incase of multiple terminations update the spinnertext of E1/E13 ( real/Imag M/Ang)
+        // incase of multiple terminations update the spinnertext of E1/E1a ( real/Imag M/Ang)
        // if(schObj.termination == 'Multiple') {
         document.getElementById("E1").value= Number(schObj.ELEMENT[1].value1).toFixed(2);
-        document.getElementById("E13").value= Number(schObj.ELEMENT[13].value1).toFixed(2);
+        document.getElementById("E1a").value= Number(schObj.ELEMENT[1].value2).toFixed(2);
         //console.log( "UPDATING DATA ELEMENT :  " +Number(schObj.ELEMENT[1].value1).toFixed(2) + " " + Number(schObj.ELEMENT[13].value1).toFixed(2) );
         //}
         //else 
@@ -1288,7 +1322,7 @@ var drop = function (e) {
                 || dropElementType == "src" || dropElementType == "r" || dropElementType == "x") drpEleWLCRX = 1;
             var drpEleOS = 0; if (dropElementType == "o" || dropElementType == "s") drpEleOS = 1;
             //var drpEleRX = 0; if (dropElementType == "R" || dropElementType == "X") drpEleRX = 1;
-
+            // check for valide drop areas for g/rx can be only be dropped in slot 1 and t can be only dropped on even ( horizontal slots) o/s on vertical slots
             if ((dropElementType == "g" && targetIdNum == 1) || (drpEleWLCRX == 1 && targetIdNum > 1)
                 || (dropElementType == "t" && isEven(targetIdNum)) || (drpEleOS == 1 && targetIdNum > 1 && !isEven(targetIdNum))
                 || (dropElementType == "rx" && targetIdNum == 1)) {
@@ -1299,7 +1333,7 @@ var drop = function (e) {
                 imgSrc = isEven(targetIdNum) ? mySrcElement.getAttribute('data-img') : mySrcElement.getAttribute('data-imgv'); // add vertical image if the targetId(slot) is odd
                 console.log("Dropping From " + dropElementType + " To " + targetIdNum) ;
                 console.log(targetElement.src);
-                var ret = showComponentdialog(dropElementType, imgSrc, mySrcElement, targetIdNum);
+                var ret = showComponentdialog(dropElementType, imgSrc, mySrcElement, targetIdNum,"new");
                 if (ret == true) {
                     targetElement.src = imgSrc;
                    // e.target.appendChild(myCpyElement); // no need to append child we are only coping the image
@@ -1326,7 +1360,7 @@ var end = function(e) {
 	}
 
 
-    function showComponentdialog(dropElementType, img, mySrcElement, targetIdNum) {
+    function showComponentdialog(dropElementType, img, mySrcElement, targetIdNum, context) {
         var imgElement = document.getElementById("IMG");
         imgElement.src = img;
         document.getElementById("cmodalEnum").textContent = targetIdNum;
@@ -1335,25 +1369,40 @@ var end = function(e) {
 
         var drpEleTOS = 0; if (dropElementType == "t" || dropElementType == "o" || dropElementType == "s") drpEleTOS = 1;
         var drpEleRXG = 0; if (dropElementType == "r" || dropElementType == "x" || dropElementType == "g" || dropElementType == "rx") drpEleRXG = 1; // for hiding Q label
-
-        $(".modal-body #V1").val(mySrcElement.getAttribute('data-value1')); // value 1 place holder assign
-        document.getElementById("V1Label").textContent = mySrcElement.getAttribute('data-unit1');  // value 1 units display
-
-        var val2 = mySrcElement.getAttribute('data-value2');
-        if (val2 == null) { $(".modal-body #V2").hide(); $(".modal-body #V2Label").hide(); }
-        else {
-            $(".modal-body #V2").show(); $(".modal-body #V2Label").show();    // value 2 show
-            $(".modal-body #V2").val(mySrcElement.getAttribute('data-value2'));   // value 2 place holder assign
-            if (drpEleTOS == 0) document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2'); // value 1 units label
-            else document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2') + schObj.LU + "]:"; // value 2 units display
+        if( context == "new") {
+            $(".modal-body #V1").val(mySrcElement.getAttribute('data-value1')); // value 1 place holder assign
+            document.getElementById("V1Label").textContent = mySrcElement.getAttribute('data-unit1');  // value 1 units display
+            var val2 = mySrcElement.getAttribute('data-value2');
+            if (val2 == null) { $(".modal-body #V2").hide(); $(".modal-body #V2Label").hide(); }
+            else {
+                $(".modal-body #V2").show(); $(".modal-body #V2Label").show();    // value 2 show
+                $(".modal-body #V2").val(mySrcElement.getAttribute('data-value2'));   // value 2 place holder assign
+                if (drpEleTOS == 0) document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2'); // value 1 units label
+                else document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2') + schObj.LU + "]:"; // value 2 units display
+            }
         }
+        else 
+         {
+            $(".modal-body #V1").val(schObj.ELEMENT[targetIdNum].value1); // value 1 place holder assign
+            document.getElementById("V1Label").textContent = mySrcElement.getAttribute('data-unit1');  // value 1 units display
+            var val2 = mySrcElement.getAttribute('data-value2');
+            if (val2 == null) { $(".modal-body #V2").hide(); $(".modal-body #V2Label").hide(); }
+            else {
+                $(".modal-body #V2").show(); $(".modal-body #V2Label").show();    // value 2 show
+                $(".modal-body #V2").val(schObj.ELEMENT[targetIdNum].value2);   // value 2 place holder assign
+                if (drpEleTOS == 0) document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2'); // value 1 units label
+                else document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2') + schObj.LU + "]:"; // value 2 units display
+            }
+         }
+
 
         if (drpEleRXG == 1) {
             $(".modal-body #Q").hide(); $(".modal-body #QLabel").hide();    // Q label and Q value hide for R and X
         }
         else {
             $(".modal-body #Q").show(); $(".modal-body #QLabel").show();    // Q label and Q value show for others
-            $(".modal-body #Q").val(mySrcElement.getAttribute('data-q')); // Q value place holder assign
+            if( context == "new") $(".modal-body #Q").val(mySrcElement.getAttribute('data-q')); // Q value place holder assign for new element
+            else $(".modal-body #Q").val((schObj.ELEMENT[targetIdNum].q));  //Q value if the element is already loaded and being updated 
         }
 
         $(".modal-body #STEP").val(mySrcElement.getAttribute('data-step')); // step value place holder assign - hidden for now
@@ -1371,26 +1420,41 @@ var end = function(e) {
     function componentValidate() {
         var eleNum = document.getElementById("cmodalEnum").textContent;
         var eleType = document.getElementById("cmodalType").textContent;
+      //  console.log("eleNum = " + eleNum);
+      //  console.log("eleType = " + eleType);
+        // if this is a two element type then show the second spin box
         schObj.ELEMENT[eleNum].type = eleType;
-         console.log("\"E" + eleNum +"\"");
-        var spin_element = document.getElementById("E" + eleNum);
-        console.log(spin_element);
+        var id = "E" + eleNum  ;
+        var id_a = "E" + eleNum + "a";  // needed if it is a 2 element componetn
+        console.log(id);
+        var spin_element = document.getElementById(id);
+        var spin_element_a = document.getElementById(id_a);
+        if(is1Component(eleType) == true) {
+            // if($("#"+id_a+"t").hasClass('hidden')== false)   $("#"+id_a+"t").addClass('hidden'); // adding t because we are hidding the row; hiding touchspin does not work ?
+            if ($("#"+id_a+"t").css('visibility') !== 'hidden')  $("#"+id_a+"t").css({'visibility': 'hidden'});
+            console.log("One element component =" + id);
+        }
+        else  // 2 element component
+        {
+            if ($("#"+id_a+"t").css('visibility') == 'hidden')  $("#"+id_a+"t").css({'visibility': 'visible'});
+            console.log("two element component =" + id_a);
+        }
         var val1 = $(".modal-body #V1").val();
         if (isNumeric(val1)) { schObj.ELEMENT[eleNum].value1 = val1; spin_element.value = Number(val1).toFixed(2); }
         var val2 = $(".modal-body #V2").val();
         console.log("val1 =" + val1 + " val2 =" + val2);
-        if (val2 == "") { schObj.ELEMENT[eleNum].value2 = 0; }  // value2
+        if (val2 == "") { schObj.ELEMENT[eleNum].value2 = 0; spin_element_a.value = 0.00;}  // value2
         else if (isNumeric(val2)) {
             schObj.ELEMENT[eleNum].value2 = val2;
-            if (eleType == "rx" || eleType == "g") // if this is RX or G then display the value2 on  spin_element E13
-                document.getElementById("E13").value = Number(val2).toFixed(2);
+            spin_element_a.value = Number(val2).toFixed(2);
         }
         var drpEleRXG = 0; if (eleType == "r" || eleType == "x" || eleType == "g" || eleType == "rx") drpEleRXG = 1;
         if (drpEleRXG == 0) { // no Q for R,X,RX and G
             var val3 = $(".modal-body #Q").val();
             if (isNumeric(val3)) schObj.ELEMENT[eleNum].q = val3;
         }
-        schObj.ELEMENT[eleNum].tune = 1;  // default the tune element to the first variable
+        $("#" + "H" + eleNum).text( eleType.toUpperCase() + eleNum); // update the component reference number on the schematic pane
+        //schObj.ELEMENT[eleNum].tune = 1;  // default the tune element to the first variable
         //console.log(JSON.stringify(schObj));
         Zcalsweep();
     }
@@ -1428,11 +1492,17 @@ $('input[name="spin2"]').on("keypress", function (e) {
     // use e.which
     var id1 = event.target.id;
     var spin_element = document.getElementById(id1);
-    //console.log("spin_change " + id1);
-    var idNum = Number(id1.substr(1));
+    var second_element = false; var id; var idNum;
+    if(id1.substr(-1)=='a')   { 
+            second_element = true; 
+            id = id1.substring(0, id1.length - 1); // remove 'a'
+            idNum = Number(id.substr(1)); // remove 'E'
+    } // here you have identified that this is the 2nd element not get rid of the "a" postfix
+    else idNum = Number(id1.substr(1)); // remove 'E' from incoming ID if not a second element
+       
     if(e.which == 83 || e.which == 115) {  // s or S
-        if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
-        else spin_element.value=schObj.ELEMENT[idNum].value1;
+        //if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
+        //else spin_element.value=schObj.ELEMENT[idNum].value1;
        // step_change(id1);
        var current_value = $(spin_element).triggerHandler("touchspin.getstep", { dummy: 1 });
        spin_element.blur();
@@ -1445,59 +1515,38 @@ $('input[name="spin2"]').on("keypress", function (e) {
 
         return;
     }
-    if( (e.which =='84' || e.which =='116')  && is1Component(schObj.ELEMENT[idNum].type)== false)  { // t or T
-         if (schObj.ELEMENT[idNum].tune == 2)  schObj.ELEMENT[idNum].tune = 1; else schObj.ELEMENT[idNum].tune = 2;
-        if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
-        else spin_element.value=schObj.ELEMENT[idNum].value1;
-        return;
-    }
+    // if( (e.which =='84' || e.which =='116')  && is1Component(schObj.ELEMENT[idNum].type)== false)  { // t or T
+    //      if (schObj.ELEMENT[idNum].tune == 2)  schObj.ELEMENT[idNum].tune = 1; else schObj.ELEMENT[idNum].tune = 2;
+    //     if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
+    //     else spin_element.value=schObj.ELEMENT[idNum].value1;
+    //     return;
+    // }
 
 });
 
     function spin_change(id1) {
+       console.log("spin_change " + id1);
+       var second_element = false; var id; var idNum;
+       if(id1.substr(-1)=='a')   { 
+              second_element = true; 
+              id = id1.substring(0, id1.length - 1); // remove 'a'
+              idNum = Number(id.substr(1)); // remove 'E'
+        } // here you have identified that this is the 2nd element not get rid of the "a" postfix
+       else idNum = Number(id1.substr(1)); // remove 'E' from incoming ID if not a second element
+       if (schObj.ELEMENT[idNum].type == "w") return;
         var spin_element = document.getElementById(id1);
-        // console.log("spin_change " + id1);
-        var idNum = Number(id1.substr(1));
-        //console.log("idNum " + idNum);
-        if (schObj.ELEMENT[idNum].type == "w") return;
-        //// extra check to see if we can fix the effect of the bug of the change event called twice by touchspin
-        //if (idNum == 11 && schObj.ELEMENT[1].value2 !== spin_element.value) { schObj.ELEMENT[1].value2 = spin_element.value; Zcalsweep(schObj, 0, idNum); }// take care of E13 case ( Load Reactance/Angle)
-        //else    {
-        //            if (schObj.ELEMENT[idNum].tune == 2 && schObj.ELEMENT[1].value2 !== spin_element.value) {
-        //            schObj.ELEMENT[idNum].value2 = spin_element.value; Zcalsweep(schObj, 0, idNum);
-        //        }
-        //        else {
-        //            if (schObj.ELEMENT[1].value1 !== spin_element.value) { schObj.ELEMENT[idNum].value1 = spin_element.value; Zcalsweep(schObj, 0, idNum); }
-        //        }
-        //}
-        // THis is support mobile as there is no right click in mobile, so press T to toggle the tune element
-        // if( spin_element.value == "S" || spin_element.value == "s" )  { 
-        //     console.log( " step pressed");
-        //     if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
-        //     else spin_element.value=schObj.ELEMENT[idNum].value1;
-        //    step_change(id1);
-        //    return;
-        // }
-
-        // if( (spin_element.value == "T" || spin_element.value == "t")  && is1Component(schObj.ELEMENT[idNum].type)== false)  { 
-        //     console.log( " Toggel pressed");
-        //    if (schObj.ELEMENT[idNum].tune == 2)  schObj.ELEMENT[idNum].tune = 1; else schObj.ELEMENT[idNum].tune = 2;
-        //     if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
-        //     else spin_element.value=schObj.ELEMENT[idNum].value1;
-        //    return;
-        // }
+       //  console.log("spin_change " + id1.substr(1));
+        console.log("idNum " + idNum);
+      
         if(isNumeric(spin_element.value) == false) {
-             if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
+            if (second_element == true)spin_element.value=schObj.ELEMENT[idNum].value2; 
             else spin_element.value=schObj.ELEMENT[idNum].value1;
             return;
         }
-        if (idNum == 13) {  // take care of E13 case ( Load Reactance/Angle)
-                schObj.ELEMENT[1].value2 = spin_element.value;
-            }
-        else {
-            if (schObj.ELEMENT[idNum].tune == 2)schObj.ELEMENT[idNum].value2 = spin_element.value; // take care of the tune element for two element components
-            else schObj.ELEMENT[idNum].value1 = spin_element.value;
-            
+        else 
+        {
+            if (second_element == true)schObj.ELEMENT[idNum].value2 = spin_element.value; 
+            else schObj.ELEMENT[idNum].value1 = spin_element.value; 
         }
         Zcalsweep();
     }
@@ -1535,12 +1584,63 @@ $('input[name="spin2"]').on("keypress", function (e) {
         $("#dataColor").val(smithObj.sweepDatasets[1].color);
        
         $("#SE").val(schObj.SE);
+ 
         // var conceptName = $('#aioConceptName').find(":selected").text();
         $("#LU").val(schObj.LU);
         $("#TER").val(schObj.termination);
         if (schObj.termination == "Multiple")  document.getElementById('TER_FILE').style.display = 'block';
         else document.getElementById('TER_FILE').style.display = 'none';       
     }
+
+   function OnOptionSweepElemet_click()  // depending upon the tune element detemine where it needs a tune option or not ( incase of a two element)
+   {
+     
+      
+     // extract id
+     var sweep_element = $('#SE').find(":selected").text();
+     var index=   $("#SE").prop('selectedIndex');
+     console.log (" Current Sweep Element:" +  $('#SE').find(":selected").text() + " Index: "+ index );
+     var eleType = schObj.ELEMENT[index].type;
+     if( index > 0 && is2Component(eleType))
+     {
+       //show tune option  with the current tune value selected
+        $("#SE_TUNE").removeClass('hidden');
+        switch (eleType) {
+            case "rx":
+                $('#TUNE1a').text('Sweep R');
+                $('#TUNE2a').text('Sweep X');
+                break;
+            case "g":
+                $('#TUNE1a').text('Sweep M');
+                $('#TUNE2a').text('Sweep A');
+                break;
+            case "t":
+            case "o":
+            case "s":
+                $('#TUNE1a').text('Sweep Z0');
+                $('#TUNE2a').text('Sweep L');
+                break;
+            case "src":
+            case "prc":
+                $('#TUNE1a').text('Sweep R');
+                $('#TUNE2a').text('Sweep C');
+                break;
+            case "slc":
+            case "plc":
+                $('#TUNE1a').text('Sweep L');
+                $('#TUNE2a').text('Sweep C');
+                break;
+            default:
+                $('#TUNE1a').text('Sweep 1');
+                $('#TUNE2a').text('Sweep 2');
+        }
+
+       if(schObj.ELEMENT[index].tune == 1) document.getElementById('TUNE1').checked = true;
+       else document.getElementById('TUNE2').checked = true;     
+     }    
+     else { $("#SE_TUNE").addClass('hidden'); schObj.ELEMENT[index].tune =1; }
+
+   }
 
     // this function shows hides the file dialog depending on Multi/Single termination
     function yesnoFileDialog() {
@@ -1551,18 +1651,16 @@ $('input[name="spin2"]').on("keypress", function (e) {
             document.getElementById('TER_FILE').style.display = 'none';
             if(schObj.ELEMENT[1].type =="rx") {
             document.getElementById("E1").value=  50.00; // default values if you are going back to single.
-            document.getElementById("E13").value= 0.00;
+            document.getElementById("E1a").value= 0.00;
             schObj.ELEMENT[1].value1 = 50.00;
             schObj.ELEMENT[1].value2 = 0.00;
             }
             else {
             document.getElementById("E1").value=  0.01; // default values if you are going back to single.
-            document.getElementById("E13").value= 0.10;
+            document.getElementById("E1a").value= 0.10;
             schObj.ELEMENT[1].value1 = 0.1;
             schObj.ELEMENT[1].value2 = 10.0;
             }
-            //$("#E13").val("0.00");
-            //console.log( "UPDATED");
         }
     }
 
@@ -1583,6 +1681,15 @@ $('input[name="spin2"]').on("keypress", function (e) {
         if (isNumeric(val) && val > 0) schObj.SST = val;
         // schObj.ELEMENT[1].type=$("input[name='LOAD']:checked").val();
         schObj.SE = $('#SE').find(":selected").text(); // Sweep element
+        var index=   $("#SE").prop('selectedIndex');
+        var eleType = schObj.ELEMENT[index].type;
+       if( index > 0 && is2Component(eleType))
+       {
+        for( var i = 0; i <13; i++ )schObj.ELEMENT[i].tune = 1;  // first reset all to tune 1, this is only used for sweep element so only one is used
+        if(document.getElementById('TUNE1').checked )schObj.ELEMENT[index].tune = 1; else  schObj.ELEMENT[index].tune = 2;
+       }    
+
+
         schObj.LU = $('#LU').find(":selected").text(); // Length Units
         //console.log (schObj.LU );
         if ($(".modal-body #TER").val() == "Multiple") {
@@ -1659,103 +1766,47 @@ $('input[name="spin2"]').on("keypress", function (e) {
     }
 
 
-    var tuneSelector1 = "Radio1"; var tuneSelector2 = "Radio2";
-    var selected_value1 = true; var selected_value2 = false;
-    var radio1_visible = false; var radio2_visible = false; var updateValue_disable = false;
-
-    $(function () {
+   // var tuneSelector1 = "Radio1"; var tuneSelector2 = "Radio2";
+   // var selected_value1 = true; var selected_value2 = false;
+  //  var radio1_visible = false; var radio2_visible = false; 
+    var updateValue_disable = false;
+    $(function () {  // right click menu only availale on desktops, should open the element value entry box as after 
         $.contextMenu({
-            selector: "input[name='spin2']",
+            selector: "input[name='spin2'],.dropzonevimg,.dropzonehimg",
             build: function ($trigger, e) {
                 // e.preventDefault(); try this to stop the mobile default menu
                 // this callback is executed every time the menu is to be shown
                 // its results are destroyed every time the menu is hidden
-                // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
                 //console.log($trigger.attr("id") );
-                //var id = $trigger.attr("id") ;
-                var idNum = Number($trigger.attr("id").substr(1));
+                var id1 = $trigger.attr("id") ;
+                if(id1.substring(0,1)=='D') id1 = id1.replaceAt(0, "E");
+                console.log("id1 =" + id1 );
+                var second_element = false; var id; var idNum;
+                if(id1.substr(-1)=='a')   { 
+                        second_element = true; 
+                        id = id1.substring(0, id1.length - 1); // remove 'a'
+                        idNum = Number(id.substr(1)); // remove 'E'
+                    } // here you have identified that this is the 2nd element not get rid of the "a" postfix
+                else idNum = Number(id1.substr(1)); // remove 'E' from incoming ID if not a second element
+               // if (schObj.ELEMENT[idNum].type == "w") return;
+                var spin_element = document.getElementById(id1);
+                //  console.log("spin_change " + id1.substr(1));
+                //   console.log("idNum " + idNum);
+                // var idNum = Number($trigger.attr("id").substr(1));
                 console.log("before showing context menu " + idNum);
                 var elType = schObj.ELEMENT[idNum].type;
                 console.log("elType " + elType);
-                var tune_selected = schObj.ELEMENT[idNum].tune; // which component is currenlty being tuned ?
-                if (tune_selected == 1) { selected_value1 = true; selected_value2 = false }  // removed 0
-                else if (tune_selected == 2) { selected_value1 = false; selected_value2 = true } // 1 means first parameter tuned
-                else { selected_value1 = true; selected_value2 = false}; // single parameter
-
-                switch (elType) {
-                    case "w":
-                        console.log("Switch W ");
-                        radio1_visible = false; radio2_visible = false; updateValue_disable = true;
-                        break;
-                    case "r":
-                    case "l":
-                    case "c":
-                    case "x":
-                    case "f":
-                    case "rx":
-                    case "g":
-                        console.log("Switch RLCXFRXG ");
-                        radio1_visible = false; radio2_visible = false; updateValue_disable = false;
-                        break;
-                    default:
-                        radio1_visible = true; radio2_visible = true; updateValue_disable = false;
-                }
-                if (idNum == 13) { radio1_visible = false; radio2_visible = false; updateValue_disable = true; }
-                if (elType == "s" || elType == "o" || elType == "t" || elType == "plc" || elType == "slc" || elType == "prc"
-                    || elType == "src" || elType == "rx" || elType == "g") {
-                    var element1 = document.getElementById(elType);
-                    tuneSelector1 = element1.getAttribute('data-unit1');
-                    if (elType == "t" || elType == "o" || elType == "s")
-                        tuneSelector2 = element1.getAttribute('data-unit2') + schObj.LU + "]"; // length units
-                    else tuneSelector2 = element1.getAttribute('data-unit2');
-                }
-
+                if( elType == 'w')updateValue_disable = true; else updateValue_disable = false;
+                var mySrcElement = document.getElementById(elType);  // to display defaults
+                var imgSrc = isEven(idNum) ? mySrcElement.getAttribute('data-img') : mySrcElement.getAttribute('data-imgv');
                 return {
                     callback: function (key, options) {
-                        //var m = "clicked: " + key;
-                        if (key == "item1") { spinValUpdatePrompt($(this).attr('id')); }
-                        // window.console && console.log(m) || alert(m);
+                       if (key == "item1") { showComponentdialog(elType, imgSrc, mySrcElement, idNum,"update")}
                     },
                     items: {
                         item1: {
                             name: "Update Value",
                             disabled: updateValue_disable
-                        },
-                        //bar: { name: "bar", disabled: true, callback: function (key, opt) { alert("Bar!") } },
-                        // sep2: "---------",
-                        radio1: {
-                            name: "Tune " + tuneSelector1,
-                            type: 'radio',
-                            radio: 'radio',
-                            value: '1',
-                            selected: selected_value1,
-                            visible: radio1_visible,
-                            events: {
-                                click: function (e) {
-                                    //console.log('Clicked On' + idNum);
-                                    var val = schObj.ELEMENT[idNum].value1;  // get from main JSON array
-                                    var spin_element = document.getElementById("E" + idNum);
-                                    spin_element.value = Number(val).toFixed(2);
-                                    schObj.ELEMENT[idNum].tune = 1;
-                                }
-                            }
-                        },
-                        radio2: {
-                            name: "Tune " + tuneSelector2,
-                            type: 'radio',
-                            radio: 'radio',
-                            value: '2',
-                            selected: selected_value2,
-                            visible: radio2_visible,
-                            events: {
-                                click: function (e) {
-                                    //console.log('Clicked On');
-                                    var val = schObj.ELEMENT[idNum].value2;  // get from main JSON array
-                                    var spin_element = document.getElementById("E" + idNum);
-                                    spin_element.value = Number(val).toFixed(2);
-                                    schObj.ELEMENT[idNum].tune = 2;
-                                }
-                            }
                         }
                     }
                 };
@@ -1765,76 +1816,62 @@ $('input[name="spin2"]').on("keypress", function (e) {
     });
 
 
-    function spinValUpdatePrompt(id1) {
-        // force it to Element ID
-        id1 = id1.replaceAt(0, "E");
-        console.log("ID1 " + id1);  // E1,E2 etc.
-        var idNum = Number(id1.substr(1));
-        console.log("idNum " + idNum);
-        var elType = schObj.ELEMENT[idNum].type;
-        console.log("elType " + elType);
-        if (elType == "w") return;
-        var eleVal2 = 1; if (elType == "r" || elType == "l" || elType == "c" || elType == "x" || elType == "f") eleVal2 = 0;
-        var element = document.getElementById(id1); // this gets the spincontrol element
-        var result = parseFloat($(element).triggerHandler("touchspin.getvalue", { dummy: 1 }));
-        console.log("result " + result);
-        var result1 = parseFloat(schObj.ELEMENT[idNum].value1);
-        var result2;
-        if (eleVal2 == 1) result2 = parseFloat(schObj.ELEMENT[idNum].value2); else result2 = null;
-        console.log("result1 " + result1);
-        if (result !== result1) alert("spinvalues and JSON values are not equal");
-        var element1 = document.getElementById(elType);
-        var prompt1 = "Enter " + element1.getAttribute('data-unit1');
-        //console.log("I am here");
-        var current_val;
-        if (isNumeric(result1) == true) {
-            var val = prompt(prompt1, Number(result1).toFixed(2));
-            if (isNumeric(val)) {
-                    schObj.ELEMENT[idNum].value1 = val;  // update the main JSON array
-                    element.value = Number(val).toFixed(2);
-                }
-            // current_val =  Number(result1).toFixed(2);
-            // bootbox.prompt({
-            // size: "small",
-            // title: prompt1, 
-            // inputType: "text",
-            // value: current_val,
-            // callback: function(result) {
-            //     if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
-            //          schObj.ELEMENT[idNum].value1 = result;  // update the main JSON array
-            //          element.value = Number(result).toFixed(2);
-            //     }
-            // }
-            // });
+    // function spinValUpdatePrompt(id1) {
+    //     // force it to Element ID
+    //     id1 = id1.replaceAt(0, "E");
+    //     console.log("ID1 " + id1);  // E1,E2 etc.
+    //     var idNum = Number(id1.substr(1));
+    //     console.log("idNum " + idNum);
+    //     var elType = schObj.ELEMENT[idNum].type;
+    //     console.log("elType " + elType);
+    //     if (elType == "w") return;
+    //     var eleVal2 = 1; if (elType == "r" || elType == "l" || elType == "c" || elType == "x" || elType == "f") eleVal2 = 0;
+    //     var element = document.getElementById(id1); // this gets the spincontrol element
+    //     var result = parseFloat($(element).triggerHandler("touchspin.getvalue", { dummy: 1 }));
+    //     console.log("result " + result);
+    //     var result1 = parseFloat(schObj.ELEMENT[idNum].value1);
+    //     var result2;
+    //     if (eleVal2 == 1) result2 = parseFloat(schObj.ELEMENT[idNum].value2); else result2 = null;
+    //     console.log("result1 " + result1);
+    //     if (result !== result1) alert("spinvalues and JSON values are not equal");
+    //     var element1 = document.getElementById(elType);
+    //     var prompt1 = "Enter " + element1.getAttribute('data-unit1');
+    //     var current_val;
+    //     if (isNumeric(result1) == true) {
+    //         var val = prompt(prompt1, Number(result1).toFixed(2));
+    //         if (isNumeric(val)) {
+    //                 schObj.ELEMENT[idNum].value1 = val;  // update the main JSON array
+    //                 element.value = Number(val).toFixed(2);
+    //             }
+    //         // current_val =  Number(result1).toFixed(2);
+    //         // bootbox.prompt({
+    //         // size: "small",
+    //         // title: prompt1, 
+    //         // inputType: "text",
+    //         // value: current_val,
+    //         // callback: function(result) {
+    //         //     if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
+    //         //          schObj.ELEMENT[idNum].value1 = result;  // update the main JSON array
+    //         //          element.value = Number(result).toFixed(2);
+    //         //     }
+    //         // }
+    //         // });
 
-            if (eleVal2 == 1 && isNumeric(result2) == true) {  // case of two parameter components T O S PLC SLC PR SRC RX G
+    //         if (eleVal2 == 1 && isNumeric(result2) == true) {  // case of two parameter components T O S PLC SLC PR SRC RX G
 
-                var unitfor_t_s_o;
-                if (elType == "t" || elType == "o" || elType == "s") unitfor_t_s_o = schObj.LU + "]"; // length units
-                else unitfor_t_s_o = "";
-                 var prompt2 = "Enter " + element1.getAttribute('data-unit2')+ unitfor_t_s_o; // units
-                var val2 = prompt(prompt2, Number(result2).toFixed(2));
-                if (isNumeric(val2)) {
-                    schObj.ELEMENT[idNum].value2 = val2;  // update the main JSON array
-                    if (elType == "rx" || elType == "g") document.getElementById("E13").value = Number(val2).toFixed(2); // incase of load element display value 2 in spin_control E13
-                }
-                // current_val =  Number(result2).toFixed(2);
-                // bootbox.prompt({
-                // size: "small",
-                // title: prompt2, 
-                // inputType: "text",
-                // value: current_val,
-                // callback: function(result) {
-                //     if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
-                //         schObj.ELEMENT[idNum].value2 = result;  // update the main JSON array
-                //         if (elType == "RX" || elType == "G") document.getElementById("E13").value = Number(result).toFixed(2); // incase of load element display value 2 in spin_control E13
-                //     }
-                // }
-                // });
-            }
-            Zcalsweep();
-        }
-    }
+    //             var unitfor_t_s_o;
+    //             if (elType == "t" || elType == "o" || elType == "s") unitfor_t_s_o = schObj.LU + "]"; // length units
+    //             else unitfor_t_s_o = "";
+    //              var prompt2 = "Enter " + element1.getAttribute('data-unit2')+ unitfor_t_s_o; // units
+    //             var val2 = prompt(prompt2, Number(result2).toFixed(2));
+    //             if (isNumeric(val2)) {
+    //                 schObj.ELEMENT[idNum].value2 = val2;  // update the main JSON array
+    //                 if (elType == "rx" || elType == "g") document.getElementById("E1a").value = Number(val2).toFixed(2); // incase of load element display value 2 in spin_control E1a
+    //             }
+    //         }
+    //         Zcalsweep();
+    //     }
+    // }
 
 
     function playSound() {
