@@ -992,15 +992,19 @@ function updateUI() {
         // if it is a two component element then update the second touchspin aswell.
         var id = "E"+i;
         var id_a = "E"+i +"a"
-        document.getElementById(id).value= schObj.ELEMENT[i].value1;
+        var spin_element;
+        spin_element =  document.getElementById(id);
+        spin_element.value= schObj.ELEMENT[i].value1;
+        if(schObj.ELEMENT[i].value1 < 0) $(spin_element).css('color','red');else $(spin_element).css('color','black');
         if(is1Component(schObj.ELEMENT[i].type)) 
         {  
             if ($("#"+id_a+"t").css('visibility') !== 'hidden')  $("#"+id_a+"t").css({'visibility': 'hidden'});
         }
         else
-        {
-            document.getElementById(id_a).value= schObj.ELEMENT[i].value2;
+        {   spin_element =  document.getElementById(id_a);
+            spin_element.value= schObj.ELEMENT[i].value2;
             if ($("#"+id_a+"t").css('visibility') == 'hidden')  $("#"+id_a+"t").css({'visibility': 'visible'});
+            if(schObj.ELEMENT[i].value2 < 0) $(spin_element).css('color','red');else $(spin_element).css('color','black')
         }
     }
     for (var i = 1; i < 13; i++) 
@@ -1440,13 +1444,17 @@ var end = function(e) {
             console.log("two element component =" + id_a);
         }
         var val1 = $(".modal-body #V1").val();
-        if (isNumeric(val1)) { schObj.ELEMENT[eleNum].value1 = val1; spin_element.value = Number(val1).toFixed(2); }
+        if (isNumeric(val1)) { 
+            schObj.ELEMENT[eleNum].value1 = val1; spin_element.value = Number(val1).toFixed(2);
+            if(val1 < 0) $(spin_element).css('color','red');else $(spin_element).css('color','black'); // change color to red if negative
+         }
         var val2 = $(".modal-body #V2").val();
         console.log("val1 =" + val1 + " val2 =" + val2);
         if (val2 == "") { schObj.ELEMENT[eleNum].value2 = 0; spin_element_a.value = 0.00;}  // value2
         else if (isNumeric(val2)) {
             schObj.ELEMENT[eleNum].value2 = val2;
             spin_element_a.value = Number(val2).toFixed(2);
+            if(schObj.ELEMENT[eleNum].value2 < 0) $(spin_element_a).css('color','red');else $(spin_element_a).css('color','black'); // change color to red if negative
         }
         var drpEleRXG = 0; if (eleType == "r" || eleType == "x" || eleType == "g" || eleType == "rx") drpEleRXG = 1;
         if (drpEleRXG == 0) { // no Q for R,X,RX and G
@@ -1537,7 +1545,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
         var spin_element = document.getElementById(id1);
        //  console.log("spin_change " + id1.substr(1));
         console.log("idNum " + idNum);
-      
+        // if number not valid then put back the old value
         if(isNumeric(spin_element.value) == false) {
             if (second_element == true)spin_element.value=schObj.ELEMENT[idNum].value2; 
             else spin_element.value=schObj.ELEMENT[idNum].value1;
@@ -1546,7 +1554,10 @@ $('input[name="spin2"]').on("keypress", function (e) {
         else 
         {
             if (second_element == true)schObj.ELEMENT[idNum].value2 = spin_element.value; 
-            else schObj.ELEMENT[idNum].value1 = spin_element.value; 
+            else { if("E"+idNum == "E1" &&  spin_element.value < 0.00)spin_element.value=schObj.ELEMENT[idNum].value1 = "0.00"  ;
+            else schObj.ELEMENT[idNum].value1 = spin_element.value;  }
+           if(spin_element.value < 0) $(spin_element).css('color','red');else $(spin_element).css('color','black')
+
         }
         Zcalsweep();
     }
