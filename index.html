@@ -11,6 +11,7 @@
   <link href="css/jquery.bootstrap-touchspin.css" rel="stylesheet" type="text/css" media="all"/>
   <link href="css/jquery.contextMenu.css" rel="stylesheet" type="text/css" media="screen">
   <link href="css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css" />
+  <link href="css/jquery.qtip.min.css" rel="stylesheet" type="text/css" />
   <script src="js/jquery-3.2.1.min.js"></script>
   <script src="js/bootstrap3.min.js"></script>
   <script src="js/math.min.js"></script>
@@ -25,6 +26,7 @@
   <script src="js/DragDropTouch.js"></script>    
   <script src="js/bootstrap-dialog.min.js"></script>
   <script src="js/bootbox.min.js"></script>
+  <script type="text/javascript" src="js/jquery.qtip.min.js"></script>
 
   
    <!-- ios-drag-drop.js does not trigger end ? -->
@@ -472,20 +474,23 @@ a:hover {
                                  <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
                         </div> <!--Component Zone 4 End-->
                     </div>   <!--Component Zone End--> 
-                    <!--ToolTip Zone Begin--> 
-                    <div id="tooltip" class=" hidden hidden-xs  col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" style="margin-top:0px">
-                        <!-- ToolTip Zone 1 begin -->
+                    <!--MatchTip Zone Begin--> 
+                    <div id="matchtip" class=" hidden hidden-xs  col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" style="margin-top:0px">
+                        <!-- MatchTip Zone 1 begin -->
                         <div class="text-center">
                             <h5 style="color:blue">Matching Tip</h5>
                         </div>
                         <div  class="text-center" style="background-color:white; clear: both; margin-top:20px; margin-bottom:20px; ">
                             <img id="regions"  class="img-thumbnail" src="img/region3.png" >
-                        </div> <!--ToolTip Zone 1 End-->                   
-                    </div>   <!--ToolTip Zone End--> 
+                        </div> <!--MatchTip Zone 1 End-->                   
+                    </div>   <!--MatchTip Zone End--> 
             </div>  <!--schematic row div--> 
-        </div>   <!--schematic window div-->       
-                        <p>To add components, drag and drop component icons on the rectangular slots. </br>
+                 </div>   <!-- drag-drop message--> 
+                    <p>To add components, drag and drop component icons on the rectangular slots. </br>
                            To remove components, drag and drop the "Wire or Null" <IMG SRC="img/w.bmp" class="img-thumbnail" style="margin:4px">icon. </p>
+                </div>
+        </div>   <!--schematic window div-->       
+                       
     </div> <!--container row div--> 
 </div>  <!--container --> 
 
@@ -676,7 +681,7 @@ var smithObj = {
                test: function() { test(this);},
           };
 
-var toolTipShown = false;
+var matchTipShown = false;
 smithObj.ctx = document.getElementById("smithMain").getContext('2d');
 
  function test(context){
@@ -783,8 +788,8 @@ function onMouseMove(evt) {
     // matching tool tip, when the sprite is hovered depending upon its regions the matching network is shown (see FAQ figure) in the MatchTip area
     var x1 = resultsObj.OUTPUT[2].GAMRout*AXIS_RANGE;
     var y1 = resultsObj.OUTPUT[2].GAMIout*AXIS_RANGE;
-    //console.log ("m = " + m + " InCircleR((x-x1),(y-y1) " + x1  +"  "+ y1 + "  "+ x +"  "+ y +" inSmith " +inSmith + " toolTipShown" + toolTipShown );
-    if(m > 0.045 && InCircleR((x-x1),(y-y1),25) && inSmith && !toolTipShown)  {
+    //console.log ("m = " + m + " InCircleR((x-x1),(y-y1) " + x1  +"  "+ y1 + "  "+ x +"  "+ y +" inSmith " +inSmith + " matchTipShown" + matchTipShown );
+    if(m > 0.045 && InCircleR((x-x1),(y-y1),25) && inSmith && !matchTipShown)  {
         var region = getRegion(x1,y1);
         //console.log ("region = " + region);
         switch(region) {
@@ -803,12 +808,12 @@ function onMouseMove(evt) {
             default:
                 document.getElementById("regions").src = ""
         }
-        toolTipShown = true;
-        $("#tooltip").removeClass('hidden');
+        matchTipShown = true;
+        $("#matchtip").removeClass('hidden');
     }
-    if(toolTipShown==true && InCircleR((x-x1),(y-y1),25)==false) {
-         $("#tooltip").addClass('hidden')
-        toolTipShown=false;
+    if(matchTipShown==true && InCircleR((x-x1),(y-y1),25)==false) {
+         $("#matchtip").addClass('hidden')
+        matchTipShown=false;
     }
     }
 
@@ -1017,6 +1022,7 @@ function updateUI() {
     else  document.getElementById('V1').style.borderColor='red';
 
     Zcalsweep();
+    updateToolTip() ;
 }
 
 function get_click()
@@ -1465,6 +1471,7 @@ var end = function(e) {
         //schObj.ELEMENT[eleNum].tune = 1;  // default the tune element to the first variable
         //console.log(JSON.stringify(schObj));
         Zcalsweep();
+        updateToolTip() ;
     }
 
     function reply_click(clicked_id, value) {
@@ -1532,8 +1539,94 @@ $('input[name="spin2"]').on("keypress", function (e) {
 
 });
 
-    function spin_change(id1) {
-       console.log("spin_change " + id1);
+$('input[name="spin2"]').TouchSpin({
+        min: -100000000,
+        max: 1000000000,
+        step: 1,
+        decimals: 2,
+        boostat: 5,
+        maxboostedstep: 10,
+        verticalbuttons: false
+});
+
+
+$('input[name="spin2"]').qtip({ 
+        content: {text: ""},
+        position:{ my: 'bottom left', at: 'top right',adjust: {x:-15, y:8}},
+        show: {delay: 500, effect: function() {$(this).slideDown();}},   // slideDown
+        hide: { inactive: 3000, event: 'click mouseleave', delay: 0 , effect: function() {$(this).slideUp();}},
+        style: {classes: 'qtip-rounded qtip-shadow'}
+    });
+
+// uses the schObj object to update the ToolTip content
+function updateToolTip() {
+     //   $('#E5').qtip('option', 'content.text', "test");
+     if(isMobile) return; 
+     var id, id_a;
+    $('#E0').qtip('disable');
+    for (var i = 1; i < 13; i++) {
+        id= 'E' + i ;
+        id_a= 'E' + i +'a';
+        $('#'+id).qtip('enable');
+        $('#'+id_a).qtip('enable');
+    }
+    for (var i = 1; i < 13; i++) {
+    id= 'E' + i ;
+    id_a= 'E' + i +'a';
+    switch (schObj.ELEMENT[i].type) {
+        case 'w':
+            $('#'+id).qtip('disable');
+            $('#'+id_a).qtip('disable');
+            break;
+        case 't':
+        case 'o':
+        case 's':
+            $('#'+id).qtip('option', 'content.text', "Z0 [ohms]");
+            $('#'+id_a).qtip('option', 'content.text', "Length [" +schObj.LU.toLowerCase()+"]");
+            break;
+        case 'r':
+        case 'x':
+            $('#'+id).qtip('option', 'content.text', "R [ohms]");
+            $('#'+id_a).qtip('disable');
+            break;
+        case 'l':
+            $('#'+id).qtip('option', 'content.text', "L [nH]");
+            $('#'+id_a).qtip('disable');
+            break;
+        case 'c':
+            $('#'+id).qtip('option', 'content.text', "C [pF]");
+            $('#'+id_a).qtip('disable');
+            break;
+        case 'rx':
+            $('#'+id).qtip('option', 'content.text', " R [ohms]");
+            $('#'+id_a).qtip('option', 'content.text', "X [ohms]");
+            break;
+        case 'g':
+            $('#'+id).qtip('option', 'content.text', "Magnitude");
+            $('#'+id_a).qtip('option', 'content.text', "degrees");
+            break;
+        case 'plc':
+        case 'slc':
+            $('#'+id).qtip('option', 'content.text', "L [nH]");
+            $('#'+id_a).qtip('option', 'content.text', "C [pF]");
+            break;
+        case 'prc':
+        case 'src':
+            $('#'+id).qtip('option', 'content.text', "R [ohms]");
+            $('#'+id_a).qtip('option', 'content.text', "C [pF]");
+            break;
+        default:
+             $('#'+id).qtip('disable');
+             $('#'+id_a).qtip('disable');
+        }
+
+    }
+
+}
+
+
+ function spin_change(id1) {
+       //console.log("spin_change " + id1);
        var second_element = false; var id; var idNum;
        if(id1.substr(-1)=='a')   { 
               second_element = true; 
@@ -1544,7 +1637,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
        if (schObj.ELEMENT[idNum].type == "w") return;
         var spin_element = document.getElementById(id1);
        //  console.log("spin_change " + id1.substr(1));
-        console.log("idNum " + idNum);
+        //console.log("idNum " + idNum);
         // if number not valid then put back the old value
         if(isNumeric(spin_element.value) == false) {
             if (second_element == true)spin_element.value=schObj.ELEMENT[idNum].value2; 
@@ -1563,15 +1656,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
     }
 
 
-    $('input[name="spin2"]').TouchSpin({
-        min: -100000000,
-        max: 1000000000,
-        step: 1,
-        decimals: 2,
-        boostat: 5,
-        maxboostedstep: 10,
-        verticalbuttons: false
-    });
+
 
     //console.log(JSON.stringify(schObj));
     /***************OPTIONS MODAL****************************/
@@ -1605,8 +1690,6 @@ $('input[name="spin2"]').on("keypress", function (e) {
 
    function OnOptionSweepElemet_click()  // depending upon the tune element detemine where it needs a tune option or not ( incase of a two element)
    {
-     
-      
      // extract id
      var sweep_element = $('#SE').find(":selected").text();
      var index=   $("#SE").prop('selectedIndex');
@@ -1774,6 +1857,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
         console.log(JSON.stringify(resultsObj));
         console.log(JSON.stringify(smithObj));
         //alert("Validate " + $(".modal-body #VF").val());
+        updateToolTip();//update tooltip as the length unit may have changed.
     }
 
 
