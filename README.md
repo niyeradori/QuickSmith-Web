@@ -23,6 +23,7 @@ Some of the features offered by this program are listed below:
 - Help files with solved examples of network matching and amplifier design
 
 Nathan Iyer
+KJ6FOJ
 
 July 31st, 2017
 
