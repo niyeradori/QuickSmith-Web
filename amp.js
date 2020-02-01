@@ -94,7 +94,7 @@ function calculateStabilityCircles() {
     ampObj.STFLAG = true;
   }
   else {
-    panel3d1.ampObj = "POTENTIALLY UNSTABLE";
+    ampObj.stability_msg = "POTENTIALLY UNSTABLE";
     ampObj.STFLAG = false;
   }
   //Calculate var Variable C1 & C2
