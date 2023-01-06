@@ -1,0 +1,273 @@
+
+
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Convert</title>
+  <meta name="description" content="Convert one unit to another">
+  <meta name="author" content="SitePoint">
+
+  <meta property="og:title" content="A Basic HTML5 Template">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content=" ">
+  <meta property="og:description" content="Convert one unit to another">
+  <meta property="og:image" content="image.png">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="57x57" href="img/apple-icon-57x57.png" />
+  <link rel="apple-touch-icon" sizes="72x72" href="img/apple-icon-72x72.png" />
+  <link rel="apple-touch-icon" sizes="114x114" href="img/apple-icon-114x114.png" />
+  <link rel="apple-touch-icon" sizes="144x144" href="img/apple-icon-144x144.png" />
+
+  <link href="css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <script src="js/bootstrap3.min.js"></script>
+
+  <style>
+body {
+  margin: 0;
+  padding: 0;
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="jumbotron text-center">
+    <h3>Convert</h3>
+  </div>
+  
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <h4>Volts<>Watts<>dBm</h4>
+        <p></p>
+        <form class="form-inline">
+          <div class="form-group form-group-sm">
+            <label for="volts">  &nbsp; &nbsp;Volts(PtP):</label>
+            <input type="text" class="form-control" id="volts">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="watts">  &nbsp; &nbsp;Watts:</label>
+            <input type="text" class="form-control" id="watts">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="dbm"> &nbsp; &nbsp; dBm:</label>
+            <input type="text" class="form-control" id="dbm">
+          </div>
+          <!-- <div class="checkbox">
+            <label><input type="checkbox"> Remember me</label>
+          </div> -->
+          &nbsp; &nbsp;
+          <button type="button" onclick="convert()" class="btn btn-default">Convert</button>
+          &nbsp; 
+          <button type="button" onclick="clear1()" class="btn btn-default">Clear</button>
+         </form>
+      </div>
+      <div style="margin-top: 40px;" class="col-sm-12">
+        <h4>milliVolts<>microTesla</h4>
+        <p></p>
+        <form class="form-inline">
+          <div class="form-group form-group-sm">
+            <label for="mvolts">  &nbsp; &nbsp; milliVolts(PtP):</label>
+            <input type="text" class="form-control" id="mvolts">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="utesla"> &nbsp; &nbsp; microTesla:</label>
+            <input type="text" class="form-control" id="utesla">
+          </div>
+          <!-- <div class="checkbox">
+            <label><input type="checkbox"> Remember me</label>
+          </div> -->
+          &nbsp; &nbsp;
+          <button type="button" onclick="convert1()" class="btn btn-default">Convert</button>
+          &nbsp; 
+          <button type="button" onclick="clear2()" class="btn btn-default">Clear</button>
+         </form>
+      </div>
+      <!-- <div class="col-sm-4">
+        <h3>Column 2</h3>
+        <p>Lorem ipsum dolor..</p>
+      </div>
+      <div class="col-sm-4">
+        <h3>Column 3</h3>
+        <p>Lorem ipsum dolor..</p>
+      </div> -->
+    </div>
+  </div>
+
+
+
+    <script>
+      var volts_present=false;
+      var watts_present=false;
+      var dbm_present=false;
+      var mvolts_present=false;
+      var utesla_present=false;
+
+      $.fn.enterKey = function (fnc) {
+        return this.each(function () {
+            $(this).keypress(function (ev) {
+                var keycode = (ev.keyCode ? ev.keyCode : ev.which);
+                if (keycode == '13') {
+                    fnc.call(this, ev);
+                }
+            })
+        })
+      }
+
+      $(document).ready(function() {
+
+        console.log("ready!");
+      })
+
+      function convert(){
+        console.log("Convert button clicked!");
+        //$('#dbm').val("00");
+        if ($('#volts').val().length != 0) {
+          var volts = $("#volts").val();
+          if($.isNumeric(volts)) volts_present=true; else volts_present=false;
+        }else volts_present=false;
+        if ($('#watts').val().length != 0) {
+          var watts = $("#watts").val();
+          if($.isNumeric(watts)) watts_present=true; else watts_present=false;
+        } else watts_present=false;
+        if ($('#dbm').val().length != 0) {
+          var dbm = $("#dbm").val();
+          if($.isNumeric(dbm)) dbm_present=true; else dbm_present=false;
+        }else dbm_present=false;
+        
+        if(volts_present){
+          var voltspeak = parseFloat($("#volts").val()/2.0);
+          var voltsrms = parseFloat(voltspeak / Math.sqrt(2));
+          var watts = parseFloat((voltsrms*voltsrms)/50.0);
+          var dbw = 10*Math.log10(watts);
+          var dbm = dbw+30;
+          watts = Number(watts).toFixed(4);
+          dbm = Number(dbm).toFixed(2);
+          $('#dbm').val(dbm);
+          $('#watts').val(watts);
+        }
+        else if(watts_present){
+          var watts = parseFloat($("#watts").val());
+          var dbw = 10*Math.log10(watts);
+          var dbm = dbw+30;
+          var voltsrms = parseFloat(Math.sqrt(watts*50))
+          var voltspeak = parseFloat(voltsrms * Math.sqrt(2));
+          var volts = parseFloat(voltspeak*2);
+          dbm = Number(dbm).toFixed(2);
+          volts = Number(volts).toFixed(4);
+          $('#dbm').val(dbm);
+          $('#volts').val(volts);
+        }
+        else if(dbm_present){
+          var dbm = parseFloat($("#dbm").val());
+          var dbw = parseFloat(dbm-30);
+          var dbw_div10 = parseFloat(dbw/10);
+          var watts = Math.pow(10,dbw_div10);
+          var voltsrms = parseFloat(Math.sqrt(watts*50))
+          var voltspeak = parseFloat(voltsrms * Math.sqrt(2));
+          var volts = parseFloat(voltspeak*2);
+          watts = Number(watts).toFixed(4);
+          volts = Number(volts).toFixed(4);
+          $('#watts').val(watts);
+          $('#volts').val(volts);
+        }
+      }
+
+      function clear1(){
+          console.log("Clear button clicked!");
+          $("#volts").val("");
+          $("#watts").val("");
+          $("#dbm").val("");
+        }
+
+      $("#volts").enterKey(function () {
+        console.log('volts entered');
+        $("#watts").val("");
+        $("#dbm").val("");
+        convert();
+     })
+
+     $("#dbm").enterKey(function () {
+        console.log('dbm entered');
+        $("#watts").val("");
+        $("#volts").val("");
+        convert();
+     })
+
+     $("#watts").enterKey(function () {
+      console.log('watts entered');
+      $("#volts").val("");
+      $("#dbm").val("");
+      convert();
+     })
+
+     function convert1(){
+        console.log("Convert1 button clicked!");
+        if ($('#mvolts').val().length != 0) {
+          var mvolts = $("#mvolts").val();
+          if($.isNumeric(mvolts)) mvolts_present=true; else mvolts_present=false;
+        }else mvolts_present=false;
+        if ($('#utesla').val().length != 0) {
+          var utesla = $("#utesla").val();
+          if($.isNumeric(utesla)) utesla_present=true; else utesla_present=false;
+        } else utesla_present=false;
+        // dbM = X + 20Log10(B) + 20log10(F)  X = 64.35 F in MHZ B in Tesla
+        if(mvolts_present){
+          var mvoltspeak = parseFloat($("#mvolts").val()/2.0);
+          var voltspeak = parseFloat(mvoltspeak/1000);
+          var voltsrms = parseFloat(voltspeak / Math.sqrt(2));
+          var watts = parseFloat((voltsrms*voltsrms)/50.0);
+          var dbw = parseFloat(10*Math.log10(watts));
+          var dbm = parseFloat(dbw+30);
+          var X = parseFloat(64.35);
+          twentylogTesla = dbm-X-20*Math.log10(27.12);
+          var tesla =  Math.pow(10,(twentylogTesla/20));
+          var utesla = tesla*1000000;
+          utesla = Number(utesla).toFixed(4);
+          $('#utesla').val(utesla);
+        }
+        else if(utesla_present){
+          var X = parseFloat(64.35);
+          var tesla = parseFloat($("#utesla").val()/1000000);
+          var dbm = X + 20*Math.log10(tesla)+ 20*Math.log10(27.12);
+          var dbw = parseFloat(dbm-30);
+          var dbw_div10 = parseFloat(dbw/10);
+          var watts = Math.pow(10,dbw_div10);
+          var voltsrms = parseFloat(Math.sqrt(watts*50))
+          var voltspeak = parseFloat(voltsrms * Math.sqrt(2));
+          var voltsp2p = parseFloat(voltspeak*2);
+          var mvolts = voltsp2p*1000;
+          mvolts = Number(mvolts).toFixed(4);
+          $('#mvolts').val(mvolts);
+        }
+
+     }
+    
+     $("#mvolts").enterKey(function () {
+        console.log('mvolts entered');
+        $("#utesla").val("");
+        convert1();
+     })
+
+     $("#utesla").enterKey(function () {
+        console.log('utesla entered');
+        $("#mvolts").val("");
+        convert1();
+     })
+
+
+     function clear2(){
+          console.log("Clear2 button clicked!");
+          $("#mvolts").val("");
+          $("#utesla").val("");
+    }
+
+  </script>
+</body>
+</html>

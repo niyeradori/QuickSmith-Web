@@ -1,0 +1,33 @@
+<section>
+<div class="card contact-form-wrapper box-shadow mx-auto rounded-2 mb-5">
+<form class="p-5 text-default" action="planet-position.php" method="POST">
+<div class="form-group row">
+<label class="col-sm-3 col-md-4 col-form-label  text-md-right text-xs-left">Ayanamsa</label>
+<div class="col-sm-9 col-md-6">
+<select name="ayanamsa" class="form-control form-control-lg rounded-1">
+<option value="1" selected="">Lahiri</option>
+<option value="3">Raman</option>
+<option value="5">KP</option>
+</select>
+</div>
+</div>
+<div class="form-group row">
+<label class="col-sm-3 col-md-4 col-form-label  text-md-right text-xs-left">Date: </label>
+<div class="col-sm-9 col-md-6 ">
+<input type="datetime-local" name="datetime" class="form-control form-control-lg rounded-1" required="required" value="2022-05-29T07:13">
+</div>
+</div>
+<div class="form-group row">
+<label class="col-sm-3 col-md-4 col-form-label  text-md-right text-xs-left ">Place of birth:</label>
+<div class="col-sm-9 col-md-6 ">
+<input type="text" id="fin-location" name="location" autocomplete="off" class="form-control form-control-lg rounded-1 prokerala-location-input" placeholder="Place of birth" value="" required="">
+</div>
+</div>
+<div id="form-hidden-fields">
+</div> <div class="text-right">
+<button type="submit" class="btn btn-warning btn-submit">Get Result</button>
+<input type="hidden" name="submit" value="1">
+</div>
+<input name="coordinates" type="hidden" value="19.0728,72.8826"><input name="timezone" type="hidden" value="Asia/Kolkata"></form>
+</div>
+</section>
