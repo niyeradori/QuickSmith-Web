@@ -32,61 +32,64 @@ body {
   margin: 0;
   padding: 0;
 }
+.maxwidth{
+  max-width: 200px !important;
+}
 
   </style>
 </head>
 
 <body>
   <div class="jumbotron text-center">
-    <h3>Convert</h3>
+    <h3 style="color:red;">Convert</h3>
   </div>
   
   <div class="container">
     <div class="row">
       <div class="col-sm-12">
-        <h4>Volts<>Watts<>dBm</h4>
+        <h4 style="color:red;">Volts<>Watts<>dBm</h4>
         <p></p>
         <form class="form-inline">
           <div class="form-group form-group-sm">
-            <label for="volts">  &nbsp; &nbsp;Volts(PtP):</label>
-            <input type="number" class="form-control" id="volts">
+            <label for="volts" style="color:blue;">  &nbsp; &nbsp;Volts(PtP):</label>
+            <input type="number" class="form-control maxwidth" id="volts">
           </div>
           <div class="form-group form-group-sm">
-            <label for="watts">  &nbsp; &nbsp;Watts:</label>
-            <input type="number" class="form-control" id="watts">
+            <label for="watts" style="color:blue;">  &nbsp; &nbsp;Watts:</label>
+            <input type="number" class="form-control maxwidth" id="watts">
           </div>
           <div class="form-group form-group-sm">
-            <label for="dbm"> &nbsp; &nbsp; dBm:</label>
-            <input type="number" class="form-control" id="dbm">
+            <label for="dbm" style="color:blue;"> &nbsp; &nbsp; dBm:</label>
+            <input type="number" class="form-control maxwidth" id="dbm">
           </div>
           <!-- <div class="checkbox">
             <label><input type="checkbox"> Remember me</label>
           </div> -->
           &nbsp; &nbsp;
-          <button type="button" onclick="convert()" class="btn btn-default">Convert</button>
+          <button type="button" style="color:blue;" onclick="convert()" class="btn btn-default">Convert</button>
           &nbsp; 
-          <button type="button" onclick="clear1()" class="btn btn-default">Clear</button>
+          <button type="button" style="color:blue;" onclick="clear1()" class="btn btn-default">Clear</button>
          </form>
       </div>
       <div style="margin-top: 40px;" class="col-sm-12">
-        <h4>milliVolts<>microTesla (using Beehive Probe)</h4>
+        <h4 style="color:red;">milliVolts<>microTesla (using Beehive Probe)</h4>
         <p></p>
         <form class="form-inline">
           <div class="form-group form-group-sm">
-            <label for="mvolts">  &nbsp; &nbsp; milliVolts(PtP):</label>
-            <input type="number" class="form-control" id="mvolts">
+            <label for="mvolts" style="color:blue;">  &nbsp; &nbsp; milliVolts(PtP):</label>
+            <input type="number" class="form-control maxwidth" id="mvolts">
           </div>
           <div class="form-group form-group-sm">
-            <label for="utesla"> &nbsp; &nbsp; microTesla:</label>
-            <input type="number" class="form-control" id="utesla">
+            <label for="utesla" style="color:blue;"> &nbsp; &nbsp; microTesla:</label>
+            <input type="number" class="form-control maxwidth" id="utesla">
           </div>
           <!-- <div class="checkbox">
             <label><input type="checkbox"> Remember me</label>
           </div> -->
           &nbsp; &nbsp;
-          <button type="button" onclick="convert1()" class="btn btn-default">Convert</button>
+          <button type="button" style="color:blue;" onclick="convert1()" class="btn btn-default">Convert</button>
           &nbsp; 
-          <button type="button" onclick="clear2()" class="btn btn-default">Clear</button>
+          <button type="button" style="color:blue;" onclick="clear2()" class="btn btn-default">Clear</button>
          </form>
       </div>
       <!-- <div class="col-sm-4">
