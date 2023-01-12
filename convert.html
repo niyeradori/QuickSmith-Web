@@ -35,7 +35,10 @@ body {
 .maxwidth{
   max-width: 200px !important;
 }
-
+.jumbotron {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
   </style>
 </head>
 
@@ -92,14 +95,44 @@ body {
           <button type="button" style="color:blue;" onclick="clear2()" class="btn btn-default">Clear</button>
          </form>
       </div>
-      <!-- <div class="col-sm-4">
-        <h3>Column 2</h3>
-        <p>Lorem ipsum dolor..</p>
+      <div style="margin-top: 40px;" class="col-sm-12">
+        <h4 style="color:red;">Path Loss Calculator</h4>
+        <p></p>
+        <form class="form-inline">
+          <div class="form-group form-group-sm">
+            <label for="txpower" style="min-width:140px;color:blue;">  &nbsp; &nbsp; Tx Power(dBm):</label>
+            <input type="number" class="form-control maxwidth" id="txpower">
+          </div>
+          <div class="form-group form-group-sm">
+            <label style="min-width:140px; color:blue;" for="txgain" > &nbsp; &nbsp; Tx Ant. Gain (dBi):</label>
+            <input type="number" class="form-control maxwidth" id="txgain">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="txfreq" style="min-width:140px;color:blue;"> &nbsp; &nbsp; Frequency(MHz):</label>
+            <input type="number" class="form-control maxwidth" id="txfreq">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="distance" style="min-width:140px; color:blue;"> &nbsp; &nbsp; Distance(Meters):</label>
+            <input type="number" class="form-control maxwidth" id="distance">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="rxgain" style="min-width:140px;color:blue;"> &nbsp; &nbsp; Rx Ant. Gain (dBi):</label>
+            <input type="number" class="form-control maxwidth" id="rxgain">
+          </div>
+        </form>
       </div>
-      <div class="col-sm-4">
-        <h3>Column 3</h3>
-        <p>Lorem ipsum dolor..</p>
-      </div> -->
+      <div style="margin-top: 20px;" class="col-sm-12">
+        <form class="form-inline">
+        <div class="form-group form-group-sm">
+          <label for="rxpower" style="min-width:140px;color:red;"> &nbsp; &nbsp; Rx Power (dBm):</label>
+          <input type="number" class="form-control maxwidth" id="rxpower">
+          &nbsp; &nbsp;
+          <button type="button" style="color:blue;" onclick="convert2()" class="btn btn-default">Convert</button>
+          &nbsp; 
+          <button type="button" style="color:blue;" onclick="clear3()" class="btn btn-default">Clear</button>
+      </div>
+      </form>
+      </div> 
     </div>
   </div>
 
@@ -269,6 +302,36 @@ body {
           console.log("Clear2 button clicked!");
           $("#mvolts").val("");
           $("#utesla").val("");
+    }
+
+
+    function convert2(){
+
+        console.log("Convert2 button clicked!");
+        if ($('#txpower').val().length != 0 && $('#txgain').val().length != 0 &&
+            $('#txfreq').val().length != 0 && $('#rxgain').val().length != 0 &&
+            $('#distance').val().length != 0){
+            var txpower = parseFloat($("#txpower").val());
+            var txgain = parseFloat($("#txgain").val());
+            var txfreq = parseFloat($("#txfreq").val());
+            var rxgain = parseFloat($("#rxgain").val());
+            var distance = parseFloat($("#distance").val());
+            var lambda = parseFloat(parseFloat(2.99792458*100)/parseFloat(txfreq*1));
+            var rxpower = parseFloat(txpower+txgain+rxgain+(20*Math.log10(lambda/parseFloat(4*Math.PI*distance))));
+            rxpower = Number(rxpower).toFixed(2);
+            $('#rxpower').val(rxpower);
+        }
+        
+    }
+
+    function clear3(){
+          console.log("Clear3 button clicked!");
+          $("#txpower").val("");
+          $("#txgain").val("");
+          $("#txfreq").val("");
+          $("#rxgain").val("");
+          $("#distance").val("");
+          $("#rxpower").val("");
     }
 
   </script>
