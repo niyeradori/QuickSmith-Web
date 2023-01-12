@@ -36,7 +36,7 @@ body {
   max-width: 200px !important;
 }
 .maxwidthp{
-  max-width: 80px !important;
+  max-width: 120px !important;
 }
 .jumbotron {
   padding-top: 10px !important;
@@ -57,15 +57,15 @@ body {
         <p></p>
         <form class="form-inline">
           <div class="form-group form-group-sm">
-            <label for="volts" style="color:blue;">  &nbsp; &nbsp;Volts(PtP):</label>
+            <label for="volts" style="color:blue;">  Volts(PtP):</label>
             <input type="number" class="form-control maxwidth" id="volts">
           </div>
           <div class="form-group form-group-sm">
-            <label for="watts" style="color:blue;">  &nbsp; &nbsp;Watts:</label>
+            <label for="watts" style="color:blue;">Watts:</label>
             <input type="number" class="form-control maxwidth" id="watts">
           </div>
           <div class="form-group form-group-sm">
-            <label for="dbm" style="color:blue;"> &nbsp; &nbsp; dBm:</label>
+            <label for="dbm" style="color:blue;">dBm:</label>
             <input type="number" class="form-control maxwidth" id="dbm">
           </div>
           <!-- <div class="checkbox">
@@ -82,11 +82,11 @@ body {
         <p></p>
         <form class="form-inline">
           <div class="form-group form-group-sm">
-            <label for="mvolts" style="color:blue;">  &nbsp; &nbsp; milliVolts(PtP):</label>
+            <label for="mvolts" style="color:blue;">milliVolts(PtP):</label>
             <input type="number" class="form-control maxwidth" id="mvolts">
           </div>
           <div class="form-group form-group-sm">
-            <label for="utesla" style="color:blue;"> &nbsp; &nbsp; microTesla:</label>
+            <label for="utesla" style="color:blue;">microTesla:</label>
             <input type="number" class="form-control maxwidth" id="utesla">
           </div>
           <!-- <div class="checkbox">
@@ -103,40 +103,41 @@ body {
         <p></p>
         <form class="form-inline">
           <div class="form-group form-group-sm">
-            <label for="txpower" style="min-width:140px;color:blue;">  &nbsp; &nbsp; Tx Power(dBm):</label>
+            <label for="txpower" style="min-width:120px;color:blue;">Tx Power(dBm):</label>
             <input type="number" class="form-control maxwidthp" id="txpower">
           </div>
           <div class="form-group form-group-sm">
-            <label style="min-width:140px; color:blue;" for="txgain" > &nbsp; &nbsp; Tx Ant. Gain (dBi):</label>
+            <label style="min-width:120px; color:blue;" for="txgain" >Tx Ant. Gain (dBi):</label>
             <input type="number" class="form-control maxwidthp" id="txgain">
           </div>
           <div class="form-group form-group-sm">
-            <label for="txfreq" style="min-width:140px;color:blue;"> &nbsp; &nbsp; Frequency(MHz):</label>
+            <label for="txfreq" style="min-width:120px;color:blue;">Frequency(MHz):</label>
             <input type="number" class="form-control maxwidthp" id="txfreq">
           </div>
           <div class="form-group form-group-sm">
-            <label for="distance" style="min-width:140px; color:blue;"> &nbsp; &nbsp; Distance(Meters):</label>
+            <label for="distance" style="min-width:120px; color:blue;">Distance(Meters):</label>
             <input type="number" class="form-control maxwidthp" id="distance">
           </div>
           <div class="form-group form-group-sm">
-            <label for="rxgain" style="min-width:140px;color:blue;"> &nbsp; &nbsp; Rx Ant. Gain (dBi):</label>
+            <label for="rxgain" style="min-width:120px;color:blue;">Rx Ant. Gain (dBi):</label>
             <input type="number" class="form-control maxwidthp" id="rxgain">
           </div>
         </form>
       </div>
       <div style="margin-top: 20px;" class="col-sm-12">
         <form class="form-inline">
-        <div class="form-group form-group-sm">
-          <label for="rxpower" style="min-width:140px;color:red;"> &nbsp; &nbsp; Rx Power (dBm):</label>
-          <input type="number" class="form-control maxwidthp" id="rxpower">
-          &nbsp; &nbsp;
-          <button type="button" style="color:blue;" onclick="convert2()" class="btn btn-default">Convert</button>
-          &nbsp; 
-          <button type="button" style="color:blue;" onclick="clear3()" class="btn btn-default">Clear</button>
+          <div class="form-group form-group-sm">
+              <label for="rxpower" style="min-width:120px;color:red;">Rx Power (dBm):</label>
+              <input type="number" class="form-control maxwidthp" id="rxpower">
+          </div>
+          <div class="form-group form-group-sm">
+            <button type="button" style="color:blue;" onclick="convert2()" class="btn btn-default">Convert</button> 
+            <button type="button" style="color:blue;" onclick="clear3()" class="btn btn-default">Clear</button>
+          </div>
+        </form>
       </div>
-      </form>
-      </div> 
-    </div>
+
+    </div> 
   </div>
 
 
