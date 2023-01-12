@@ -35,6 +35,9 @@ body {
 .maxwidth{
   max-width: 200px !important;
 }
+.maxwidthp{
+  max-width: 80px !important;
+}
 .jumbotron {
   padding-top: 10px !important;
   padding-bottom: 10px !important;
@@ -101,23 +104,23 @@ body {
         <form class="form-inline">
           <div class="form-group form-group-sm">
             <label for="txpower" style="min-width:140px;color:blue;">  &nbsp; &nbsp; Tx Power(dBm):</label>
-            <input type="number" class="form-control maxwidth" id="txpower">
+            <input type="number" class="form-control maxwidthp" id="txpower">
           </div>
           <div class="form-group form-group-sm">
             <label style="min-width:140px; color:blue;" for="txgain" > &nbsp; &nbsp; Tx Ant. Gain (dBi):</label>
-            <input type="number" class="form-control maxwidth" id="txgain">
+            <input type="number" class="form-control maxwidthp" id="txgain">
           </div>
           <div class="form-group form-group-sm">
             <label for="txfreq" style="min-width:140px;color:blue;"> &nbsp; &nbsp; Frequency(MHz):</label>
-            <input type="number" class="form-control maxwidth" id="txfreq">
+            <input type="number" class="form-control maxwidthp" id="txfreq">
           </div>
           <div class="form-group form-group-sm">
             <label for="distance" style="min-width:140px; color:blue;"> &nbsp; &nbsp; Distance(Meters):</label>
-            <input type="number" class="form-control maxwidth" id="distance">
+            <input type="number" class="form-control maxwidthp" id="distance">
           </div>
           <div class="form-group form-group-sm">
             <label for="rxgain" style="min-width:140px;color:blue;"> &nbsp; &nbsp; Rx Ant. Gain (dBi):</label>
-            <input type="number" class="form-control maxwidth" id="rxgain">
+            <input type="number" class="form-control maxwidthp" id="rxgain">
           </div>
         </form>
       </div>
@@ -125,7 +128,7 @@ body {
         <form class="form-inline">
         <div class="form-group form-group-sm">
           <label for="rxpower" style="min-width:140px;color:red;"> &nbsp; &nbsp; Rx Power (dBm):</label>
-          <input type="number" class="form-control maxwidth" id="rxpower">
+          <input type="number" class="form-control maxwidthp" id="rxpower">
           &nbsp; &nbsp;
           <button type="button" style="color:blue;" onclick="convert2()" class="btn btn-default">Convert</button>
           &nbsp; 
