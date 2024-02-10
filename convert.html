@@ -124,7 +124,7 @@ body {
           </div>
         </form>
       </div>
-      <div style="margin-top: 20px;" class="col-sm-12">
+      <div style="margin-top: 0px;" class="col-sm-12">
         <form class="form-inline">
           <div class="form-group form-group-sm">
               <label for="rxpower" style="min-width:125px;color:red;">Rx Power (dBm):</label>
@@ -135,6 +135,32 @@ body {
             <button type="button" style="color:blue;" onclick="clear3()" class="btn btn-default">Clear</button>
           </div>
         </form>
+      </div>
+
+      <div style="margin-top: 40px;" class="col-sm-12">
+        <h4 style="color:red;">Freq<>C<>L</h4>
+        <p></p>
+        <form class="form-inline">
+          <div class="form-group form-group-sm">
+            <label for="mhz" style="color:blue;">  Frequency(MHz):</label>
+            <input type="number" class="form-control maxwidth" id="mhz">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="pf" style="color:blue;">C(pf):</label>
+            <input type="number" class="form-control maxwidth" id="pf">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="nh" style="color:blue;">L(nH):</label>
+            <input type="number" class="form-control maxwidth" id="nh">
+          </div>
+          <!-- <div class="checkbox">
+            <label><input type="checkbox"> Remember me</label>
+          </div> -->
+          &nbsp; &nbsp;
+          <button type="button" style="color:blue;" onclick="convert_fcl()" class="btn btn-default">Convert</button>
+          &nbsp; 
+          <button type="button" style="color:blue;" onclick="clear_fcl()" class="btn btn-default">Clear</button>
+         </form>
       </div>
 
     </div> 
@@ -148,6 +174,9 @@ body {
       var dbm_present=false;
       var mvolts_present=false;
       var utesla_present=false;
+      var mhz_present = false;
+      var nh_present = false;
+      var pf_present = false;
 
       $.fn.enterKey = function (fnc) {
         return this.each(function () {
@@ -169,6 +198,9 @@ body {
           $("#rxgain").val("21");
           $("#distance").val("");
           $("#rxpower").val("");
+          $("#mhz").val("");
+          $("#pf").val("");
+          $("#nh").val("");
       })
 
       function convert(){
@@ -231,6 +263,10 @@ body {
           $("#watts").val("");
           $("#dbm").val("");
         }
+
+
+
+
 
       $("#volts").enterKey(function () {
         console.log('volts entered');
@@ -343,6 +379,77 @@ body {
           $("#distance").val("");
           $("#rxpower").val("");
     }
+
+
+    function clear_fcl(){
+          console.log("Clear button clicked!");
+          $("#mhz").val("");
+          $("#pf").val("");
+          $("#nh").val("");
+        }
+
+      $("#mhz").enterKey(function () {
+        console.log('mhz entered');
+        $("#nh").val("");
+        $("#pf").val("");
+        convert_fcl();
+     })
+
+     $("#pf").enterKey(function () {
+        console.log('pf entered');
+        $("#mhz").val("");
+        $("#nh").val("");
+        convert_fcl();
+     })
+
+     $("#nh").enterKey(function () {
+      console.log('nh entered');
+      $("#pf").val("");
+      $("#mhz").val("");
+      convert_fcl();
+     })
+
+
+     function convert_fcl(){
+        console.log("Convert_fcl button clicked!");
+        //$('#dbm').val("00");
+        if ($('#mhz').val().length != 0) {
+          var mhz = $("#mhz").val();
+          if($.isNumeric(mhz)) mhz_present=true; else mhz_present=false;
+        }else mhz_present=false;
+        if ($('#pf').val().length != 0) {
+          var pf = $("#pf").val();
+          if($.isNumeric(pf)) pf_present=true; else pf_present=false;
+        } else pf_present=false;
+        if ($('#nh').val().length != 0) {
+          var nh = $("#nh").val();
+          if($.isNumeric(nh)) nh_present=true; else nh_present=false;
+        }else nh_present=false;
+        
+        if(mhz_present && pf_present){
+          var hz = parseFloat($("#mhz").val()* Math.pow(10,6));
+          var f = parseFloat($("#pf").val()* Math.pow(10,-12));
+          var h = parseFloat(1/(2*Math.PI*hz*Math.sqrt(f)));
+          h = h*h;
+          var nh = Number(h * Math.pow(10,9)).toFixed(2);
+          $('#nh').val(nh);
+        }
+        else if(pf_present && nh_present){
+          var n = parseFloat($("#nh").val()* Math.pow(10,-9));
+          var f = parseFloat($("#pf").val()* Math.pow(10,-12));
+          var hz = parseFloat(1/(2*Math.PI*Math.sqrt(n)*Math.sqrt(f)));
+          hz = Number(hz *  Math.pow(10,-6)).toFixed(2);
+          $('#mhz').val(hz);
+        }
+        else if(nh_present && mhz_present){
+          var hz = parseFloat($("#mhz").val()* Math.pow(10,6));
+          var h = parseFloat($("#nh").val()* Math.pow(10,-9));
+          var f = parseFloat(1/(2*Math.PI*hz*Math.sqrt(h)));
+          f = f*f;
+          var pf = Number(f * Math.pow(10,12)).toFixed(2);
+          $('#pf').val(pf);
+        }
+      }
 
   </script>
 </body>
