@@ -159,7 +159,9 @@
 .username_field {
   font-family: Tahoma, "Trebuchet MS", sans-serif;
   /* color: blue !important; */
-  font-size: max(0.9vw, 11px) !important;
+  /* font-size: max(0.9vw, 11px) !important; */
+  /* clamp(min, val, max) */
+  font-size: clamp(11px, 0.9vw, 18px) !important;
 }
 /* @media only screen and (max-width: 850px) {
 
