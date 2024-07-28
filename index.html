@@ -156,30 +156,13 @@
   /* just for demo */
   /* min-width: 612px; */
 } 
-
-
-
-
-   /* .draggable {
-   width: 150px;
-  height: 125px; 
-  vertical-align: top;
-  display: inline-block;
-  *display: inline;
-}    */
-
-/* img ~ .content {
-  display:none;
+.username_field {
+  font-family: Tahoma, "Trebuchet MS", sans-serif;
+  /* color: blue !important; */
+  font-size: 0.9vw !important;
 }
 
-img:hover ~ .content {
-  display:block;
-}
-
-a:hover {
-    background-color: yellow;
-} */
-  </style>
+    </style>
 </head>
 <body>
     <!-- ********************************NAV BAR************************************************* -->  
@@ -248,9 +231,14 @@ a:hover {
       </ul>
        <!-- <button class="btn btn-default navbar-btn" onclick= smithObj.drawAdmitanceCircles() >Admittance</button>   -->
       <ul class="nav navbar-nav navbar-right">
-         <li class="hidden-xs" ><a href="#" onclick=IL_open_click() ><span class="glyphicon glyphicon-stats"></span> Insertion Loss</a></li>
-        <li  ><a href="#" onclick=AMP_open_click()><span class="glyphicon glyphicon-pencil"></span> Amp. Design</a></li>
-        <li><a href="qsmithfaq.html" target="_blank" ><span class="glyphicon glyphicon-book"></span> FAQ</a></li>
+         <li class="hidden-xs" ><a href="#" onclick=IL_open_click() ><span class="glyphicon glyphicon-stats"></span> IL</a></li>
+        <li  ><a href="#" onclick=AMP_open_click()><span class="glyphicon glyphicon-pencil"></span>Amp. Design</a></li>
+        <li><a  class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-question-sign">Help</span></a>
+            <ul class="dropdown-menu">
+                <li><a href="qsmithfaq.html" target="_blank" ><span class="glyphicon glyphicon-book"></span> FAQ</a></li>
+                <li><a href="/help/examples/examples/EXAMPLES.html" target="_blank" ><span class="glyphicon glyphicon-book"></span> Examples</a></li>
+             </ul>
+        </li>
         <li><a href="#" data-toggle="modal" data-target="#optionsModal" onclick ="options_click()"><span class="glyphicon glyphicon-list-alt"></span></a></li>
       </ul>
     </div>
@@ -258,17 +246,17 @@ a:hover {
 </nav>
 
  <!-- ********************************SMITH WINDOW************************************************* -->
-<div class="container-fluid">
+<div class="container-fluid ">
     <div class="row">
         <div class="col-xl-8 col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: 0px">
                     <!-- <h4 style = "font-weight:bold" >Smith Chart</h4> -->
             <table>
                 <tr>
-                    <td><label  for="SM0" > <font size="1"> SWR: </font> </label> </td>
+                    <td><label  for="SM0" style="font-size:12px;"> SWR: </label> </td>
                     <td><input id="SM0" type="text" value="0" name="spin1"  style="width: 100%" class="form-control input-sm" onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false"/></td>
                     <td> &nbsp</td>
                     <div>
-                        <td><label  for="SM1" class="hidden-xs" > <font size="1"> Q: </font> </label> </td>
+                        <td><label  for="SM1" class="hidden-xs" style="font-size:12px;">Q: </label> </td>
                         <td  class="hidden-xs"  ><input id="SM1" type="text" value="0" name="spin1" style="width: 100%"  class="form-control input-sm " onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false"/></td>  
                     </div>
                     <td> &nbsp</td>
@@ -281,27 +269,25 @@ a:hover {
             <!--</div>-->
         </div>
                  <!-- ********************************SCHEMATIC WINDOW ************************************************* -->
-        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-xs-12 " style="background-color:white;" > 
+        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-xs-12" style="background-color:white;" > 
                     <!-- ********************************SCHEMATIC WINDOW  ROW 1************************************************* -->
             <div nopadding style="margin-left: -13px;  margin-bottom: 5px;">
                 <table  >
                     <tr>
-                        <td><label  for="E0" > <font ="1">Freq.MHz: </font> </label> </td>
+                        <td><label  for="E0" style="font-size:12px;"> Freq.MHz: </label> </td>
                         <td><input id="E0" type="text" value="100" name="spin2"  style="width: 100%;" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td> 
                         <td> &nbsp</td>
-                        <td><label  for="ZO" > <font size="1">Zin.&#937:</font> </label> </td>
+                        <td><label  for="ZO" style="font-size:12px;">Zin.&#937: </label> </label> </td>
                         <td><input id="ZO" type="text" value="0.0"  readonly class="form-control input-sm " /></td>
                         <td> &nbsp</td>
-                        <td><label  class="hidden-xs" for="IL" > <font size="1">IL.dB:</font> </label> </td>
+                        <td><label  class="hidden-xs" for="IL" style="font-size:12px;">IL.dB: </label></label> </td>
                         <td><input  class="hidden-xs form-control input-sm " id="IL" type="text" value="0.0" style="width: 100%;" readonly  /></td>
-                        <!-- <td><label  for="ZIO" > <font size="1"> X: </font> </label> </td>
-                        <td><input id="ZIO" type="text" value="0" readonly class="form-control  input-sm" /></td>  -->
                     </tr>
                 </table>
             </div>
             <!-- ********************************SCHEMATIC WINDOW ROW 1 END************************************************* -->  
             <!--width:527px-->
-            <div class="row" > 
+            <div class="row " > 
                 <!-- Dropzone1 -->
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 nopadding" style="background-color:white;">
                     <!-- <div class="spinzone" >  -->
@@ -312,14 +298,14 @@ a:hover {
                                 <th id='H6'>W6</th>
                             </tr>  
                             <tr >
-                                <td id="E2at" style = "visibility: hidden"><input id="E2a" style="font-size:10px;" type="text" value="0" name="spin2" class=" form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td>
-                                <td id="E4at" style = "visibility: hidden"><input id="E4a" style="font-size:10px;" type="text" value="0" name="spin2" class=" form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false"/></td>
-                                <td id="E6at" style = "visibility: hidden"><input id="E6a" style="font-size:10px;" type="text" value="0" name="spin2" class=" form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false" /></td>
+                                <td id="E2at" style = "visibility: hidden"><input id="E2a" type="text" value="0" name="spin2" class=" form-control input-sm username_field " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td>
+                                <td id="E4at" style = "visibility: hidden"><input id="E4a" type="text" value="0" name="spin2" class=" form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false"/></td>
+                                <td id="E6at" style = "visibility: hidden"><input id="E6a" type="text" value="0" name="spin2" class=" form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false" /></td>
                             </tr>
                             <tr >
-                                <td><input id="E2" style="font-size:10px;" type="text" value="0" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td>
-                                <td><input id="E4" style="font-size:10px;"type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false"/></td>
-                                <td><input id="E6" style="font-size:10px;"type="text" value="0" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false" /></td>
+                                <td><input id="E2" type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td>
+                                <td><input id="E4" type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false"/></td>
+                                <td><input id="E6" type="text" value="0" name="spin2" class="form-control input-sm  username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false" /></td>
                             </tr>
                         </table>
                     <!-- </div>  -->
@@ -361,14 +347,14 @@ a:hover {
                       <!-- <div class="spinzone" style=" margin-left: 0px;  margin-top: 50px;" >   -->
                         <table style=" margin-left: 0px;  margin-top: 5px; width:100%; margin-bottom: 6px;">
                             <tr>
-                                <td><input id="E1" style="font-size:10px;"type="text" value="50" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false" /></td>
-                                <td><input id="E3" style="font-size:10px;"type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
-                                <td><input id="E5" style="font-size:10px;"type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                                <td><input id="E1" type="text" value="50" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false" /></td>
+                                <td><input id="E3" type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                                <td><input id="E5" type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                             </tr>
                             <tr>
-                                <td id="E1at"  style = "visibility: visible"><input id="E1a" style="font-size:10px;" type="text" value="0.00" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td>
-                                <td id="E3at"  style = "visibility: hidden"><input id="E3a"  style="font-size:10px;" type="text" value="0" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
-                                <td id="E5at"  style = "visibility: hidden"><input id="E5a"  style="font-size:10px;" type="text" value="0" name="spin2" class=" form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                                <td id="E1at"  style = "visibility: visible"><input id="E1a" type="text" value="0.00" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td>
+                                <td id="E3at"  style = "visibility: hidden"><input id="E3a"  type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                                <td id="E5at"  style = "visibility: hidden"><input id="E5a"  type="text" value="0" name="spin2" class=" form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                             </tr>
 
                             <tr class="hidden-xs">
@@ -389,14 +375,14 @@ a:hover {
                             <th id='H12'>W12</th>
                         </tr>  
                         <tr>
-                            <td id="E8at" style = "visibility: hidden"><input id="E8a"   style="font-size:10px;"type="text" value="0" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
-                            <td id="E10at" style = "visibility: hidden"><input id="E10a" style="font-size:10px;"type="text" value="0" name="spin2"class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
-                            <td id="E12at" style = "visibility: hidden"><input id="E12a" style="font-size:10px;"type="text" value="0" name="spin2"class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td id="E8at" style = "visibility: hidden"><input id="E8a"   type="text" value="0" name="spin2" class="form-control input-sm username_field " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td id="E10at" style = "visibility: hidden"><input id="E10a" type="text" value="0" name="spin2"class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td id="E12at" style = "visibility: hidden"><input id="E12a" type="text" value="0" name="spin2"class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                         </tr>
                         <tr>
-                            <td><input id="E8" style="font-size:10px;"type="text" value="0" name="spin2" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
-                            <td><input id="E10" style="font-size:10px;"type="text" value="0" name="spin2"class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
-                            <td><input id="E12" style="font-size:10px;"type="text" value="0" name="spin2"class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td><input id="E8"  type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td><input id="E10" type="text" value="0" name="spin2"class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td><input id="E12" type="text" value="0" name="spin2"class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                         </tr>
                     </table>
                     <!--<br />-->
@@ -431,14 +417,14 @@ a:hover {
                             <!--width:527px-->
                     <table style=" margin-top: 5px;  margin-left: 0px; width:100%">
                         <tr>
-                            <td><input id="E7" style="font-size:10px;"type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
-                            <td><input id="E9" style="font-size:10px;"type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
-                            <td><input id="E11" style="font-size:10px;"type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td><input id="E7"  type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td><input id="E9"  type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td><input id="E11" type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                         </tr>
                         <tr>
-                            <td id="E7at"  style = "visibility: hidden"><input id="E7a" style="font-size:10px;" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
-                            <td id="E9at"  style = "visibility: hidden"><input id="E9a" style="font-size:10px;" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
-                            <td id="E11at" style = "visibility: hidden"><input id="E11a"style="font-size:10px;" type="text" value="0" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td id="E7at"  style = "visibility: hidden"><input id="E7a" type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td id="E9at"  style = "visibility: hidden"><input id="E9a" type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
+                            <td id="E11at" style = "visibility: hidden"><input id="E11a" type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                         </tr>
                          <tr class="hidden-xs">
                             <th id='H7'>W7 </th>
