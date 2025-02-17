@@ -138,6 +138,37 @@ body {
       </div>
 
       <div style="margin-top: 40px;" class="col-sm-12">
+        <div style= "display:inline-block;">
+        <h4 style="color:red;">Free Space Path Loss Calculator</h4>
+        <h5 style="color:blue;"> FSPL(dB) = 32.45 + 20Log(MHz) + 20Log(km)</h5>
+      </div>
+        <p></p>
+        <form class="form-inline">
+          <div class="form-group form-group-sm">
+            <label for="txfreqa" style="min-width:125px;color:blue;">Frequency(MHz):</label>
+            <input type="number" class="form-control maxwidthp" id="txfreqa">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="distancea" style="min-width:125px; color:blue;">Distance(km):</label>
+            <input type="number" class="form-control maxwidthp" id="distancea">
+          </div>
+        </form>
+      </div>
+      <div style="margin-top: 0px;" class="col-sm-12">
+        <form class="form-inline">
+          <div class="form-group form-group-sm">
+            <label for="lossa" style="min-width:125px;color:red;">Loss (dBm):</label>
+            <input type="number" class="form-control maxwidthp" id="lossa">
+         </div>
+          <div class="form-group form-group-sm">
+            <button type="button" style="color:blue;" onclick="convert2a()" class="btn btn-default">Convert</button> 
+            <button type="button" style="color:blue;" onclick="clear2a()" class="btn btn-default">Clear</button>
+          </div>
+        </form>
+      </div>
+
+
+      <div style="margin-top: 40px;" class="col-sm-12">
         <h4 style="color:red;">Freq<>C<>L</h4>
         <p></p>
         <form class="form-inline">
@@ -201,6 +232,8 @@ body {
           $("#mhz").val("");
           $("#pf").val("");
           $("#nh").val("");
+          $("#txfreqa").val("12000");
+          $("#distancea").val("35786");
       })
 
       function convert(){
@@ -366,9 +399,26 @@ body {
             var rxpower = parseFloat(txpower+txgain+rxgain+(20*Math.log10(lambda/parseFloat(4*Math.PI*distance))));
             rxpower = Number(rxpower).toFixed(2);
             $('#rxpower').val(rxpower);
+        }     
+    }
+
+    function clear2a(){
+          console.log("Clear2a button clicked!");
+          $("#txfreqa").val("");
+          $("#distancea").val("");
+    }
+
+    function convert2a(){
+        console.log("Convert2a button clicked!");
+        if ($('#txfreqa').val().length != 0 && $('#distancea').val().length != 0){
+            var txfreqa = parseFloat($("#txfreqa").val());
+            var distancea = parseFloat($("#distancea").val());
+            var lossa = parseFloat( 32.45 + 20*Math.log10(txfreqa) + 20*Math.log10(distancea));
+            lossa = Number(lossa).toFixed(2);
+            $('#lossa').val(lossa);
+        }
         }
         
-    }
 
     function clear3(){
           console.log("Clear3 button clicked!");
