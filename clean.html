@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Text Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00ff88;
+            font-size: 24px;
+        }
+
+        .editor-container {
+            display: flex;
+            gap: 20px;
+            height: 70vh;
+        }
+
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            background-color: #2d2d2d;
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        textarea {
+            flex: 1;
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+            border: 2px solid #404040;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            resize: none;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: #00ff88;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            background-color: #00ff88;
+            color: #1a1a1a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #00cc6a;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin: 20px 0;
+            justify-content: center;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ff88;
+            display: block;
+        }
+
+        .info {
+            background-color: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .info h3 {
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .editor-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .panel {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ASCII Text Editor</h1>
+        
+        <div class="editor-container">
+            <div class="panel">
+                <div class="panel-header">Input Text (Paste Here)</div>
+                <textarea id="inputText" placeholder="Paste your text here to clean up non-ASCII characters..."></textarea>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">Cleaned ASCII Output</div>
+                <textarea id="outputText" placeholder="Cleaned text will appear here..." readonly></textarea>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button onclick="cleanText()">Clean ASCII</button>
+            <button onclick="copyOutput()">Copy Output</button>
+            <button onclick="clearAll()">Clear All</button>
+            <button onclick="swapTexts()">Swap Input ↔ Output</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <span class="stat-value" id="originalLength">0</span>
+                <span>Original Characters</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="cleanedLength">0</span>
+                <span>ASCII Characters</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="removedCount">0</span>
+                <span>Characters Removed</span>
+            </div>
+        </div>
+
+        <div class="info">
+            <h3>How to Use:</h3>
+            <p>
+                1. <strong>Paste</strong> text containing non-ASCII characters (like watermarks from AI tools) into the left panel<br>
+                2. <strong>Click "Clean ASCII"</strong> to remove all non-ASCII characters<br>
+                3. <strong>Copy the cleaned text</strong> from the right panel<br><br>
+                This tool removes characters outside the standard ASCII range (0-127), including hidden watermark characters, 
+                special Unicode symbols, and formatting marks that some AI tools insert into generated content.<br>
+                Keyboard Shortcuts:<br>
+                    Ctrl+Enter (or Cmd+Enter on Mac): Clean the text<br>
+                    Ctrl+Shift+C: Copy the output<br>
+                    Escape: Clear all text
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const inputText = document.getElementById('inputText');
+        const outputText = document.getElementById('outputText');
+        const originalLength = document.getElementById('originalLength');
+        const cleanedLength = document.getElementById('cleanedLength');
+        const removedCount = document.getElementById('removedCount');
+
+        // Auto-clean as user types
+        inputText.addEventListener('input', function() {
+            updateStats();
+        });
+
+        function cleanText() {
+            const input = inputText.value;
+            
+            // Remove all non-ASCII characters (keeping only characters 0-127)
+            const cleaned = input.replace(/[^\x00-\x7F]/g, '');
+            
+            outputText.value = cleaned;
+            updateStats();
+        }
+
+        function updateStats() {
+            const original = inputText.value;
+            const cleaned = outputText.value;
+            
+            originalLength.textContent = original.length;
+            cleanedLength.textContent = cleaned.length;
+            removedCount.textContent = original.length - cleaned.length;
+        }
+
+        async function copyOutput() {
+            try {
+                await navigator.clipboard.writeText(outputText.value);
+                
+                // Visual feedback
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.backgroundColor = '#28a745';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.backgroundColor = '#00ff88';
+                }, 1500);
+                
+            } catch (err) {
+                // Fallback for older browsers
+                outputText.select();
+                document.execCommand('copy');
+                alert('Text copied to clipboard!');
+            }
+        }
+
+        function clearAll() {
+            inputText.value = '';
+            outputText.value = '';
+            updateStats();
+            inputText.focus();
+        }
+
+        function swapTexts() {
+            const temp = inputText.value;
+            inputText.value = outputText.value;
+            outputText.value = temp;
+            updateStats();
+        }
+
+        // Initialize
+        updateStats();
+        
+        // Focus input on load
+        window.addEventListener('load', () => {
+            inputText.focus();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+Enter or Cmd+Enter to clean
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                cleanText();
+            }
+            
+            // Ctrl+Shift+C to copy output
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                copyOutput();
+            }
+            
+            // Escape to clear
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                clearAll();
+            }
+        });
+    </script>
+</body>
+</html>
