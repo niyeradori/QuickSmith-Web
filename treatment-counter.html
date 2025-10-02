@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treatment Counter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        input[type="file"] {
+            padding: 10px;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            background: #f7f9fc;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        input[type="file"]:hover {
+            border-color: #764ba2;
+            background: #f0f3ff;
+        }
+        
+        input[type="date"] {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result h2 {
+            color: #333;
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+        
+        .result-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .details {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .details h3 {
+            color: #555;
+            margin-top: 0;
+            font-size: 1.2em;
+        }
+        
+        .treatment-list {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f7f9fc;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        
+        .debug-area {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .debug-area.show {
+            display: block;
+        }
+        
+        .error {
+            color: #e74c3c;
+            padding: 10px;
+            background: #ffe0e0;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .debug-toggle {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: #6c757d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 Treatment Counter Tool</h1>
+        
+        <div class="input-group">
+            <label for="fileInput">Upload Treatment Log File (PDF or TXT):</label>
+            <input type="file" id="fileInput" accept=".pdf,.txt">
+        </div>
+        
+        <div class="input-group">
+            <label for="dateInput">Count treatments on or before date:</label>
+            <input type="date" id="dateInput">
+        </div>
+        
+        <button onclick="countTreatments()" id="countBtn">Count Treatments</button>
+        <button onclick="toggleDebug()" class="debug-toggle">Toggle Debug Info</button>
+        
+        <div class="loading" id="loading">Processing file...</div>
+        <div class="error" id="error"></div>
+        
+        <div class="debug-area" id="debugArea">
+            <strong>Debug Information:</strong>
+            <div id="debugContent"></div>
+        </div>
+        
+        <div class="result" id="result">
+            <h2>Results</h2>
+            <div class="result-number" id="count">0</div>
+            <p style="text-align: center; color: #666; font-size: 1.1em;">
+                completed treatments found on or before <span id="selectedDate"></span>
+            </p>
+            <p style="text-align: center; color: #555; font-size: 1em; margin-top: -10px;">
+                (Cutoff date: <span id="cutoffDate"></span>)
+            </p>
+            
+            <div class="details">
+                <h3>Treatment Dates Found:</h3>
+                <div class="treatment-list" id="treatmentList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+        
+        let fileContent = '';
+        let debugInfo = [];
+        
+        function addDebug(message) {
+            debugInfo.push(message);
+            document.getElementById('debugContent').innerHTML = debugInfo.join('<br>');
+        }
+        
+        function toggleDebug() {
+            document.getElementById('debugArea').classList.toggle('show');
+        }
+        
+        document.getElementById('fileInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            debugInfo = [];
+            addDebug(`File name: ${file.name}`);
+            addDebug(`File type: ${file.type}`);
+            addDebug(`File size: ${file.size} bytes`);
+            
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('error').classList.remove('show');
+            
+            try {
+                if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+                    addDebug('Processing as PDF file...');
+                    // Handle PDF file
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                    addDebug(`PDF pages: ${pdf.numPages}`);
+                    
+                    let fullText = '';
+                    
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        
+                        // Build text with better handling of spaces and newlines
+                        let pageText = '';
+                        let lastY = null;
+                        
+                        textContent.items.forEach(item => {
+                            // Check if we need a newline (significant Y position change)
+                            if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
+                                pageText += '\n';
+                            }
+                            pageText += item.str;
+                            lastY = item.transform[5];
+                        });
+                        
+                        fullText += pageText + '\n';
+                        addDebug(`Page ${i}: ${pageText.length} characters extracted`);
+                    }
+                    
+                    fileContent = fullText;
+                    
+                    // Additional processing: ensure line breaks around timestamps
+                    fileContent = fileContent.replace(/(\d{2}-\d{2}-\d{2}:\d{2}\.\d{2}\.\d{2})/g, '\n$1');
+                    
+                } else {
+                    addDebug('Processing as text file...');
+                    // Handle text file
+                    fileContent = await file.text();
+                }
+                
+                addDebug(`Total content length: ${fileContent.length} characters`);
+                
+                // Debug: Check for the pattern
+                const pattern1 = fileContent.match(/stop normal treatment_time=15:00/g);
+                addDebug(`Found "stop normal treatment_time=15:00": ${pattern1 ? pattern1.length : 0} times`);
+                
+                // Also check without the seconds
+                const pattern2 = fileContent.match(/stop normal treatment_time=15/g);
+                addDebug(`Found "stop normal treatment_time=15": ${pattern2 ? pattern2.length : 0} times`);
+                
+                // Show first 500 characters
+                addDebug(`First 500 chars: ${fileContent.substring(0, 500).replace(/\n/g, '\\n')}`);
+                
+                console.log('File loaded successfully');
+                document.getElementById('loading').classList.remove('show');
+            } catch (error) {
+                console.error('Error reading file:', error);
+                addDebug(`Error: ${error.message}`);
+                showError('Error reading file. Please make sure it\'s a valid PDF or text file.');
+                document.getElementById('loading').classList.remove('show');
+            }
+        });
+        
+        function parseLogDate(dateStr) {
+            // Parse date in format DD-MM-YY (from log file)
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                const day = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1; // JavaScript months are 0-indexed
+                let year = parseInt(parts[2]);
+                
+                // Handle year: 24 = 2024, 25 = 2025
+                if (year < 100) {
+                    // Assume 1900s for 50-99, 2000s for 00-49
+                    year = year >= 50 ? 1900 + year : 2000 + year;
+                }
+                
+                return new Date(year, month, day);
+            }
+            return null;
+        }
+        
+        function countTreatments() {
+            const dateInput = document.getElementById('dateInput').value;
+            
+            if (!fileContent) {
+                showError('Please upload a file first');
+                return;
+            }
+            
+            if (!dateInput) {
+                showError('Please select a date');
+                return;
+            }
+            
+            document.getElementById('error').classList.remove('show');
+            debugInfo = [];
+            
+
+
+            // dateInput is in YYYY-MM-DD format (HTML date input standard)
+            console.log('Raw input:', dateInput);
+            const [y, m, d] = dateInput.split('-').map(Number);
+            const cutoffDate = new Date(y, m - 1, d);
+
+            // Include the entire selected day (local end of day)
+            cutoffDate.setHours(23, 59, 59, 999);
+
+            console.log('My date entered (local):', cutoffDate);
+            addDebug(
+                `Cutoff date: ${cutoffDate.toLocaleDateString()} ${cutoffDate.toLocaleTimeString()}`
+            );
+            
+            //const cutoffDate = new Date(dateInput);
+            //cutoffDate.setHours(23, 59, 59, 999); // Include the entire selected day
+            //addDebug(`Cutoff date: ${cutoffDate.toLocaleDateString()}`);
+            
+            // Try multiple patterns to find treatments
+            const foundTreatments = [];
+            
+            // Pattern 1: Look for lines with both date and "stop normal treatment_time=15:00"
+            const pattern1 = /(\d{2}-\d{2}-\d{2}):[^,\n]*?,stop normal treatment_time=15:00/g;
+            let match;
+            while ((match = pattern1.exec(fileContent)) !== null) {
+                foundTreatments.push({
+                    date: match[1],
+                    context: match[0]
+                });
+            }
+            addDebug(`Pattern 1 found: ${foundTreatments.length} treatments`);
+            
+            // Pattern 2: If pattern 1 didn't work, try without the comma
+            if (foundTreatments.length === 0) {
+                const pattern2 = /(\d{2}-\d{2}-\d{2}):[^,\n]*?stop normal treatment_time=15:00/g;
+                while ((match = pattern2.exec(fileContent)) !== null) {
+                    foundTreatments.push({
+                        date: match[1],
+                        context: match[0]
+                    });
+                }
+                addDebug(`Pattern 2 found: ${foundTreatments.length} treatments`);
+            }
+            
+            // Pattern 3: Try line by line approach
+            if (foundTreatments.length === 0) {
+                const lines = fileContent.split('\n');
+                addDebug(`Checking ${lines.length} lines...`);
+                
+                for (let i = 0; i < lines.length; i++) {
+                    if (lines[i].includes('stop normal treatment_time=15:00')) {
+                        // Look for date in current line or previous lines
+                        let dateStr = null;
+                        
+                        // Check current line
+                        let dateMatch = lines[i].match(/(\d{2}-\d{2}-\d{2}):/);
+                        if (dateMatch) {
+                            dateStr = dateMatch[1];
+                        } else {
+                            // Check previous lines (up to 5 lines back)
+                            for (let j = 1; j <= 5 && i - j >= 0; j++) {
+                                dateMatch = lines[i - j].match(/(\d{2}-\d{2}-\d{2}):/);
+                                if (dateMatch) {
+                                    dateStr = dateMatch[1];
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (dateStr) {
+                            foundTreatments.push({
+                                date: dateStr,
+                                context: lines[i].substring(0, 80)
+                            });
+                        }
+                    }
+                }
+                addDebug(`Line-by-line found: ${foundTreatments.length} treatments`);
+            }
+            
+            // Process found treatments
+            const validTreatments = [];
+            const seenDates = new Map();
+            
+            foundTreatments.forEach(t => {
+                const treatmentDate = parseLogDate(t.date);
+                if (treatmentDate && treatmentDate <= cutoffDate) {
+                    // Track to avoid exact duplicates
+                    const key = `${t.date}-${t.context}`;
+                    if (!seenDates.has(key)) {
+                        seenDates.set(key, true);
+                        validTreatments.push({
+                            date: t.date,
+                            parsedDate: treatmentDate,
+                            context: t.context
+                        });
+                    }
+                }
+            });
+            
+            // Sort treatments by date
+            validTreatments.sort((a, b) => a.parsedDate - b.parsedDate);
+            
+            const count = validTreatments.length;
+            addDebug(`Final count: ${count} valid treatments before cutoff date`);
+            
+            // Display results
+            document.getElementById('count').textContent = count;
+            
+            // Format the selected date for display
+            const displayDate = new Date(dateInput).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('selectedDate').textContent = displayDate;
+            
+            // Also show the cutoff date in MM/DD/YYYY format
+            const cutoffDateFormatted = (cutoffDate.getMonth() + 1) + '/' + 
+                                        cutoffDate.getDate() + '/' + 
+                                        cutoffDate.getFullYear();
+            document.getElementById('cutoffDate').textContent = cutoffDateFormatted;
+            
+            // Show treatment list
+            const treatmentListDiv = document.getElementById('treatmentList');
+            if (validTreatments.length > 0) {
+                treatmentListDiv.innerHTML = validTreatments
+                    .map(t => {
+                        const formattedDate = t.parsedDate.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                        });
+                        return `${t.date} (${formattedDate}): Completed treatment`;
+                    })
+                    .join('<br>');
+            } else {
+                treatmentListDiv.innerHTML = 'No completed treatments found on or before this date';
+            }
+            
+            document.getElementById('result').classList.add('show');
+            document.getElementById('debugArea').classList.add('show');
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+        
+        // Set default date to today
+        document.getElementById('dateInput').valueAsDate = new Date();
+    </script>
+</body>
+</html>
