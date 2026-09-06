@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<!-- saved from url=(0253)https://ec28bbd9-6cc1-4049-b73d-c543199a731e.frame.claudeusercontent.com/_f/1788639531-f649/?__frame_t=L1Co14d-FpRi64695EOrx4Oh.3597e08d-a97f-422f-84b8-0448b4a20ebb.fbf6af6b-5fa2-471d-9664-cb64d1575715.1788643132&__frame_v=manifest.db4407fd1f4905d5.json -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!-- frame-runtime --><script>window.__FRAME_PREAMBLE={"v":1,"capabilities":{"artifact":"artifact.DfA2To-s.js","assets":"assets.8Gk803W0.js","comments":"comments.hEoja5zd.js","db":"db.h-3sndFg.js","downloads":"downloads.th1YuAIk.js","embed":"embed.eqL6deQM.js","endpoints":"endpoints.CfzSv5nM.js","mcp":"mcp.Bvma3qD7.js","network":"network.B5UA9Su4.js","permissions":"permissions.BNySkLV5.js","room":"room.VSdFwTE9.js","sample":"sample.BW2Uysoh.js","self":"artifact.DfA2To-s.js","user":"user.BpKav-Rf.js"},"transforms":"_transforms.-IAc0qoT.js","comments":"_comments.C-AkolIB.js","translate":"_translate.5HCW4BJh.js","ldx":"_ldx.f0k6Z2Dd.js"}</script><script>(function(){"use strict";var le=["light","dark","system"],ue=/^[A-Za-z0-9_-]{1,64}$/,J=/^[a-zA-Z_:][a-zA-Z0-9_:.-]{0,127}$/,fe=new Set(["class","hidden","value","checked","style","title","alt","placeholder","lang","dir","role","tabindex","disabled","readonly","contenteditable","open","colspan","rowspan"]);function de(e){const t=e.toLowerCase();return t.startsWith("data-")||t.startsWith("aria-")||fe.has(t)}var We="http://www.w3.org/1999/xhtml",pe="http://www.w3.org/2000/svg",me=new Set(["script","style","iframe","noscript","noframes","noembed","xmp","plaintext","template","title","textarea","object","embed"]),he=new Set(["script","style"]);function _e(e){const t=e.localName.toLowerCase();return e.namespaceURI==="http://www.w3.org/1999/xhtml"?!me.has(t):e.namespaceURI===pe?!he.has(t):!1}function I(e,t){return e===t||(e===160||e===32)&&(t===160||t===32)}function ve(e,t){const r=e.length,n=t.length;let a=0;for(;a<r&&a<n&&I(e.charCodeAt(a),t.charCodeAt(a));)a++;let s=0;for(;s<r-a&&s<n-a&&I(e.charCodeAt(r-1-s),t.charCodeAt(n-1-s));)s++;return{p:a,s}}function ye(e,t){const r=e.firstChild;if(e.childNodes.length!==1||r===null||r.nodeType!==Node.TEXT_NODE){e.textContent=t;return}const n=r.data,a=n.length,s=t.length,{p:c,s:i}=ve(n,t);c===a&&i===0&&a===s||r.replaceData(c,a-c-i,t.slice(c,s-i));const p=r.data,f=e.ownerDocument.getSelection?.()??null,v=f!==null&&f.rangeCount>0&&(f.anchorNode===r||f.focusNode===r)?{anchor:f.anchorNode,anchorOffset:f.anchorOffset,focus:f.focusNode,focusOffset:f.focusOffset}:null;let d=-1,y=-1;for(let _=0;_<p.length&&_<t.length;_++){const E=p.charCodeAt(_),T=t.charCodeAt(_);E!==T&&I(E,T)&&(d<0&&(d=_),y=_)}const w=d>=0;if(w&&r.replaceData(d,y-d+1,t.slice(d,y+1)),w&&v!==null&&v.anchor!==null&&v.focus!==null)try{f.setBaseAndExtent(v.anchor,v.anchorOffset,v.focus,v.focusOffset)}catch{}}var we=new Set(["html","head","body","frameset"]);function be(e){return e.namespaceURI==="http://www.w3.org/1999/xhtml"&&we.has(e.localName)}function Ee(e){if(e===null||typeof e!="object")return!1;const t=e;if(typeof t.target!="string"||!ue.test(t.target)||t.text!==void 0&&typeof t.text!="string")return!1;if(t.attrsSet!==void 0){if(t.attrsSet===null||typeof t.attrsSet!="object")return!1;for(const[r,n]of Object.entries(t.attrsSet))if(!J.test(r)||typeof n!="string")return!1}if(t.attrsRemoved!==void 0){if(!Array.isArray(t.attrsRemoved))return!1;for(const r of t.attrsRemoved)if(typeof r!="string"||!J.test(r))return!1}return!0}function ge(e,t){if(e===null||typeof e!="object")return!1;const{seq:r,elements:n}=e;if(typeof r!="number"||!Number.isSafeInteger(r)||!Array.isArray(n)||n.length===0||n.length>64)return!1;for(let a=0;a<n.length;a++)if(!t(n[a]))return!1;return!0}function Ae(e){return e===null||typeof e!="object"?!1:ge(e.__frame_patch,Ee)}function Te(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_init;return t!==null&&typeof t=="object"}function Re(e){return e!==null&&typeof e=="object"&&e.__frame_size_poke===!0}function Le(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_theme;if(t===null||typeof t!="object")return!1;const r=t.theme;return typeof r=="string"&&le.includes(r)}var L=/^[\w.-]+\.js$/;function Se(e,t,r){return r?"inert":typeof t=="string"&&L.test(t)?e?[t]:"inert":e?"inert":"framed"}var Ke="frame_ldx_runtime",$e="script#an-form";function ke(){return{post(e,t){parent.postMessage(e,t)},on(e){const t=r=>{r.source===parent&&e(r.data,r.origin,r.isTrusted)};return addEventListener("message",t),()=>removeEventListener("message",t)}}}function Pe(){return{post:()=>{},on:()=>()=>{}}}var U="__frame_scroll",Oe=150,Ce=310,Me=160,je=3e4;function Ne(){let e=0,t=!1,r=!1,n=!1,a=0,s=null;const c=u=>{try{sessionStorage.setItem(U,JSON.stringify({y:u}))}catch{}},i=()=>{if(clearTimeout(e),s===null)return;const u=s;s=null,c(u)},p=()=>{if(t){t=!1;return}r=!0,s=scrollY,clearTimeout(e),e=setTimeout(i,Oe)};try{addEventListener("scroll",p,{passive:!0}),addEventListener("pagehide",i)}catch{}const f=()=>{let u;try{u=sessionStorage.getItem(U)}catch{return null}if(u===null)return null;let b;try{b=JSON.parse(u)}catch{b=null}const o=b?.y;if(!(typeof o=="number"&&Number.isFinite(o)&&o>=0)){try{sessionStorage.removeItem(U)}catch{}return null}return o};let v=!1;const d=u=>{try{const b=scrollY;scrollTo({top:u,left:0,behavior:"instant"}),a=u,n=!0,clearTimeout(e),s=null,c(u);const o=scrollY;o!==b&&(t=!0),o!==u&&!v&&(v=!0,addEventListener("load",()=>{try{if(scrollY===o){const m=f();d(m!==null?m:a)}}catch{}},{once:!0}))}catch{}},y=()=>{try{return!!location.hash}catch{return!0}};let w=!1;const _=()=>{try{if(w||innerWidth>Ce||innerHeight>Me)return;w=!0;const u=Date.now(),b=()=>{try{removeEventListener("resize",b)}catch{}if(Date.now()-u>je||r||y())return;const o=f();d(o!==null?o:a)};addEventListener("resize",b)}catch{}};let E=!1,T=!1;return{restore(){if(E||(E=!0,y()))return;const u=f();u!==null&&(d(u),_())},promoted(){if(T||(T=!0,y()))return;const u=f();u!==null?(d(u),_()):n&&d(a)}}}function Be(e,t,r,n){let a=null;try{a=window.trustedTypes?.createPolicy("frame-runtime",{createScriptURL:p=>p})??null}catch{}const s=window.Worker,c=s?.prototype,i=Object.freeze({Worker:s,workerOn:c?.addEventListener,workerPost:c?.postMessage,workerTerminate:c?.terminate,fetch:window.fetch.bind(window),preventDefault:Event.prototype.preventDefault,policy:a,origins:t});r(e).then(p=>p?.bootTopLevel?p.bootTopLevel(i,n):n.settle()).catch(()=>n.settle())}var qe="modulepreload",Xe=function(e){return"/"+e},Ye={},De=function(t,r,n){let a=Promise.resolve();function s(c){const i=new Event("vite:preloadError",{cancelable:!0});if(i.payload=c,window.dispatchEvent(i),!i.defaultPrevented)throw c}return a.then(c=>{for(const i of c||[])i.status==="rejected"&&s(i.reason);return t().catch(s)})},Ie=window===top,Q=Object.getOwnPropertyDescriptor(window,"claude"),C=Se(Ie,window.__FRAME_PREAMBLE?.topLevel,Q?.writable===!1),x=typeof C=="object"&&C[0],h=x?Pe():ke();(function(){const e=Object.defineProperty,t=globalThis,r=["RTCPeerConnection","webkitRTCPeerConnection","RTCDataChannel","RTCIceCandidate","RTCSessionDescription","RTCRtpSender","RTCRtpReceiver"];let n=0;for(let a=0;a<r.length;a++){const s=r[a];try{e(t,s,{value:void 0,writable:!1,configurable:!1})}catch{try{delete t[s]}catch{}try{e(t,s,{value:void 0,writable:!1,configurable:!0})}catch{}}typeof t[s]=="function"&&n++}if(n&&C==="framed")try{h.post({__frame_rtc_lockdown_failed:n},"*")}catch{}})();var Ue=1e4,xe=2e3,ee=Object.freeze([...window.__FRAME_PREAMBLE?.origins??["https://claude.ai","https://preview.claude.ai"]]);function te(e){for(const t of ee)if(t.endsWith(":*"))try{const r=new URL(e);if(`${r.protocol}//${r.hostname}:*`===t)return!0}catch{}else if(e===t)return!0;return!1}var M=Object.freeze({...window.__FRAME_PREAMBLE?.capabilities}),F=window.__FRAME_PREAMBLE?.transforms,z=window.__FRAME_PREAMBLE?.comments,H=window.__FRAME_PREAMBLE?.translate,W=window.__FRAME_PREAMBLE?.ldx;function S(e){return De(()=>import("/_runtime/"+e),void 0)}function re(e,t){return{contract:e.contract,changes:new Set(e.changes??[]),flags:new Set(e.flags??[]),capabilities:e.capabilities??{},capBudgets:e.capBudgets??{},transforms:new Map,shellOrigin:t,mount:q,hooks:N,pipe:()=>({wrap:(r,n)=>(...a)=>{try{return n(...a)}catch(s){return Promise.reject(s)}}})}}var j=null,A=null;function ne(e,t,r){try{Object.defineProperty(e,t,{value:r,writable:!1,configurable:!1,enumerable:!0})}catch{try{Object.defineProperty(e,t,{value:r,writable:!1,configurable:!0,enumerable:!0})}catch{}}}var K=!1,N={editBefore:null,edit:null};function Fe(e,t,r=!1){const n=[];let a;if(r)try{N.editBefore?.(e)}catch{}for(const s of e.elements){const c=document.querySelector(`[data-id="${s.target}"]`);if(!c){a=s.target;break}if([...Object.keys(s.attrsSet??{}),...s.attrsRemoved??[]].some(i=>!de(i))){a=s.target;break}if(s.text!==void 0&&(!_e(c)||be(c))){a=s.target;break}for(const[i,p]of Object.entries(s.attrsSet??{}))if(!se(c,i)){try{c.setAttribute(i,p)}catch{}oe(c,i,p)}for(const i of s.attrsRemoved??[])se(c,i)||(c.removeAttribute(i),oe(c,i,null));typeof s.text=="string"&&ye(c,s.text),n.push(s.target)}if(r)try{N.edit?.(e.seq,n,a)}catch{}if(a!==void 0){h.post({__frame_patch_miss:{seq:e.seq}},t);return}try{document.dispatchEvent(new CustomEvent("claude:edit",{detail:{seq:e.seq,targets:n}}))}catch{}}function oe(e,t,r){if(!(e instanceof HTMLInputElement))return;const n=t.toLowerCase();n==="checked"?e.checked=r!==null:n==="value"&&e.type!=="file"&&(e.value=r??"")}function se(e,t){const r=t.toLowerCase(),n=e;return r==="data-id"||(r==="value"||r==="checked")&&(n.__artifactSecret===!0||/^(password|hidden|file)$/.test(n.type??"")||/(^|\s)(cc-|one-time-code|current-password|new-password)/i.test(`${e.getAttribute("autocomplete")??""} ${n.autocomplete??""}`))}function ae(e){const t=document.documentElement;e==="light"||e==="dark"?(t.dataset.theme=e,t.style.colorScheme=e,K=!0):K&&(delete t.dataset.theme,t.style.colorScheme="",K=!1)}var B=new Map;function ze(){let e;const t={u:new Promise(r=>{e=r}),r:r=>{t.done=!0,e(r)},done:!1,nulled:!1};return t}function $(){for(const e of B.values())e.done||(e.nulled=!0,e.r(null))}var He=Object.freeze(Object.assign(Object.create(null),{call:Function.prototype.call,apply:Function.prototype.apply,bind:Function.prototype.bind})),q=(e,t)=>{const r=B.get(e);if(!r||r.done){r?.nulled&&A&&h.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:e}},A);return}const n=typeof t=="function"?Object.setPrototypeOf(t,He):Object.assign(Object.create(null),t);typeof n.then=="function"&&delete n.then,r.r(Object.freeze(n))};function ie(){const e=Q?.value??{};ne(window,"claude",e);for(const t of Object.keys(M)){if(e[t]!==void 0){ne(e,t,e[t]);continue}B.set(t,ze())}if(e.use===void 0){const t=r=>{if(typeof r!="string"||!Object.hasOwn(M,r))return Promise.resolve(null);const n=B.get(r);return n?n.u:Promise.resolve(e[r]??null)};try{Object.defineProperty(e,"use",{value:t,writable:!0,configurable:!0,enumerable:!1})}catch{}}}if(C==="framed"){const e=F&&L.test(F)?S(F).catch(()=>{}):Promise.resolve(void 0),t=o=>{if(o.type==="auxclick"&&o.button!==1)return;const m=o.target,k=m&&m.closest?m.closest("a[href],area[href]"):null;if(!k)return;const O=k.getAttribute("href");if(!O)return;let R;try{R=new URL(O,document.baseURI)}catch{return}if((R.protocol==="http:"||R.protocol==="https:")&&R.origin!==location.origin){o.preventDefault();const P=(k.getAttribute("target")??"").toLowerCase(),g=o.type==="auxclick"||o.metaKey||o.ctrlKey||o.shiftKey||o.altKey||!["","_self","_top","_parent"].includes(P);h.post({__frame_nav:!0,url:R.href,newTab:g},"*")}};addEventListener("click",t,!0),addEventListener("auxclick",t,!0);const r={},n=o=>{o.isTrusted&&(r.pointer=!0)},a=o=>{o.isTrusted&&(r.click=!0)};addEventListener("pointermove",n,{capture:!0,passive:!0}),addEventListener("click",a,{capture:!0,passive:!0});const s={cb:null};addEventListener("keydown",o=>s.cb?.(o),!0),e.then(o=>o?.installEscapeForward?.(s,m=>{A&&h.post(m,A)})),e.then(o=>{o?.wireNav&&(o.wireNav(),removeEventListener("click",t,!0),removeEventListener("auxclick",t,!0),removeEventListener("pointermove",n,!0),removeEventListener("click",a,!0),o.wireEngagement?.(r))});let c=null;try{c=Ne()}catch{}ie();let i=null,p=null,f=0;const v=h.on((o,m)=>{te(m)&&Te(o)&&(i=o.__frame_init,A=m,v(),clearTimeout(f),p?.())});h.post({__frame_connect:!0},"*");const d=setTimeout,y=clearTimeout;let w=0;const _=()=>{try{h.post({__frame_alive:!0},"*")}catch{}w=d(_,xe)},E=()=>y(w);_(),addEventListener("load",E,{once:!0});const T=new Promise(o=>{p=o,f=setTimeout(()=>{v(),o()},Ue)}),u=document.readyState==="loading"?new Promise(o=>document.addEventListener("DOMContentLoaded",()=>o(),{once:!0})):Promise.resolve();u.then(()=>{try{c?.restore()}catch{}});const b={cb:null};h.on((o,m)=>{if(te(m)&&Re(o)){try{c?.promoted()}catch{}b.cb?.()}}),T.then(async()=>{if(!i||!A){$();return}ae(i.theme);const o=A;let m=!1,k=!1;h.on((l,Y,D)=>{if(Y!==o)return;Le(l)&&ae(l.__frame_theme.theme),Ae(l)&&Fe(l.__frame_patch,o,D);const G=l?.__fc_mode;G&&typeof G=="object"&&!m&&z&&L.test(z)&&(m=!0,S(z).then(Z=>Z.install?.(o,G.on===!0)).catch(()=>{}));const V=l?.__ft_cmd;V&&typeof V=="object"&&!k&&H&&L.test(H)&&(k=!0,S(H).then(Z=>Z.install?.(o,V)).catch(()=>{}))});const O=Object.keys(i.capabilities??{}).filter(l=>Object.hasOwn(M,l)).map(l=>[l,M[l]]).filter(l=>typeof l[1]=="string"&&L.test(l[1])),R=await Promise.allSettled(O.map(([,l])=>S(l))),P=await e,g=A;if(P?.buildBoot||h.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},g),P?.buildBoot)try{j=P.buildBoot(i,P.TRANSFORMS??{},{shellOrigin:g,mount:q,hooks:N},l=>h.post({__frame_cap_telemetry:l},g))}catch{h.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},g),j=re(i,g)}else j=re(i,g);const X=l=>h.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:l}},g),ce=j;R.forEach((l,Y)=>{const D=O[Y][0];if(l.status!=="fulfilled"){X(D);return}try{l.value?.install?.(ce)}catch{X(D)}}),$(),await u,E(),h.post({__frame_ready:!0},A),e.then(l=>l?.installSizeReporter?.(g,b)),ce.flags.has("frame_ldx_runtime")&&W&&L.test(W)&&document.querySelector("script#an-form")&&S(W).then(l=>l?.boot?.()).catch(()=>!1).then(l=>{l!==!0&&X("_ldx")})})}else x&&(ie(),Be(x,ee,S,{settle:$,mount:q}))})();</script><!-- /frame-runtime --><meta name="viewport" content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>Revallis RF Calculators</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link rel="stylesheet" href="./css2">
+<style>
+:root{
+  --ground:#F4F5F9; --surface:#FFFFFF; --surface-alt:#EAECF4; --raised:#FFFFFF;
+  --ink:#12141C; --ink-soft:#464C60; --ink-faint:#767D93;
+  --rule:#DCDFEA; --rule-strong:#C0C5D6;
+  --accent:#0025FF; --accent-soft:#E2E5FF; --accent-ink:#0020D4;
+  --warn:#B26A00; --warn-soft:#FDF0DC; --alarm:#B22D1C; --alarm-soft:#FBE7E4;
+  --ok:#0A7A42;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D0F16; --surface:#14171F; --surface-alt:#1B1F2A; --raised:#1B1F2A;
+    --ink:#E6E9F2; --ink-soft:#A3AABC; --ink-faint:#717A8F;
+    --rule:#242936; --rule-strong:#373E4E;
+    --accent:#7C8CFF; --accent-soft:#1A1F3D; --accent-ink:#A8B3FF;
+    --warn:#E0A44E; --warn-soft:#2B2113; --alarm:#E0705C; --alarm-soft:#2E1D1A;
+    --ok:#4FBE85;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D0F16; --surface:#14171F; --surface-alt:#1B1F2A; --raised:#1B1F2A;
+  --ink:#E6E9F2; --ink-soft:#A3AABC; --ink-faint:#717A8F;
+  --rule:#242936; --rule-strong:#373E4E;
+  --accent:#7C8CFF; --accent-soft:#1A1F3D; --accent-ink:#A8B3FF;
+  --warn:#E0A44E; --warn-soft:#2B2113; --alarm:#E0705C; --alarm-soft:#2E1D1A;
+  --ok:#4FBE85;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:74rem;margin:0 auto;padding:clamp(1.2rem,.7rem+2vw,2.6rem) clamp(1rem,.5rem+2vw,2rem) 4rem;}
+h1{font-size:clamp(1.5rem,1.2rem+1.3vw,2.1rem);font-weight:600;letter-spacing:-.02em;margin:0 0 .3rem;}
+.sub{color:var(--ink-soft);margin:0 0 1.8rem;max-width:60ch}
+h2{font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);
+   font-weight:600;margin:2.2rem 0 .9rem}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+
+/* ---- stat tiles ---- */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(10.5rem,1fr));gap:.8rem;margin-bottom:.5rem}
+.tile{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:.9rem 1rem}
+.tile .k{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+.tile .v{font-family:"IBM Plex Mono",monospace;font-size:1.5rem;font-weight:500;
+         font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:.15rem}
+.tile .n{font-size:.78rem;color:var(--ink-soft);margin-top:.1rem}
+.tile.hero{border-color:var(--accent);background:var(--accent-soft)}
+.tile.hero .v{color:var(--accent-ink)}
+
+/* ---- inputs ---- */
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:1.1rem 1.2rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:1rem 1.3rem}
+label{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;
+      color:var(--ink-faint);font-weight:600;margin-bottom:.25rem}
+input[type=number]{
+  width:100%;background:var(--ground);color:var(--ink);border:1px solid var(--rule-strong);
+  border-radius:4px;padding:.42rem .55rem;font-family:"IBM Plex Mono",monospace;
+  font-size:.95rem;font-variant-numeric:tabular-nums}
+input[type=number]:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.presets{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+button{
+  font:inherit;font-size:.82rem;font-weight:500;cursor:pointer;
+  background:var(--surface-alt);color:var(--ink);border:1px solid var(--rule-strong);
+  border-radius:999px;padding:.35rem .9rem}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---- the chain ---- */
+.chain{display:flex;flex-direction:column;gap:1px;background:var(--rule);
+       border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.step{background:var(--surface);padding:.85rem 1.1rem;display:grid;
+      grid-template-columns:1.6rem 1fr auto;gap:.9rem;align-items:baseline}
+.step .no{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-weight:600;font-size:.9rem}
+.step .what{font-weight:600;font-size:.93rem}
+.step .eq{font-family:"IBM Plex Mono",monospace;font-size:.82rem;color:var(--ink-soft);
+          margin-top:.15rem;word-break:break-word}
+.step .out{font-family:"IBM Plex Mono",monospace;font-size:1.05rem;font-weight:500;
+           font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+
+/* ---- tables ---- */
+.tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:34rem;font-size:.87rem}
+th,td{text-align:right;padding:.5rem .8rem;border-bottom:1px solid var(--rule);
+      font-variant-numeric:tabular-nums;font-family:"IBM Plex Mono",monospace}
+th{font-family:"IBM Plex Sans",sans-serif;font-size:.7rem;letter-spacing:.08em;
+   text-transform:uppercase;color:var(--ink-faint);font-weight:600;
+   border-bottom-color:var(--rule-strong);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+tr:last-child td{border-bottom:none}
+tr.here td{background:var(--accent-soft);font-weight:600}
+tr.here td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+
+.pill{display:inline-block;padding:.1rem .5rem;border-radius:999px;font-size:.72rem;
+      font-weight:600;font-family:"IBM Plex Sans",sans-serif;letter-spacing:.02em}
+.pill.ok{background:var(--accent-soft);color:var(--accent-ink)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--alarm-soft);color:var(--alarm)}
+
+.note{border:1px solid var(--rule-strong);border-left:3px solid var(--accent);
+      background:var(--surface);border-radius:4px;padding:.9rem 1.1rem;margin-top:1rem;
+      font-size:.9rem;color:var(--ink-soft);max-width:70ch}
+.note b{color:var(--ink)}
+.foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--rule-strong);
+      color:var(--ink-faint);font-size:.82rem}
+
+/* ---- added for the combined page ---- */
+input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.note.bad{border-left-color:var(--alarm)}
+.tabs{display:flex;gap:.4rem;border-bottom:1px solid var(--rule);margin:0 0 2rem;
+  padding:0;flex-wrap:wrap}
+.tabs button{background:none;border:none;border-radius:0;padding:.6rem .1rem;
+  margin-right:1.4rem;font-size:.95rem;font-weight:500;color:var(--ink-faint);
+  border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button:hover{color:var(--ink-soft)}
+.tabs button[aria-selected="true"]{color:var(--accent-ink);border-bottom-color:var(--accent)}
+.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pane[hidden]{display:none}
+.pane>h1{margin-top:0}
+@media (prefers-reduced-motion:no-preference){
+  .pane:not([hidden]){animation:fade .18s ease-out}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+}
+</style>
+
+<div class="wrap">
+  <div class="tabs" role="tablist" aria-label="Calculator">
+    <button role="tab" id="tab-tk" aria-controls="pane-tk" aria-selected="true">Tank, passive side</button>
+    <button role="tab" id="tab-ce" aria-controls="pane-ce" aria-selected="false">Class-E, switch side</button>
+  </div>
+
+  <section class="pane" id="pane-tk" role="tabpanel" aria-labelledby="tab-tk">
+<h1>Tank Calculator</h1>
+  <p class="sub">Field first, then everything else. Enter the field you want at the centre
+  of the applicator and this works outward to the power the passive side must be fed and
+  the voltage its capacitors have to survive. Passive network only, up to TP103/TP105.</p>
+
+  <h2>Result</h2>
+  <div class="tiles">
+    <div class="tile hero"><div class="k">Power at TP103</div><div class="v" id="tk_o_ptot">1.350 W</div><div class="n" id="tk_n_ptot">into 50 Ω, 8.22 V rms</div></div>
+    <div class="tile hero"><div class="k">Tank voltage</div><div class="v" id="tk_o_vtank">106.3 V</div><div class="n" id="tk_n_vtank"><span class="pill ok">2.35× on 250 V</span></div></div>
+    <div class="tile"><div class="k">Loaded Q</div><div class="v" id="tk_o_q">36.1</div><div class="n" id="tk_n_q">751 kHz</div></div>
+    <div class="tile"><div class="k">Loop current</div><div class="v" id="tk_o_i">0.648 A</div><div class="n">circulating, rms</div></div>
+  </div>
+
+  <h2>Inputs</h2>
+  <div class="panel">
+    <div class="grid">
+      <div><label for="tk_B">Target field, µT pk</label><input type="number" id="tk_B" value="6" step="0.1" min="0.1"></div>
+      <div><label for="tk_R105">R105 damper, Ω</label><input type="number" id="tk_R105" value="5100" step="100" min="100"></div>
+      <div><label for="tk_L">Loop L, nH</label><input type="number" id="tk_L" value="680.77" step="0.01"></div>
+      <div><label for="tk_Rl">Loop R, Ω</label><input type="number" id="tk_Rl" value="1.418" step="0.001"></div>
+      <div><label for="tk_k">Field constant, µT/A pk</label><input type="number" id="tk_k" value="6.545" step="0.001"></div>
+      <div><label for="tk_f">Frequency, MHz</label><input type="number" id="tk_f" value="27.12" step="0.01"></div>
+      <div><label for="tk_Vcap">Capacitor rating, V</label><input type="number" id="tk_Vcap" value="250" step="10"></div>
+      <div><label for="tk_Z0">Feed impedance, Ω</label><input type="number" id="tk_Z0" value="50" step="1"></div>
+    </div>
+    <div class="presets">
+      <button type="button" data-preset="litz">8&nbsp;in oval, Litz</button>
+      <button type="button" data-preset="solid">8&nbsp;in oval, solid 18&nbsp;AWG</button>
+      <button type="button" data-preset="d51">R105 = 5.1&nbsp;k</button>
+      <button type="button" data-preset="d75">R105 = 7.5&nbsp;k</button>
+      <button type="button" data-preset="t5">Target 5&nbsp;µT</button>
+      <button type="button" data-preset="t6">Target 6&nbsp;µT</button>
+    </div>
+  </div>
+
+  <h2>The chain</h2>
+  <div class="chain" id="tk_chain"><div class="step"><div class="no">1</div><div><div class="what">Loop current</div><div class="eq">I_pk = B / k = 6 / 6.545</div></div><div class="out">0.9167 A pk</div></div><div class="step"><div class="no">2</div><div><div class="what">Loop reactance</div><div class="eq">X_L = 2πf·L = 1.7040e+8 × 680.77e−9</div></div><div class="out">116.00 Ω</div></div><div class="step"><div class="no">3</div><div><div class="what">Tank voltage</div><div class="eq">V_pk = I_pk × X_L</div></div><div class="out">106.3 V pk</div></div><div class="step"><div class="no">4</div><div><div class="what">Loop dissipation</div><div class="eq">P = I_rms² × R_loop = 0.6482² × 1.418</div></div><div class="out">596 mW</div></div><div class="step"><div class="no">5</div><div><div class="what">Damper dissipation</div><div class="eq">P = V_rms² / R105 = 75.20² / 7500</div></div><div class="out">754 mW</div></div><div class="step"><div class="no">6</div><div><div class="what">Total to deliver</div><div class="eq">P_loop + P_damp</div></div><div class="out">1.350 W</div></div><div class="step"><div class="no">7</div><div><div class="what">Voltage at TP103</div><div class="eq">V = √(P × Z₀) = √(1.3498 × 50)</div></div><div class="out">8.22 V rms</div></div><div class="step"><div class="no">8</div><div><div class="what">Loaded Q</div><div class="eq">R_p = X_L²/R_loop = 9490 Ω, then ∥ R105 = 4189 Ω, ÷ X_L</div></div><div class="out">36.1</div></div><div class="step"><div class="no">9</div><div><div class="what">Resonating C</div><div class="eq">C = 1/(ω²L)</div></div><div class="out">50.59 pF</div></div></div>
+
+  <div class="note" id="tk_hdr"><b>Headroom.</b> The shunt capacitors sit directly across the tank, so they see the full 106.3 V peak. The series capacitor has the tank on one side and 11.6 V on the other, roughly in quadrature, so it sees about 107.0 V. Circulating current is 0.648 A rms through both the loop and the shunt capacitance, which is the number that decides ESR loss and is the one most often left unspecified.</div>
+
+  <h2>Field sweep, at the damper above</h2>
+  <div class="tablewrap"><table id="tk_sweep">
+    <thead><tr><th>Field</th><th>I loop</th><th>V tank pk</th><th>P loop</th><th>P damper</th><th>P total</th><th>V TP103</th></tr></thead>
+    <tbody><tr><td>4.0 µT</td><td>0.432 A</td><td>70.9 V</td><td>265 mW</td><td>335 mW</td><td>600 mW</td><td>5.48 V</td></tr><tr><td>4.5 µT</td><td>0.486 A</td><td>79.8 V</td><td>335 mW</td><td>424 mW</td><td>759 mW</td><td>6.16 V</td></tr><tr><td>5.0 µT</td><td>0.540 A</td><td>88.6 V</td><td>414 mW</td><td>524 mW</td><td>937 mW</td><td>6.85 V</td></tr><tr><td>5.5 µT</td><td>0.594 A</td><td>97.5 V</td><td>501 mW</td><td>634 mW</td><td>1.134 W</td><td>7.53 V</td></tr><tr class="here"><td>6.0 µT</td><td>0.648 A</td><td>106.3 V</td><td>596 mW</td><td>754 mW</td><td>1.350 W</td><td>8.22 V</td></tr><tr><td>6.5 µT</td><td>0.702 A</td><td>115.2 V</td><td>699 mW</td><td>885 mW</td><td>1.584 W</td><td>8.90 V</td></tr><tr><td>7.0 µT</td><td>0.756 A</td><td>124.1 V</td><td>811 mW</td><td>1.026 W</td><td>1.837 W</td><td>9.58 V</td></tr><tr><td>7.5 µT</td><td>0.810 A</td><td>132.9 V</td><td>931 mW</td><td>1.178 W</td><td>2.109 W</td><td>10.27 V</td></tr><tr><td>8.0 µT</td><td>0.864 A</td><td>141.8 V</td><td>1.059 W</td><td>1.340 W</td><td>2.400 W</td><td>10.95 V</td></tr></tbody></table></div>
+
+  <h2>Damper sweep, at the field above</h2>
+  <div class="tablewrap"><table id="tk_damp">
+    <thead><tr><th>R105</th><th>Loop share</th><th>P total</th><th>Loaded Q</th><th>−3 dB BW</th><th>V tank pk</th></tr></thead>
+    <tbody><tr><td>2.2 k</td><td>19 %</td><td>3.166 W</td><td>15</td><td>1762 kHz</td><td>106.3 V</td></tr><tr><td>3.3 k</td><td>26 %</td><td>2.309 W</td><td>21</td><td>1285 kHz</td><td>106.3 V</td></tr><tr><td>5.1 k</td><td>35 %</td><td>1.705 W</td><td>29</td><td>948 kHz</td><td>106.3 V</td></tr><tr class="here"><td>7.5 k</td><td>44 %</td><td>1.350 W</td><td>36</td><td>751 kHz</td><td>106.3 V</td></tr><tr><td>10.0 k</td><td>51 %</td><td>1.161 W</td><td>42</td><td>646 kHz</td><td>106.3 V</td></tr><tr><td>15.0 k</td><td>61 %</td><td>973 mW</td><td>50</td><td>541 kHz</td><td>106.3 V</td></tr><tr><td>22.0 k</td><td>70 %</td><td>853 mW</td><td>57</td><td>475 kHz</td><td>106.3 V</td></tr><tr><td>omitted</td><td>100 %</td><td>596 mW</td><td>82</td><td>332 kHz</td><td>106.3 V</td></tr></tbody></table></div>
+  <div class="note">
+    <b>The damper is the biggest lever and the most dangerous one to pull.</b> Raising it
+    sends more power to the loop, so less is needed for the same field. It also raises Q,
+    which narrows the match and hands repeatability back to every unit's individual loss.
+    That trade is the reason R105 exists at all. Tank voltage does not move with it: it is
+    set by the field and the loop, not by the damper.
+  </div>
+
+  <div class="foot">
+    Validated against <code>loop-inductance.md</code> §8b: Litz at R105 = 7.5 kΩ for 5 µT
+    reproduces 414 mW into the loop, 524 mW into the damper and Q = 36 to the milliwatt.
+    Passive side only, at resonance, and it assumes the network presents the feed impedance
+    at TP103. It does not model C110/C111 individually, the class-E side, or harmonics.
+  </div>
+  </section>
+
+  <section class="pane" id="pane-ce" role="tabpanel" aria-labelledby="tab-ce" hidden="">
+<h1>Class-E Calculator</h1>
+  <p class="sub">The switch side, paired with the Tank Calculator. Sokal's finite-Q design
+  equations: give it the rail and the load the passive network presents, and it returns the
+  network the switch needs, the capacitor C119 has to make up, and what the device has to
+  survive.</p>
+
+  <h2>Result</h2>
+  <div class="tiles">
+    <div class="tile hero"><div class="k">Power delivered</div><div class="v" id="ce_o_p">2.879 W</div><div class="n" id="ce_n_p">tank needs 1.350 W, which wants R = 107 Ω</div></div>
+    <div class="tile hero"><div class="k">C119 needed</div><div class="v" id="ce_o_c119">21.8 pF</div><div class="n" id="ce_n_c119">C_oss is 24% of C1 <span class="pill ok">ok</span></div></div>
+    <div class="tile"><div class="k">Drain peak</div><div class="v" id="ce_o_vpk">65.6 V</div><div class="n" id="ce_n_vpk"><span class="pill warn">1.52x</span> on 100 V</div></div>
+    <div class="tile"><div class="k">Drain peak current</div><div class="v" id="ce_o_ipk">463 mA</div><div class="n" id="ce_n_ipk"><span class="pill warn">1.47x</span> on 680 mA pulsed</div></div>
+    <div class="tile hero"><div class="k">Expected field</div><div class="v" id="ce_o_B">6.71 µT</div><div class="n" id="ce_n_B">peak, from 2.131 W delivered at 74% efficiency</div></div>
+  </div>
+
+  <h2>Inputs</h2>
+  <div class="panel">
+    <div class="grid">
+      <div><label for="ce_Vdd">V_x rail, V</label><input type="number" id="ce_Vdd" value="17.8" step="0.1"></div>
+      <div><label for="ce_R">Load R at drain, Ω</label><input type="number" id="ce_R" value="50" step="1"></div>
+      <div><label for="ce_QL">Loaded Q</label><input type="number" id="ce_QL" value="2.8" step="0.1"></div>
+      <div><label for="ce_f">Frequency, MHz</label><input type="number" id="ce_f" value="27.12" step="0.01"></div>
+      <div><label for="ce_L1">L102 choke, µH</label><input type="number" id="ce_L1" value="6.8" step="0.1"></div>
+      <div><label for="ce_Coss">Device C_oss, pF</label><input type="number" id="ce_Coss" value="7" step="0.1"></div>
+      <div><label for="ce_Vdss">Device V_DSS, V</label><input type="number" id="ce_Vdss" value="100" step="5"></div>
+      <div><label for="ce_Ipulse">Device I pulsed, mA</label><input type="number" id="ce_Ipulse" value="680" step="10"></div>
+      <div><label for="ce_Qg">Gate charge Q_g, nC</label><input type="number" id="ce_Qg" value="1.2" step="0.1"></div>
+      <div><label for="ce_Idrv">Driver rating, mA</label><input type="number" id="ce_Idrv" value="24" step="1"></div>
+      <div><label for="ce_Ptgt">Tank needs, W</label><input type="number" id="ce_Ptgt" value="1.35" step="0.05"></div>
+      <div><label for="ce_eta">Efficiency, %</label><input type="number" id="ce_eta" value="74" step="1" min="1" max="100"></div>
+      <div><label for="ce_R105">R105 damper, Ω</label><input type="number" id="ce_R105" value="5100" step="100"></div>
+      <div><label for="ce_Lp">Loop L, nH</label><input type="number" id="ce_Lp" value="680.77" step="0.01"></div>
+      <div><label for="ce_Rlp">Loop R, Ω</label><input type="number" id="ce_Rlp" value="1.418" step="0.001"></div>
+    </div>
+    <div class="presets">
+      <button type="button" data-preset="now">As built: BSS123, 17.8 V</button>
+      <button type="button" data-preset="orig">Original: NDS7002A, 14.8 V</button>
+      <button type="button" data-preset="v148">Rail 14.8 V</button>
+      <button type="button" data-preset="v178">Rail 17.8 V</button>
+    </div>
+  </div>
+
+  <h2>The chain</h2>
+  <div class="chain" id="ce_chain"><div class="step"><div class="no">1</div><div><div class="what">Load coefficient</div><div class="eq">k_R = 0.576801 × (1.0000086 − 0.414395/Q − 0.577501/Q² + 0.205967/Q³)</div></div><div class="out">0.45436</div></div><div class="step"><div class="no">2</div><div><div class="what">Power into R</div><div class="eq">P = k_R · V_x² / R = 0.4544 × 17.8² / 50</div></div><div class="out">2.879 W</div></div><div class="step"><div class="no">3</div><div><div class="what">Shunt C at drain</div><div class="eq">C1 = 1/(34.2219·f·R)·(0.99866 + 0.91424/Q − 1.03175/Q²) + 0.6/(ω²L1)</div></div><div class="out">28.76 pF</div></div><div class="step"><div class="no">4</div><div><div class="what">C119 to fit</div><div class="eq">C119 = C1 − C_oss = 28.76 − 7</div></div><div class="out">21.76 pF</div></div><div class="step"><div class="no">5</div><div><div class="what">Series C</div><div class="eq">C2 = 1/(ωR)·1/(Q−0.104823)·(1.00121 + 1.01468/(Q−1.7879)) − 0.2/(ω²L1)</div></div><div class="out">86.25 pF</div></div><div class="step"><div class="no">6</div><div><div class="what">Series L</div><div class="eq">L2 = Q·R/ω</div></div><div class="out">0.822 µH</div></div><div class="step"><div class="no">7</div><div><div class="what">Peak drain voltage</div><div class="eq">V_pk = k(Q)·V_x, k = 3.684</div></div><div class="out">65.6 V</div></div><div class="step"><div class="no">8</div><div><div class="what">DC and peak current</div><div class="eq">I_dc = P/V_x = 162 mA, I_pk = 2.862·I_dc</div></div><div class="out">463 mA</div></div><div class="step"><div class="no">9</div><div><div class="what">Gate current demand</div><div class="eq">Q_g × f = 1.2e−9 × 27.12e6</div></div><div class="out">32.5 mA</div></div><div class="step"><div class="no">10</div><div><div class="what">Power actually delivered</div><div class="eq">P × η = 2.879 W × 74%</div></div><div class="out">2.131 W</div></div><div class="step"><div class="no">11</div><div><div class="what">Field at the applicator</div><div class="eq">tank turns that into B, going as √P</div></div><div class="out">6.71 µT pk</div></div></div>
+  <div id="ce_alerts"><div class="note"><b>The stage and the tank disagree by 113%.</b> At 17.8 V into 50 Ω an ideally switching stage delivers 2.879 W, while the tank needs 1.350 W. Either the rail is higher than this load needs, or the stage is not converting at the efficiency the equations assume. Measuring DC input during a burst separates those two, and nothing else does.</div><div class="note"><b>Gate demand exceeds the driver.</b> 33 mA against a 24 mA rating. That rating is a static figure rather than a peak limit, so the gate is still driven, but the output sags below its guaranteed levels while charging and edges slow. Class E assumes fast switching.</div></div>
+
+  <h2>Device stress</h2>
+  <div class="tablewrap"><table id="ce_stress">
+    <thead><tr><th>Quantity</th><th>Value</th><th>Rating</th><th>Margin</th></tr></thead>
+    <tbody><tr><td>Peak drain voltage</td><td>65.6 V</td><td>100 V</td><td><span class="pill warn">1.52x</span></td></tr><tr><td>Peak drain current</td><td>463 mA</td><td>680 mA</td><td><span class="pill warn">1.47x</span></td></tr><tr><td>C_oss share of C1</td><td>24 %</td><td>&lt; 30 %</td><td><span class="pill ok">1.23x</span></td></tr><tr><td>Gate current</td><td>32.5 mA</td><td>24 mA</td><td><span class="pill bad">0.74x</span></td></tr></tbody></table></div>
+
+  <h2>Rail sweep, at the load above</h2>
+  <div class="tablewrap"><table id="ce_sweepV">
+    <thead><tr><th>V_x</th><th>P out</th><th>Drain pk</th><th>I pk</th><th>C1</th><th>vs V_DSS</th></tr></thead>
+    <tbody><tr><td>10.0 V</td><td>909 mW</td><td>36.8 V</td><td>260 mA</td><td>28.8 pF</td><td><span class="pill ok">2.71x</span></td></tr><tr><td>11.0 V</td><td>1.100 W</td><td>40.5 V</td><td>286 mA</td><td>28.8 pF</td><td><span class="pill ok">2.47x</span></td></tr><tr><td>12.0 V</td><td>1.309 W</td><td>44.2 V</td><td>312 mA</td><td>28.8 pF</td><td><span class="pill ok">2.26x</span></td></tr><tr><td>13.0 V</td><td>1.536 W</td><td>47.9 V</td><td>338 mA</td><td>28.8 pF</td><td><span class="pill ok">2.09x</span></td></tr><tr><td>14.0 V</td><td>1.781 W</td><td>51.6 V</td><td>364 mA</td><td>28.8 pF</td><td><span class="pill warn">1.94x</span></td></tr><tr><td>15.0 V</td><td>2.045 W</td><td>55.3 V</td><td>390 mA</td><td>28.8 pF</td><td><span class="pill warn">1.81x</span></td></tr><tr><td>16.0 V</td><td>2.326 W</td><td>58.9 V</td><td>416 mA</td><td>28.8 pF</td><td><span class="pill warn">1.70x</span></td></tr><tr><td>17.0 V</td><td>2.626 W</td><td>62.6 V</td><td>442 mA</td><td>28.8 pF</td><td><span class="pill warn">1.60x</span></td></tr><tr class="here"><td>18.0 V</td><td>2.944 W</td><td>66.3 V</td><td>468 mA</td><td>28.8 pF</td><td><span class="pill warn">1.51x</span></td></tr><tr><td>19.0 V</td><td>3.281 W</td><td>70.0 V</td><td>494 mA</td><td>28.8 pF</td><td><span class="pill bad">1.43x</span></td></tr><tr><td>20.0 V</td><td>3.635 W</td><td>73.7 V</td><td>520 mA</td><td>28.8 pF</td><td><span class="pill bad">1.36x</span></td></tr></tbody></table></div>
+
+  <h2>Loaded-Q sweep, at the rail and load above</h2>
+  <div class="tablewrap"><table id="ce_sweepQ">
+    <thead><tr><th>Q_L</th><th>C1</th><th>C119</th><th>C2</th><th>L2</th><th>Drain pk</th></tr></thead>
+    <tbody><tr><td>2.0</td><td>28.9 pF</td><td>21.9 pF</td><td>357.3 pF</td><td>0.59 µH</td><td>67.0 V</td></tr><tr><td>2.4</td><td>28.9 pF</td><td>21.9 pF</td><td>135.0 pF</td><td>0.70 µH</td><td>66.1 V</td></tr><tr class="here"><td>2.8</td><td>28.8 pF</td><td>21.8 pF</td><td>86.2 pF</td><td>0.82 µH</td><td>65.6 V</td></tr><tr><td>3.5</td><td>28.4 pF</td><td>21.4 pF</td><td>54.1 pF</td><td>1.03 µH</td><td>65.0 V</td></tr><tr><td>5.0</td><td>27.6 pF</td><td>20.6 pF</td><td>30.6 pF</td><td>1.47 µH</td><td>64.4 V</td></tr><tr><td>7.0</td><td>26.9 pF</td><td>19.9 pF</td><td>19.3 pF</td><td>2.05 µH</td><td>64.1 V</td></tr><tr><td>10.0</td><td>26.3 pF</td><td>19.3 pF</td><td>12.3 pF</td><td>2.93 µH</td><td>63.8 V</td></tr></tbody></table></div>
+  <div class="note">
+    <b>Sokal's expressions have a pole at Q_L = 1.7879</b>, visible in C2's denominator, and
+    they are stated as valid above it. At Q_L = 2.8 that term contributes 1.00; at 2.0 it is
+    4.78 and at 1.9 it is 9.05, so the equations go stiff well before they go singular.
+    Treat anything under about 2.2 as needing a different method rather than a smaller number.
+  </div>
+  <div class="note">
+    <b>Q_L is the one genuinely free parameter.</b> Raising it shrinks C1, which pushes C119
+    down toward C_oss and hands the tank back to the transistor. Lowering it grows C1 and
+    C2 but weakens harmonic filtering, which the board has no low-pass stage to make up for.
+    2.8 was chosen deliberately, not inherited.
+  </div>
+
+  <div class="note">
+    <b>Efficiency is measured, not assumed.</b> 74% is what reconciles this stage with the
+    Beehive probe on 2026-09-05: at 17.8 V into 50 Ω the equations offer 2.879 W, and the
+    field the probe reports needs 2.132 W of it. It is a single-point calibration at one
+    operating point, so treat it as an anchor rather than a law. Class E should reach 85 to
+    95%, and the shortfall is the open question in <code>class-e-design.md</code> §9.
+    Set it to 100 to see what a perfectly switching stage would give.
+  </div>
+
+  <div class="foot">
+    Sokal's finite-Q equations (QEX 2001). Validated against <code>classe2</code> at the
+    design point: C1 and L2 exact, R within 0.5%. C2 differs by about 1.2% because
+    <code>classe2</code> omits the choke correction term for C2 while applying it to C1;
+    the difference is well inside C107's trimmer range. Peak-voltage factor is fitted through
+    the three values in <code>class-e-design.md</code> §4 and reproduces all three exactly.
+    Ideal switching is assumed throughout: no R_DS(on) loss, no transition loss, so the
+    power figure is what a perfectly switching stage would deliver, not what this one does.
+  </div>
+  </section>
+</div>
+
+<script>
+// Tab switcher. Each calculator below runs in its own scope, so nothing it
+// declares can collide with the other one.
+(function(){
+  const tabs = [...document.querySelectorAll('.tabs button')];
+  function show(id){
+    tabs.forEach(t=>{
+      const on = t.id === id;
+      t.setAttribute('aria-selected', on);
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+  tabs.forEach(t=>t.addEventListener('click',()=>show(t.id)));
+})();
+</script>
+
+<script>
+(function(){
+const ROOT = document.getElementById('pane-tk');
+const $ = id => document.getElementById('tk_'+id);
+const F = ['B','R105','L','Rl','k','f','Vcap','Z0'];
+const num = id => parseFloat($(id).value);
+
+function model(o){
+  const w = 2*Math.PI*o.f*1e6;
+  const XL = w*o.L*1e-9;
+  const Ipk = o.B/o.k, Irms = Ipk/Math.SQRT2;
+  const Vpk = Ipk*XL, Vrms = Vpk/Math.SQRT2;
+  const Ploop = Irms*Irms*o.Rl;
+  const Pdamp = Vrms*Vrms/o.R105;
+  const Ptot = Ploop+Pdamp;
+  const Rp = XL*XL/o.Rl;
+  const Rtank = 1/(1/o.R105 + 1/Rp);
+  const Q = Rtank/XL;
+  const Vin = Math.sqrt(Ptot*o.Z0);
+  const Cres = 1/(w*w*o.L*1e-9);
+  return {w,XL,Ipk,Irms,Vpk,Vrms,Ploop,Pdamp,Ptot,Rp,Rtank,Q,
+          Vin,Vinpk:Vin*Math.SQRT2,Cres,bw:o.f*1e6/Q,share:Ploop/Ptot};
+}
+const W = w => w>=1 ? w.toFixed(3)+' W' : (w*1000).toFixed(0)+' mW';
+
+function render(){
+  const o={}; F.forEach(n=>o[n]=num(n));
+  if(F.some(n=>!isFinite(o[n])||o[n]<=0)) return;
+  const m = model(o);
+
+  $('o_ptot').textContent = W(m.Ptot);
+  $('n_ptot').textContent = 'into '+o.Z0+' Ω, '+m.Vin.toFixed(2)+' V rms';
+  $('o_vtank').textContent = m.Vpk.toFixed(1)+' V';
+  const ratio = o.Vcap/m.Vpk;
+  const cls = ratio>=2 ? 'ok' : ratio>=1.5 ? 'warn' : 'bad';
+  $('n_vtank').innerHTML = '<span class="pill '+cls+'">'+ratio.toFixed(2)+'× on '+o.Vcap+' V</span>';
+  $('o_q').textContent = m.Q.toFixed(1);
+  $('n_q').textContent = (m.bw/1000).toFixed(0)+' kHz';
+  $('o_i').textContent = m.Irms.toFixed(3)+' A';
+
+  const steps = [
+    ['Loop current','I_pk = B / k = '+o.B+' / '+o.k, m.Ipk.toFixed(4)+' A pk'],
+    ['Loop reactance','X_L = 2πf·L = '+m.w.toExponential(4)+' × '+o.L+'e−9', m.XL.toFixed(2)+' Ω'],
+    ['Tank voltage','V_pk = I_pk × X_L', m.Vpk.toFixed(1)+' V pk'],
+    ['Loop dissipation','P = I_rms² × R_loop = '+m.Irms.toFixed(4)+'² × '+o.Rl, W(m.Ploop)],
+    ['Damper dissipation','P = V_rms² / R105 = '+m.Vrms.toFixed(2)+'² / '+o.R105, W(m.Pdamp)],
+    ['Total to deliver','P_loop + P_damp', W(m.Ptot)],
+    ['Voltage at TP103','V = √(P × Z₀) = √('+m.Ptot.toFixed(4)+' × '+o.Z0+')', m.Vin.toFixed(2)+' V rms'],
+    ['Loaded Q','R_p = X_L²/R_loop = '+m.Rp.toFixed(0)+' Ω, then ∥ R105 = '+m.Rtank.toFixed(0)+' Ω, ÷ X_L', m.Q.toFixed(1)],
+    ['Resonating C','C = 1/(ω²L)', (m.Cres*1e12).toFixed(2)+' pF'],
+  ];
+  $('chain').innerHTML = steps.map((s,i)=>
+    '<div class="step"><div class="no">'+(i+1)+'</div><div><div class="what">'+s[0]+
+    '</div><div class="eq">'+s[1]+'</div></div><div class="out">'+s[2]+'</div></div>').join('');
+
+  $('hdr').innerHTML = '<b>Headroom.</b> The shunt capacitors sit directly across the tank, '+
+    'so they see the full '+m.Vpk.toFixed(1)+' V peak. The series capacitor has the tank on '+
+    'one side and '+m.Vinpk.toFixed(1)+' V on the other, roughly in quadrature, so it sees '+
+    'about '+Math.hypot(m.Vpk,m.Vinpk).toFixed(1)+' V. Circulating current is '+
+    m.Irms.toFixed(3)+' A rms through both the loop and the shunt capacitance, which is '+
+    'the number that decides ESR loss and is the one most often left unspecified.';
+
+  const sb = $('sweep').querySelector('tbody'); sb.innerHTML='';
+  for(let b=4; b<=8.01; b+=0.5){
+    const mm = model({...o,B:b});
+    const tr = document.createElement('tr');
+    if(Math.abs(b-o.B)<0.26) tr.className='here';
+    tr.innerHTML = '<td>'+b.toFixed(1)+' µT</td><td>'+mm.Irms.toFixed(3)+' A</td><td>'+
+      mm.Vpk.toFixed(1)+' V</td><td>'+W(mm.Ploop)+'</td><td>'+W(mm.Pdamp)+'</td><td>'+
+      W(mm.Ptot)+'</td><td>'+mm.Vin.toFixed(2)+' V</td>';
+    sb.appendChild(tr);
+  }
+
+  const db = $('damp').querySelector('tbody'); db.innerHTML='';
+  [2200,3300,5100,7500,10000,15000,22000,1e9].forEach(r=>{
+    const mm = model({...o,R105:r});
+    const tr = document.createElement('tr');
+    if(Math.abs(r-o.R105)/o.R105<0.02) tr.className='here';
+    tr.innerHTML = '<td>'+(r>1e8?'omitted':(r/1000).toFixed(1)+' k')+'</td><td>'+
+      (mm.share*100).toFixed(0)+' %</td><td>'+W(mm.Ptot)+'</td><td>'+mm.Q.toFixed(0)+
+      '</td><td>'+(mm.bw/1000).toFixed(0)+' kHz</td><td>'+mm.Vpk.toFixed(1)+' V</td>';
+    db.appendChild(tr);
+  });
+}
+
+const PRESETS = {
+  litz:{L:680.77,Rl:1.418}, solid:{L:688.87,Rl:0.586},
+  d51:{R105:5100}, d75:{R105:7500}, t5:{B:5}, t6:{B:6},
+};
+ROOT.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{
+  const p = PRESETS[b.dataset.preset];
+  for(const k in p) $(k).value = p[k];
+  render();
+}));
+F.forEach(n=>$(n).addEventListener('input',render));
+render();
+})();
+</script>
+
+<script>
+(function(){
+const ROOT = document.getElementById('pane-ce');
+const $ = id => document.getElementById('ce_'+id);
+const F=['Vdd','R','QL','f','L1','Coss','Vdss','Ipulse','Qg','Idrv','Ptgt','eta','R105','Lp','Rlp'];
+const num=id=>parseFloat($(id).value);
+const W=w=>w>=1?w.toFixed(3)+' W':(w*1000).toFixed(0)+' mW';
+
+// Peak V_DS factor vs loaded Q, fitted through 3.681 @ 2.85, 3.587 @ 10, 3.565 @ inf.
+const kpk=Q=>3.565+0.17591/Q+0.44090/Q/Q;
+
+function model(o){
+  const w=2*Math.PI*o.f*1e6, L1=o.L1*1e-6;
+  const kR=0.576801*(1.0000086-0.414395/o.QL-0.577501/o.QL**2+0.205967/o.QL**3);
+  const P = o.Vdd*o.Vdd*kR/o.R;                       // R = Vdd^2 kR / P, inverted
+  const Rtgt = o.Vdd*o.Vdd*kR/o.Ptgt;
+  const C1 = 1/(34.2219*o.f*1e6*o.R)*(0.99866+0.91424/o.QL-1.03175/o.QL**2)+0.6/(w*w*L1);
+  const C2 = (1/(w*o.R))*(1/(o.QL-0.104823))*(1.00121+1.01468/(o.QL-1.7879))-0.2/(w*w*L1);
+  const L2 = o.QL*o.R/w;
+  const C119 = C1-o.Coss*1e-12;
+  const Vpk = kpk(o.QL)*o.Vdd;
+  const Idc = P/o.Vdd, Ipk = 2.862*Idc;
+  const Igate = o.Qg*1e-9*o.f*1e6;
+  const Pdel = P*o.eta/100;
+  // Tank: field goes as sqrt(power), so scale from a 1 uT reference point.
+  const XLp = w*o.Lp*1e-9;
+  const P1uT = (1/6.545/Math.SQRT2)**2*o.Rlp + ((1/6.545)*XLp/Math.SQRT2)**2/o.R105;
+  const Bexp = Math.sqrt(Pdel/P1uT);
+  return {w,kR,P,Pdel,Bexp,Rtgt,C1,C2,L2,C119,Vpk,Idc,Ipk,Igate,
+          cossShare:o.Coss*1e-12/C1, kpk:kpk(o.QL)};
+}
+
+function badge(ratio,warnAt,okAt){
+  const c = ratio>=okAt?'ok':ratio>=warnAt?'warn':'bad';
+  return '<span class="pill '+c+'">'+ratio.toFixed(2)+'x</span>';
+}
+
+function render(){
+  const o={}; F.forEach(n=>o[n]=num(n));
+  if(F.some(n=>!isFinite(o[n]))) return;
+  const m=model(o);
+
+  $('o_p').textContent=W(m.P);
+  $('n_p').textContent='tank needs '+W(o.Ptgt)+', which wants R = '+m.Rtgt.toFixed(0)+' Ω';
+  $('o_c119').textContent=(m.C119*1e12).toFixed(1)+' pF';
+  $('n_c119').innerHTML='C_oss is '+(m.cossShare*100).toFixed(0)+'% of C1 '+
+    (m.cossShare>0.4?'<span class="pill bad">device dominates</span>':
+     m.cossShare>0.3?'<span class="pill warn">high</span>':'<span class="pill ok">ok</span>');
+  $('o_vpk').textContent=m.Vpk.toFixed(1)+' V';
+  $('n_vpk').innerHTML=badge(o.Vdss/m.Vpk,1.5,2)+' on '+o.Vdss+' V';
+  $('o_B').textContent=m.Bexp.toFixed(2)+' µT';
+  $('n_B').textContent='peak, from '+W(m.Pdel)+' delivered at '+o.eta+'% efficiency';
+  $('o_ipk').textContent=(m.Ipk*1000).toFixed(0)+' mA';
+  $('n_ipk').innerHTML=badge(o.Ipulse/(m.Ipk*1000),1.2,1.5)+' on '+o.Ipulse+' mA pulsed';
+
+  const steps=[
+    ['Load coefficient','k_R = 0.576801 × (1.0000086 − 0.414395/Q − 0.577501/Q² + 0.205967/Q³)', m.kR.toFixed(5)],
+    ['Power into R','P = k_R · V_x² / R = '+m.kR.toFixed(4)+' × '+o.Vdd+'² / '+o.R, W(m.P)],
+    ['Shunt C at drain','C1 = 1/(34.2219·f·R)·(0.99866 + 0.91424/Q − 1.03175/Q²) + 0.6/(ω²L1)', (m.C1*1e12).toFixed(2)+' pF'],
+    ['C119 to fit','C119 = C1 − C_oss = '+(m.C1*1e12).toFixed(2)+' − '+o.Coss, (m.C119*1e12).toFixed(2)+' pF'],
+    ['Series C','C2 = 1/(ωR)·1/(Q−0.104823)·(1.00121 + 1.01468/(Q−1.7879)) − 0.2/(ω²L1)', (m.C2*1e12).toFixed(2)+' pF'],
+    ['Series L','L2 = Q·R/ω', (m.L2*1e6).toFixed(3)+' µH'],
+    ['Peak drain voltage','V_pk = k(Q)·V_x, k = '+m.kpk.toFixed(3), m.Vpk.toFixed(1)+' V'],
+    ['DC and peak current','I_dc = P/V_x = '+(m.Idc*1000).toFixed(0)+' mA, I_pk = 2.862·I_dc', (m.Ipk*1000).toFixed(0)+' mA'],
+    ['Gate current demand','Q_g × f = '+o.Qg+'e−9 × '+o.f+'e6', (m.Igate*1000).toFixed(1)+' mA'],
+    ['Power actually delivered','P × η = '+W(m.P)+' × '+o.eta+'%', W(m.Pdel)],
+    ['Field at the applicator','tank turns that into B, going as √P', m.Bexp.toFixed(2)+' µT pk'],
+  ];
+  $('chain').innerHTML=steps.map((s,i)=>'<div class="step"><div class="no">'+(i+1)+
+    '</div><div><div class="what">'+s[0]+'</div><div class="eq">'+s[1]+
+    '</div></div><div class="out">'+s[2]+'</div></div>').join('');
+
+  let a='';
+  if(o.QL<2.2) a+='<div class="note bad"><b>Q_L = '+o.QL+' sits near the pole at 1.7879.</b> '+
+    'The C2 expression contains 1/(Q − 1.7879), which contributes '+
+    (1.01468/(o.QL-1.7879)).toFixed(1)+' here against 1.00 at Q_L = 2.8. These results are '+
+    'not trustworthy below about 2.2.</div>';
+  if(m.C119<=0) a+='<div class="note bad"><b>C119 is impossible here.</b> C_oss ('+o.Coss+
+    ' pF) already exceeds the C1 this design wants ('+(m.C1*1e12).toFixed(1)+
+    ' pF), so no external capacitor can reach the target. Lower Q_L, lower R, or find a '+
+    'device with less output capacitance.</div>';
+  const ratio=m.P/o.Ptgt;
+  if(Math.abs(ratio-1)>0.15) a+='<div class="note"><b>The stage and the tank disagree by '+
+    ((ratio-1)*100).toFixed(0)+'%.</b> At '+o.Vdd+' V into '+o.R+' Ω an ideally switching stage '+
+    'delivers '+W(m.P)+', while the tank needs '+W(o.Ptgt)+'. Either the rail is higher than '+
+    'this load needs, or the stage is not converting at the efficiency the equations assume. '+
+    'Measuring DC input during a burst separates those two, and nothing else does.</div>';
+  if(m.Igate*1000>o.Idrv) a+='<div class="note"><b>Gate demand exceeds the driver.</b> '+
+    (m.Igate*1000).toFixed(0)+' mA against a '+o.Idrv+' mA rating. That rating is a static '+
+    'figure rather than a peak limit, so the gate is still driven, but the output sags below '+
+    'its guaranteed levels while charging and edges slow. Class E assumes fast switching.</div>';
+  $('alerts').innerHTML=a;
+
+  const rows=[
+    ['Peak drain voltage', m.Vpk.toFixed(1)+' V', o.Vdss+' V', badge(o.Vdss/m.Vpk,1.5,2)],
+    ['Peak drain current', (m.Ipk*1000).toFixed(0)+' mA', o.Ipulse+' mA', badge(o.Ipulse/(m.Ipk*1000),1.2,1.5)],
+    ['C_oss share of C1', (m.cossShare*100).toFixed(0)+' %', '&lt; 30 %', badge(0.30/m.cossShare,0.8,1)],
+    ['Gate current', (m.Igate*1000).toFixed(1)+' mA', o.Idrv+' mA', badge(o.Idrv/(m.Igate*1000),0.9,1.2)],
+  ];
+  $('stress').querySelector('tbody').innerHTML=rows.map(r=>
+    '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>').join('');
+
+  const sv=$('sweepV').querySelector('tbody'); sv.innerHTML='';
+  for(let v=10;v<=20.01;v+=1){
+    const mm=model({...o,Vdd:v}); const tr=document.createElement('tr');
+    if(Math.abs(v-o.Vdd)<0.51) tr.className='here';
+    tr.innerHTML='<td>'+v.toFixed(1)+' V</td><td>'+W(mm.P)+'</td><td>'+mm.Vpk.toFixed(1)+
+      ' V</td><td>'+(mm.Ipk*1000).toFixed(0)+' mA</td><td>'+(mm.C1*1e12).toFixed(1)+
+      ' pF</td><td>'+badge(o.Vdss/mm.Vpk,1.5,2)+'</td>';
+    sv.appendChild(tr);
+  }
+
+  const sq=$('sweepQ').querySelector('tbody'); sq.innerHTML='';
+  [2.0,2.4,2.8,3.5,5,7,10].forEach(q=>{
+    const mm=model({...o,QL:q}); const tr=document.createElement('tr');
+    if(Math.abs(q-o.QL)<0.05) tr.className='here';
+    tr.innerHTML='<td>'+q.toFixed(1)+'</td><td>'+(mm.C1*1e12).toFixed(1)+' pF</td><td>'+
+      (mm.C119*1e12).toFixed(1)+' pF</td><td>'+(mm.C2*1e12).toFixed(1)+' pF</td><td>'+
+      (mm.L2*1e6).toFixed(2)+' µH</td><td>'+mm.Vpk.toFixed(1)+' V</td>';
+    sq.appendChild(tr);
+  });
+}
+
+const PRESETS={
+  now:{Vdd:17.8,Coss:7,Vdss:100,Ipulse:680,Qg:1.2},
+  orig:{Vdd:14.8,Coss:11,Vdss:60,Ipulse:280,Qg:0.5},
+  v148:{Vdd:14.8}, v178:{Vdd:17.8},
+};
+ROOT.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{
+  const p=PRESETS[b.dataset.preset]; for(const k in p) $(k).value=p[k]; render();
+}));
+F.forEach(n=>$(n).addEventListener('input',render));
+render();
+})();
+</script>
+
+</body></html>
