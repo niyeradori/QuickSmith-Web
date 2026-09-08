@@ -8,10 +8,8 @@
   <title>Amplifier Design</title>
   <link href="img/smith.ico" rel="icon" >
   <link href="css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
-  <link href="css/jquery.bootstrap-touchspin.css" rel="stylesheet" type="text/css" media="all"/>
   <script src="js/jquery-3.2.1.min.js"></script>
   <script src="js/bootstrap3.min.js"></script>
-  <script src="js/jquery.bootstrap-touchspin_ni.js"></script>
   <!-- <script src="js/jquery.ui.position.js"></script> -->
   <script src="js/DragDropTouch.js"></script>   
   <script src="engine.js"></script>
@@ -353,27 +351,10 @@ $('input[name="spin3"]').taphold(function (e) {
                step_change($(e.target).attr("id"))  },
                1200);
 
-$('input[name="spin3"]').TouchSpin({
-        min: 0,
-        max: 10000000,
-        step: 0.1,
-        decimals: 2,
-        boostat: 5,
-        maxboostedstep: 10,
-        verticalbuttons: false
-  });
+QSUI.attachAll('input[name="spin3"]', { min: 0, max: 1e7, step: 0.1, decimals: 2 });
 
 
-  $('input[name="spin4"]').TouchSpin({
-        min: -100000000,
-        max: 1000000000,
-        step: 1,
-        decimals: 2,
-        booster: false,
-        maxboostedstep: false,
-        mousewheel: false,
-        verticalbuttons: false
-  });
+  QSUI.attachAll('input[name="spin4"]', { min: -1e8, max: 1e9, step: 1, decimals: 2, boost: 1 });
 
 // $('input[name="spin4"]').TouchSpin({
 //         //min: 0,
@@ -460,7 +441,7 @@ $('input[name="spin3"]').TouchSpin({
 
 function spin_changeAV(id1){
   var element = document.getElementById(id1);
-  var up = $(element).triggerHandler("touchspin.getspin", { dummy: 1 });
+  var up = QSUI.wasUp(element);
   if($(AC).hasClass("active")) {
     if(up)ampObj.AVLoadAngle =   ampObj.AVLoadAngle + ampObj.AVStepAngle; else ampObj.AVLoadAngle =   ampObj.AVLoadAngle - ampObj.AVStepAngle;  
       CircleGamma(ampObj.AVCenterR, ampObj.AVCenterI, ampObj.Again_r, ampObj.AVLoadAngle, false);  // Available == false
@@ -471,7 +452,7 @@ function spin_changeAV(id1){
 
 function spin_changeOP(id1){
   var element = document.getElementById(id1);
-  var up = $(element).triggerHandler("touchspin.getspin", { dummy: 1 });
+  var up = QSUI.wasUp(element);
   if($(OC).hasClass("active")) {
     if(up)ampObj.OPLoadAngle =   ampObj.OPLoadAngle + ampObj.OPStepAngle; else ampObj.OPLoadAngle =   ampObj.OPLoadAngle - ampObj.OPStepAngle;  
       CircleGamma(ampObj.OPCenterR,ampObj.OPCenterI, ampObj.Ogain_r,ampObj.OPLoadAngle, true);// operation == true
@@ -535,7 +516,7 @@ function spin_change(id1) {
 
 function step_change(id1) {
   var element = document.getElementById(id1);
-  var current_value = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
+  var current_value = QSUI.getStep(element);
   // var val = prompt("Enter Step Size", current_value);
   // if (isNumeric(val) == true) {
   //     $(element).trigger("touchspin.updatesettings", { step: val })
@@ -913,6 +894,7 @@ function stability_dialog()
                         $(OC).addClass('disabled');
                         $(AC).addClass('disabled');
                 }
+                return false;   // K, DELTA and RESULT are shown in this dialog
             }
         }, 
             {

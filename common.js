@@ -489,9 +489,7 @@ function updateStepSize_prompt(current_val, element) {
         label: "How much each press of the arrows changes the value:",
         value: current_val,
         onOK: function (result) {
-            if (isNumeric(result)) {
-                $(element).trigger("touchspin.updatesettings", { step: result });
-            }
+            if (isNumeric(result)) QSUI.setStep(element, result);
         }
     });
 }

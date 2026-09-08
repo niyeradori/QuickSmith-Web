@@ -1,5 +1,5 @@
 /*
- * QuickSmith dialogs, tooltips and context menus.
+ * QuickSmith dialogs, menus and number steppers.
  * =============================================================================
  *
  * Replaces four libraries that between them weighed about 180 KB: bootstrap
@@ -52,7 +52,19 @@ var QSUI = (function () {
         ".qs-menu button{display:block;width:100%;text-align:left;border:0;background:none;",
         "font:inherit;padding:7px 12px;border-radius:5px;cursor:pointer;color:#14181f}",
         ".qs-menu button:hover{background:#eef2f9}",
-        ".qs-menu button[disabled]{color:#a8afbb;cursor:default;background:none}"
+        ".qs-menu button[disabled]{color:#a8afbb;cursor:default;background:none}",
+
+        ".qs-spin{display:flex;width:100%;align-items:stretch}",
+        ".qs-spin>input{flex:1 1 auto;min-width:0;border-radius:0;text-align:left}",
+        ".qs-spin>button{flex:0 0 auto;width:26px;padding:0;cursor:pointer;",
+        "border:1px solid #ccc;background:#f5f5f5;color:#333;",
+        "font:14px/1 system-ui,-apple-system,sans-serif;",
+        "-webkit-user-select:none;user-select:none;touch-action:manipulation}",
+        ".qs-spin>button:first-child{border-radius:4px 0 0 4px;border-right:0}",
+        ".qs-spin>button:last-child{border-radius:0 4px 4px 0;border-left:0}",
+        ".qs-spin>button:hover{background:#e6e6e6}",
+        ".qs-spin>button:active{background:#d4d4d4}",
+        ".qs-spin>button:focus-visible{outline:2px solid #1f5fbf;outline-offset:-2px}"
     ].join("");
 
     function installStyles() {
@@ -218,12 +230,129 @@ var QSUI = (function () {
         if (e.key === "Escape") dismissMenu();
     }
 
+    /* ================================================================ spinner
+     *
+     * Replaces Bootstrap TouchSpin. What QuickSmith uses of it: two buttons, a
+     * step size that the user can change, hold-to-repeat with some
+     * acceleration, clamping, and - from the local fork of the library - a way
+     * to ask which way the last press went, which the amplifier page uses to
+     * walk a gain circle round.
+     *
+     * The mouse wheel is deliberately not wired up. TouchSpin bound it, so
+     * scrolling the page with the pointer over a value box silently retuned a
+     * component.
+     */
+    var REPEAT_DELAY = 400;      // before a held button starts repeating
+    var REPEAT_EVERY = 60;
+    var BOOST_AFTER = 20;        // repeats before the step grows
+
+    function attach(input, opts) {
+        if (!input || input.qsSpin) return input && input.qsSpin;
+        installStyles();
+        opts = opts || {};
+
+        var state = {
+            input: input,
+            min: opts.min === undefined ? -Infinity : Number(opts.min),
+            max: opts.max === undefined ? Infinity : Number(opts.max),
+            step: Number(opts.step === undefined ? 1 : opts.step),
+            decimals: opts.decimals === undefined ? 2 : opts.decimals,
+            boost: opts.boost === undefined ? 10 : opts.boost,
+            up: true,
+            timer: null
+        };
+        input.qsSpin = state;
+
+        var wrap = document.createElement("div");
+        wrap.className = "qs-spin";
+        input.parentNode.insertBefore(wrap, input);
+        wrap.appendChild(button(state, -1, "\u2212"));
+        wrap.appendChild(input);
+        wrap.appendChild(button(state, 1, "+"));
+
+        input.addEventListener("keydown", function (e) {
+            if (e.key === "ArrowUp") { e.preventDefault(); nudge(state, 1, 1); }
+            else if (e.key === "ArrowDown") { e.preventDefault(); nudge(state, -1, 1); }
+        });
+        return state;
+    }
+
+    function button(state, dir, glyph) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.textContent = glyph;
+        b.tabIndex = -1;                 // the input is the focus stop, not its arrows
+        b.setAttribute("aria-label", dir > 0 ? "Increase" : "Decrease");
+
+        b.addEventListener("pointerdown", function (e) {
+            e.preventDefault();
+            // Capture so a press that drifts off the button still repeats until
+            // release. Synthetic events have no live pointer to capture.
+            try { b.setPointerCapture(e.pointerId); } catch (err) { /* not capturable */ }
+            nudge(state, dir, 1);
+            var repeats = 0;
+            state.timer = setTimeout(function tick() {
+                repeats++;
+                nudge(state, dir, repeats > BOOST_AFTER ? state.boost : 1);
+                state.timer = setTimeout(tick, REPEAT_EVERY);
+            }, REPEAT_DELAY);
+        });
+
+        ["pointerup", "pointercancel", "pointerleave"].forEach(function (ev) {
+            b.addEventListener(ev, function () { stop(state); });
+        });
+        return b;
+    }
+
+    function stop(state) {
+        if (state.timer) { clearTimeout(state.timer); state.timer = null; }
+    }
+
+    function nudge(state, dir, multiplier) {
+        var current = parseFloat(state.input.value);
+        if (!isFinite(current)) current = 0;
+        var next = current + dir * state.step * multiplier;
+        if (next < state.min) next = state.min;
+        if (next > state.max) next = state.max;
+
+        state.up = dir > 0;
+        state.input.value = next.toFixed(state.decimals);
+        state.input.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    /* The page asks for these by element, the way it used to ask TouchSpin. */
+    function getStep(input) {
+        return input && input.qsSpin ? input.qsSpin.step : 1;
+    }
+
+    function setStep(input, step) {
+        if (input && input.qsSpin && isFinite(Number(step))) {
+            input.qsSpin.step = Number(step);
+        }
+    }
+
+    /* True if the last press was the up button. */
+    function wasUp(input) {
+        return input && input.qsSpin ? input.qsSpin.up : true;
+    }
+
+    function attachAll(selector, opts) {
+        var list = document.querySelectorAll(selector);
+        for (var i = 0; i < list.length; i++) attach(list[i], opts);
+        return list.length;
+    }
+
     return {
         open: open,
         close: close,
         message: message,
         promptValue: promptValue,
         menu: menu,
-        dismissMenu: dismissMenu
+        dismissMenu: dismissMenu,
+        attach: attach,
+        attachAll: attachAll,
+        getStep: getStep,
+        setStep: setStep,
+        wasUp: wasUp
     };
 })();
