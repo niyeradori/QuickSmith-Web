@@ -340,22 +340,6 @@ function placeText(ctx,x,y,txt,textAlign,textBaseline){
 	  ctx.closePath();
 }
 
-function drawFilledCircle(ctx,x,y) {
-     var r=0.02*AXIS_RANGE;
-     ctx.beginPath();
-	   ctx.save();
-     ctx.fillStyle = 'blue';
-     ctx.shadowOffsetX = 1;
-     ctx.shadowOffsetY = 1;
-     ctx.shadowColor = 'rgb(100,100,100)';
-     ctx.shadowBlur = 1;
-     var scaled = scale(x,y,r);
-     if(scaled.R <5) scaled.R = 5;
-     ctx.arc(scaled.X, scaled.Y, scaled.R, (Math.PI/180)*0, (Math.PI/180)*360, false);
-     ctx.fill();
-	   ctx.restore();
-     ctx.closePath();
-}
 
 function drawSprite(ctx,x,y) {
   //ctx.globalAlpha = 0.5;  // default value 1

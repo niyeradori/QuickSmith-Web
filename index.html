@@ -29,11 +29,11 @@
   <link rel="apple-touch-icon" sizes="144x144" href="img/apple-icon-144x144.png" />
   <script src="js/jquery-3.2.1.min.js"></script>
   <script src="js/bootstrap3.min.js"></script>
-  <script src="js/math.min.js"></script>
   <script src="js/jquery.bootstrap-touchspin_ni.js"></script>
    <!-- for file and canvas save compatibilty with Safari -->
   <script src="js/FileSaver.min.js"></script>  
   <script src="js/canvas-toBlob.js"></script>
+  <script src="engine.js"></script>
   <script src="common.js"></script>
   <script src="smith.js"></script>
   <script src="sch.js"></script>
@@ -782,9 +782,9 @@ function onMouseMove(evt) {
     var y=descaled.y;
     var inSmith = InSmith(x,y)
     if (inSmith) {
-        var r1 = math.sqrt(((x*x)+(y*y))); // convert to polar form
+        var r1 = Math.sqrt(((x*x)+(y*y))); // convert to polar form
         var q;
-        if(r1==0) q=0 ; else q= 180*math.asin(y/r1)/Math.PI;
+        if(r1==0) q=0 ; else q= 180*Math.asin(y/r1)/Math.PI;
         if(x < 0 && y >=0) q= 180-q; if(x<0 && y<0) q= -180-q;  // Adjust for the second and third quadrant
         var m= r1/AXIS_RANGE; 
         var ZR= GToZR(m,q);
@@ -836,9 +836,9 @@ function onMouseClick(e) {
     var descaled = descale(mouseX,mouseY);
     var x= descaled.x;
     var y=descaled.y;
-    var r1 = math.sqrt(((x*x)+(y*y))); // convert to polar form
+    var r1 = Math.sqrt(((x*x)+(y*y))); // convert to polar form
     var q;
-    if(r1==0) q=0 ; else q= 180*math.asin(y/r1)/Math.PI;
+    if(r1==0) q=0 ; else q= 180*Math.asin(y/r1)/Math.PI;
 	if(x < 0 && y >=0) q= 180-q; if(x<0 && y<0) q= -180-q;  // Adjust for the second and third quadrant
     var m = r1/AXIS_RANGE; 
     if (InSmith(x,y) == true) {
@@ -1105,7 +1105,7 @@ function export_click() {
     // var points = Math.abs((stop-start)/step)+1; // eg: start=1, stop=100, step=1; number of points = 99+1=100 0-99 values from 1, 2, 3, .. 100
     // for ( i=0; i < points; i++) {
     //     thisStep = step*i;
-    //     gamObj.gamData.dataX=Number(math.add(start,thisStep)).toFixed(4); 
+    //     gamObj.gamData.dataX=Number(start + thisStep).toFixed(4); 
     // } 
     gamObj.gamData.dataM = smithObj.sweepDatasets[0].dataM;
     gamObj.gamData.dataQ = smithObj.sweepDatasets[0].dataQ;
@@ -1115,7 +1115,7 @@ function export_click() {
     console.log(" Number of Points= "+points);
     for ( i=0; i < points; i++) {
         thisStep = step*i;
-        gamObj.gamData.dataX[i]=Number(math.add(start,thisStep)).toFixed(4); 
+        gamObj.gamData.dataX[i]=Number(start + thisStep).toFixed(4); 
     } 
     // for Safari compatibility
     saveJSONtoFile(gamObj, "out.gam");
@@ -1156,7 +1156,7 @@ function handleFileImport(e) {
                      if(points > 0){
                      schObj.SS =  parseFloat(gamObj.gamData.dataX[0]);
                      schObj.ST =  parseFloat(gamObj.gamData.dataX[points-1]);
-                     schObj.SST = Number(Math.abs(math.subtract(schObj.ST,schObj.SS))/(points-1)).toFixed(3);
+                     schObj.SST = Number(Math.abs(schObj.ST - schObj.SS)/(points-1)).toFixed(3);
                      smithObj.plotDatasets[0].dataM = gamObj.gamData.dataM ;
                      smithObj.plotDatasets[0].dataQ = gamObj.gamData.dataQ ;
                      updateUI(); // update the ui elements
@@ -1495,11 +1495,6 @@ var end = function(e) {
         updateStepSize_prompt(current_value,element);
     }
     
-    function step_change1(id1) {
-        var element = document.getElementById(id1);
-        var current_value = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
-        updateStepSize_prompt(current_value,element);
-    }
 
 // touch
 //   $('input[name="spin2"]').taphold(function (e) {
@@ -1816,7 +1811,7 @@ function updateToolTip() {
                             if(points > 0){
                                 schObj.SS =  parseFloat(gamObj.gamData.dataX[0]);
                                 schObj.ST =  parseFloat(gamObj.gamData.dataX[points-1]);
-                                //schObj.SST = Number(Math.abs(math.subtract(schObj.ST,schObj.SS))/(points-1)).toFixed(3);
+                                //schObj.SST = Number(Math.abs(schObj.ST - schObj.SS)/(points-1)).toFixed(3);
                                 smithObj.Z0= schObj.Z0=gamObj.Z0;
                                 schObj.gamData.label = gamObj.gamData.label;
                                 schObj.gamData.color = gamObj.gamData.color;
@@ -2069,8 +2064,8 @@ function generateSweep() {
     //console.log( " SweepElement = " +sweepElement + " points =  " +points + " oldValue =  " +oldValue + " elNum =  " +elNum + " start =  " +start);
     for ( i=0; i < points; i++) {
         thisStep = step*i;
-        if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=math.add(start,thisStep) ; 
-        else schObj.ELEMENT[elNum].value2=math.add(start,thisStep);
+        if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=start + thisStep ; 
+        else schObj.ELEMENT[elNum].value2=start + thisStep;
         //console.log( " schObj.ELEMENT[elNum].value1 = " +schObj.ELEMENT[elNum].value1 + " thisStep =  " +thisStep)
         Zcalsweep1(); // assign and calculate network impedances
         resultsObj.OUTPUT[2].calculate(); // calculate gamma Number(ZR).toFixed(2)

@@ -557,6 +557,63 @@ var QS_CASES = [
       ZinI: [50, 1e-12],
       ZinMag: [55.901699, 1e-6]
     }
+  },
+
+  /* ============================================================== PHASE 2
+   * A transmission line used to be reduced to a lumped series impedance when
+   * the transfer function was computed. That gives the right Zin and the wrong
+   * insertion loss: this network reported 4.217 dB. The line is lossless, so
+   * every decibel of it has to be mismatch, -10*log10(1 - |gamma|^2).
+   */
+  {
+    id: "fix-tline-insertion-loss",
+    name: "Fix: a lossless line shows mismatch loss only, not lumped loss",
+    ref: "engine.js - transmission lines cascade as a two-port",
+    setup: {
+      freq: 100, TDF: 100, LU: "Degrees",
+      load: { type: "rx", value1: 50, value2: 0 },
+      elements: { 2: { type: "t", value1: 75, value2: 90 } }
+    },
+    // Zin = Z0^2/ZL = 75^2/50 = 112.5, |gamma| = 62.5/162.5
+    assert: {
+      ZinR: [112.5, 1e-9],
+      ZinI: [0.0, 1e-9],
+      GammaMag: [0.384615, 1e-6],
+      InsertionLoss: [0.695242, 1e-6]
+    }
+  },
+  {
+    id: "fix-tline-half-wave-lossless",
+    name: "Fix: a half-wave line into a matched load has zero insertion loss",
+    ref: "engine.js - transmission lines cascade as a two-port",
+    setup: {
+      freq: 100, TDF: 100, LU: "Degrees",
+      load: { type: "rx", value1: 50, value2: 0 },
+      elements: { 2: { type: "t", value1: 93, value2: 180 } }
+    },
+    // transparent at half a wavelength whatever its characteristic impedance
+    assert: {
+      ZinR: [50.0, 1e-9],
+      GammaMag: [0, 1e-12],
+      InsertionLoss: [0.0, 1e-9]
+    }
+  },
+  {
+    id: "fix-tline-stub-network-lossless",
+    name: "Fix: Example 3's line-and-stub match dissipates nothing",
+    ref: "EXAMPLE_3.html via engine.js",
+    setup: {
+      freq: 1000,
+      LU: "MilliMeters",
+      load: { type: "rx", value1: 10, value2: -15 },
+      elements: {
+        2: { type: "t", value1: 30, value2: 56.4 },
+        3: { type: "o", value1: 30, value2: 38.5 }
+      }
+    },
+    // a matched, lossless network: the residual is the leftover 1.006 VSWR
+    assert: { InsertionLoss: [0.0, 0.001] },
+    expect: { InsertionLoss: [0.000034, 1e-5] }
   }
 ];
 

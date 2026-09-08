@@ -10,7 +10,7 @@
   <link href="css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
   <script src="js/jquery-3.2.1.min.js"></script>
   <script src="js/bootstrap3.min.js"></script>
-  <script src="js/math.min.js"></script>
+  <script src="engine.js"></script>
   <script src="common.js"></script>
   <script src="smith.js"></script>
   <script src="sch.js"></script>
@@ -340,10 +340,10 @@ function runILsweep()
     var i;
     for ( i=0; i <= points; i++) {
         if(i!==0) {
-          if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=math.add(schObj.ELEMENT[elNum].value1,step) ; 
-          else schObj.ELEMENT[elNum].value2=math.add(schObj.ELEMENT[elNum].value2,step);
+          if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=Number(schObj.ELEMENT[elNum].value1) + Number(step) ; 
+          else schObj.ELEMENT[elNum].value2=Number(schObj.ELEMENT[elNum].value2) + Number(step);
           //freqPoints[i] = math.add(points,step);
-          myChart.data.labels[i]  = math.add(start,math.multiply(step,i));
+          myChart.data.labels[i]  = Number(start) + Number(step) * i;
         }
         resultsObj.OUTPUT[0].calculate(); // this will call  Zcalsweep1(); calculate Zcalsweep1
         resultsObj.OUTPUT[5].calculate(); // calculate Insertion loss

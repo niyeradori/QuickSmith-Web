@@ -13,13 +13,13 @@
   <link href="css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css" />
   <script src="js/jquery-3.2.1.min.js"></script>
   <script src="js/bootstrap3.min.js"></script>
-  <script src="js/math.min.js"></script>
   <script src="js/jquery.bootstrap-touchspin_ni.js"></script>
   <!-- <script src="js/jquery.ui.position.js"></script> -->
   <script src="js/jquery.contextMenu.js"></script>
   <script src="js/DragDropTouch.js"></script>   
   <script src="js/bootstrap-dialog.min.js"></script>
   <script src="js/bootbox.min.js"></script>
+  <script src="engine.js"></script>
   <script src="common.js"></script>
   <script src="smith.js"></script>
   <script src="amp.js"></script>
@@ -702,12 +702,12 @@ function NoiseDialog_prompt(current_val)
 }
 
 function NoiseDialog() {
-  var current_val = parseFloat(math.add(ampObj.Fmin,1.1));
+  var current_val = parseFloat(ampObj.Fmin) + 1.1;
   NoiseDialog_prompt(current_val)
 }
 
 // function  NoiseDialog (){  
-//     var pc = parseFloat(math.add(ampObj.Fmin,1.1));
+//     var pc = parseFloat(ampObj.Fmin) + 1.1;
 //     var $content = $('<div><label for="FMin">Minimum Noise Figure [dB]: <input type="text" id="FMmin" value='+ampObj.Fmin+' readonly style="width:64px; border: 0"  /> \
 //       <div><label for="FI">Enter Noise Figure in dB: <input type="text" id="FI"  value='+pc+'  style="width:64px" /> \
 //         </label><br /></div>');

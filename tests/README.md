@@ -12,6 +12,11 @@ that already ships with the program, so the suite encodes what the program is
 ./tests/run.sh --json       # machine-readable
 ```
 
+`run.sh` runs two things: `tests/standalone.js`, which loads `engine.js` and
+nothing else at all and solves a few known networks — if the solver ever reaches
+back out for jQuery, math.js or the DOM, that fails first with a
+`ReferenceError` — and then the full suite in `tests/run.js`.
+
 No toolchain required. `run.sh` uses `node` if it is installed, otherwise it
 falls back to the JavaScriptCore shell that ships with macOS
 (`/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Helpers/jsc`).
@@ -41,8 +46,9 @@ fixtures.)
 | Q | synthetic | finite-Q loss model for C, L, PLC, SLC |
 | Units | synthetic | `Inches / MilliMeters / Meters / Degrees / Wave Lengths` all agree |
 | Invariants | synthetic | quarter-wave transform, half-wave transparency, empty ladder |
+| Phase 1&2 fixes | the September 2026 review | parallel equivalent, insertion-loss reference, numeric output, infinite return loss, transmission-line transfer function |
 
-27 cases, 100 checks.
+37 cases, 129 checks, plus 8 standalone checks on the engine.
 
 ## How the expected values were produced
 
@@ -93,23 +99,35 @@ stabilitySourceRad stabilityLoadMag stabilityLoadRad` for `amp` cases.
 
 ## Known limitations of the code under test
 
-Things the suite deliberately does **not** assert, because they are current
-behaviour that should probably change:
+- `Example 5` claims ≥ 60 dB at 100 MHz; the shipped `Filter.sch` gives
+  53.25 dB. The suite pins the computed value, not the prose.
+- Insertion loss is a *transducer* loss from a `Z0` source into the actual load,
+  so it includes mismatch as well as dissipation. That is the useful definition
+  and the one the FAQ describes, but it is not the same as "loss of the
+  two-port in isolation".
 
-- `ReturnLoss` returns ~316 dB rather than ∞ for a perfect match, and
-  `InsertionLoss` returns ~308 dB, because `Γ` is floored at `1e-16` rather than
-  handled as an exact zero.
-- `InsertionLoss` / `S21` are referenced to a source impedance equal to
-  **Re(Z_load)**, not to `Z0`. They are only meaningful when the load is the
-  system impedance (as in `Filter.sch`). Feeding Ex2's 500 Ω load through the
-  same path gives 4.77 dB, which is not the insertion loss of anything useful.
-- `parallelEquiv()` in `sch.js` uses `Qu ^ 2`, which in JavaScript is a bitwise
-  XOR, not a square — a literal translation of the original VB `^`. The parallel
-  equivalent it reports is wrong. Fixing it will need a new golden value.
-- `Example 5` claims ≥ 60 dB at 100 MHz; the shipped `Filter.sch` gives 53.25 dB.
-  The suite pins the computed value, not the prose.
+## Where the numbers come from
 
-The harness talks to the engine through global `schObj` / `resultsObj` /
-`ampObj`, because that is the only interface there is. If the engine is ever
-extracted into a module with a real API, `tests/harness.js` is the one file that
+`tests/harness.js` drives the real globals — `schObj`, `resultsObj`, `ampObj` —
+because that is the interface `index.html`, `InsertionLoss.html` and
+`AmplifierDesign.html` actually use. Since Phase 2 those globals are a thin
+adapter in `sch.js` over `QSEngine.solve()` in `engine.js`, so a passing run
+exercises both the solver and the adapter.
+
+When the adapter is eventually removed, `tests/harness.js` is the one file that
 has to change; `tests/cases.js` should survive untouched.
+
+## Fixed since the first run of this suite
+
+Kept here because the fixes are what several of the cases exist to hold in
+place:
+
+- `parallelEquiv()` used `Qu ^ 2`, a bitwise XOR rather than a square.
+- Insertion loss was referenced to `Re(Z_load)` instead of `Z0`.
+- Results were stored as 16-significant-digit strings and re-parsed.
+- Gamma was floored at `1E-36`, so a perfect match could not report ∞ dB.
+- A transmission line was reduced to a lumped series impedance when computing
+  the transfer function — correct for `Zin`, wrong for insertion loss. A
+  lossless 75 Ω quarter-wave line into a 50 Ω load reported 4.22 dB where the
+  answer is 0.695 dB, its mismatch loss. The solver now cascades every element
+  as an ABCD matrix, so lines, stubs and lumped parts go through one code path.
