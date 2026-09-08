@@ -20,9 +20,6 @@
   <link href="img/smith.ico" rel="icon" >
   <link href="css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
   <link href="css/jquery.bootstrap-touchspin.css" rel="stylesheet" type="text/css" media="all"/>
-  <link href="css/jquery.contextMenu.css" rel="stylesheet" type="text/css" media="screen">
-  <link href="css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css" />
-  <link href="css/jquery.qtip.min.css" rel="stylesheet" type="text/css" />
   <link rel="apple-touch-icon" sizes="57x57" href="img/apple-icon-57x57.png" />
   <link rel="apple-touch-icon" sizes="72x72" href="img/apple-icon-72x72.png" />
   <link rel="apple-touch-icon" sizes="114x114" href="img/apple-icon-114x114.png" />
@@ -33,18 +30,13 @@
    <!-- for file and canvas save compatibilty with Safari -->
   <script src="js/FileSaver.min.js"></script>  
   <script src="engine.js"></script>
+  <script src="ui.js"></script>
   <script src="touchstone.js"></script>
   <script src="permalink.js"></script>
   <script src="common.js"></script>
   <script src="smith.js"></script>
   <script src="sch.js"></script>
-  <script src="js/jquery.contextMenu.js"></script>
   <script src="js/DragDropTouch.js"></script>    
-  <script src="js/bootstrap-dialog.min.js"></script>
-  <script src="js/bootbox.min.js"></script>
-  <script type="text/javascript" src="js/jquery.qtip.min.js"></script>
-
-  
    <!-- ios-drag-drop.js does not trigger end ? -->
     <!-- <script src="js/ios-drag-drop.js"></script>   -->
   <!-- <script src="js/jquery.longclick-1.0.min.js"></script> -->
@@ -270,7 +262,7 @@
                 <li><a href="/help/examples/examples/EXAMPLES.html" target="_blank" ><span class="glyphicon glyphicon-book"></span> Examples</a></li>
              </ul>
         </li>
-        <li><a href="#" data-toggle="modal" data-target="#optionsModal" onclick ="options_click()"><span class="glyphicon glyphicon-list-alt"></span></a></li>
+        <li><a href="#" onclick="options_click(); document.getElementById('optionsModal').showModal()"><span class="glyphicon glyphicon-list-alt"></span></a></li>
       </ul>
     </div>
   </div>
@@ -528,12 +520,9 @@
 
     <audio id="audio" src="img/button-3.wav" autostart="false"> </audio>
  <!-- ************************MODAL OPTION DIALOG BEGINS************************************************************************************** -->
-    <div id="optionsModal" class="modal fade" role="dialog">
-        <div class="modal-dialog modal-sm">
-            <!-- Options/Settings Modal content-->
-            <div class="modal-content">
+    <dialog id="optionsModal" class="qs-dialog qs-small">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="close" onclick="this.closest('dialog').close()">&times;</button>
                     <h4 class="modal-title">Settings</h4>
                 </div>
                 <div class="modal-body">
@@ -594,27 +583,19 @@
                     <br /> 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" onclick="optionValidate()" > OK </button>
+                    <button type="button" class="btn btn-default btn-lg" onclick="optionValidate(); this.closest('dialog').close()"> OK </button>
                 </div>
-            </div>
-        </div>
-    </div>
+    </dialog>
 <!-- ************************MODAL OPTION DIALOG ENDS************************************************************************************** -->
 
 <!-- ************************MODAL COMPONENT DIALOG BEGINS************************************************************************************** -->
-    <div id="componentsModal" class="modal fade" role="dialog">
-        <div class="modal-dialog modal-sm">
-            <!-- Options/Settings Modal content-->
-            <div class="modal-content">
+    <dialog id="componentsModal" class="qs-dialog qs-small">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <div> <br />
-                        <h4 style="text-align:left;float:left;color:blue;">Ele. Num:&nbsp;</h4>
-                        <h4 id="cmodalEnum" style="text-align:right;float:left;color:red;">1</h4>
-                        <h4 id="cmodalType" style="text-align:right;float:right;color:red;">R&nbsp;&nbsp;&nbsp;&nbsp;</h4>
-                        <h4 style="text-align:left;float:right;color:blue;">Type:&nbsp;</h4>
-                        <h4 style="clear:both;" />
-                    </div>
+                    <button type="button" class="close" onclick="this.closest('dialog').close()">&times;</button>
+                    <h4 class="modal-title" style="margin:0">
+                        Slot <span id="cmodalEnum" style="color:#b5342b">1</span>
+                        &middot; <span id="cmodalType" style="color:#b5342b">R</span>
+                    </h4>
                 </div>
                 <div class="modal-body">
                     <br />
@@ -630,11 +611,9 @@
                         <input type="text" id="STEP" value="" style="width:100px" hidden /><br /> <br />
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" onclick="componentValidate()"> OK </button>
+                    <button type="button" class="btn btn-default btn-lg" onclick="componentValidate(); this.closest('dialog').close()"> OK </button>
                 </div>
-            </div>
-        </div>
-    </div>
+    </dialog>
     <!-- ************************MODAL COMPONENT DIALOG ENDS************************************************************************************** -->
   <input id="file-input" type="file" name="name" style="display: none;" />     <!-- this for helping with file load -->
   <input id="file-input1" type="file" name="name" style="display: none;" />     <!-- this for helping with gam export -->
@@ -1411,7 +1390,7 @@ var end = function(e) {
             $(".modal-body #Q").val(mySrcElement.getAttribute('data-q'));
             componentValidate();
         }
-        else $("#componentsModal").modal(); // show dialog                       // note that two parameter components can have two step values
+        else document.getElementById("componentsModal").showModal();                       // note that two parameter components can have two step values
         return true;
     }
 
@@ -1533,78 +1512,40 @@ $('input[name="spin2"]').TouchSpin({
 });
 
 
-$('input[name="spin2"]').qtip({ 
-        content: {text: ""},
-        position:{ my: 'bottom left', at: 'top right',adjust: {x:-15, y:8}},
-        show: {delay: 500, effect: function() {$(this).slideDown();}},   // slideDown
-        hide: { inactive: 3000, event: 'click mouseleave', delay: 0 , effect: function() {$(this).slideUp();}},
-        style: {classes: 'qtip-rounded qtip-shadow'}
-    });
+/*
+ * Unit hints on the value boxes, from the schematic's own state. These were
+ * qTip2 tooltips; the browser draws a perfectly good one from a title
+ * attribute, which also reaches screen readers and needs no library.
+ */
+var UNIT_HINTS = {
+    t: ["Z0 [ohms]", "length"],
+    o: ["Z0 [ohms]", "length"],
+    s: ["Z0 [ohms]", "length"],
+    r: ["R [ohms]", null],
+    x: ["X [ohms]", null],
+    l: ["L [nH]", null],
+    c: ["C [pF]", null],
+    rx: ["R [ohms]", "X [ohms]"],
+    g: ["magnitude", "degrees"],
+    plc: ["L [nH]", "C [pF]"],
+    slc: ["L [nH]", "C [pF]"],
+    prc: ["R [ohms]", "C [pF]"],
+    src: ["R [ohms]", "C [pF]"]
+};
 
-// uses the schObj object to update the ToolTip content
 function updateToolTip() {
-     //   $('#E5').qtip('option', 'content.text', "test");
-     if(isMobile) return; 
-     var id, id_a;
-    $('#E0').qtip('disable');
     for (var i = 1; i < 13; i++) {
-        id= 'E' + i ;
-        id_a= 'E' + i +'a';
-        $('#'+id).qtip('enable');
-        $('#'+id_a).qtip('enable');
+        var hint = UNIT_HINTS[schObj.ELEMENT[i].type] || [null, null];
+        var lengthUnit = schObj.LU.toLowerCase();
+        setHint("E" + i, hint[0]);
+        setHint("E" + i + "a", hint[1] === "length" ? "length [" + lengthUnit + "]" : hint[1]);
     }
-    for (var i = 1; i < 13; i++) {
-    id= 'E' + i ;
-    id_a= 'E' + i +'a';
-    switch (schObj.ELEMENT[i].type) {
-        case 'w':
-            $('#'+id).qtip('disable');
-            $('#'+id_a).qtip('disable');
-            break;
-        case 't':
-        case 'o':
-        case 's':
-            $('#'+id).qtip('option', 'content.text', "Z0 [ohms]");
-            $('#'+id_a).qtip('option', 'content.text', "Length [" +schObj.LU.toLowerCase()+"]");
-            break;
-        case 'r':
-        case 'x':
-            $('#'+id).qtip('option', 'content.text', "R [ohms]");
-            $('#'+id_a).qtip('disable');
-            break;
-        case 'l':
-            $('#'+id).qtip('option', 'content.text', "L [nH]");
-            $('#'+id_a).qtip('disable');
-            break;
-        case 'c':
-            $('#'+id).qtip('option', 'content.text', "C [pF]");
-            $('#'+id_a).qtip('disable');
-            break;
-        case 'rx':
-            $('#'+id).qtip('option', 'content.text', " R [ohms]");
-            $('#'+id_a).qtip('option', 'content.text', "X [ohms]");
-            break;
-        case 'g':
-            $('#'+id).qtip('option', 'content.text', "Magnitude");
-            $('#'+id_a).qtip('option', 'content.text', "degrees");
-            break;
-        case 'plc':
-        case 'slc':
-            $('#'+id).qtip('option', 'content.text', "L [nH]");
-            $('#'+id_a).qtip('option', 'content.text', "C [pF]");
-            break;
-        case 'prc':
-        case 'src':
-            $('#'+id).qtip('option', 'content.text', "R [ohms]");
-            $('#'+id_a).qtip('option', 'content.text', "C [pF]");
-            break;
-        default:
-             $('#'+id).qtip('disable');
-             $('#'+id_a).qtip('disable');
-        }
+}
 
-    }
-
+function setHint(id, text) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (text) el.title = text; else el.removeAttribute("title");
 }
 
 
@@ -1844,54 +1785,32 @@ function updateToolTip() {
     }
 
 
-   // var tuneSelector1 = "Radio1"; var tuneSelector2 = "Radio2";
-   // var selected_value1 = true; var selected_value2 = false;
-  //  var radio1_visible = false; var radio2_visible = false; 
-    var updateValue_disable = false;
-    $(function () {  // right click menu only availale on desktops, should open the element value entry box as after 
-        $.contextMenu({
-            selector: "input[name='spin2'],.dropzonevimg,.dropzonehimg",
-            build: function ($trigger, e) {
-                // e.preventDefault(); try this to stop the mobile default menu
-                // this callback is executed every time the menu is to be shown
-                // its results are destroyed every time the menu is hidden
-                //console.log($trigger.attr("id") );
-                var id1 = $trigger.attr("id") ;
-                if(id1.substring(0,1)=='D') id1 = id1.replaceAt(0, "E");
-                console.log("id1 =" + id1 );
-                var second_element = false; var id; var idNum;
-                if(id1.substr(-1)=='a')   { 
-                        second_element = true; 
-                        id = id1.substring(0, id1.length - 1); // remove 'a'
-                        idNum = Number(id.substr(1)); // remove 'E'
-                    } // here you have identified that this is the 2nd element not get rid of the "a" postfix
-                else idNum = Number(id1.substr(1)); // remove 'E' from incoming ID if not a second element
-               // if (schObj.ELEMENT[idNum].type == "w") return;
-                var spin_element = document.getElementById(id1);
-                //  console.log("spin_change " + id1.substr(1));
-                //   console.log("idNum " + idNum);
-                // var idNum = Number($trigger.attr("id").substr(1));
-                console.log("before showing context menu " + idNum);
-                var elType = schObj.ELEMENT[idNum].type;
-                console.log("elType " + elType);
-                if( elType == 'w')updateValue_disable = true; else updateValue_disable = false;
-                var mySrcElement = document.getElementById(elType);  // to display defaults
-                var imgSrc = isEven(idNum) ? mySrcElement.getAttribute('data-img') : mySrcElement.getAttribute('data-imgv');
-                return {
-                    callback: function (key, options) {
-                       if (key == "item1") { showComponentdialog(elType, imgSrc, mySrcElement, idNum,"update")}
-                    },
-                    items: {
-                        item1: {
-                            name: "Update Value",
-                            disabled: updateValue_disable
-                        }
-                    }
-                };
-            }
-        });
+/*
+ * Right-clicking a value box or a slot image opens that component's value
+ * dialog. jquery.contextMenu drew an 88 KB menu for this one item.
+ */
+document.addEventListener("contextmenu", function (e) {
+    var target = e.target.closest(
+        "input[name='spin2'], .dropzonevimg, .dropzoneh img, .dropzonev img");
+    if (!target) return;
 
-    });
+    var id = target.id;
+    if (!id) return;
+    if (id.charAt(0) === "D") id = "E" + id.slice(1);          // slot image -> its value box
+    var slot = Number(id.replace(/^E/, "").replace(/a$/, ""));
+    if (!(slot >= 1 && slot <= 12)) return;
+
+    e.preventDefault();
+    var type = schObj.ELEMENT[slot].type;
+    if (type === "w") return;                                  // nothing to edit on a wire
+
+    var source = document.getElementById(type);
+    var img = isEven(slot) ? source.getAttribute("data-img") : source.getAttribute("data-imgv");
+    QSUI.menu(e.clientX, e.clientY, [{
+        label: "Update value",
+        action: function () { showComponentdialog(type, img, source, slot, "update"); }
+    }]);
+});
 
 
     // function spinValUpdatePrompt(id1) {
@@ -1970,17 +1889,10 @@ function updateToolTip() {
     var msg9 =  "Maximum Standing Wave: " +  Number(resultsObj.OUTPUT[9].MaximumSWR).toFixed(3) + "\n" ; 
     var msg10 = "Minimum Standing Wave: " +  Number(resultsObj.OUTPUT[10].MinimumSWR).toFixed(3) + "\n" ;
      //msg2$ = " Note: S21 vaild only if Z0 = Load "
-    BootstrapDialog.show({
-            //size: BootstrapDialog.SIZE_SMALL,
-            title: 'Tr. Line Equivalents',
-            message: msg0+msg1+msg2+msg3+msg4+msg5+msg6+msg7+msg8+msg9+msg10+seriesEquiv()+ "\n"+ parallelEquiv(),
-            buttons: [{
-   		        label: 'Close',
-                action: function(dialog) {            
-                dialog.close();               
-        }
-    }]
-        });
+    QSUI.open({
+        title: "Tr. Line Equivalents",
+        body: msg0+msg1+msg2+msg3+msg4+msg5+msg6+msg7+msg8+msg9+msg10+seriesEquiv()+ "\n"+ parallelEquiv()
+    });
     }
 
     /* One coloured arc per ladder component, so the path from the load to Zin
@@ -1993,44 +1905,42 @@ function updateToolTip() {
     }
 
     function showMarkerDialog() {
-        var markerM = smithObj.markerM;
-        var markerQ = smithObj.markerQ;
-        var $content = $('<div><label for="MM">Marker Magnitude: <input type="text" id="MM" value='+markerM+'  style="width:100px" />\
-            </label><br /><label for="MA">Marker Angle: <input type="text" id="MA" value='+markerQ+' style="width:100px" /></label><br /></div>');
-            BootstrapDialog.show({
-            size: BootstrapDialog.SIZE_SMALL,
-            title: 'Marker',
-            message: $content,
-            buttons: [{
-                label: 'Set',
-                cssClass: 'btn-success',
-                action: function(dialogRef){
-                    //dialogRef.setClosable(false);
-                    var val = dialogRef.getModalBody().find('#MM').val();
-                    var val1 = dialogRef.getModalBody().find('#MA').val();
-                    if (isNumeric(val) && val >= 0 && val <= 1 && isNumeric(val1) && val1 > 0 && val1 <= 360) 
-                        {
-                            smithObj.markerM = val;
-                            smithObj.markerQ = val1;
-                            smithObj.showMarker=true;
-                            smithObj.redrawSmith();
-                            //dialogRef.setClosable(true);
-                            dialogRef.close();
-                        }
-                        else {
-                            //alert(val);
-                           // dialogRef.setClosable(false);
-                        }
+        var form = document.createElement("div");
+        form.innerHTML =
+            '<label>Marker magnitude (0 to 1)<br><input type="text" id="MM"></label>' +
+            '<label>Marker angle (degrees)<br><input type="text" id="MA"></label>';
+        form.querySelector("#MM").value = smithObj.markerM;
+        form.querySelector("#MA").value = smithObj.markerQ;
+
+        QSUI.open({
+            title: "Marker",
+            body: form,
+            small: true,
+            buttons: [
+                {
+                    label: "Reset",
+                    action: function () {
+                        smithObj.showMarker = false;
+                        smithObj.redrawSmith();
                     }
-            }, {
-                label: 'Reset',
-                cssClass: 'btn-success',
-                action: function(dialogRef){
-                    smithObj.showMarker=false;
-                    smithObj.redrawSmith();
-                    dialogRef.close();
+                },
+                {
+                    label: "Set",
+                    primary: true,
+                    action: function () {
+                        var m = form.querySelector("#MM").value;
+                        var a = form.querySelector("#MA").value;
+                        if (!(isNumeric(m) && m >= 0 && m <= 1 &&
+                              isNumeric(a) && a > 0 && a <= 360)) {
+                            return false;   // out of range, leave the dialog open
+                        }
+                        smithObj.markerM = m;
+                        smithObj.markerQ = a;
+                        smithObj.showMarker = true;
+                        smithObj.redrawSmith();
+                    }
                 }
-            }]
+            ]
         });
     }
 
@@ -2094,38 +2004,40 @@ function shareLink_click() {
         return;
     }
 
-    var $content = $('<div><p style="margin-bottom:8px">This link carries the whole design — \
-frequency, load, every component, and the chart overlays.</p>\
-<input type="text" id="shareUrl" class="form-control" readonly style="font-size:12px"></div>');
-    $content.find("#shareUrl").val(url);
+    var wrap = document.createElement("div");
+    var note = document.createElement("p");
+    note.style.margin = "0 0 10px";
+    note.textContent = "This link carries the whole design: frequency, load, every component, " +
+                       "and the chart overlays.";
+    var field = document.createElement("input");
+    field.type = "text";
+    field.readOnly = true;
+    field.value = url;
+    field.style.width = "100%";
+    field.style.fontSize = "12px";
+    wrap.appendChild(note);
+    wrap.appendChild(field);
 
-    BootstrapDialog.show({
+    QSUI.open({
         title: "Share Link",
-        message: $content,
-        onshown: function (dialog) {
-            var field = dialog.getModalBody().find("#shareUrl")[0];
-            field.focus();
-            field.setSelectionRange(0, field.value.length);
-        },
-        buttons: [{
-            label: "Copy",
-            cssClass: "btn-primary",
-            action: function (dialog) {
-                var field = dialog.getModalBody().find("#shareUrl")[0];
-                field.focus();
-                field.setSelectionRange(0, field.value.length);
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(field.value).then(
-                        function () { dialog.close(); },
-                        function () { /* leave it selected to copy by hand */ });
-                } else {
-                    try { document.execCommand("copy"); dialog.close(); } catch (e) { /* ditto */ }
+        body: wrap,
+        onShown: function () { field.focus(); field.setSelectionRange(0, field.value.length); },
+        buttons: [
+            { label: "Close" },
+            {
+                label: "Copy",
+                primary: true,
+                action: function () {
+                    field.focus();
+                    field.setSelectionRange(0, field.value.length);
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(field.value);
+                    } else {
+                        try { document.execCommand("copy"); } catch (e) { /* copy by hand */ }
+                    }
                 }
             }
-        }, {
-            label: "Close",
-            action: function (dialog) { dialog.close(); }
-        }]
+        ]
     });
 }
 
@@ -2273,38 +2185,56 @@ transmission line or a three-element network.");
         return;
     }
 
-    var $content = $('<div></div>');
-    $content.append($('<p style="margin-bottom:10px"></p>').text(header));
-    var $list = $('<div></div>');
-    options.forEach(function (option, i) {
+    var wrap = document.createElement("div");
+    var head = document.createElement("p");
+    head.style.margin = "0 0 10px";
+    head.textContent = header;
+    wrap.appendChild(head);
+
+    var dlg = null;
+    options.forEach(function (option) {
         var parts = option.elements.filter(function (el) { return el.type !== "w"; })
             .map(function (el) {
                 return el.type.toUpperCase() + el.slot + " = " +
                        Number(el.value1).toFixed(3) + (el.type === "l" ? " nH" : " pF");
-            }).join("  ·  ");
-        var shape = option.topology === "series-shunt"
-            ? "series then shunt" : "shunt then series";
-        var $row = $('<div style="padding:8px 0;border-top:1px solid #e7e7e7"></div>');
-        $row.append($('<div style="font-family:monospace;font-size:13px"></div>').text(parts));
-        $row.append($('<div style="color:#888;font-size:12px;margin-top:2px"></div>')
-            .text(shape + "   ·   loaded Q " + option.q.toFixed(2)));
-        $('<button type="button" class="btn btn-sm btn-primary" style="margin-top:6px">Apply</button>')
-            .on("click", function () {
-                applyMatch(option);
-                $content.closest(".modal").modal("hide");
-            }).appendTo($row);
-        $list.append($row);
-    });
-    $content.append($list);
-    $content.append($('<p style="color:#888;font-size:12px;margin-top:12px"></p>')
-        .text("Applying clears the rest of the ladder, because the match is calculated " +
-              "from the load outwards. Lower Q means wider bandwidth."));
+            }).join("   \u00b7   ");
 
-    BootstrapDialog.show({
-        title: "Match to " + Z0 + " Ω",
-        message: $content,
-        buttons: [{ label: "Close", action: function (d) { d.close(); } }]
+        var row = document.createElement("div");
+        row.style.cssText = "padding:10px 0;border-top:1px solid #e5e8ee";
+
+        var values = document.createElement("div");
+        values.style.cssText = "font-family:ui-monospace,Menlo,monospace;font-size:13px";
+        values.textContent = parts;
+
+        var meta = document.createElement("div");
+        meta.style.cssText = "color:#7b8496;font-size:12px;margin-top:3px";
+        meta.textContent = (option.topology === "series-shunt"
+            ? "series then shunt" : "shunt then series") +
+            "   \u00b7   loaded Q " + option.q.toFixed(2);
+
+        var apply = document.createElement("button");
+        apply.type = "button";
+        apply.className = "qs-btn qs-primary";
+        apply.style.marginTop = "8px";
+        apply.textContent = "Apply";
+        apply.addEventListener("click", function () {
+            applyMatch(option);
+            QSUI.close(dlg);
+        });
+
+        row.appendChild(values);
+        row.appendChild(meta);
+        row.appendChild(apply);
+        wrap.appendChild(row);
     });
+
+    var foot = document.createElement("p");
+    foot.style.cssText = "color:#7b8496;font-size:12px;margin:14px 0 0";
+    foot.textContent = "Applying clears the rest of the ladder, because the match is " +
+                       "calculated from the load outwards. Lower Q means wider bandwidth.";
+    wrap.appendChild(foot);
+
+    dlg = QSUI.open({ title: "Match to " + Z0 + " \u03a9", body: wrap });
 }
 
 function applyMatch(option) {

@@ -470,48 +470,29 @@ function enableScroll() {
   //  document.onkeydown = null;  
 }
 
-function ShowMessage(title,msg) {
-    // var msg0 = " ZIN : " +   Number(resultsObj.OUTPUT[0].ZRout).toFixed(3) + " + " +  Number(resultsObj.OUTPUT[0].ZIout).toFixed(3) + "j" + "   " +  Number(resultsObj.OUTPUT[0].MAGout).toFixed(3) + " < " +  Number(resultsObj.OUTPUT[0].ANGout).toFixed(3) + "\n" ;
-    BootstrapDialog.show({
-            //size: BootstrapDialog.SIZE_SMALL,
-            title: title,
-            message: msg,
-            buttons: [{
-   		        label: 'Close',
-                action: function(dialog) {            
-                dialog.close();               
-                }
-            }]
-    });
+/*
+ * Message boxes and the step-size prompt. These names are called from all
+ * three pages; QSUI in ui.js does the work now that bootstrap-dialog and
+ * bootbox are gone.
+ */
+function ShowMessage(title, msg) {
+    QSUI.open({ title: title, body: msg });
 }
 
-function ShowMessage_sm(title,msg) {
-    // var msg0 = " ZIN : " +   Number(resultsObj.OUTPUT[0].ZRout).toFixed(3) + " + " +  Number(resultsObj.OUTPUT[0].ZIout).toFixed(3) + "j" + "   " +  Number(resultsObj.OUTPUT[0].MAGout).toFixed(3) + " < " +  Number(resultsObj.OUTPUT[0].ANGout).toFixed(3) + "\n" ;
-    BootstrapDialog.show({
-            size: BootstrapDialog.SIZE_SMALL,
-            title: title,
-            message: msg,
-            buttons: [{
-   		        label: 'Close',
-                action: function(dialog) {            
-                dialog.close();               
-                }
-            }]
-    });
+function ShowMessage_sm(title, msg) {
+    QSUI.open({ title: title, body: msg, small: true });
 }
 
-function updateStepSize_prompt(current_val,element)
-{
-    bootbox.prompt({
-    size: "small",
-    title: "Enter Step Size", 
-    inputType: "text",
-    value: current_val,
-    callback: function(result) {
-        if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
-            $(element).trigger("touchspin.updatesettings", { step: result });
+function updateStepSize_prompt(current_val, element) {
+    QSUI.promptValue({
+        title: "Step Size",
+        label: "How much each press of the arrows changes the value:",
+        value: current_val,
+        onOK: function (result) {
+            if (isNumeric(result)) {
+                $(element).trigger("touchspin.updatesettings", { step: result });
+            }
         }
-    }
     });
 }
 

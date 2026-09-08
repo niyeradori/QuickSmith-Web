@@ -9,17 +9,13 @@
   <link href="img/smith.ico" rel="icon" >
   <link href="css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
   <link href="css/jquery.bootstrap-touchspin.css" rel="stylesheet" type="text/css" media="all"/>
-  <link href="css/jquery.contextMenu.css" rel="stylesheet" type="text/css" media="screen">
-  <link href="css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css" />
   <script src="js/jquery-3.2.1.min.js"></script>
   <script src="js/bootstrap3.min.js"></script>
   <script src="js/jquery.bootstrap-touchspin_ni.js"></script>
   <!-- <script src="js/jquery.ui.position.js"></script> -->
-  <script src="js/jquery.contextMenu.js"></script>
   <script src="js/DragDropTouch.js"></script>   
-  <script src="js/bootstrap-dialog.min.js"></script>
-  <script src="js/bootbox.min.js"></script>
   <script src="engine.js"></script>
+  <script src="ui.js"></script>
   <script src="common.js"></script>
   <script src="smith.js"></script>
   <script src="amp.js"></script>
@@ -105,7 +101,7 @@
         <li class="hidden-xs hidden-sm" ><a href="#"  onclick ="back_click()"><span class="glyphicon glyphicon-backward"></span>Back</a></li>
         <li class="hidden-md hidden-lg"  ><a href="#"  onclick ="back_mobile_click()"><span class="glyphicon glyphicon-backward"></span>BackM</a></li>
         <li><a href="qsmithfaq.html"><span class="glyphicon glyphicon-book"></span> FAQ</a></li>
-        <li><a href="#" data-toggle="modal" data-target="#optionsModal" onclick ="options_click()"><span class="glyphicon glyphicon-list-alt"></span> Options</a></li> 
+        <li><a href="#" onclick="options_click(); document.getElementById('optionsModal').showModal()"><span class="glyphicon glyphicon-list-alt"></span> Options</a></li> 
       </ul>
     </div>
   </div>
@@ -165,13 +161,9 @@
 
     <audio id="audio" src="img/button-3.wav" autostart="false"> </audio>
  <!-- ************************MODAL OPTION DIALOG BEGINS************************************************************************************** -->
-  <div id="optionsModal" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-sm">
-
-      <!-- Options/Settings Modal content-->
-      <div class="modal-content">
+  <dialog id="optionsModal" class="qs-dialog qs-small">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <button type="button" class="close" onclick="this.closest('dialog').close()">&times;</button>
           <h4 class="modal-title">Settings</h4>
         </div>
         <div class="modal-body">
@@ -202,11 +194,9 @@
           <br /> 
 </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" onclick="optionValidate()" > OK </button>
+          <button type="button" class="btn btn-default btn-lg" onclick="optionValidate(); this.closest('dialog').close()"> OK </button>
         </div>
-      </div>
-    </div>
-  </div>
+  </dialog>
   <input id="file-input" type="file" name="name" style="display: none;" />     <!-- this for helping with file load -->
 <script>
 /************************* SCRIPT STARTS HERE********************************************************************************/
@@ -643,12 +633,11 @@ function NoiseCircles_click() {
 
 function NoiseDialog_prompt(current_val)
 {
-    bootbox.prompt({
-    size: "small",
-    title: "Minimum Noise Figure:"+ ampObj.Fmin +' dB\n' + "Enter Noise Figure in dB:", 
-    inputType: "number",
+    QSUI.promptValue({
+    title: "QuickSmith",
+    label: "Minimum Noise Figure:"+ ampObj.Fmin +' dB\n' + "Enter Noise Figure in dB:",
     value: current_val,
-    callback: function(result) {
+    onOK: function (result) {
       if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
             if( parseFloat(ampObj.Fmin) > parseFloat(result))  ampObj.Fi = ampObj.Fmin; else  ampObj.Fi =  parseFloat(result);
             document.getElementById("FI").value = Number(ampObj.Fi).toFixed(2);
@@ -688,9 +677,9 @@ function NoiseDialog() {
 //         buttons: [{
 //             label: 'OK',
 //             cssClass: 'btn-success',
-//             action: function(dialogRef){
+//             action: function () {
 //                 dialogRef.setClosable(true);
-//                 fi = dialogRef.getModalBody().find('#FI').val();
+//                 fi = $content.find('#FI').val();
 //                 if (isNumeric(fi)) // validation
 //                   {
 //                     if(ampObj.Fmin > ampObj.Fi)  ampObj.Fi = ampObj.Fmin; else  ampObj.Fi = fi;
@@ -721,12 +710,11 @@ function NoiseDialog() {
 function AvailableCirclesDialog_prompt(current_val)
 {
     var GPMAX =  Number(ampObj.GPMAX).toFixed(2)
-    bootbox.prompt({
-    size: "small",
-    title: "Maximum Av Gain:"+ GPMAX +" dB"+"\n" + "Enter Gain in dB:", 
-    inputType: "number",
+    QSUI.promptValue({
+    title: "QuickSmith",
+    label: "Maximum Av Gain:"+ GPMAX +" dB"+"\n" + "Enter Gain in dB:",
     value: current_val,
-    callback: function(result) {
+    onOK: function (result) {
       if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
           console.log ("result = "+ result);
             if(parseFloat(result) > parseFloat(GPMAX)) result = GPMAX; 
@@ -758,12 +746,11 @@ function  AvailableCirclesDialog (){
 function OperatingCirclesDialog_prompt(current_val)
 {
     var GPMAX =  Number(ampObj.GPMAX).toFixed(2)
-    bootbox.prompt({
-    size: "small",
-    title: "Maximum Op Gain:"+ GPMAX +" dB"+"\n" + "Enter Gain in dB:", 
-    inputType: "number",
+    QSUI.promptValue({
+    title: "QuickSmith",
+    label: "Maximum Op Gain:"+ GPMAX +" dB"+"\n" + "Enter Gain in dB:",
     value: current_val,
-    callback: function(result) {
+    onOK: function (result) {
       if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
           if(parseFloat(result) > parseFloat(GPMAX)) result = GPMAX; 
             ampObj.OpG = parseFloat(result);
@@ -799,9 +786,9 @@ function  OperatingCirclesDialog (){
     //     buttons: [{
     //         label: 'OK',
     //         cssClass: 'btn-success',
-    //         action: function(dialogRef){
+    //         action: function () {
     //             dialogRef.setClosable(true);
-    //             OpG = dialogRef.getModalBody().find('#OPG1').val();
+    //             OpG = $content.find('#OPG1').val();
     //             if (isNumeric(OpG)) // validation
     //               {
     //                 if(OpG > GPMAX) OpG = GPMAX; 
@@ -884,23 +871,23 @@ function stability_dialog()
           <br />\
         <br /><label for="RESULT">RESULT:<input type="text" id="RESULT"  readonly style="width:220px;  color:red"/>\
         </div>');
-    BootstrapDialog.show({
-    size: BootstrapDialog.SIZE_SMALL,
-    title: 'S-Parmeters Entry',
-    message: $content,
+    QSUI.open({
+    title: "S-Parmeters Entry",
+    small: true,
+    body: $content[0],
         buttons: [{
             label: 'Calculate Stability',
             cssClass: 'btn-success',
-            action: function(dialogRef){
+            action: function () {
                 //dialogRef.setClosable(false);
-                var val0 = dialogRef.getModalBody().find('#S11M').val();
-                var val1 = dialogRef.getModalBody().find('#S11A').val();
-                var val2 = dialogRef.getModalBody().find('#S21M').val();
-                var val3 = dialogRef.getModalBody().find('#S21A').val();
-                var val4 = dialogRef.getModalBody().find('#S12M').val();
-                var val5 = dialogRef.getModalBody().find('#S12A').val();
-                var val6 = dialogRef.getModalBody().find('#S22M').val();
-                var val7 = dialogRef.getModalBody().find('#S22A').val();
+                var val0 = $content.find('#S11M').val();
+                var val1 = $content.find('#S11A').val();
+                var val2 = $content.find('#S21M').val();
+                var val3 = $content.find('#S21A').val();
+                var val4 = $content.find('#S12M').val();
+                var val5 = $content.find('#S12A').val();
+                var val6 = $content.find('#S22M').val();
+                var val7 = $content.find('#S22A').val();
                 if (isNumeric(val0)  && isNumeric(val1)  && isNumeric(val2)  && isNumeric(val3) && isNumeric(val4) 
                  && isNumeric(val5)  && isNumeric(val6)  && isNumeric(val7)) // validation
                 {
@@ -913,11 +900,9 @@ function stability_dialog()
                         ampObj.S22M = val6;
                         ampObj.S22A = val7;
                         ampObj.calculateStabilityCircles();
-                        dialogRef.getModalBody().find('#K').val(ampObj.k);
-                        dialogRef.getModalBody().find('#DELTA').val(ampObj.delta);
-                        dialogRef.getModalBody().find('#RESULT').val(ampObj.stability_msg);
-                        
-                        dialogRef.setClosable(false);
+                        $content.find('#K').val(ampObj.k);
+                        $content.find('#DELTA').val(ampObj.delta);
+                        $content.find('#RESULT').val(ampObj.stability_msg);
                         $(SC).removeClass('disabled'); // enable the circle menus
                         $(OC).removeClass('disabled');
                         $(AC).removeClass('disabled');
@@ -933,10 +918,9 @@ function stability_dialog()
             {
              label: 'OK',
              cssClass: 'btn-success',
-             action: function(dialogRef){
+             action: function () {
                 //smithSourceObj.redrawSmith();
                 //smithSourceObj.redrawSmith();
-                dialogRef.close();
              }
             }
     ]
@@ -956,19 +940,18 @@ function noise_dialog()
         </label><br /><label for="GA">G0 [Ang]: <input type="number" id="GA" value='+G0A+' style="width:100px" />\
         </label><br /><label for="RN">RN [Ohms]: <input type="number" id="RN" value='+RN+' style="width:100px" />\
         </label><br /></div>');
-    BootstrapDialog.show({
-    size: BootstrapDialog.SIZE_SMALL,
-    title: 'Noise Parmeters Entry',
-    message: $content,
+    QSUI.open({
+    title: "Noise Parmeters Entry",
+    small: true,
+    body: $content[0],
         buttons: [{
             label: 'OK',
             cssClass: 'btn-success',
-            action: function(dialogRef){
-                dialogRef.setClosable(true);
-                var val0 = dialogRef.getModalBody().find('#FM').val();
-                var val1 = dialogRef.getModalBody().find('#GM').val();
-                var val2 = dialogRef.getModalBody().find('#GA').val();
-                var val3 = dialogRef.getModalBody().find('#RN').val();
+            action: function () {
+                var val0 = $content.find('#FM').val();
+                var val1 = $content.find('#GM').val();
+                var val2 = $content.find('#GA').val();
+                var val3 = $content.find('#RN').val();
                 if (isNumeric(val0)  && isNumeric(val1)  && isNumeric(val2)  && isNumeric(val3)) // validation
                 {
                         ampObj.Fmin = val0;
@@ -978,7 +961,6 @@ function noise_dialog()
                         //ampObj.NoiseCircles();
                         //dialogRef.setClosable(true);
                         $(NC).removeClass('disabled');
-                        dialogRef.close();
                 }
                 else {
                         //alert(val);
@@ -989,7 +971,7 @@ function noise_dialog()
             // {
             //  label: 'Reset',
             //  cssClass: 'btn-success',
-            //  action: function(dialogRef){
+            //  action: function () {
             //     smithObj.showMarker=false;
             //     smithObj.redrawSmith();
             //     dialogRef.close();
