@@ -221,6 +221,18 @@ function getUnits(elementType) {
 
 }
 
+// Formats a dB figure for display. A perfect match has infinite return loss and
+// a short-circuit load has infinite insertion loss, so both are real answers
+// rather than errors - toFixed() would print "Infinity".
+function formatdB(n, decimals){
+    var v = Number(n);
+    if (decimals === undefined) decimals = 3;
+    if (v === Infinity) return "∞";
+    if (v === -Infinity) return "-∞";
+    if (isNaN(v)) return "--";
+    return v.toFixed(decimals);
+}
+
 function getSign(n){
     var sign = Math.sign(n);
     var sign_txt;

@@ -841,15 +841,12 @@ function onMouseClick(e) {
     if(r1==0) q=0 ; else q= 180*math.asin(y/r1)/Math.PI;
 	if(x < 0 && y >=0) q= 180-q; if(x<0 && y<0) q= -180-q;  // Adjust for the second and third quadrant
     var m = r1/AXIS_RANGE; 
-    var str1;
     if (InSmith(x,y) == true) {
        // var msg =  x + " ," + y +"i";
-        if (m == 0)  m = 1e-16;
         if (m == 1)  m = 0.9999999999;
         var swr = (1 + m) / (1 - m);
-        var S11 = -20 * (Math.log(m) / Math.log(10));
-        if (S11 >= 720)  str1 = " > "; else str1 = "";
-        var msg = "Gamma [Mag]: " + Number(m).toFixed(2) + "\n" + "Gamma [Ang]: " + Number(q).toFixed(2) + '&#176' + '\n' + "VSWR: " + Number(swr).toFixed(2) + '\n' + "Return Loss: " + str1 + Number(S11).toFixed(2) + " dB" ; 
+        var S11 = (m <= 0) ? Infinity : -20 * Math.log10(m);
+        var msg = "Gamma [Mag]: " + Number(m).toFixed(2) + "\n" + "Gamma [Ang]: " + Number(q).toFixed(2) + '&#176' + '\n' + "VSWR: " + Number(swr).toFixed(2) + '\n' + "Return Loss: " + formatdB(S11, 2) + " dB" ; 
         ShowMessage_sm("QuickSmith",msg);
         //console.log("x= " + x + "y= " + y );
         }
@@ -1270,7 +1267,7 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         resultsObj.OUTPUT[8].calculate(); // calculate TLCal
         resultsObj.OUTPUT[9].calculate(); // calculate MaxSWRCal
         resultsObj.OUTPUT[10].calculate(); // calculate MinSWRCal
-        document.getElementById("IL").value =  Number(resultsObj.OUTPUT[5].InsertionLoss).toFixed(3);; // update IL
+        document.getElementById("IL").value =  formatdB(resultsObj.OUTPUT[5].InsertionLoss); // update IL
         // incase of multiple terminations update the spinnertext of E1/E1a ( real/Imag M/Ang)
        // if(schObj.termination == 'Multiple') {
         document.getElementById("E1").value= Number(schObj.ELEMENT[1].value1).toFixed(2);
@@ -1988,8 +1985,8 @@ function updateToolTip() {
     var msg1 =  "YIN(mS) : " +  Number(resultsObj.OUTPUT[1].YRout).toFixed(3) + getSign(resultsObj.OUTPUT[1].YIout) +  Number(Math.abs(resultsObj.OUTPUT[1].YIout)).toFixed(3) + "i" + "   P: " +  Number(resultsObj.OUTPUT[1].YMag).toFixed(3) + " < " +  Number(resultsObj.OUTPUT[1].YAng).toFixed(3) +"&#176"+ "\n" ;
     var msg2 =  "GAM : " +  Number(resultsObj.OUTPUT[2].GAMRout).toFixed(3) + getSign(resultsObj.OUTPUT[2].GAMIout) +  Number(Math.abs(resultsObj.OUTPUT[2].GAMIout)).toFixed(3) + "i" + "  P: " +  Number(resultsObj.OUTPUT[2].GAMMag).toFixed(3) + " < " +  Number(resultsObj.OUTPUT[2].GAMAng).toFixed(3) +"&#176"+ "\n" ; 
     var msg3 = "VSWR : " +  Number(resultsObj.OUTPUT[3].VSWR).toFixed(3) + "\n" ;
-    var msg4 = "Return Loss : " +  Number(resultsObj.OUTPUT[4].ReturnLoss).toFixed(3) + " dB" + "\n" ;
-    var msg5 =  "Insertion Loss : " +  Number(resultsObj.OUTPUT[5].InsertionLoss).toFixed(3) + " dB" + " S21 : " +  Number(resultsObj.OUTPUT[5].S21Mag).toFixed(3) + " dB" + " < " +  Number(resultsObj.OUTPUT[5].S21Ang).toFixed(3) +"&#176"+"\n"; 
+    var msg4 = "Return Loss : " +  formatdB(resultsObj.OUTPUT[4].ReturnLoss) + " dB" + "\n" ;
+    var msg5 =  "Insertion Loss : " +  formatdB(resultsObj.OUTPUT[5].InsertionLoss) + " dB" + " S21 : " +  formatdB(resultsObj.OUTPUT[5].S21Mag) + " dB" + " < " +  Number(resultsObj.OUTPUT[5].S21Ang).toFixed(3) +"&#176"+"\n"; 
     var msg6 = "Reflection Loss : " +  Number(resultsObj.OUTPUT[6].ReflectionLoss).toFixed(3) + " dB" + "\n" ; 
     var msg7 = "Power Reflection Coefficient : " +  Number(resultsObj.OUTPUT[7].PowerReflectionCoeff).toFixed(3) + "\n" ;
     var msg8 =  "Transmission Loss Coefficient : " +   Number(resultsObj.OUTPUT[8].TransmissionLossCoeff).toFixed(3) + "\n" ;

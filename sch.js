@@ -90,8 +90,11 @@ function updateImpedance()
     var beta = w / ( schObj.VF * C);
     var index = this.index; // this has to be a even number except for RX and G
     v1 = this.value1; v2 = this.value2;
-    if(v1 ==0)  v1 = 1e-14; 
-    if(v2 ==0)  v2 = 1e-14; 
+    // The 1e-14 floor exists to keep 1/(wC) and friends finite. R, X and the
+    // load itself have no such singularity, so they use the entered value
+    // exactly - otherwise an exact 50 ohm load can never reach gamma = 0.
+    if(v1 ==0)  v1 = 1e-14;
+    if(v2 ==0)  v2 = 1e-14;
     switch (this.type) {
         case "f":
             break;
@@ -100,13 +103,13 @@ function updateImpedance()
             resultsObj.ELEMENT[index].ZI = 0;
             break;
         case "r":
-            resultsObj.ELEMENT[index].ZR = v1;
+            resultsObj.ELEMENT[index].ZR = Number(this.value1);
             console.log(" R = " + resultsObj.ELEMENT[index].ZR + " Index = " + index);
             resultsObj.ELEMENT[index].ZI = 0;
             break;
         case "x":
             resultsObj.ELEMENT[index].ZR = 0;
-            resultsObj.ELEMENT[index].ZI = v1;
+            resultsObj.ELEMENT[index].ZI = Number(this.value1);
             break;
         case "g":
             if( schObj.termination =="Multiple") {                
@@ -140,8 +143,8 @@ function updateImpedance()
                 resultsObj.ELEMENT[index].ZI = ZI;
             }
             else {
-                resultsObj.ELEMENT[index].ZR = v1;
-                resultsObj.ELEMENT[index].ZI = v2;               
+                resultsObj.ELEMENT[index].ZR = Number(this.value1);
+                resultsObj.ELEMENT[index].ZI = Number(this.value2);
             }
             schObj.ELEMENT[1].value1 = resultsObj.ELEMENT[index].ZR;
             schObj.ELEMENT[1].value2 = resultsObj.ELEMENT[index].ZI;
@@ -472,11 +475,13 @@ function Zcalsweep1() // scObj JSON,
     var complexOut = math.complex(ZRout, ZIout);
     var MAGout = complexOut.abs();
     var ANGout = complexOut.arg() * math.divide(180.00,Math.PI);
-    var precision = 16;
-    resultsObj.OUTPUT[0].ZRout = math.format(ZRout, precision);
-    resultsObj.OUTPUT[0].ZIout = math.format(ZIout, precision);
-    resultsObj.OUTPUT[0].MAGout = math.format(MAGout, precision);
-    resultsObj.OUTPUT[0].ANGout = math.format(ANGout, precision);
+    // Kept as numbers. These used to be rounded to 16-significant-digit strings
+    // and re-parsed by every consumer, which turned an exact 25 into
+    // "25.00000000000001" and cost precision for no benefit.
+    resultsObj.OUTPUT[0].ZRout = ZRout;
+    resultsObj.OUTPUT[0].ZIout = ZIout;
+    resultsObj.OUTPUT[0].MAGout = MAGout;
+    resultsObj.OUTPUT[0].ANGout = ANGout;
   //  console.log("result1 =" + resultsObj.OUTPUT[0].ZRout); console.log("result2 =" + resultsObj.OUTPUT[0].ZIout);
   //  console.log(JSON.stringify(resultsObj));
   //
@@ -509,24 +514,33 @@ var points, k, j, i, CRA, CIA, C1, dB1;
 //    freq = (f + step1)// ' frequency sweep
 //    if (arg !== 1) freq = fold;
 //    if (arg < 2)  assign();
-   var freq = schObj.ELEMENT[0].value1; 
-   var ZR1= resultsObj.ELEMENT[1].ZR;
-   if (ZR1 == 0) ZR1 = 1E-40;
-   var YR1 = 1 / ZR1;
-   var YI1 = 0;
+   var freq = schObj.ELEMENT[0].value1;
+
+   // Transducer loss: a Z0 source drives the ladder, which is terminated by the
+   // load element.  The source used to be referenced to Re(Z_load) instead of
+   // Z0, which is the same thing whenever the load IS the system impedance -
+   // and meaningless otherwise (a lossless 500-to-50 ohm match reported 4.8 dB).
+   var GS = 1 / schObj.Z0;                       // source conductance
+   var ZLR = Number(resultsObj.ELEMENT[1].ZR);   // load impedance
+   var ZLI = Number(resultsObj.ELEMENT[1].ZI);
+   var ZLmagsq = ZLR * ZLR + ZLI * ZLI;
+   if (ZLmagsq === 0) ZLmagsq = 1E-40;
+   var GL =  ZLR / ZLmagsq;                      // load admittance
+   var BL = -ZLI / ZLmagsq;
 
    resultsObj.ELEMENT[13].YR = 0;
    resultsObj.ELEMENT[13].YI = 0;
    resultsObj.ELEMENT[14].ZR = 0;
    resultsObj.ELEMENT[14].ZI = 0;
-   resultsObj.ELEMENT[15].YR = YR1;
-   resultsObj.ELEMENT[15].YI = YI1;
-   CR[2] = YR1;
-   CI[2] = 0;
+   resultsObj.ELEMENT[15].YR = GS;
+   resultsObj.ELEMENT[15].YI = 0;
+   // 1 volt across the load, so the load current is its admittance
+   CR[2] = GL;
+   CI[2] = BL;
    var ZR2= resultsObj.ELEMENT[2].ZR;
    var ZI2= resultsObj.ELEMENT[2].ZI;
-   VI[2] = YR1 * ZI2;
-   VR[2] = YR1 * ZR2;
+   VR[2] = CR[2] * ZR2 - CI[2] * ZI2;
+   VI[2] = CR[2] * ZI2 + CI[2] * ZR2;
    VR[3] = 1 + VR[2];  //' VR[1] = 1 Volt
    VI[3] = VI[2];
    var YR3= resultsObj.ELEMENT[3].YR;
@@ -555,7 +569,10 @@ var points, k, j, i, CRA, CIA, C1, dB1;
    //'S21IM# = C1#    ' store global data
    //'S21IR# = CRA#
    //'S21II# = CIA#
-   dB1 = -(20 / 2.30259) * math.log(C1 / (2 * YR1));//  il loss = 20 log (v1/v2)
+   // |S21| = 2*sqrt(Gs*Gl) * V_load / I_source, with V_load held at 1 volt.
+   // A load with no real part can absorb nothing, so the loss is infinite.
+   var ref = 2 * Math.sqrt(GS * GL);
+   dB1 = (ref > 0) ? 20 * Math.log10(ref / C1) : -Infinity;
    //S21mag(k) = dB1;
     var S21Mag = dB1;
     var S21Ang = (Math.atan(CIA / CRA) * 180 / Math.PI);
@@ -564,10 +581,9 @@ var points, k, j, i, CRA, CIA, C1, dB1;
      S21Ang = -S21Ang;
     var S21IA = S21Ang; //' store global data
     var IL = -dB1;
-    var precision = 16;
-    resultsObj.OUTPUT[5].InsertionLoss = math.format(IL, precision);
-    resultsObj.OUTPUT[5].S21Mag = math.format(S21Mag, precision);
-    resultsObj.OUTPUT[5].S21Ang = math.format(S21Ang, precision);
+    resultsObj.OUTPUT[5].InsertionLoss = IL;
+    resultsObj.OUTPUT[5].S21Mag = S21Mag;
+    resultsObj.OUTPUT[5].S21Ang = S21Ang;
 
     console.log( "IL RESULTS:", resultsObj.OUTPUT[5].InsertionLoss ,resultsObj.OUTPUT[5].S21Mag,resultsObj.OUTPUT[5].S21Ang );
 
@@ -603,25 +619,25 @@ function YCal() {
     var YIout = (ZIout * -1000) / den;
     var YMag = Math.sqrt(YRout*YRout + YIout*YIout);
     var YAng = Math.atan(YIout/YRout) * math.divide(180.00, Math.PI);
-    var precision = 16;
-    resultsObj.OUTPUT[1].YRout = math.format(YRout, precision);
-    resultsObj.OUTPUT[1].YIout = math.format(YIout, precision);
-    resultsObj.OUTPUT[1].YMag = math.format(YMag, precision);
-    resultsObj.OUTPUT[1].YAng = math.format(YAng, precision);
+    resultsObj.OUTPUT[1].YRout = YRout;
+    resultsObj.OUTPUT[1].YIout = YIout;
+    resultsObj.OUTPUT[1].YMag = YMag;
+    resultsObj.OUTPUT[1].YAng = YAng;
 }
 function GAMCal() {
     var ZRout = resultsObj.OUTPUT[0].ZRout;
     var ZIout = resultsObj.OUTPUT[0].ZIout;
     var SM = ZtoGammaM(ZRout, ZIout);                                   // S11/Gamma
     var SQ = ZtoGammaA(ZRout, ZIout);
-    if (SM == 0) { SQ = 0;  SM = 1E-36; }
+    // A perfect match is gamma = 0, not gamma = 1E-36.  Flooring it here is what
+    // used to turn an infinite return loss into an arbitrary 316 dB.
+    if (SM === 0) SQ = 0;
     SR = SM * math.cos(SQ * Math.PI / 180);
     SI = SM * math.sin(SQ * Math.PI / 180);
-    var precision = 16;
-    resultsObj.OUTPUT[2].GAMRout = math.format(SR, precision);
-    resultsObj.OUTPUT[2].GAMIout = math.format(SI, precision);
-    resultsObj.OUTPUT[2].GAMMag = math.format(SM, precision);
-    resultsObj.OUTPUT[2].GAMAng = math.format(SQ, precision);
+    resultsObj.OUTPUT[2].GAMRout = SR;
+    resultsObj.OUTPUT[2].GAMIout = SI;
+    resultsObj.OUTPUT[2].GAMMag = SM;
+    resultsObj.OUTPUT[2].GAMAng = SQ;
 }
 
 function VSWRCal() {
@@ -631,9 +647,8 @@ function VSWRCal() {
 
 function RLCal() {
     var sm = parseFloat(resultsObj.OUTPUT[2].GAMMag);
-    var RL = Math.abs(20 * (Math.log(sm) / Math.log(10)));               // Rl
-    var str;
-    if (RL >= 720) str = ">"; else str = "";
+    // gamma = 0 is a perfect match: infinite return loss.  formatdB() renders it.
+    var RL = (sm <= 0) ? Infinity : Math.abs(20 * Math.log10(sm));       // Rl
     resultsObj.OUTPUT[4].ReturnLoss = RL;
 }
 
@@ -663,71 +678,54 @@ function MinSWRCal() {
     resultsObj.OUTPUT[10].MinimumSWR =  1 / Math.sqrt(swr);
 }
 
+/**
+ * One-element equivalent of an impedance, as numbers.
+ *
+ *   Zin = R + jX.  In parallel form  Rp = R(1+Q^2)  and  Xp = Rp/Q  with Q = X/R.
+ *
+ * Returns { R, X, type: "L" | "C" | "", value } where value is nH for an
+ * inductor and pF for a capacitor, both at freq in MHz.
+ *
+ * The parallel branch used to read (Qu ^ 2 + 1), which in JavaScript is a
+ * bitwise XOR against 3 - not Q squared - so every parallel equivalent the
+ * program has ever reported was wrong.
+ */
+function equivalentCircuit(ZinR, ZinI, freq, parallel) {
+    var R = Number(ZinR), X = Number(ZinI);
+    freq = Number(freq);
+    if (parallel) {
+        if (R === 0) R = 1e-14;
+        var Qu = X / R;
+        var Rp = (Qu * Qu + 1) * R;
+        X = (Qu === 0) ? 0 : Rp / Qu;
+        R = Rp;
+    }
+    var type = "", value = 0;
+    if (X < 0)      { type = "C"; value = Math.abs(1e6 / (2 * Math.PI * freq * X)); }
+    else if (X > 0) { type = "L"; value = 1000 * X / (2 * Math.PI * freq); }
+    return { R: R, X: X, type: type, value: value };
+}
+
+function formatEquiv(label, joiner, eq) {
+    var msg = "R = " + Number(eq.R).toFixed(3) + " Ohms";
+    if (eq.type !== "") {
+        var units = (eq.type === "C") ? " pF" : " nH";
+        var amount = isFinite(eq.value) ? Number(eq.value).toFixed(3) : "\u221e";
+        msg += joiner + eq.type + " = " + amount + units;
+    }
+    return label + ": " + msg;
+}
+
 function seriesEquiv(){
-    console.log("SS");
-    var msg;
-    var ZinR = resultsObj.OUTPUT[0].ZRout;
-    var ZinI = resultsObj.OUTPUT[0].ZIout;
-    var freq = schObj.ELEMENT[0].value1; 
-    var LC,EL,PN;
-    if (ZinI < 0) {      // capacitor
-        LC = 1 / (2 * Math.PI * freq * ZinI * 0.000001);
-        EL = "C";
-        PN = " pf";
-    }
-    else if (ZinI > 0) {    // inductor
-            LC = ZinI / (2 * Math.PI * freq * 0.001);
-            EL = "L";
-            PN = " nH";
-        }
-    else {                      // neither cap nor ind
-            LC = 0;
-            EL = " ";
-    }
-    if (LC == 0) {
-         msg = "R = " + Number(ZinR).toFixed(3) + " Ohms";
-    }
-    else if ( LC > 10e18)   msg = "R = " + Number(ZinR).toFixed(3) + " Ohms" +  " in Series with " + EL + " = " + "∞" + PN;
-    else { 
-        msg = "R = " + Number(ZinR).toFixed(3) + " Ohms"  + " in Series with "  + EL + " = " + Number(Math.abs(LC)).toFixed(3)+ PN;
-    }
-    return "Series Equivalent: " + msg;
+    var freq = schObj.ELEMENT[0].value1;
+    var eq = equivalentCircuit(resultsObj.OUTPUT[0].ZRout, resultsObj.OUTPUT[0].ZIout, freq, false);
+    return formatEquiv("Series Equivalent", " in Series with ", eq);
 }
 
 function parallelEquiv() {
-    console.log("PP");
-    var msg;
-    var LC,EL,PN;
-    var freq = schObj.ELEMENT[0].value1; 
-    var ZinR = resultsObj.OUTPUT[0].ZRout;
-    var ZinI = resultsObj.OUTPUT[0].ZIout;
-    if (ZinR == 0) ZinR = 0.00000000000001;
-    var Qu = ZinI / ZinR;
-    ZinR = (Qu ^ 2 + 1) * ZinR;
-    if (Qu !== 0)  ZinI = ZinR / Qu;
-
-    if (ZinI < 0) {              // capacitor
-        LC = 1 / (2 * Math.PI * freq * ZinI * 0.000001);
-        EL = "C";
-        PN = " pF";
-    }
-    else if (ZinI > 0) {            // inductor
-        LC = ZinI / (2 *  Math.PI * freq * 0.001);
-        EL = "L";
-        PN = " nH";
-    }
-    else {                            // neither cap nor ind
-        LC = 0;
-        EL = " ";
-    }
-    if (LC == 0) {
-          msg = "R = " +  Number(ZinR).toFixed(3) + " Ohms";
-        }
-    else if ( LC > 10e18)   msg = "R = " + Number(ZinR).toFixed(3) + " Ohms" +  " in Parallel with " + EL + " = " + "∞" + PN;
-    else { 
-         msg = "R = " + Number(ZinR).toFixed(3) + " Ohms" +  " in Parallel with " + EL + " = " + Number(Math.abs(LC).toFixed(3), "0.000") + PN;
-        }
-    return "Parallel Equivalent: " + msg;
+    var freq = schObj.ELEMENT[0].value1;
+    var eq = equivalentCircuit(resultsObj.OUTPUT[0].ZRout, resultsObj.OUTPUT[0].ZIout, freq, true);
+    return formatEquiv("Parallel Equivalent", " in Parallel with ", eq);
 }
 
 
