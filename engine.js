@@ -515,9 +515,113 @@ var QSEngine = (function () {
         return out;
     }
 
+    /* ==================================================== L-network matching
+     *
+     * Every two-element match from a load to a real Z0 is one of two shapes,
+     * and each has two solutions, so there are at most four:
+     *
+     *   series first    load --[X]--+--      needs R_L <= Z0
+     *                               |
+     *                              [B]
+     *
+     *   shunt first     load --+--[X]--      needs R_p >= Z0,
+     *                          |                  R_p = |Z_L|^2 / R_L
+     *                         [B]
+     *
+     * Series first: adding X puts the node on the Z0 conductance circle, and
+     * the shunt then cancels what is left.
+     *
+     *     R_L / (R_L^2 + (X_L + X)^2) = 1/Z0   ->   X = -X_L +/- sqrt(R_L(Z0 - R_L))
+     *
+     * Shunt first is the same statement in admittance. Both are exact; there
+     * is nothing to iterate.
+     *
+     * Returns solutions ordered by loaded Q, lowest first - the widest
+     * bandwidth match is usually the one you want.
+     */
+    function matchToZ0(ZL, Z0, freq) {
+        var out = [];
+        var RL = ZL.re, XL = ZL.im;
+        if (!(RL > 0) || !(Z0 > 0) || !(freq > 0)) return out;
+
+        var magsq = RL * RL + XL * XL;
+        var GL = RL / magsq, BL = -XL / magsq;
+
+        // ---- series element first, then shunt
+        var disc = RL * (Z0 - RL);
+        if (disc >= 0) {
+            [1, -1].forEach(function (sign) {
+                var X = -XL + sign * Math.sqrt(disc);
+                var Z1 = cx(RL, XL + X);
+                var Y1 = cinv(Z1);
+                var B = -Y1.im;
+                out.push({
+                    topology: "series-shunt",
+                    q: RL === 0 ? Infinity : Math.abs(XL + X) / RL,
+                    elements: [
+                        assign({ slot: 2 }, seriesElement(X, freq)),
+                        assign({ slot: 3 }, shuntElement(B, freq))
+                    ]
+                });
+            });
+        }
+
+        // ---- shunt element first, then series
+        var disc2 = GL * (1 / Z0 - GL);
+        if (disc2 >= 0) {
+            [1, -1].forEach(function (sign) {
+                var B = -BL + sign * Math.sqrt(disc2);
+                var Y1 = cx(GL, BL + B);
+                var Z1 = cinv(Y1);
+                var X = -Z1.im;
+                out.push({
+                    topology: "shunt-series",
+                    q: GL === 0 ? Infinity : Math.abs(BL + B) / GL,
+                    elements: [
+                        { slot: 2, type: "w", value1: 0 },
+                        assign({ slot: 3 }, shuntElement(B, freq)),
+                        assign({ slot: 4 }, seriesElement(X, freq))
+                    ]
+                });
+            });
+        }
+
+        // Drop degenerate answers: a zero-valued part is not a part.
+        out = out.filter(function (s) {
+            return s.elements.every(function (e) {
+                return e.type === "w" || (isFinite(e.value1) && Math.abs(e.value1) > 1e-9);
+            });
+        });
+
+        out.sort(function (a, b) { return a.q - b.q; });
+        return out;
+    }
+
+    function assign(target, source) {
+        for (var k in source) if (source.hasOwnProperty(k)) target[k] = source[k];
+        return target;
+    }
+
+    /* A series reactance as the part that realises it at this frequency. */
+    function seriesElement(X, freq) {
+        var w = 2 * Math.PI * freq * 1e6;
+        return (X >= 0)
+            ? { type: "l", value1: X * 1e9 / w }         // nH
+            : { type: "c", value1: -1e12 / (w * X) };    // pF
+    }
+
+    /* A shunt susceptance as the part that realises it. */
+    function shuntElement(B, freq) {
+        var w = 2 * Math.PI * freq * 1e6;
+        return (B >= 0)
+            ? { type: "c", value1: B * 1e12 / w }        // pF
+            : { type: "l", value1: -1e9 / (w * B) };     // nH
+    }
+
     return {
         solve: solve,
         equivalent: equivalent,
+        matchToZ0: matchToZ0,
         gammaToZ: gammaToZ,
         zToGamma: zToGamma,
         interpolate: interpolate,

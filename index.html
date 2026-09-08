@@ -33,6 +33,8 @@
    <!-- for file and canvas save compatibilty with Safari -->
   <script src="js/FileSaver.min.js"></script>  
   <script src="engine.js"></script>
+  <script src="touchstone.js"></script>
+  <script src="permalink.js"></script>
   <script src="common.js"></script>
   <script src="smith.js"></script>
   <script src="sch.js"></script>
@@ -214,7 +216,9 @@
             <!-- <div class="hidden-xs"> -->
                 <li class="hidden-xs"><a href="#" onclick ="load_click()" >Load File</a></li> 
                 <li class="hidden-xs" ><a href="#" onclick ="save_click()" >Save File</a></li>
-                <li class="hidden-xs"><a href="#" onclick ="saveCanvas_click()" >Capture Chart</a></li> 
+                <li class="hidden-xs"><a href="#" onclick ="saveCanvas_click()" >Capture Chart</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#" onclick ="shareLink_click()" >Copy Share Link</a></li> 
                 <!-- <li class="hidden-xs"><a href="#">Import</a></li>
                 <li class="hidden-xs" ><a href="#">Export</a></li> -->
             <!-- </div> -->
@@ -240,11 +244,15 @@
           </ul>
         </li> 
 
+        <li><a href="#" onclick=autoMatch_click()>Match</a></li>
+
         <li class="dropdown hidden-xs hidden-sm ">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">Data<span class="caret"></span></a>
           <ul class="dropdown-menu">
-             <li><a href="#"  onclick=export_click()>Export</a></li>
-             <li><a href="#"  onclick=import_click()>Import</a></li>
+             <li><a href="#"  onclick=export_click()>Export Gamma</a></li>
+             <li><a href="#"  onclick=exportTouchstone_click()>Export Touchstone</a></li>
+             <li><a href="#"  onclick=import_click()>Import Gamma</a></li>
+             <li><a href="#"  onclick=importTouchstone_click()>Import Touchstone</a></li>
              <li><a href="#"  onclick=clear_import_click()>Clear</a></li>
             <!-- <li><a><input type="checkbox" name="checkbox1" style="float: right;">Show Sweep</a></li> -->
           </ul>
@@ -630,6 +638,7 @@
     <!-- ************************MODAL COMPONENT DIALOG ENDS************************************************************************************** -->
   <input id="file-input" type="file" name="name" style="display: none;" />     <!-- this for helping with file load -->
   <input id="file-input1" type="file" name="name" style="display: none;" />     <!-- this for helping with gam export -->
+  <input id="file-input2" type="file" name="name" accept=".s1p,.s2p,.S1P,.S2P" style="display: none;" />  <!-- Touchstone import -->
   <!-- <a href="https://www.w3schools.com">w3schools.com</a> -->
   <!-- <img src="img/qsmith.png">
   <div class="content">This is an awesome picture of qsmith</div> -->
@@ -734,7 +743,9 @@ smithObj.view = QSChart.mount("smithMain");
     console.log ( "Transferflag absent");
     }
     resizeSchematic();
-    get(); // restore the last session if saved earlier
+    // A shared link describes a specific design, so it wins over whatever
+    // session happened to be saved in this browser.
+    if (!loadFromHash()) get();
     updateUI();
     $(E1).trigger("touchspin.updatesettings", { step: 0.1 }); // make load element(RX(R)/G(Mag)) step size 0.1
  
@@ -2059,6 +2070,236 @@ function clearSweep() {
     //smithObj.sweepDatasets[0].dataM.splice(0,smithObj.sweepDatasets[0].dataM.length);
     //smithObj.sweepDatasets[0].dataQ.splice(0,smithObj.sweepDatasets[0].dataQ.length);
     smithObj.redrawSmith();
+}
+
+/* =======================================================================
+ * Share links, Touchstone import, and the automatic matcher.
+ * ===================================================================== */
+
+/*
+ * The whole design as a URL. A decoded link is a schObj, so it restores
+ * through exactly the path that opens a .sch file.
+ */
+function shareLink_click() {
+    var url;
+    try {
+        url = location.origin + location.pathname + "#" + QSLink.encode(schObj, smithObj);
+    } catch (e) {
+        ShowMessage_sm("QuickSmith", "Could not build a link: " + e.message);
+        return;
+    }
+
+    var $content = $('<div><p style="margin-bottom:8px">This link carries the whole design — \
+frequency, load, every component, and the chart overlays.</p>\
+<input type="text" id="shareUrl" class="form-control" readonly style="font-size:12px"></div>');
+    $content.find("#shareUrl").val(url);
+
+    BootstrapDialog.show({
+        title: "Share Link",
+        message: $content,
+        onshown: function (dialog) {
+            var field = dialog.getModalBody().find("#shareUrl")[0];
+            field.focus();
+            field.setSelectionRange(0, field.value.length);
+        },
+        buttons: [{
+            label: "Copy",
+            cssClass: "btn-primary",
+            action: function (dialog) {
+                var field = dialog.getModalBody().find("#shareUrl")[0];
+                field.focus();
+                field.setSelectionRange(0, field.value.length);
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(field.value).then(
+                        function () { dialog.close(); },
+                        function () { /* leave it selected to copy by hand */ });
+                } else {
+                    try { document.execCommand("copy"); dialog.close(); } catch (e) { /* ditto */ }
+                }
+            }
+        }, {
+            label: "Close",
+            action: function (dialog) { dialog.close(); }
+        }]
+    });
+}
+
+/* Restore a design from the address bar. Returns true if there was one. */
+function loadFromHash() {
+    var hash = location.hash || "";
+    if (hash.length < 2) return false;
+    try {
+        var decoded = QSLink.decode(hash);
+        copy_schObj(decoded.sch);
+        if (schObj.termination === "Multiple") {
+            schObj.gamData.dataQ = phase_unwrap(schObj.gamData.dataQ);
+        }
+        if (decoded.chart) copy_smithObj(decoded.chart);
+        return true;
+    } catch (e) {
+        ShowMessage_sm("QuickSmith", "That link could not be read: " + e.message);
+        return false;
+    }
+}
+
+/* ------------------------------------------------------------- Touchstone */
+
+/*
+ * The last sweep as a .s1p, so a QuickSmith result can feed whatever tool the
+ * user works in next. The sweep must be a frequency sweep for the file to mean
+ * anything - a component sweep has no frequency axis.
+ */
+function exportTouchstone_click() {
+    var dataM = smithObj.sweepDatasets[0].dataM;
+    var dataQ = smithObj.sweepDatasets[0].dataQ;
+    if (!dataM.length) {
+        ShowMessage_sm("QuickSmith", "Run Sweep \u2192 Generate first; there is no data to export.");
+        return;
+    }
+    if (schObj.SE !== "Frequency") {
+        ShowMessage_sm("QuickSmith",
+            "Touchstone files are indexed by frequency, but the last sweep varied " +
+            schObj.SE + ".\n\nSet the sweep variable back to Frequency and generate again.");
+        return;
+    }
+
+    var start = parseFloat(schObj.SS), step = parseFloat(schObj.SST);
+    var points = [];
+    for (var i = 0; i < dataM.length; i++) {
+        points.push({ f: start + step * i, mag: Number(dataM[i]), angle: Number(dataQ[i]) });
+    }
+    var text = QSTouchstone.formatS1P(points, {
+        R: parseFloat(schObj.Z0),
+        title: "Zin sweep, " + points[0].f + " to " + points[points.length - 1].f + " MHz"
+    });
+    saveAs(new Blob([text], { type: "text/plain;charset=utf-8" }), "QuickSmith.s1p");
+}
+
+function importTouchstone_click() {
+    document.getElementById("file-input2").click();
+}
+
+/*
+ * A .s1p or .s2p becomes the frequency-dependent load: S11 is exactly the
+ * reflection coefficient QuickSmith interpolates between. If the file was
+ * measured against a different reference impedance it is renormalised first.
+ */
+function handleTouchstoneImport(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+        try {
+            var parsed = QSTouchstone.parse(reader.result,
+                                            QSTouchstone.portsFromFilename(file.name));
+            var gam = QSTouchstone.toGamData(parsed, parseFloat(schObj.Z0));
+            if (gam.dataX.length < 2) {
+                ShowMessage_sm("QuickSmith",
+                    "That file has only one frequency, so there is nothing to interpolate.");
+                return;
+            }
+
+            schObj.gamData = {
+                label: file.name, color: "#000000",
+                dataX: gam.dataX, dataM: gam.dataM, dataQ: phase_unwrap(gam.dataQ)
+            };
+            schObj.termination = "Multiple";
+            schObj.SS = gam.dataX[0];
+            schObj.ST = gam.dataX[gam.dataX.length - 1];
+            schObj.SST = Number(Math.abs(schObj.ST - schObj.SS) / (gam.dataX.length - 1)).toFixed(4);
+            schObj.ELEMENT[0].value1 = gam.dataX[0];
+            document.getElementById("V1").style.borderColor = "red";
+
+            updateUI();
+            ShowMessage_sm("QuickSmith",
+                file.name + "\n\n" + gam.dataX.length + " points, " +
+                gam.dataX[0].toFixed(3) + " to " + gam.dataX[gam.dataX.length - 1].toFixed(3) +
+                " MHz\nreferenced to " + parsed.R + " Ω" +
+                (parsed.ports > 1 ? "\n\nUsing S11; the other parameters were ignored." : "") +
+                "\n\nThe load now follows the measurement. Sweep to see the whole band.");
+        } catch (err) {
+            ShowMessage_sm("QuickSmith", "Could not read " + file.name + ":\n\n" + err.message);
+        }
+    };
+    reader.readAsText(file);
+    $("#file-input2").val(null);
+}
+document.getElementById("file-input2").addEventListener("change", handleTouchstoneImport, false);
+
+/* ---------------------------------------------------------- auto matching */
+
+/*
+ * Offers every two-element network that takes the present load to Z0, lowest
+ * loaded Q first. Nothing is applied until the user picks one - the point of a
+ * Smith chart is to see the transformation, not to have it done invisibly.
+ */
+function autoMatch_click() {
+    var solution = resultsObj.solution;
+    if (!solution) { Zcalsweep(); solution = resultsObj.solution; }
+
+    var ZL = solution.load;
+    var Z0 = parseFloat(schObj.Z0);
+    var freq = parseFloat(schObj.ELEMENT[0].value1);
+    var options = QSEngine.matchToZ0(ZL, Z0, freq);
+
+    var header = "Load " + ZL.re.toFixed(3) + (ZL.im >= 0 ? " + j" : " - j") +
+                 Math.abs(ZL.im).toFixed(3) + " Ω to " + Z0 + " Ω at " +
+                 freq + " MHz";
+
+    if (!options.length) {
+        ShowMessage_sm("QuickSmith", header + "\n\nNo two-element match is possible here. \
+If the load is already at " + Z0 + " Ω there is nothing to do; otherwise try a \
+transmission line or a three-element network.");
+        return;
+    }
+
+    var $content = $('<div></div>');
+    $content.append($('<p style="margin-bottom:10px"></p>').text(header));
+    var $list = $('<div></div>');
+    options.forEach(function (option, i) {
+        var parts = option.elements.filter(function (el) { return el.type !== "w"; })
+            .map(function (el) {
+                return el.type.toUpperCase() + el.slot + " = " +
+                       Number(el.value1).toFixed(3) + (el.type === "l" ? " nH" : " pF");
+            }).join("  ·  ");
+        var shape = option.topology === "series-shunt"
+            ? "series then shunt" : "shunt then series";
+        var $row = $('<div style="padding:8px 0;border-top:1px solid #e7e7e7"></div>');
+        $row.append($('<div style="font-family:monospace;font-size:13px"></div>').text(parts));
+        $row.append($('<div style="color:#888;font-size:12px;margin-top:2px"></div>')
+            .text(shape + "   ·   loaded Q " + option.q.toFixed(2)));
+        $('<button type="button" class="btn btn-sm btn-primary" style="margin-top:6px">Apply</button>')
+            .on("click", function () {
+                applyMatch(option);
+                $content.closest(".modal").modal("hide");
+            }).appendTo($row);
+        $list.append($row);
+    });
+    $content.append($list);
+    $content.append($('<p style="color:#888;font-size:12px;margin-top:12px"></p>')
+        .text("Applying clears the rest of the ladder, because the match is calculated " +
+              "from the load outwards. Lower Q means wider bandwidth."));
+
+    BootstrapDialog.show({
+        title: "Match to " + Z0 + " Ω",
+        message: $content,
+        buttons: [{ label: "Close", action: function (d) { d.close(); } }]
+    });
+}
+
+function applyMatch(option) {
+    for (var i = 2; i <= 12; i++) {
+        schObj.ELEMENT[i].type = "w";
+        schObj.ELEMENT[i].value1 = 0;
+        schObj.ELEMENT[i].value2 = 0;
+        schObj.ELEMENT[i].q = 1000000;
+    }
+    option.elements.forEach(function (el) {
+        schObj.ELEMENT[el.slot].type = el.type;
+        schObj.ELEMENT[el.slot].value1 = Number(el.value1).toFixed(4);
+        schObj.ELEMENT[el.slot].value2 = 0;
+    });
+    updateUI();
 }
 
 function IL_open_click()

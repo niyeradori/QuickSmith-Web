@@ -565,6 +565,90 @@ var QS_CASES = [
    * insertion loss: this network reported 4.217 dB. The line is lossless, so
    * every decibel of it has to be mismatch, -10*log10(1 - |gamma|^2).
    */
+  /* ============================================================== PHASE 5
+   * The auto-match solver. Two things are being checked: that the closed-form
+   * answer actually lands on the centre of the chart when fed back through the
+   * solver, and - for two of the worked examples - that it independently
+   * rediscovers the network the textbook arrived at by hand.
+   *
+   * The residual gamma is not zero because the engine's default component Q is
+   * 1e6, not infinity. With ideal parts these land at 2e-13.
+   */
+  {
+    id: "match-rediscovers-example-2",
+    name: "Auto-match rediscovers Example 2's L-network by itself",
+    ref: "EXAMPLE_2.html - book says shunt C 9.5 pF, series L 240 nH",
+    match: { load: { re: 500, im: 0 }, Z0: 50, freq: 100 },
+    assert: {
+      MatchCount: [2, 0],
+      MatchWorstGamma: [0, 1e-5],
+      MatchBestQ: [3.0, 1e-12],          // sqrt(500/50 - 1) = 3
+      Match0Slot3: [9.5, 0.06],         // pF, against the book's 9.5
+      Match0Slot4: [240, 1.3]           // nH, against the book's 240
+    },
+    expect: {
+      Match0Slot3: [9.549297, 1e-5],
+      Match0Slot4: [238.732414, 1e-5]
+    }
+  },
+  {
+    id: "match-rediscovers-example-6-output",
+    name: "Auto-match rediscovers the AN721 output match",
+    ref: "OUTPUT_MATCH.html - book says L2 = 25.3 nH, C3 = 35 pF",
+    match: { load: { re: 10.6, im: -7.3 }, Z0: 50, freq: 175 },
+    assert: {
+      MatchWorstGamma: [0, 1e-5],
+      Match0Slot2: [25.3, 0.1],         // nH, against the book's 25.3
+      Match0Slot3: [35.0, 0.1]          // pF, against the book's 35
+    },
+    expect: {
+      Match0Slot2: [25.224915, 1e-5],
+      Match0Slot3: [35.067698, 1e-5]
+    }
+  },
+  {
+    id: "match-low-impedance-load",
+    name: "Auto-match: a load below Z0 gets the series-first shape",
+    match: { load: { re: 10, im: -15 }, Z0: 50, freq: 1000 },
+    // R_L < Z0 so series-first is available; R_p = 32.5 < 50 so shunt-first is not
+    assert: {
+      MatchCount: [2, 0],
+      MatchNSeriesFirst: [2, 0],
+      MatchWorstGamma: [0, 1e-5],
+      MatchBestQ: [2.0, 1e-9]
+    }
+  },
+  {
+    id: "match-high-impedance-load",
+    name: "Auto-match: a load above Z0 gets the shunt-first shape",
+    match: { load: { re: 500, im: 0 }, Z0: 50, freq: 100 },
+    assert: { MatchNSeriesFirst: [0, 0], MatchCount: [2, 0] }
+  },
+  {
+    id: "match-reactive-load-both-shapes",
+    name: "Auto-match: a load reachable both ways offers all four networks",
+    // R_L = 30 < 50, and R_p = (30^2+40^2)/30 = 83.3 > 50, so both shapes work
+    match: { load: { re: 30, im: 40 }, Z0: 50, freq: 100 },
+    assert: {
+      MatchCount: [4, 0],
+      MatchNSeriesFirst: [2, 0],
+      MatchWorstGamma: [0, 1e-5]
+    }
+  },
+  {
+    id: "match-non-50-ohm-system",
+    name: "Auto-match works in a 75 ohm system",
+    match: { load: { re: 120, im: 85 }, Z0: 75, freq: 433 },
+    assert: { MatchWorstGamma: [0, 1e-5], MatchCount: [2, 0] }
+  },
+  {
+    id: "match-already-matched",
+    name: "Auto-match on an already-matched load offers nothing to add",
+    // both discriminants collapse to zero, so every candidate part is degenerate
+    match: { load: { re: 50, im: 0 }, Z0: 50, freq: 100 },
+    assert: { MatchCount: [0, 0] }
+  },
+
   /* ============================================================== PHASE 3
    * The chart draws one arc per component, so the solver now reports the
    * impedance after every populated slot along with the locus that got there.

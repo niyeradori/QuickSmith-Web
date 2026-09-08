@@ -17,13 +17,21 @@ that already ships with the program, so the suite encodes what the program is
 1. `tests/standalone.js` — loads `engine.js` and *nothing else at all* and
    solves a few known networks. If the solver ever reaches back out for jQuery,
    math.js or the DOM, this fails first with a `ReferenceError`.
-2. `tests/render.js` — checks the chart's grid geometry (pure arithmetic: a
+2. `tests/touchstone.js` — the `.s1p`/`.s2p` reader and writer. The useful
+   assertions cross-check against data QuickSmith already holds in another
+   form: `touchstone/dipole.s1p` has to come back as the same load as
+   `gam/dipole.gam`, and `touchstone/hp-an970.s2p` has to give the K and |Δ|
+   that Example 7 states.
+3. `tests/permalink.js` — share links. Every case encodes a design, decodes it,
+   solves *both*, and requires the answers to agree — the claim is not that the
+   string looks right but that the design survives.
+4. `tests/render.js` — checks the chart's grid geometry (pure arithmetic: a
    constant-resistance circle has to cross the real axis at `(r-1)/(r+1)` and
    touch the rim at Γ = 1), then mounts and renders a real chart against a
    small DOM stub. It cannot tell you the chart *looks* right — only a browser
    does that — but it proves the renderer runs end to end and builds the tree
    it claims to.
-3. `tests/run.js` — the full case suite.
+5. `tests/run.js` — the full case suite.
 
 No toolchain required. `run.sh` uses `node` if it is installed, otherwise it
 falls back to the JavaScriptCore shell that ships with macOS
@@ -55,8 +63,9 @@ fixtures.)
 | Units | synthetic | `Inches / MilliMeters / Meters / Degrees / Wave Lengths` all agree |
 | Invariants | synthetic | quarter-wave transform, half-wave transparency, empty ladder |
 | Phase 1&2 fixes | the September 2026 review | parallel equivalent, insertion-loss reference, numeric output, infinite return loss, transmission-line transfer function |
+| Auto-match | `EXAMPLE_2`, `OUTPUT_MATCH` | the closed-form matcher, checked by feeding every solution back through the solver — and by requiring it to rediscover two of the book's own networks |
 
-37 cases, 129 checks, plus 8 standalone checks on the engine.
+47 cases, 162 checks, plus the four suites above.
 
 ## How the expected values were produced
 

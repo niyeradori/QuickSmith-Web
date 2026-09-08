@@ -22,6 +22,39 @@ Some of the features offered by this program are listed below:
 - Import and Export of data files
 - Help files with solved examples of network matching and amplifier design
 
+
+## Recent work
+
+The solver, the chart and the tests were rebuilt in 2026. Nothing about how the
+program is used has changed, and there is still no build step: it is static
+files, served as-is.
+
+- **`engine.js`** — the whole of QuickSmith's mathematics as pure functions over
+  plain data. No DOM, no jQuery, no external library; it runs on `Math` plus
+  about forty lines of complex arithmetic. Everything cascades as ABCD matrices,
+  so a lumped part, a stub and a transmission line share one code path.
+- **`smith.js`** — the chart, as SVG. Crisp at any zoom, pinch and pan,
+  two palettes (light and dark), and one coloured arc per component so the path
+  from the load to Zin is attributable element by element.
+- **Touchstone** — `.s1p` / `.s2p` import and export, so measurements from a
+  network analyser go straight in. Samples in `touchstone/`.
+- **Share links** — `File → Copy Share Link` puts the whole design in a URL.
+- **Automatic matching** — `Match` lists every two-element network that takes
+  the load to Z0, with its loaded Q, and applies the one you choose.
+
+### Running the tests
+
+```sh
+./tests/run.sh
+```
+
+No toolchain required: it uses Node if you have it, and otherwise the
+JavaScriptCore shell that ships with macOS. There is a browser runner at
+`tests/index.html` (serve over HTTP). Every case comes from one of the worked
+examples in `help/examples/examples/`, and the expected values were derived from
+an independent model of the ladder rather than captured from this program's own
+output. See `tests/README.md`.
+
 Nathan Iyer
 
 KJ6FOJ

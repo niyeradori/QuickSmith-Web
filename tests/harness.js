@@ -155,6 +155,39 @@ var QSHarness = (function () {
     };
   }
 
+  /*
+   * Auto-match. The strong check is not what values come out but what they do:
+   * every solution is fed back through the solver and has to land on the centre
+   * of the chart. MatchWorstGamma is the residual across all of them.
+   *
+   * Metrics:
+   *   MatchCount            how many solutions were found
+   *   MatchWorstGamma       largest |gamma| after applying any of them
+   *   MatchBestQ            lowest loaded Q (solutions come out sorted)
+   *   MatchNSeriesFirst     how many put the series element next to the load
+   *   Match<n>Slot<s>       the component value in slot s of solution n
+   */
+  function matchMetrics(spec) {
+    var Z0 = spec.Z0 === undefined ? 50 : spec.Z0;
+    var sols = QSEngine.matchToZ0(spec.load, Z0, spec.freq);
+    var m = { MatchCount: sols.length, MatchWorstGamma: 0, MatchNSeriesFirst: 0 };
+    if (!sols.length) return m;
+
+    m.MatchBestQ = sols[0].q;
+    sols.forEach(function (s, n) {
+      if (s.topology === "series-shunt") m.MatchNSeriesFirst++;
+      var elements = [];
+      s.elements.forEach(function (e) {
+        elements[e.slot] = { type: e.type, value1: e.value1, value2: 0 };
+        m["Match" + n + "Slot" + e.slot] = e.value1;
+      });
+      elements[1] = { type: "rx", value1: spec.load.re, value2: spec.load.im };
+      var r = QSEngine.solve({ Z0: Z0, frequency: spec.freq, elements: elements });
+      m.MatchWorstGamma = Math.max(m.MatchWorstGamma, r.gamma.mag);
+    });
+    return m;
+  }
+
   /* Fold a point measurement into the flat metric map as "Name@freq". */
   function stamp(metrics, m, f) {
     for (var k in m) if (m.hasOwnProperty(k)) metrics[k + "@" + f] = m[k];
@@ -168,6 +201,7 @@ var QSHarness = (function () {
     var metrics = {};
 
     if (c.amp) return ampMetrics(c.amp);
+    if (c.match) return matchMetrics(c.match);
 
     if (c.schFile) applySch(readFile(c.schFile));
     else applySetup(c.setup);

@@ -37,6 +37,9 @@
 <li><a href="#vswr">How do I get VSWR/Return Loss at any point on the Smith chart?</a>
 <li><a href="#missingfeatures">I don't see some features on my phone.</a>
 <li><a href="#session">How can I avoid losing my work if the page reloads ?</a>
+<li><a href="#automatch">Can QuickSmith design the matching network for me ?</a>
+<li><a href="#touchstone">How do I load a measurement from my network analyser ?</a>
+<li><a href="#sharelink">How do I share a design with someone else ?</a>
 <li><a href="#import">How can I import external data on the Smith Chart ?</a>
 <li><a href="#latestversion">Where can I get the latest version from ?</a>
 <li><a href="#examples">Where can I find tutorials or examples ?</a>
@@ -111,7 +114,10 @@ Use the Marker in the SmithChart window display menu to set a target marker.
 </blockquote>
 <h3><a name="s21">Insertion Loss Window</a></h3>
 <blockquote>
-Insertion Loss window gives you the insertion loss of the network. It assume load and source impedance is 50 (characteristic) Ohms.
+Insertion Loss window gives you the insertion loss of the network. The source is the characteristic
+impedance (50 Ohms by default) and the network is terminated by whatever load you have set, so the
+figure is a transducer loss: it counts mismatch as well as dissipation. A lossless network that
+matches its load therefore reads 0 dB.
 To set frequency sweep parameters, use "Options" menu in the navaigation bar.
 </blockquote>
 <h3><a name="sweep">Sweep Frequency or component</a></h3>
@@ -142,6 +148,39 @@ Move you mouse pointer to the Smith chart and double click your right mouse butt
  To avoid losing data in between refresh, use "Save Session" in the File menu. This saves the data to the local memory, a new refresh will check if there is anything saved and load it if so. <BR>
  "New Session" removes any saved session and "Restore Session" recalls the last saved session.
 </blockquote> 
+ <h3><a name="automatch">Automatic matching</a></h3>
+ <blockquote>
+ Click <B>Match</B> in the menu bar. QuickSmith works out every two-element network that takes
+ the present load to the characteristic impedance at the current frequency, and lists them with
+ their component values and loaded Q, lowest Q first &mdash; lower Q means wider bandwidth.
+ Nothing changes until you press <B>Apply</B> on the one you want, and applying clears the rest
+ of the ladder, because the match is calculated from the load outwards.
+ <BR><BR>
+ There are at most four: a series element next to the load followed by a shunt one, or the other
+ way round, each with two solutions. If the list is empty the load is already matched, or it
+ cannot be reached with two elements &mdash; try a transmission line or add a third component by hand.
+</blockquote>
+
+ <h3><a name="touchstone">Touchstone files from a network analyser</a></h3>
+ <blockquote>
+ <B>Data &rarr; Import Touchstone</B> reads a <B>.s1p</B> or <B>.s2p</B> file &mdash; the format every
+ VNA exports &mdash; and makes it the load. S11 becomes a frequency-dependent termination, interpolated
+ between the measured points, so you can match a real antenna instead of a typed-in impedance.
+ The sweep range is set to the range of the file. If the file was measured against a different
+ reference impedance it is renormalised to yours.
+ <BR><BR>
+ <B>Data &rarr; Export Touchstone</B> writes the last frequency sweep back out as a .s1p, so a
+ QuickSmith result can feed the next tool in the chain. A sample file is in the "touchstone" folder.
+</blockquote>
+
+ <h3><a name="sharelink">Share links</a></h3>
+ <blockquote>
+ <B>File &rarr; Copy Share Link</B> puts the whole design in a web address: frequency, load, every
+ component and the chart overlays. Opening that address rebuilds the design exactly, so an answer
+ on a forum can be a link to the working circuit rather than a screenshot. A four-component match
+ comes to about 120 characters; a link carrying measured load data is longer.
+</blockquote>
+
  <h3><a name="import">Export/Import feature</a></h3>
  <blockquote>
  External data can be imported by using the Import feature under Data menu in the Navbar. The data is stored in JSON format. Example files can be found in the gam folder. To create "gam" files "Generate" a Sweep and export the data using the "Export Command".
