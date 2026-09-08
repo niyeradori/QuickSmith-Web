@@ -100,7 +100,9 @@ var QSChart = (function () {
         "background:var(--qs-face);border:1px solid var(--qs-rim);border-radius:6px}",
         ".qs-tools button:hover{border-color:var(--qs-vswr);color:var(--qs-vswr)}",
         ".qs-tools button:focus-visible{outline:2px solid var(--qs-vswr);outline-offset:1px}",
-        ".qs-tools button[hidden]{display:none}"
+        // The reset button keeps its slot when inactive. Collapsing it would shift
+        // the others sideways the moment you zoom, moving + out from under the cursor.
+        ".qs-tools button[hidden]{visibility:hidden;pointer-events:none}"
     ].join("");
 
     function installStyles() {

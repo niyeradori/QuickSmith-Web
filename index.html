@@ -743,11 +743,16 @@ smithObj.view = QSChart.mount("smithMain");
     console.log ( "Transferflag absent");
     }
     resizeSchematic();
+    // Set the load's step size before anything is restored. TouchSpin rounds
+    // the field's current value to the new step, so doing this afterwards
+    // snapped a restored 1.94 ohm load down to 1.90 and quietly changed the
+    // answer.
+    $(E1).trigger("touchspin.updatesettings", { step: 0.1 }); // load element (RX(R)/G(Mag)) steps by 0.1
+
     // A shared link describes a specific design, so it wins over whatever
     // session happened to be saved in this browser.
     if (!loadFromHash()) get();
     updateUI();
-    $(E1).trigger("touchspin.updatesettings", { step: 0.1 }); // make load element(RX(R)/G(Mag)) step size 0.1
  
 
     // device detection
@@ -2124,6 +2129,21 @@ frequency, load, every component, and the chart overlays.</p>\
     });
 }
 
+/*
+ * Pasting a share link into an already-open tab only changes the fragment, and
+ * browsers do not reload for that, so pick the new design up here as well.
+ */
+window.addEventListener("hashchange", function () {
+    if (loadFromHash()) updateUI();
+});
+
+/*
+ * The menu items are <a href="#">, and following one replaces the fragment,
+ * which wipes a shared design out of the address bar. Their onclick handlers
+ * do all the work, so there is nothing to follow.
+ */
+$(document).on("click", ".navbar a[href='#']", function (e) { e.preventDefault(); });
+
 /* Restore a design from the address bar. Returns true if there was one. */
 function loadFromHash() {
     var hash = location.hash || "";
@@ -2295,6 +2315,7 @@ function applyMatch(option) {
         schObj.ELEMENT[i].q = 1000000;
     }
     option.elements.forEach(function (el) {
+        if (el.type === "w") return;          // the loop above already cleared it
         schObj.ELEMENT[el.slot].type = el.type;
         schObj.ELEMENT[el.slot].value1 = Number(el.value1).toFixed(4);
         schObj.ELEMENT[el.slot].value2 = 0;
