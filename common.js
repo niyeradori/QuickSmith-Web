@@ -42,9 +42,11 @@ function copy_smithObj(smithObj1) {
         {
             //if(key !== "sweepDatasets" || key !== "plotDatasets") 
             {
-                if(key !== "ctx") {
+                // "view" is the live QSChart mount: DOM, not data. Never copy
+                // or restore it. ("ctx" is the name it had before Phase 3, and
+                // may still be present in an old saved session.)
+                if(key !== "ctx" && key !== "view") {
                 smithObj[key] = smithObj1[key];
-                //console.log(key + " -> " + smithObj[key]);
                 }
             }
         //     else if (key == "sweepDatasets")

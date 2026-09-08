@@ -60,6 +60,7 @@ var schObj = {
  * all but OUTPUT[0] are now no-ops.
  */
 var resultsObj = {
+    "solution": null,      // the last QSEngine.solve() result, in full
     "OUTPUT":[
         { "ZRout": 0, "unit1": "Ohms", "ZIout": 0, "unit2": "Ohms", "MAGout": 0, "unit3": "Ohms", "ANGout": 0, "unit4": "Degrees", calculate: Zcalsweep1 },
         { "YRout": 0, "unit1": "mS", "YIout": 0, "unit2": "mS", "YMag": 0, "unit3": "Magnitude*1000", "YAng": 0, "unit4": "Degrees", calculate: solved },
@@ -94,6 +95,10 @@ function Zcalsweep1() {
         frequency: schObj.ELEMENT[0].value1,
         elements: schObj.ELEMENT
     });
+
+    // The full solution, kept for anything that needs more than the flat
+    // OUTPUT fields - the chart draws its per-element arcs from r.nodes.
+    resultsObj.solution = r;
 
     var O = resultsObj.OUTPUT;
     O[0].ZRout = r.Zin.re;   O[0].ZIout = r.Zin.im;

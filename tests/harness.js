@@ -75,8 +75,36 @@ var QSHarness = (function () {
     };
     equivalents(m);
     m.OutputsAreNumbers = outputsAreNumbers() ? 1 : 0;
+    nodeTrace(m);
     return m;
   }
+
+  /*
+   * The node walk and the cascaded two-port are two different routes to the
+   * same answer inside the engine, so checking that they agree is a real
+   * cross-check rather than a restatement.
+   */
+  function nodeTrace(m) {
+    var r = resultsObj.solution;
+    if (!r || !r.nodes) return;
+    m.NodeCount = r.nodes.length;
+
+    var last = r.nodes[r.nodes.length - 1];
+    m.NodesEndAtZin = (Math.abs(last.Z.re - r.Zin.re) < 1e-9 &&
+                       Math.abs(last.Z.im - r.Zin.im) < 1e-9) ? 1 : 0;
+
+    // every path must start on the previous node and finish on its own
+    var joins = 1;
+    for (var i = 1; i < r.nodes.length; i++) {
+      var p = r.nodes[i].path;
+      if (!p || p.length < 2) { joins = 0; break; }
+      if (dist(p[0], r.nodes[i - 1].gamma) > 1e-9) joins = 0;
+      if (dist(p[p.length - 1], r.nodes[i].gamma) > 1e-9) joins = 0;
+    }
+    m.PathsJoinNodes = joins;
+  }
+
+  function dist(a, b) { return Math.sqrt(Math.pow(a.re - b.re, 2) + Math.pow(a.im - b.im, 2)); }
 
   /* The solver's published results must be numbers. They were once
      16-significant-digit strings, which cost precision and forced every

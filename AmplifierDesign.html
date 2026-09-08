@@ -137,7 +137,7 @@
                 </tr>
             </table>
             <!--<div id='parent_div_5'  >-->
-            <canvas id="smithSource"  style="float: left; margin-top: 5px;margin-bottom: 5px;"></canvas>
+            <div id="smithSource" style="margin-top: 5px; margin-bottom: 5px;"></div>
             <!--</div>-->
         </div>
                  <!-- ********************************LOAD PLANE WINDOW ************************************************* -->
@@ -158,7 +158,7 @@
                 </tr>
             </table>
             <!--<div id='parent_div_5'  >-->
-            <canvas id="smithLoad"  style="float: left; margin-top: 5px;margin-bottom: 5px;"></canvas>
+            <div id="smithLoad" style="margin-top: 5px; margin-bottom: 5px;"></div>
             <!--</div>-->
         </div>
     </div> 
@@ -210,15 +210,11 @@
   <input id="file-input" type="file" name="name" style="display: none;" />     <!-- this for helping with file load -->
 <script>
 /************************* SCRIPT STARTS HERE********************************************************************************/
-var sprite = new Image();
 var up;
-sprite.src = "img/sphere.png";  
 const AXIS_RANGE = 1000;
-var resize_done = false;  // this is to avoid half shape canvas draw sometime when an attempt is made to draw with out scaling first
-var chart= {"width": 300, "height" : 300,  "currentDevicePixelRatio" : 1, "devicePixelRatio" : 1 };
  //var smithSourceObj = new smithObj;
 var smithSourceObj = {
-              "ctx" : null,
+              "view" : null,   // the QSChart mount, set once the DOM is ready
               "title": 'Source Plane',
               "showAdmittace": false,  // DrawAdmittance
                drawAdmitanceCircles: function() { drawAdmitanceCircles(this)},
@@ -279,7 +275,7 @@ var smithSourceObj = {
           };
 
 var smithLoadObj = {
-              "ctx" : null,
+              "view" : null,   // the QSChart mount, set once the DOM is ready
               "title": 'Load Plane',
               "showAdmittace": false,  // DrawAdmittance
                drawAdmitanceCircles: function() { drawAdmitanceCircles(this)},
@@ -338,8 +334,8 @@ var smithLoadObj = {
                drawSmith: function() { drawSmith(this)},
                test: function() { test(this)},
           };
-smithSourceObj.ctx = document.getElementById("smithSource").getContext('2d');
-smithLoadObj.ctx = document.getElementById("smithLoad").getContext('2d');
+smithSourceObj.view = QSChart.mount("smithSource");
+smithLoadObj.view = QSChart.mount("smithLoad");
 
  $('document').ready(function () {
       console.log("init")
@@ -352,40 +348,13 @@ smithLoadObj.ctx = document.getElementById("smithLoad").getContext('2d');
 
 
 
- // called by redrawSmith function
-function resize(canvas) {
-    var ht =  getMaximumHeight (canvas);
-    var wd =  getMaximumWidth (canvas);
-    const aspectRatio = true;
-    var width = Math.max(0, Math.floor(wd));
-    var height = Math.max(0, Math.floor(aspectRatio ? width / aspectRatio : ht));
-    console.log( "NewWidth = " + width);
-    console.log( "NewHeight = " + height);
-    chart.width= width;
-    chart.height = height;
-    resize_done = true;
-}
-
-
+/*
+ * Both charts are SVG and size themselves from their viewBox, so redrawing is
+ * just re-rendering from state.
+ */
 function redrawSmith () {
-    console.log("Redrawing smith Start");
-    //if(ctx==null) return;
-    if(smithSourceObj.ctx ==null) return;
-    resize(smithSourceObj.ctx.canvas)
-    smithSourceObj.ctx.canvas.width = chart.width;
-    smithSourceObj.ctx.canvas.height =chart.height ;
-    smithSourceObj.ctx.canvas.style.width = chart.width+'px';
-    smithSourceObj.ctx.canvas.style.height = chart.height+'px';
-    retinaScale(chart, smithSourceObj);
-    smithSourceObj.drawSmith(); // clears canvas too
-    if(smithLoadObj.ctx ==null) return;
-    smithLoadObj.ctx.canvas.width = chart.width;
-    smithLoadObj.ctx.canvas.height =chart.height ;
-    smithLoadObj.ctx.canvas.style.width = chart.width+'px';
-    smithLoadObj.ctx.canvas.style.height = chart.height+'px';
-    retinaScale(chart, smithLoadObj);
-    smithLoadObj.drawSmith(); // clears canvas too
-    console.log("Redrawing smith  End");
+    if (smithSourceObj.view) smithSourceObj.drawSmith();
+    if (smithLoadObj.view) smithLoadObj.drawSmith();
 }
 
 window.addEventListener('resize',redrawSmith, false); // resize,clear and redraw

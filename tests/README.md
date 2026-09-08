@@ -12,10 +12,18 @@ that already ships with the program, so the suite encodes what the program is
 ./tests/run.sh --json       # machine-readable
 ```
 
-`run.sh` runs two things: `tests/standalone.js`, which loads `engine.js` and
-nothing else at all and solves a few known networks — if the solver ever reaches
-back out for jQuery, math.js or the DOM, that fails first with a
-`ReferenceError` — and then the full suite in `tests/run.js`.
+`run.sh` runs three things in order:
+
+1. `tests/standalone.js` — loads `engine.js` and *nothing else at all* and
+   solves a few known networks. If the solver ever reaches back out for jQuery,
+   math.js or the DOM, this fails first with a `ReferenceError`.
+2. `tests/render.js` — checks the chart's grid geometry (pure arithmetic: a
+   constant-resistance circle has to cross the real axis at `(r-1)/(r+1)` and
+   touch the rim at Γ = 1), then mounts and renders a real chart against a
+   small DOM stub. It cannot tell you the chart *looks* right — only a browser
+   does that — but it proves the renderer runs end to end and builds the tree
+   it claims to.
+3. `tests/run.js` — the full case suite.
 
 No toolchain required. `run.sh` uses `node` if it is installed, otherwise it
 falls back to the JavaScriptCore shell that ships with macOS

@@ -565,6 +565,53 @@ var QS_CASES = [
    * insertion loss: this network reported 4.217 dB. The line is lossless, so
    * every decibel of it has to be mismatch, -10*log10(1 - |gamma|^2).
    */
+  /* ============================================================== PHASE 3
+   * The chart draws one arc per component, so the solver now reports the
+   * impedance after every populated slot along with the locus that got there.
+   */
+  {
+    id: "node-trace-agrees-with-cascade",
+    name: "Node walk and cascaded two-port agree, and every arc joins its nodes",
+    ref: "engine.js solve().nodes",
+    schFile: "sch/example_6I.sch",
+    // load, series L2, shunt C3, series C4
+    assert: {
+      NodeCount: [4, 0],
+      NodesEndAtZin: [1, 0],
+      PathsJoinNodes: [1, 0]
+    }
+  },
+  {
+    id: "node-trace-transmission-line",
+    name: "Node arcs survive a line and a stub",
+    ref: "engine.js solve().nodes",
+    setup: {
+      freq: 1000,
+      LU: "MilliMeters",
+      load: { type: "rx", value1: 10, value2: -15 },
+      elements: {
+        2: { type: "t", value1: 30, value2: 56.4 },
+        3: { type: "o", value1: 30, value2: 38.5 }
+      }
+    },
+    assert: {
+      NodeCount: [3, 0],
+      NodesEndAtZin: [1, 0],
+      PathsJoinNodes: [1, 0]
+    }
+  },
+  {
+    id: "node-trace-empty-ladder",
+    name: "An empty ladder has one node and no arcs",
+    ref: "engine.js solve().nodes",
+    setup: {
+      freq: 100,
+      load: { type: "rx", value1: 37.5, value2: 12.25 },
+      elements: {}
+    },
+    assert: { NodeCount: [1, 0], NodesEndAtZin: [1, 0], PathsJoinNodes: [1, 0] }
+  },
+
   {
     id: "fix-tline-insertion-loss",
     name: "Fix: a lossless line shows mismatch loss only, not lumped loss",

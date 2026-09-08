@@ -262,19 +262,45 @@ var QSEngine = (function () {
 
     /* ================================================================= solve */
 
+    /* Apply one two-port to the impedance behind it: Zin = (A*Z + B)/(C*Z + D). */
+    function throughABCD(m, Z) {
+        return cdiv(cadd(cmul(m[0][0], Z), m[0][1]),
+                    cadd(cmul(m[1][0], Z), m[1][1]));
+    }
+
     function solve(net) {
         var ctx = normalise(net);
         var ZL = loadImpedance(net, ctx);
 
-        // Cascade slots 12 down to 2, so port 1 ends up facing the source.
+        // Walk the ladder from the load outwards, accumulating both the total
+        // two-port and the impedance seen after each slot. Multiplying each new
+        // slot on the left builds M12 * M11 * ... * M2, so port 1 ends up facing
+        // the source, which is what the transmission calculation needs.
         var m = IDENTITY;
-        for (var i = SLOTS; i >= 2; i--) {
-            m = cascade(m, slotABCD(slot(net, i), i, ctx));
+        var Z = ZL;
+        var nodes = [{ slot: 1, type: slot(net, 1).type, Z: { re: ZL.re, im: ZL.im },
+                       gamma: gammaOf(zToGamma(ZL, ctx.Z0)), path: null }];
+
+        for (var i = 2; i <= SLOTS; i++) {
+            var el = slot(net, i);
+            var mi = slotABCD(el, i, ctx);
+            m = cascade(mi, m);
+            var Zprev = Z;
+            Z = throughABCD(mi, Z);
+            if (el.type !== "w") {
+                nodes.push({
+                    slot: i,
+                    type: el.type,
+                    shunt: isShuntSlot(i),
+                    Z: { re: Z.re, im: Z.im },
+                    gamma: gammaOf(zToGamma(Z, ctx.Z0)),
+                    path: elementPath(el, i, ctx, Zprev, Z)
+                });
+            }
         }
         var A = m[0][0], B = m[0][1], Cc = m[1][0], D = m[1][1];
 
-        // Zin = (A*ZL + B) / (C*ZL + D)
-        var Zin = cdiv(cadd(cmul(A, ZL), B), cadd(cmul(Cc, ZL), D));
+        var Zin = Z;
         var Yin = cinv(Zin);
         var gamma = zToGamma(Zin, ctx.Z0);
         var gmag = cabs(gamma);
@@ -289,6 +315,9 @@ var QSEngine = (function () {
             load: { re: ZL.re, im: ZL.im },
             // the load as a reflection coefficient, for the UI's "g" display
             loadGamma: gammaOf(zToGamma(ZL, ctx.Z0)),
+            // load first, then one entry per populated slot, each carrying the
+            // locus its element traced to get there
+            nodes: nodes,
             Zin: withPolar(Zin),
             // The UI has always shown admittance in millisiemens.
             Yin: withPolar(cx(Yin.re * 1000, Yin.im * 1000)),
@@ -307,6 +336,56 @@ var QSEngine = (function () {
 
     function withPolar(z) {
         return { re: z.re, im: z.im, mag: cabs(z), ang: cargDeg(z) };
+    }
+
+    /*
+     * The locus an element traces on the chart, as reflection coefficients from
+     * the node before it to the node after it.
+     *
+     * A series reactance keeps R constant, so the path is the straight segment
+     * from Z_before to Z_after in the impedance plane - which is exactly the
+     * constant-resistance arc the chart is drawn to show. A shunt element is
+     * the same statement in admittance, giving the constant-conductance arc.
+     * A transmission line is neither, so it is walked by length instead: its
+     * own rotation, from zero length to the real one.
+     */
+    var PATH_STEPS = 32;
+
+    function elementPath(el, index, ctx, Zbefore, Zafter) {
+        var pts = [], t, i;
+
+        if (el.type === "t") {
+            var full = el.v2;
+            for (i = 0; i <= PATH_STEPS; i++) {
+                t = i / PATH_STEPS;
+                var part = { type: "t", v1: el.v1, v2: full * t, q: el.q };
+                pts.push(zToGamma(throughABCD(tlineABCD(part, ctx), Zbefore), ctx.Z0));
+            }
+            return toGammaPoints(pts);
+        }
+
+        if (isShuntSlot(index)) {
+            var Ybefore = cinv(Zbefore), Yafter = cinv(Zafter);
+            var dY = csub(Yafter, Ybefore);
+            for (i = 0; i <= PATH_STEPS; i++) {
+                t = i / PATH_STEPS;
+                pts.push(zToGamma(cinv(cadd(Ybefore, cx(dY.re * t, dY.im * t))), ctx.Z0));
+            }
+            return toGammaPoints(pts);
+        }
+
+        var dZ = csub(Zafter, Zbefore);
+        for (i = 0; i <= PATH_STEPS; i++) {
+            t = i / PATH_STEPS;
+            pts.push(zToGamma(cadd(Zbefore, cx(dZ.re * t, dZ.im * t)), ctx.Z0));
+        }
+        return toGammaPoints(pts);
+    }
+
+    function toGammaPoints(list) {
+        var out = [];
+        for (var i = 0; i < list.length; i++) out.push({ re: list[i].re, im: list[i].im });
+        return out;
     }
 
     /* A reflection coefficient of exactly zero has no meaningful angle. */
