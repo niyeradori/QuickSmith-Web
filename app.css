@@ -374,10 +374,10 @@ th {
     display: grid;
     position: relative;
     grid-template-columns: 1fr;
-    grid-template-areas: "half-a" "tray" "half-b" "meter";
+    grid-template-areas: "half-a" "tray" "half-b";
     gap: 18px;
     /* lanes for the fold on the right and the input terminal on the left */
-    padding: 0 34px 0 18px;
+    padding: 0 20px 0 12px;
 }
 
 .qs-wiring {
@@ -394,7 +394,7 @@ th {
 @container (min-width: 620px) {
     .ladder-row {
         grid-template-columns: 1fr 1fr;
-        grid-template-areas: "half-a half-b" "tray tray" "meter meter";
+        grid-template-areas: "half-a half-b" "tray tray";
     }
     .ladder-row { padding: 0; }
 }
@@ -402,19 +402,6 @@ th {
 .half-b { grid-area: half-b; }
 .qs-tray { grid-area: tray; }
 
-/*
- * The instrument. Zin is looking in at the far end of slot 12, which the fold
- * puts at the bottom left, so the readout sits under that end with its cable
- * running up the lane. Side by side there is no fold and slot 12 finishes on
- * the right, so it moves across.
- */
-.qs-meter {
-    grid-area: meter;
-    justify-self: start;
-    width: 100%;
-    max-width: 330px;
-    margin-bottom: 0;
-}
 
 .ladder-half { min-width: 0; }
 .ladder-half table { width: 100%; table-layout: fixed; border-collapse: collapse; }
@@ -441,8 +428,6 @@ th {
 @container (min-width: 620px) {
     .half-b .dropzone { flex-direction: row; }
     .half-b table { direction: ltr; }
-    /* no fold, so slot 12 finishes on the right and the instrument follows */
-    .qs-meter { justify-self: end; }
 }
 
 /*
@@ -451,7 +436,10 @@ th {
  * divider instead of a wedge. display:contents keeps the grouping in the
  * markup while letting every icon flow in one line.
  */
+/* nothing runs down the left lane beside the bin, so it takes that back:
+   every pixel of width here is a pixel off the height, because the icons wrap */
 .qs-tray {
+    margin-left: -12px;
     padding: 10px 12px;
     background: var(--qs-face, #fff);
     border: 1px solid var(--qs-rim, #d9dde5);
@@ -462,7 +450,7 @@ th {
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 8px 14px;
+    gap: 6px 10px;
 }
 .component > div { display: contents; }
 .component .stretch { display: none !important; }
@@ -503,7 +491,7 @@ body > font blockquote { max-width: 70ch; }
  */
 .qs-main {
     display: grid;
-    grid-template-columns: minmax(380px, 1.05fr) 250px minmax(360px, 1fr);
+    grid-template-columns: minmax(380px, 1.05fr) 262px minmax(360px, 1fr);
     grid-template-areas: "chart side work";
     gap: 20px;
     align-items: start;
@@ -649,3 +637,8 @@ body > font blockquote { max-width: 70ch; }
 
 .qp-legend { display: flex; gap: 14px; margin-top: 8px; font-size: 12px; color: var(--qs-text, #6b7280); }
 .qp-legend i { display: inline-block; width: 12px; height: 3px; margin-right: 5px; vertical-align: middle; border-radius: 2px; }
+
+/* side by side there are no lanes, so the bin has nothing to reclaim */
+@container (min-width: 620px) {
+    .qs-tray { margin-left: 0; }
+}

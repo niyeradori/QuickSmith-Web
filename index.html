@@ -272,6 +272,21 @@
         <!-- ********************************READOUT COLUMN************************************* -->
         <div class="qs-side">
             <section class="qs-panel">
+                <h2>Readout</h2>
+                <dl class="qs-readout">
+                    <dt>Z<sub>in</sub> &#8486;</dt>  <dd id="ROzin">&mdash;</dd>
+                    <dt>Y<sub>in</sub> mS</dt>       <dd id="ROyin">&mdash;</dd>
+                    <dt>&#915;</dt>                  <dd id="ROgam">&mdash;</dd>
+                    <dt>VSWR</dt>                    <dd id="ROvswr" class="qs-key">&mdash;</dd>
+                    <dt>Return loss</dt>             <dd id="ROrl">&mdash;</dd>
+                    <dt>Insertion loss</dt>          <dd id="ROil">&mdash;</dd>
+                    <dt>Loaded Q</dt>                <dd id="ROq">&mdash;</dd>
+                    <dt id="RObwLabel">BW (VSWR &lt; 2)</dt> <dd id="RObw">&mdash;</dd>
+                </dl>
+                <button type="button" class="btn btn-sm qs-wide" onclick="showTxEquivalents()">All values and equivalents</button>
+            </section>
+
+            <section class="qs-panel">
                 <h2>Overlays</h2>
                 <div class="qs-overlay-row">
                     <label for="SM0">VSWR circle</label>
@@ -517,23 +532,6 @@
                     </table>
                         <br />
                 </div>   <!--ladder half 2 end-->
-                <!-- Zin is measured at the far end of slot 12, so this is
-                     where the instrument goes. -->
-                <section class="qs-panel qs-meter">
-                    <h2>Readout</h2>
-                    <dl class="qs-readout">
-                        <dt>Z<sub>in</sub> &#8486;</dt>  <dd id="ROzin">&mdash;</dd>
-                        <dt>Y<sub>in</sub> mS</dt>       <dd id="ROyin">&mdash;</dd>
-                        <dt>&#915;</dt>                  <dd id="ROgam">&mdash;</dd>
-                        <dt>VSWR</dt>                    <dd id="ROvswr" class="qs-key">&mdash;</dd>
-                        <dt>Return loss</dt>             <dd id="ROrl">&mdash;</dd>
-                        <dt>Insertion loss</dt>          <dd id="ROil">&mdash;</dd>
-                        <dt>Loaded Q</dt>                <dd id="ROq">&mdash;</dd>
-                        <dt id="RObwLabel">BW (VSWR &lt; 2)</dt> <dd id="RObw">&mdash;</dd>
-                    </dl>
-                    <button type="button" class="btn btn-sm qs-wide" onclick="showTxEquivalents()">All values and equivalents</button>
-                </section>
-
             </div>   <!--ladder row end-->
 
         </div>   <!--schematic column end-->
@@ -906,7 +904,8 @@ function resizeSchematic() {
  * The ladder is one wire folded once. When the halves are stacked the second
  * row is read backwards (see app.css), so slot 7 sits under slot 6 and the two
  * rails are joined by a U down the right-hand lane. The far end of slot 12
- * then lands at the bottom left, which is the input, so it gets a terminal.
+ * then lands at the bottom left, and that is where Zin is looking in, so it
+ * gets a terminal.
  *
  * Both ends move with the layout, so this is redrawn whenever the slots are.
  */
@@ -933,20 +932,11 @@ function drawLadderWiring(slotH) {
     var turn = box.width - 9;
     var left = rb.left - box.left;
 
-    var wire =
+    svg.innerHTML =
         '<path class="qs-fold" d="M' + right + ' ' + yA + 'H' + turn +
-            'V' + yB + 'H' + right + '"/>';
-
-    // and the cable from that end down the empty lane into the instrument
-    var meter = row.querySelector(".qs-meter");
-    if (meter) {
-        var rm = meter.getBoundingClientRect();
-        var yM = rm.top - box.top + 26;
-        wire += '<path class="qs-fold" d="M' + left + ' ' + yB +
-                'H7V' + yM + 'H' + (rm.left - box.left) + '"/>' +
-                '<circle class="qs-port" cx="7" cy="' + yB + '" r="3.4"/>';
-    }
-    svg.innerHTML = wire;
+            'V' + yB + 'H' + right + '"/>' +
+        '<path class="qs-fold" d="M' + left + ' ' + yB + 'H6"/>' +
+        '<circle class="qs-port" cx="5" cy="' + yB + '" r="3"/>';
 }
 
 function setHeight(nodes, px) {
