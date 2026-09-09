@@ -17,8 +17,8 @@
   <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"> -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6.0, minimum-scale=.25, user-scalable=yes"/>
   <title>QuickSmith</title>
-  <link href="img/smith.ico" rel="icon" >
-  <link href="css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
+  <link href="img/smith.ico" rel="icon">
+  <link href="app.css" rel="stylesheet">
   <link rel="apple-touch-icon" sizes="57x57" href="img/apple-icon-57x57.png" />
   <link rel="apple-touch-icon" sizes="72x72" href="img/apple-icon-72x72.png" />
   <link rel="apple-touch-icon" sizes="114x114" href="img/apple-icon-114x114.png" />
@@ -121,26 +121,6 @@
      
 
 
-/* The ladder halves butt their slot images edge to edge, so they carry no
-   padding of their own. */
- .nopadding {
-   padding: 0 !important;
-   margin: 0 !important;
-}
-
-/* Because of that, the row holding them must not use Bootstrap's negative
-   gutters either - with nothing to cancel them the schematic hung 15px past
-   its column and ran off the right edge of the page. */
-.ladder-row {
-   margin-left: 0;
-   margin-right: 0;
-}
-
-/* Breathing room between the two halves of the ladder. box-sizing is
-   border-box, so this comes out of the column's 50% rather than adding to it. */
-.ladder-row > .nopadding + .nopadding {
-   padding-left: 10px !important;
-}
 
 /* .widthdemo {
     width:20px;
@@ -201,14 +181,14 @@
             <li><a href="#" onclick ="new_click()">New Session</a></li>
             <li><a href="#" onclick ="set_click()" >Save Session</a></li>
             <li><a href="#" onclick ="get_click()" >Restore Session</a></li>   
-            <!-- <div class="hidden-xs"> -->
-                <li class="hidden-xs"><a href="#" onclick ="load_click()" >Load File</a></li> 
-                <li class="hidden-xs" ><a href="#" onclick ="save_click()" >Save File</a></li>
-                <li class="hidden-xs"><a href="#" onclick ="saveCanvas_click()" >Capture Chart</a></li>
+            <!-- <div class=""> -->
+                <li class=""><a href="#" onclick ="load_click()" >Load File</a></li> 
+                <li class="" ><a href="#" onclick ="save_click()" >Save File</a></li>
+                <li class=""><a href="#" onclick ="saveCanvas_click()" >Capture Chart</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="#" onclick ="shareLink_click()" >Copy Share Link</a></li> 
-                <!-- <li class="hidden-xs"><a href="#">Import</a></li>
-                <li class="hidden-xs" ><a href="#">Export</a></li> -->
+                <!-- <li class=""><a href="#">Import</a></li>
+                <li class="" ><a href="#">Export</a></li> -->
             <!-- </div> -->
           </ul>
         </li>
@@ -234,7 +214,7 @@
 
         <li><a href="#" onclick=autoMatch_click()>Match</a></li>
 
-        <li class="dropdown hidden-xs hidden-sm ">
+        <li class="dropdown ">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">Data<span class="caret"></span></a>
           <ul class="dropdown-menu">
              <li><a href="#"  onclick=export_click()>Export Gamma</a></li>
@@ -250,15 +230,15 @@
       </ul>
        <!-- <button class="btn btn-default navbar-btn" onclick= smithObj.drawAdmitanceCircles() >Admittance</button>   -->
       <ul class="nav navbar-nav navbar-right">
-         <li class="hidden-xs" ><a href="#" onclick=IL_open_click() ><span class="glyphicon glyphicon-stats"></span> IL</a></li>
-        <li  ><a href="#" onclick=AMP_open_click()><span class="glyphicon glyphicon-pencil"></span>Amp. Design</a></li>
-        <li><a  class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-question-sign">Help</span></a>
+         <li class="" ><a href="#" onclick=IL_open_click() >IL</a></li>
+        <li  ><a href="#" onclick=AMP_open_click()>Amp. Design</a></li>
+        <li><a  class="dropdown-toggle" data-toggle="dropdown" href="#">Help</a>
             <ul class="dropdown-menu">
-                <li><a href="qsmithfaq.html" target="_blank" ><span class="glyphicon glyphicon-book"></span> FAQ</a></li>
-                <li><a href="/help/examples/examples/EXAMPLES.html" target="_blank" ><span class="glyphicon glyphicon-book"></span> Examples</a></li>
+                <li><a href="qsmithfaq.html" target="_blank" >FAQ</a></li>
+                <li><a href="/help/examples/examples/EXAMPLES.html" target="_blank" >Examples</a></li>
              </ul>
         </li>
-        <li><a href="#" onclick="options_click(); document.getElementById('optionsModal').showModal()"><span class="glyphicon glyphicon-list-alt"></span></a></li>
+        <li><a href="#" onclick="options_click(); document.getElementById('optionsModal').showModal()">Settings</a></li>
       </ul>
     </div>
   </div>
@@ -275,8 +255,8 @@
                     <td><input id="SM0" type="text" value="0" name="spin1"  style="width: 100%" class="form-control input-sm" onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false"/></td>
                     <td> &nbsp</td>
                     <div>
-                        <td><label  for="SM1" class="hidden-xs" style="font-size:12px;">Q: </label> </td>
-                        <td  class="hidden-xs"  ><input id="SM1" type="text" value="0" name="spin1" style="width: 100%"  class="form-control input-sm " onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false"/></td>  
+                        <td><label  for="SM1" class="" style="font-size:12px;">Q: </label> </td>
+                        <td  class=""  ><input id="SM1" type="text" value="0" name="spin1" style="width: 100%"  class="form-control input-sm " onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false"/></td>  
                     </div>
                     <td> &nbsp</td>
                     <!-- <td><button type="button" class="btn btn-default btn-sm" style="height:27px" onclick= test() > Test </button></td> -->
@@ -288,7 +268,7 @@
             <!--</div>-->
         </div>
                  <!-- ********************************SCHEMATIC WINDOW ************************************************* -->
-        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-xs-12" style="background-color:white;" > 
+        <div class="col-xl-4 schematic"> 
                     <!-- ********************************SCHEMATIC WINDOW  ROW 1************************************************* -->
             <div style="margin-bottom: 5px;">
                 <table  >
@@ -299,8 +279,8 @@
                         <td><label  for="ZO" style="font-size:12px;">Zin.&#937: </label> </label> </td>
                         <td><input id="ZO" type="text" value="0.0"  readonly class="form-control input-sm " /></td>
                         <td> &nbsp</td>
-                        <td><label  class="hidden-xs" for="IL" style="font-size:12px;">IL.dB: </label></label> </td>
-                        <td><input  class="hidden-xs form-control input-sm " id="IL" type="text" value="0.0" style="width: 100%;" readonly  /></td>
+                        <td><label  class="" for="IL" style="font-size:12px;">IL.dB: </label></label> </td>
+                        <td><input  class=" form-control input-sm " id="IL" type="text" value="0.0" style="width: 100%;" readonly  /></td>
                     </tr>
                 </table>
             </div>
@@ -308,10 +288,10 @@
             <!--width:527px-->
             <div class="row ladder-row"> 
                 <!-- Dropzone1 -->
-                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 nopadding" style="background-color:white;">
+                <div class="ladder-half">
                     <!-- <div class="spinzone" >  -->
                         <table style=" margin-left: 0px;  margin-bottom: 0px; width:100%; ">  
-                            <tr class="hidden-xs">
+                            <tr class="">
                                 <th id='H2'>W2</th>
                                 <th id='H4'>W4</th>
                                 <th id='H6'>W6</th>
@@ -376,7 +356,7 @@
                                 <td id="E5at"  style = "visibility: hidden"><input id="E5a"  type="text" value="0" name="spin2" class=" form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                             </tr>
 
-                            <tr class="hidden-xs">
+                            <tr class="">
                                 <th id='H1'>RX1</th>
                                 <th id='H3'>W3</th>
                                 <th id='H5'>W5</th> 
@@ -386,9 +366,9 @@
                 </div>   <!--dropzone div 1 end--> 
                     
                 <!-- Dropzone2 begin -->
-                <div class="hidden-xs col-sm-12 col-md-6 col-lg-6 col-xl-6 nopadding" style="background-color:white;">
+                <div class="ladder-half">
                     <table style=" width:100%;">  
-                          <tr class="hidden-xs">
+                          <tr class="">
                             <th id='H8'>W8</th>
                             <th id='H10'>W10</th>
                             <th id='H12'>W12</th>
@@ -445,18 +425,18 @@
                             <td id="E9at"  style = "visibility: hidden"><input id="E9a" type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                             <td id="E11at" style = "visibility: hidden"><input id="E11a" type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                         </tr>
-                         <tr class="hidden-xs">
+                         <tr class="">
                             <th id='H7'>W7 </th>
                             <th id='H9'>W9 </th> 
                             <th id='H11'>W11</th> 
                         </tr> 
                     </table>
                         <br />
-                </div>   <!--dropzone div 2 end-->  
-                    <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span> -->
-                    <br style="clear: both;" />
-                    <!--Component Zone Begin--> 
-                    <div id="component-container" class="component col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" style="margin-top:0px">
+                </div>   <!--ladder half 2 end-->
+            </div>   <!--ladder row end-->
+
+                    <!--Component Zone Begin-->
+                    <div id="component-container" class="component">
                         <!-- Note that here we are only storing the default values, the actual user input values are stored in the schObj JSON -->                  
                         <!-- Component Zone 1 begin -->
                         <div  style="background-color:white; clear: both; margin-top:10px; padding-left:5%;padding-right:5% ">
@@ -495,7 +475,7 @@
                         </div> <!--Component Zone 4 End-->
                     </div>   <!--Component Zone End--> 
                     <!--MatchTip Zone Begin--> 
-                    <div id="matchtip" class=" hidden hidden-xs  col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" style="margin-top:0px">
+                    <div id="matchtip" class="hidden">
                         <!-- MatchTip Zone 1 begin -->
                         <div class="text-center">
                             <h5 style="color:blue">Matching Tip</h5>
@@ -503,16 +483,13 @@
                         <div  class="text-center" style="background-color:white; clear: both; margin-top:20px; margin-bottom:20px; ">
                             <img id="regions"  class="img-thumbnail" src="img/region3.png" >
                         </div> <!--MatchTip Zone 1 End-->                   
-                    </div>   <!--MatchTip Zone End--> 
-            </div>  <!--schematic row div--> 
-                 </div>   <!-- drag-drop message--> 
-                    <p>To add components, drag and drop component icons on the rectangular slots. </br>
-                           To remove components, drag and drop the "Wire or Null" <IMG SRC="img/w.bmp" class="img-thumbnail" style="margin:4px">icon. </p>
-                </div>
-        </div>   <!--schematic window div-->       
-                       
-    </div> <!--container row div--> 
-</div>  <!--container --> 
+                    </div>   <!--MatchTip Zone End-->
+
+                    <p class="hint">To add a component, drag its icon onto a rectangular slot.<br>
+                       To remove one, drag the wire <img src="img/w.bmp" class="img-thumbnail" style="margin:0 4px;vertical-align:middle" alt="wire"> onto it.</p>
+        </div>   <!--schematic column end-->
+    </div>   <!--row end-->
+</div>   <!--container end--> 
 
     <audio id="audio" src="img/button-3.wav" autostart="false"> </audio>
  <!-- ************************MODAL OPTION DIALOG BEGINS************************************************************************************** -->
@@ -567,7 +544,7 @@
                             <option>Wave Lengths</option>
                         </select>
                     </div>
-                    <div class="form-group hidden-xs hidden-sm"  >
+                    <div class="form-group"  >
                         <label for="TER">Termination:</label>
                         <select class="form-control" id="TER" onclick="javascript:yesnoFileDialog();">
                             <option>Single</option>

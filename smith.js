@@ -38,29 +38,30 @@ var QSChart = (function () {
     /* ------------------------------------------------------------- styling */
 
     var CSS = [
-        ".qs-wrap{position:relative;width:100%;--qs-bg:#fbfbf9;--qs-face:#fff;",
+        ":root{--qs-bg:#fbfbf9;--qs-face:#fff;--qs-ink:#14181f;",
         "--qs-rim:#c9ccc4;--qs-r:#b5342b;--qs-x:#1f7a52;--qs-adm:#4a6fa5;",
         "--qs-vswr:#1f5fbf;--qs-q:#8d3a9b;--qs-marker:#14181f;--qs-dot:#1f5fbf;",
         "--qs-trace:#1f5fbf;--qs-plot:#14181f;--qs-text:#5c6270;--qs-ui:#5c6270;",
         "--qs-a1:#1f5fbf;--qs-a2:#b5342b;--qs-a3:#1f7a52;--qs-a4:#8d3a9b;",
         "--qs-a5:#b26a00;--qs-a6:#0f7f8f}",
 
-        "@media (prefers-color-scheme:dark){.qs-wrap:not([data-qs-theme=bench]){",
-        "--qs-bg:#0d1117;--qs-face:#141a23;--qs-rim:#2c3644;--qs-r:#e5776e;",
+        "@media (prefers-color-scheme:dark){:root:not([data-qs-theme=bench]){",
+        "--qs-bg:#0d1117;--qs-face:#141a23;--qs-ink:#e6ebf2;--qs-rim:#2c3644;--qs-r:#e5776e;",
         "--qs-x:#48c48d;--qs-adm:#7aa2c9;--qs-vswr:#6aa4f5;--qs-q:#c47fd0;",
         "--qs-marker:#e6ebf2;--qs-dot:#6aa4f5;--qs-trace:#6aa4f5;--qs-plot:#e6ebf2;",
         "--qs-text:#93a0b4;--qs-ui:#93a0b4;",
         "--qs-a1:#6aa4f5;--qs-a2:#e5776e;--qs-a3:#48c48d;--qs-a4:#c47fd0;",
         "--qs-a5:#e0a04a;--qs-a6:#4fc4d6}}",
 
-        ".qs-wrap[data-qs-theme=analyzer]{",
-        "--qs-bg:#0d1117;--qs-face:#141a23;--qs-rim:#2c3644;--qs-r:#e5776e;",
+        ":root[data-qs-theme=analyzer]{",
+        "--qs-bg:#0d1117;--qs-face:#141a23;--qs-ink:#e6ebf2;--qs-rim:#2c3644;--qs-r:#e5776e;",
         "--qs-x:#48c48d;--qs-adm:#7aa2c9;--qs-vswr:#6aa4f5;--qs-q:#c47fd0;",
         "--qs-marker:#e6ebf2;--qs-dot:#6aa4f5;--qs-trace:#6aa4f5;--qs-plot:#e6ebf2;",
         "--qs-text:#93a0b4;--qs-ui:#93a0b4;",
         "--qs-a1:#6aa4f5;--qs-a2:#e5776e;--qs-a3:#48c48d;--qs-a4:#c47fd0;",
         "--qs-a5:#e0a04a;--qs-a6:#4fc4d6}",
 
+        ".qs-wrap{position:relative;width:100%}",
         ".qs-svg{display:block;width:100%;height:auto;aspect-ratio:1/1;background:var(--qs-bg);",
         "border-radius:10px;-webkit-user-select:none;user-select:none;",
         // pan-y keeps the page scrollable under a finger; once the chart is
@@ -138,7 +139,7 @@ var QSChart = (function () {
         wrap.className = "qs-wrap";
         var stored = null;
         try { stored = localStorage.getItem("qsChartTheme"); } catch (e) { stored = null; }
-        if (stored) wrap.setAttribute("data-qs-theme", stored);
+        if (stored) document.documentElement.setAttribute("data-qs-theme", stored);
         target.parentNode.replaceChild(wrap, target);
 
         var svg = el("svg", {
@@ -199,7 +200,7 @@ var QSChart = (function () {
 
         button("◐", "Switch palette", function () {
             var next = currentTheme(view) === "analyzer" ? "bench" : "analyzer";
-            view.wrap.setAttribute("data-qs-theme", next);
+            document.documentElement.setAttribute("data-qs-theme", next);
             try { localStorage.setItem("qsChartTheme", next); } catch (e) { /* private mode */ }
         });
 
@@ -207,7 +208,7 @@ var QSChart = (function () {
     }
 
     function currentTheme(view) {
-        var set = view.wrap.getAttribute("data-qs-theme");
+        var set = document.documentElement.getAttribute("data-qs-theme");
         if (set) return set;
         return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)
             ? "analyzer" : "bench";
