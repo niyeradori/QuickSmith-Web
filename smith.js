@@ -88,7 +88,7 @@ var QSChart = (function () {
         "stroke-linecap:round;vector-effect:non-scaling-stroke}",
         ".qs-plot{stroke:var(--qs-plot);stroke-width:2.4;fill:none;stroke-linejoin:round;",
         "vector-effect:non-scaling-stroke}",
-        ".qs-arc{fill:none;stroke-width:9;stroke-linecap:round;stroke-linejoin:round;",
+        ".qs-arc{fill:none;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;",
         "opacity:.9;vector-effect:non-scaling-stroke}",
         ".qs-node{stroke:var(--qs-face);stroke-width:3}",
         ".qs-dot{fill:var(--qs-dot);stroke:var(--qs-face);stroke-width:5}",

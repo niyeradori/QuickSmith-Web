@@ -34,6 +34,7 @@ a:hover { text-decoration: underline; }
 /* ============================================================== menu bar */
 
 .navbar {
+    position: relative;   /* the Auto-match button centres against this */
     display: flex;
     align-items: center;
     gap: 8px;
@@ -79,6 +80,12 @@ a:hover { text-decoration: underline; }
     flex-wrap: wrap;
 }
 .navbar-right { margin-left: auto; }
+#matchBtn {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
 
 .nav > li { position: relative; }
 .nav > li > a {
@@ -161,6 +168,8 @@ a:hover { text-decoration: underline; }
     .navbar-collapse.collapse.in { display: block; }
     .navbar-collapse .nav { flex-direction: column; align-items: stretch; padding-bottom: 8px; }
     .navbar-right { margin-left: 0; }
+    /* stacked, it is just another item in the opened menu */
+    #matchBtn { position: static; transform: none; display: block; width: 100%; margin: 8px 0; }
     /* a dropdown in the stacked menu opens in flow rather than floating */
     .navbar-collapse .dropdown-menu { position: static; box-shadow: none; border: 0; padding-left: 14px; }
 }
