@@ -298,9 +298,6 @@ input[type="color"] { width: 46px; height: 28px; padding: 2px; border: 1px solid
 
 /* ============================================================== schematic */
 
-/* The component tray and the ladder read better with a little air. */
-.component img { cursor: grab; }
-.component img:active { cursor: grabbing; }
 
 th {
     font: 500 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -310,9 +307,49 @@ th {
     padding: 2px 0;
 }
 
-/* The slot images are bitmaps from 1993 and have no transparency, so they are
-   left on white whatever the page theme is doing. */
-.dropzoneh, .dropzonev { background: #fff; }
+/*
+ * Component symbols. They are strokes in currentColor now (see symbols.js),
+ * so a slot follows the page theme instead of sitting on an opaque white
+ * rectangle, and an empty shunt slot is genuinely empty.
+ */
+.dropzonehimg, .dropzonevimg, .dragable, .qs-hint-sym, .qs-preview {
+    color: var(--qs-ink, #14181f);
+    overflow: visible;
+}
+
+/*
+ * The series rail. A series symbol's leads reach both edges of its own slot,
+ * but the shunt slots sitting between them broke the line. Each shunt slot
+ * carries the piece of rail that crosses it, which joins the row into one
+ * circuit and puts a T where the branch hangs off. The height comes from
+ * resizeSchematic, the only place that knows how tall a slot ended up.
+ */
+.dropzonev::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--qs-rail, -10px);
+    height: 1.4px;
+    background: var(--qs-ink, #14181f);
+    pointer-events: none;
+}
+
+/*
+ * A symbol fills its slot, which is sized to the frame it is drawn in (61:20
+ * for series, 20:70 for shunt - the same shapes the bitmaps had). Its leads
+ * reach the slot edges, so the ladder reads as one circuit rather than a row
+ * of small parts floating in boxes. The rule itself is in index.html, next to
+ * the slot sizes it belongs with.
+ */
+
+.dragable { cursor: grab; }
+.dragable:active { cursor: grabbing; }
+.dragable:hover { color: var(--qs-vswr, #1f5fbf); }
+.dragable.dragging { outline: 2px solid var(--qs-r, #b5342b); border-radius: 4px; }
+
+.qs-hint-sym { vertical-align: middle; margin: 0 4px; }
+.qs-preview { width: 20px; height: 70px; padding: 3px; }
 
 /* ================================================================= ladder
  *
@@ -344,7 +381,7 @@ th {
 .component > div {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: center;
     gap: 10px 14px;
     margin-bottom: 10px;
     padding: 0 !important;
