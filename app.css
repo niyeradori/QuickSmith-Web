@@ -372,25 +372,78 @@ th {
  */
 .ladder-row {
     display: grid;
+    position: relative;
     grid-template-columns: 1fr;
-    grid-template-areas: "half-a" "tray" "half-b";
+    grid-template-areas: "half-a" "tray" "half-b" "meter";
     gap: 18px;
+    /* lanes for the fold on the right and the input terminal on the left */
+    padding: 0 34px 0 18px;
 }
+
+.qs-wiring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+}
+.qs-fold { fill: none; stroke: var(--qs-ink, #14181f); stroke-width: 1.4;
+           stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.qs-port { fill: var(--qs-ink, #14181f); stroke: none; }
 @container (min-width: 620px) {
     .ladder-row {
         grid-template-columns: 1fr 1fr;
-        grid-template-areas: "half-a half-b" "tray tray";
+        grid-template-areas: "half-a half-b" "tray tray" "meter meter";
     }
+    .ladder-row { padding: 0; }
 }
 .half-a { grid-area: half-a; }
 .half-b { grid-area: half-b; }
 .qs-tray { grid-area: tray; }
 
+/*
+ * The instrument. Zin is looking in at the far end of slot 12, which the fold
+ * puts at the bottom left, so the readout sits under that end with its cable
+ * running up the lane. Side by side there is no fold and slot 12 finishes on
+ * the right, so it moves across.
+ */
+.qs-meter {
+    grid-area: meter;
+    justify-self: start;
+    width: 100%;
+    max-width: 330px;
+    margin-bottom: 0;
+}
+
 .ladder-half { min-width: 0; }
 .ladder-half table { width: 100%; table-layout: fixed; border-collapse: collapse; }
 .ladder-half td { padding: 1px; }
 
-.dropzone { overflow: hidden; }
+/*
+ * A row of slots. Flex rather than floats, because the second row is read
+ * backwards when the halves are stacked.
+ */
+.dropzone { display: flex; align-items: flex-start; overflow: hidden; }
+.dropzoneh, .dropzonev { flex: none; float: none; }
+
+/*
+ * The ladder is one wire, folded once. Stacked, the second row runs right to
+ * left, so slot 7 sits under slot 6 where the fold is, and slot 12 (the input,
+ * where Zin is looking in) ends up at the bottom left with the readout under
+ * it. Side by side the two halves already meet in the middle, so both rows
+ * read the same way there.
+ */
+.half-b .dropzone { flex-direction: row-reverse; }
+.half-b table { direction: rtl; }
+.half-b table td, .half-b table th { direction: ltr; }
+
+@container (min-width: 620px) {
+    .half-b .dropzone { flex-direction: row; }
+    .half-b table { direction: ltr; }
+    /* no fold, so slot 12 finishes on the right and the instrument follows */
+    .qs-meter { justify-self: end; }
+}
 
 /*
  * The parts bin. One wrapping strip rather than the four stacked rows the
@@ -441,28 +494,35 @@ body > font blockquote { max-width: 70ch; }
  * 900px everything is one column, in the order you would read it: chart,
  * numbers, schematic.
  */
+/*
+ * Three columns, one row: chart and its response plot, the overlays, and the
+ * workbench. One row matters - the schematic is much taller than the chart,
+ * and a column spanning two rows stretches them both, which left a hole under
+ * the chart. Narrower, the workbench drops to its own full-width row, where
+ * the ladder is wide enough to put its two halves side by side.
+ */
 .qs-main {
     display: grid;
-    grid-template-columns: minmax(380px, 1.05fr) 260px minmax(360px, 1fr);
-    grid-template-areas: "chart side work"
-                         "resp  side work";
+    grid-template-columns: minmax(380px, 1.05fr) 250px minmax(360px, 1fr);
+    grid-template-areas: "chart side work";
     gap: 20px;
     align-items: start;
 }
 
 @media (max-width: 1200px) {
+    /* the chart is square, so it is capped rather than given every spare
+       pixel; the overlays take the slack */
     .qs-main {
-        grid-template-columns: minmax(320px, 1fr) minmax(340px, 1fr);
-        grid-template-areas: "chart work"
-                             "side  work"
-                             "resp  work";
+        grid-template-columns: minmax(320px, 620px) minmax(250px, 1fr);
+        grid-template-areas: "chart side"
+                             "work  work";
     }
 }
 
 @media (max-width: 900px) {
     .qs-main {
         grid-template-columns: 1fr;
-        grid-template-areas: "chart" "side" "work" "resp";
+        grid-template-areas: "chart" "side" "work";
         gap: 16px;
     }
 }
@@ -470,9 +530,8 @@ body > font blockquote { max-width: 70ch; }
 .qs-chart-col { grid-area: chart; }
 .qs-side      { grid-area: side; }
 .qs-work      { grid-area: work; }
-.qs-response  { grid-area: resp; }
 
-.qs-chart-col, .qs-side, .qs-work, .qs-response { min-width: 0; }
+.qs-chart-col, .qs-side, .qs-work { min-width: 0; }
 
 .qs-cursor {
     display: block;
