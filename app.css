@@ -437,9 +437,31 @@ th {
 .qs-tray { grid-area: tray; }
 
 
-.ladder-half { min-width: 0; }
-.ladder-half table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+/*
+ * How much of the panel the ladder itself takes. Everything about a slot is
+ * derived from this: a series slot is a quarter of the row wide and 20/61 of
+ * that tall, a shunt slot is 8.23% wide and 3.5 times that tall, and the
+ * symbol fills whatever it lands in. So this one number sets how long and how
+ * thick every slot is, and how tall the schematic ends up. Turning it down
+ * shrinks the value boxes with it, which is the limit: they have to stay
+ * comfortable to type in and step.
+ */
+.ladder-half { min-width: 0; --qs-ladder: 92%; }
+.ladder-half table,
+.ladder-half .dropzone {
+    width: var(--qs-ladder);
+    margin-left: auto;
+    margin-right: auto;
+}
+.ladder-half table { table-layout: fixed; border-collapse: collapse; }
 .ladder-half td { padding: 1px; }
+
+/* On a narrow panel every pixel goes to the controls instead: the value boxes
+   are down to about fifty pixels there, which is as small as they can be and
+   still hold "38.12". The compaction is a wide-screen luxury. */
+@container (max-width: 470px) {
+    .ladder-half { --qs-ladder: 100%; }
+}
 
 /*
  * A row of slots. Flex rather than floats, because the second row is read
