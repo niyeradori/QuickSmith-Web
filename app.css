@@ -361,6 +361,31 @@ th {
 .dragable:hover { color: var(--qs-vswr, #1f5fbf); }
 .dragable.dragging { outline: 2px solid var(--qs-r, #b5342b); border-radius: 4px; }
 
+/*
+ * On a narrow panel the unit costs width the value needs, so the stepper gives
+ * some back: smaller buttons, tighter padding. Without this "38.12 pF" in a
+ * 124px cell clips the number, which is worse than having no unit at all.
+ */
+@container (max-width: 470px) {
+    .ladder-half .qs-spin > button { width: 20px; }
+    .ladder-half .qs-spin > input { padding-left: 3px; padding-right: 3px; }
+    .ladder-half .qs-unit-tag { padding: 0 2px; font-size: 9px; }
+}
+
+/* the unit beside a slot's value, inside the stepper next to the + button */
+.qs-unit-tag {
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    font: 500 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--qs-text, #6b7280);
+    background: var(--qs-face, #fff);
+    border: 1px solid var(--qs-rim, #ccd2dc);
+    border-left: 0;
+    border-right: 0;
+    white-space: nowrap;
+}
+
 .qs-hint-sym { vertical-align: middle; margin: 0 4px; }
 .qs-preview { width: 20px; height: 70px; padding: 3px; }
 

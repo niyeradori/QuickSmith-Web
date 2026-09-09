@@ -1743,13 +1743,66 @@ var UNIT_HINTS = {
     src: ["R [ohms]", "C [pF]"]
 };
 
+/*
+ * The same units, short enough to sit next to the value. A slot holding two
+ * parts shows two numbers with nothing to say which is which - 16.8 and 38.12
+ * could be either way round until you know that an slc is L then C.
+ */
+var UNIT_LABELS = {
+    t:   ["\u03a9", "length"],
+    o:   ["\u03a9", "length"],
+    s:   ["\u03a9", "length"],
+    r:   ["\u03a9", null],
+    x:   ["\u03a9", null],
+    l:   ["nH", null],
+    c:   ["pF", null],
+    rx:  ["\u03a9", "\u03a9"],
+    g:   ["mag", "\u00b0"],
+    plc: ["nH", "pF"],
+    slc: ["nH", "pF"],
+    prc: ["\u03a9", "pF"],
+    src: ["\u03a9", "pF"]
+};
+
+/* A line's length is in whatever the settings say, so it is not fixed. */
+var LENGTH_LABELS = {
+    "Inches": "in", "MilliMeters": "mm", "Meters": "m",
+    "Degrees": "\u00b0", "Wave Lengths": "\u03bb"
+};
+
 function updateToolTip() {
+    var lengthUnit = schObj.LU.toLowerCase();
+    var lengthLabel = LENGTH_LABELS[schObj.LU] || "";
     for (var i = 1; i < 13; i++) {
-        var hint = UNIT_HINTS[schObj.ELEMENT[i].type] || [null, null];
-        var lengthUnit = schObj.LU.toLowerCase();
+        var type = schObj.ELEMENT[i].type;
+        var hint = UNIT_HINTS[type] || [null, null];
         setHint("E" + i, hint[0]);
         setHint("E" + i + "a", hint[1] === "length" ? "length [" + lengthUnit + "]" : hint[1]);
+
+        var unit = UNIT_LABELS[type] || [null, null];
+        setUnit("E" + i, unit[0]);
+        setUnit("E" + i + "a", unit[1] === "length" ? lengthLabel : unit[1]);
     }
+}
+
+/*
+ * The unit rides inside the stepper, between the value and the + button, so it
+ * stays with its own box when a slot has two of them.
+ */
+function setUnit(id, text) {
+    var input = document.getElementById(id);
+    if (!input || !input.parentNode) return;
+    var spin = input.parentNode;
+    if (!spin.classList || !spin.classList.contains("qs-spin")) return;
+
+    var tag = spin.querySelector(".qs-unit-tag");
+    if (!text) { if (tag) spin.removeChild(tag); return; }
+    if (!tag) {
+        tag = document.createElement("span");
+        tag.className = "qs-unit-tag";
+        spin.insertBefore(tag, input.nextSibling);
+    }
+    tag.textContent = text;
 }
 
 function setHint(id, text) {
