@@ -279,6 +279,7 @@
                 </div>
                 <h2>Readout</h2>
                 <dl class="qs-readout">
+                    <dt>Z<sub>in</sub> &#8486;</dt>  <dd id="ROzin">&mdash;</dd>
                     <dt>Y<sub>in</sub> mS</dt>       <dd id="ROyin">&mdash;</dd>
                     <dt>VSWR</dt>                    <dd id="ROvswr" class="qs-key">&mdash;</dd>
                     <dt>Return loss</dt>             <dd id="ROrl">&mdash;</dd>
@@ -318,8 +319,7 @@
             <section class="qs-panel qs-input">
                 <h2>At the input</h2>
                 <dl class="qs-readout">
-                    <dt>Z<sub>in</sub> &#8486;</dt>  <dd id="ROzin">&mdash;</dd>
-                    <dt>S<sub>11</sub></dt>          <dd id="ROgam">&mdash;</dd>
+                    <dt>Z<sub>in</sub> &#8486;</dt>  <dd id="ROzinPort">&mdash;</dd>
                 </dl>
             </section>
         </div>
@@ -1384,9 +1384,8 @@ function updateReadout() {
     var O = resultsObj.OUTPUT;
 
     text("ROzin", cplx(r.Zin.re, r.Zin.im));
+    text("ROzinPort", cplx(r.Zin.re, r.Zin.im));   // the card at the terminal
     text("ROyin", cplx(r.Yin.re, r.Yin.im));
-    text("ROgam", Number(r.gamma.mag).toFixed(4) + " \u2220 " +
-                  Number(r.gamma.ang).toFixed(1) + "\u00b0");
     text("ROvswr", Number(r.vswr).toFixed(4));
     text("ROrl", formatdB(O[4].ReturnLoss) + " dB");
     text("ROil", formatdB(O[5].InsertionLoss) + " dB");
