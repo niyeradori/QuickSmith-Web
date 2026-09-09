@@ -8,8 +8,6 @@
   <title>Insertion Loss</title>
   <link href="img/smith.ico" rel="icon" >
   <link href="css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
-  <script src="js/jquery-3.2.1.min.js"></script>
-  <script src="js/bootstrap3.min.js"></script>
   <script src="engine.js"></script>
   <script src="ui.js"></script>
   <script src="common.js"></script>
@@ -117,7 +115,7 @@ td {
 
 <script>
 /*************************INSERTION LOSS CHART********************************************************************************/
- $('document').ready(function () {
+ document.addEventListener('DOMContentLoaded', function () {
            console.log("init")
            get();
            runILsweep();

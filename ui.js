@@ -342,9 +342,54 @@ var QSUI = (function () {
         return list.length;
     }
 
+    /* ================================================================== nav
+     *
+     * The menu bar's dropdowns and its small-screen toggle. These were the only
+     * two things Bootstrap's JavaScript did, and it needed jQuery to do them.
+     * The class names stay the same, so Bootstrap's stylesheet still dresses
+     * them until that goes too.
+     */
+    function initNav() {
+        document.addEventListener("click", function (e) {
+            var collapse = e.target.closest("[data-toggle='collapse']");
+            if (collapse) {
+                e.preventDefault();
+                var panel = document.querySelector(collapse.getAttribute("data-target"));
+                if (panel) panel.classList.toggle("in");
+                return;
+            }
+
+            var toggle = e.target.closest("[data-toggle='dropdown']");
+            var keep = toggle ? toggle.parentNode : null;
+            closeDropdowns(keep);
+            if (toggle) {
+                e.preventDefault();
+                toggle.parentNode.classList.toggle("open");
+            }
+        });
+
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape") closeDropdowns(null);
+        });
+    }
+
+    function closeDropdowns(keep) {
+        var open = document.querySelectorAll(".dropdown.open");
+        for (var i = 0; i < open.length; i++) {
+            if (open[i] !== keep) open[i].classList.remove("open");
+        }
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initNav);
+    } else {
+        initNav();
+    }
+
     return {
         open: open,
         close: close,
+        initNav: initNav,
         message: message,
         promptValue: promptValue,
         menu: menu,

@@ -8,8 +8,6 @@
   <title>Amplifier Design</title>
   <link href="img/smith.ico" rel="icon" >
   <link href="css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
-  <script src="js/jquery-3.2.1.min.js"></script>
-  <script src="js/bootstrap3.min.js"></script>
   <!-- <script src="js/jquery.ui.position.js"></script> -->
   <script src="js/DragDropTouch.js"></script>   
   <script src="engine.js"></script>
@@ -325,11 +323,13 @@ var smithLoadObj = {
 smithSourceObj.view = QSChart.mount("smithSource");
 smithLoadObj.view = QSChart.mount("smithLoad");
 
- $('document').ready(function () {
+ document.addEventListener('DOMContentLoaded', function () {
       console.log("init")
-      $('input[type=text]').bind('copy paste', function (e) {
-         e.preventDefault();
-      });   // this prenvents the copy/paste menu popping up in IOS when you touch the step box
+      // stops the copy/paste menu popping up on iOS when a step box is touched
+      Array.prototype.forEach.call(document.querySelectorAll('input[type=text]'), function (box) {
+         box.addEventListener("copy", function (e) { e.preventDefault(); });
+         box.addEventListener("paste", function (e) { e.preventDefault(); });
+      });
       
      redrawSmith ();
  })
@@ -347,9 +347,7 @@ function redrawSmith () {
 
 window.addEventListener('resize',redrawSmith, false); // resize,clear and redraw
 // touch
-$('input[name="spin3"]').taphold(function (e) {
-               step_change($(e.target).attr("id"))  },
-               1200);
+onTapHold('input[name="spin3"]', 1200, function (box) { step_change(box.id); });
 
 QSUI.attachAll('input[name="spin3"]', { min: 0, max: 1e7, step: 0.1, decimals: 2 });
 
@@ -371,10 +369,10 @@ QSUI.attachAll('input[name="spin3"]', { min: 0, max: 1e7, step: 0.1, decimals: 2
 
 // this is updating the touchspin value when the buttons are continiously spun
 // $('#GS, #ZS').on('touchspin.on.stopspin', function ()  {
-//     if($(AC).hasClass("active")) CircleGamma(ampObj.AVCenterR, ampObj.AVCenterI, ampObj.Again_r, ampObj.AVLoadAngle, false);  // Available == false
+//     if(document.getElementById("AC").classList.contains("active")) CircleGamma(ampObj.AVCenterR, ampObj.AVCenterI, ampObj.Again_r, ampObj.AVLoadAngle, false);  // Available == false
 // });
 // $('#GL, #ZL').on('touchspin.on.stopspin', function ()  {
-//     if($(OC).hasClass("active")) CircleGamma(ampObj.AVCenterR, ampObj.AVCenterI, ampObj.Again_r, ampObj.AVLoadAngle, false);  // Available == false
+//     if(document.getElementById("OC").classList.contains("active")) CircleGamma(ampObj.AVCenterR, ampObj.AVCenterI, ampObj.Again_r, ampObj.AVLoadAngle, false);  // Available == false
      
 //   });
 
@@ -383,7 +381,7 @@ QSUI.attachAll('input[name="spin3"]', { min: 0, max: 1e7, step: 0.1, decimals: 2
 // $('#GS, #ZS').on('touchspin.on.startupspin', function ()  // Available gain up
 //   {
 //    // up=true;
-//   if($(AC).hasClass("active")) {
+//   if(document.getElementById("AC").classList.contains("active")) {
 //     ampObj.AVLoadAngle =   ampObj.AVLoadAngle + ampObj.AVStepAngle;
 //     CircleGamma(ampObj.AVCenterR, ampObj.AVCenterI, ampObj.Again_r, ampObj.AVLoadAngle, false);  // Available == false
 //     smithSourceObj.dataM = ampObj.DataSM;
@@ -392,7 +390,7 @@ QSUI.attachAll('input[name="spin3"]', { min: 0, max: 1e7, step: 0.1, decimals: 2
 //   }
 // });
 // $('#GS, #ZS').on('touchspin.on.startdownspin', function () { // Available gain down
-//   if($(AC).hasClass("active")) {
+//   if(document.getElementById("AC").classList.contains("active")) {
 //     //up=false;
 //     ampObj.AVLoadAngle =   ampObj.AVLoadAngle - ampObj.AVStepAngle;
 //     CircleGamma(ampObj.AVCenterR, ampObj.AVCenterI, ampObj.Again_r, ampObj.AVLoadAngle, false);  // Available == false
@@ -405,7 +403,7 @@ QSUI.attachAll('input[name="spin3"]', { min: 0, max: 1e7, step: 0.1, decimals: 2
 
 // $('#GL, #ZL').on('touchspin.on.startupspin', function ()  // Operation gain up
 //   {
-//   if($(OC).hasClass("active")) {
+//   if(document.getElementById("OC").classList.contains("active")) {
 //     ampObj.OPLoadAngle =   ampObj.OPLoadAngle + ampObj.OPStepAngle;
 //     CircleGamma(ampObj.OPCenterR,ampObj.OPCenterI, ampObj.Ogain_r,ampObj.OPLoadAngle, true);// operation == true
 //   }
@@ -442,7 +440,7 @@ QSUI.attachAll('input[name="spin3"]', { min: 0, max: 1e7, step: 0.1, decimals: 2
 function spin_changeAV(id1){
   var element = document.getElementById(id1);
   var up = QSUI.wasUp(element);
-  if($(AC).hasClass("active")) {
+  if(document.getElementById("AC").classList.contains("active")) {
     if(up)ampObj.AVLoadAngle =   ampObj.AVLoadAngle + ampObj.AVStepAngle; else ampObj.AVLoadAngle =   ampObj.AVLoadAngle - ampObj.AVStepAngle;  
       CircleGamma(ampObj.AVCenterR, ampObj.AVCenterI, ampObj.Again_r, ampObj.AVLoadAngle, false);  // Available == false
       updateUI_Z_G();
@@ -453,7 +451,7 @@ function spin_changeAV(id1){
 function spin_changeOP(id1){
   var element = document.getElementById(id1);
   var up = QSUI.wasUp(element);
-  if($(OC).hasClass("active")) {
+  if(document.getElementById("OC").classList.contains("active")) {
     if(up)ampObj.OPLoadAngle =   ampObj.OPLoadAngle + ampObj.OPStepAngle; else ampObj.OPLoadAngle =   ampObj.OPLoadAngle - ampObj.OPStepAngle;  
       CircleGamma(ampObj.OPCenterR,ampObj.OPCenterI, ampObj.Ogain_r,ampObj.OPLoadAngle, true);// operation == true
        updateUI_Z_G();
@@ -469,7 +467,7 @@ function spin_change(id1) {
               smithSourceObj.drawVSWRCircles();
               smithLoadObj.drawVSWRCircles();
         }  
-        if (id1 == "FI" &&  $(NC).hasClass("active")) {  
+        if (id1 == "FI" &&  document.getElementById("NC").classList.contains("active")) {  
               
               ampObj.Fi= spin_element.value;
               ampObj.calculateNoiseCircles();
@@ -480,10 +478,10 @@ function spin_change(id1) {
               smithSourceObj.drawGainCircles();
         } 
         
-        if (id1 == "GA" &&  ( $(AC).hasClass("active") || $(OC).hasClass("active")) ) {  
+        if (id1 == "GA" &&  ( document.getElementById("AC").classList.contains("active") || document.getElementById("OC").classList.contains("active")) ) {  
               //console.log(" in GA");
               if( spin_element.value > ampObj.GPMAX )  spin_element.value =  ampObj.GPMAX;
-              if(  $(AC).hasClass("active")) {
+              if(  document.getElementById("AC").classList.contains("active")) {
                   ampObj.AvG= spin_element.value;
                   ampObj.calculateAVGainCircles();
                   smithSourceObj.circleM[1]= ampObj.Again_m;
@@ -495,7 +493,7 @@ function spin_change(id1) {
                   //smithSourceObj.drawdataSprite();
                  // smithSourceObj.redrawSmith();
               }
-              if(  $(OC).hasClass("active")) {
+              if(  document.getElementById("OC").classList.contains("active")) {
                   ampObj.OpG= spin_element.value;
                   ampObj.calculateOPGainCircles();
                   smithLoadObj.circleM[1]= ampObj.Ogain_m;
@@ -527,15 +525,15 @@ function step_change(id1) {
 
 function StabilityCircles_click() {
   console.log(" stability clicked");
-  if( $(SC).hasClass("active")){
-      $(SC).removeClass('active');
+  if( document.getElementById("SC").classList.contains("active")){
+      document.getElementById("SC").classList.remove("active");
       smithSourceObj.circleShow[0] = false;
       smithLoadObj.circleShow[0] = false;
       redrawSmith();
   }
   else
   {
-    $(SC).addClass('active');
+    document.getElementById("SC").classList.add("active");
       smithSourceObj.circleM[0]= ampObj.stablityS_m;
       smithSourceObj.circleQ[0] = ampObj.stablityS_q;
       smithSourceObj.circleR[0] = ampObj.stablityS_r;
@@ -564,15 +562,15 @@ function StabilityCircles_click() {
 }
 
 function OperatingGCircles_click() {
-  if( $(OC).hasClass("active")){
-     $(OC).removeClass('active');
+  if( document.getElementById("OC").classList.contains("active")){
+     document.getElementById("OC").classList.remove("active");
      smithLoadObj.circleShow[1] = false;
     updateUI_Zl_Gl_0();
     smithLoadObj.redrawSmith();
   }
   else
   {
-    $(OC).addClass('active');
+    document.getElementById("OC").classList.add("active");
     smithLoadObj.circleShow[1] = true;
     OperatingCirclesDialog();
   }
@@ -580,15 +578,15 @@ function OperatingGCircles_click() {
 }
 
 function AvailableGCircles_click() {
-  if( $(AC).hasClass("active")){
-      $(AC).removeClass('active');
+  if( document.getElementById("AC").classList.contains("active")){
+      document.getElementById("AC").classList.remove("active");
       smithSourceObj.circleShow[1] = false
       updateUI_Zs_Gs_0();
       smithSourceObj.redrawSmith();
   }
   else
   {
-    $(AC).addClass('active');
+    document.getElementById("AC").classList.add("active");
     // smithSourceObj.circleShow[1] = true;
     smithSourceObj.circleShow[1] = true;
     AvailableCirclesDialog();
@@ -597,14 +595,14 @@ function AvailableGCircles_click() {
 }
 
 function NoiseCircles_click() {
-  if( $(NC).hasClass("active")){
-     $(NC).removeClass('active');
+  if( document.getElementById("NC").classList.contains("active")){
+     document.getElementById("NC").classList.remove("active");
      smithSourceObj.circleShow[2] = false;
      redrawSmith();
   }
   else
   {
-    $(NC).addClass('active');
+    document.getElementById("NC").classList.add("active");
     smithSourceObj.circleShow[2] = true;
     NoiseDialog (); // updates ampObj.fi;
   }  
@@ -622,7 +620,7 @@ function NoiseDialog_prompt(current_val)
       if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
             if( parseFloat(ampObj.Fmin) > parseFloat(result))  ampObj.Fi = ampObj.Fmin; else  ampObj.Fi =  parseFloat(result);
             document.getElementById("FI").value = Number(ampObj.Fi).toFixed(2);
-            $(NC).addClass('active');
+            document.getElementById("NC").classList.add("active");
             ampObj.calculateNoiseCircles(); // updates noise circles in ampObj
             // next draw noise circle
             smithSourceObj.circleM[2]= ampObj.noise_m;
@@ -634,7 +632,7 @@ function NoiseDialog_prompt(current_val)
         }
       else {
             document.getElementById("FI").value = "";
-            $(NC).removeClass('active');
+            document.getElementById("NC").classList.remove("active");
       }
     }
     });
@@ -647,7 +645,7 @@ function NoiseDialog() {
 
 // function  NoiseDialog (){  
 //     var pc = parseFloat(ampObj.Fmin) + 1.1;
-//     var $content = $('<div><label for="FMin">Minimum Noise Figure [dB]: <input type="text" id="FMmin" value='+ampObj.Fmin+' readonly style="width:64px; border: 0"  /> \
+//     var content = fragment('<div><label for="FMin">Minimum Noise Figure [dB]: <input type="text" id="FMmin" value='+ampObj.Fmin+' readonly style="width:64px; border: 0"  /> \
 //       <div><label for="FI">Enter Noise Figure in dB: <input type="text" id="FI"  value='+pc+'  style="width:64px" /> \
 //         </label><br /></div>');
 //     var fi;
@@ -660,12 +658,12 @@ function NoiseDialog() {
 //             cssClass: 'btn-success',
 //             action: function () {
 //                 dialogRef.setClosable(true);
-//                 fi = $content.find('#FI').val();
+//                 fi = content.querySelector('#FI').value;
 //                 if (isNumeric(fi)) // validation
 //                   {
 //                     if(ampObj.Fmin > ampObj.Fi)  ampObj.Fi = ampObj.Fmin; else  ampObj.Fi = fi;
 //                       document.getElementById("FI").value = Number(ampObj.Fi).toFixed(2);
-//                       $(NC).addClass('active');
+//                       document.getElementById("NC").classList.add("active");
 
 //                       ampObj.calculateNoiseCircles(); // updates noise circles in ampObj
 //                       // next draw noise circle
@@ -679,7 +677,7 @@ function NoiseDialog() {
 //                   }
 //                 else{
 //                       document.getElementById("FI").value = "";
-//                       $(NC).removeClass('active');
+//                       document.getElementById("NC").classList.remove("active");
 //                   }
                        
 //             }
@@ -701,7 +699,7 @@ function AvailableCirclesDialog_prompt(current_val)
             if(parseFloat(result) > parseFloat(GPMAX)) result = GPMAX; 
             ampObj.AvG = parseFloat(result);
             document.getElementById("GA").value = Number(ampObj.AvG).toFixed(2);
-            $(AC).addClass('active');
+            document.getElementById("AC").classList.add("active");
             ampObj.calculateAVGainCircles(); // updates noise circles in ampObj
             smithSourceObj.circleM[1]= ampObj.Again_m;
             smithSourceObj.circleQ[1] = ampObj.Again_q;
@@ -712,7 +710,7 @@ function AvailableCirclesDialog_prompt(current_val)
         }
       else {
             document.getElementById("GA").value = "";
-            $(AC).removeClass('active');
+            document.getElementById("AC").classList.remove("active");
       }
     }
     });
@@ -736,7 +734,7 @@ function OperatingCirclesDialog_prompt(current_val)
           if(parseFloat(result) > parseFloat(GPMAX)) result = GPMAX; 
             ampObj.OpG = parseFloat(result);
           //  document.getElementById("GL").value = Number(ampObj.OpG).toFixed(2);
-            $(OC).addClass('active');
+            document.getElementById("OC").classList.add("active");
             ampObj.calculateOPGainCircles(); // updates noise circles in ampObj
             smithLoadObj.circleM[1]= ampObj.Ogain_m;
             smithLoadObj.circleQ[1] = ampObj.Ogain_q;
@@ -747,7 +745,7 @@ function OperatingCirclesDialog_prompt(current_val)
         }
       else {
             //document.getElementById("GL").value = "";
-            $(OC).removeClass('active');
+            document.getElementById("OC").classList.remove("active");
       }
     }
     });
@@ -756,7 +754,7 @@ function  OperatingCirclesDialog (){
  
      var current_val = parseFloat(10.0);
      OperatingCirclesDialog_prompt(current_val);
-    // var $content = $('<div><label for="OPG">Maximum Gain [dB]: <input type="text" id="OPG" value='+GPMAX+' readonly style="width:64px; border: 0"  /> \
+    // var content = fragment('<div><label for="OPG">Maximum Gain [dB]: <input type="text" id="OPG" value='+GPMAX+' readonly style="width:64px; border: 0"  /> \
     //   <div><label for="OPG1">Enter Gain in dB: <input type="text" id="OPG1"  value='+pc+'  style="width:64px" /> \
     //     </label><br /></div>');
     // var OpG;
@@ -769,13 +767,13 @@ function  OperatingCirclesDialog (){
     //         cssClass: 'btn-success',
     //         action: function () {
     //             dialogRef.setClosable(true);
-    //             OpG = $content.find('#OPG1').val();
+    //             OpG = content.querySelector('#OPG1').value;
     //             if (isNumeric(OpG)) // validation
     //               {
     //                 if(OpG > GPMAX) OpG = GPMAX; 
     //                   ampObj.OpG = OpG;
     //                 //  document.getElementById("GL").value = Number(ampObj.OpG).toFixed(2);
-    //                   $(OC).addClass('active');
+    //                   document.getElementById("OC").classList.add("active");
 
     //                   ampObj.calculateOPGainCircles(); // updates noise circles in ampObj
     //                   smithLoadObj.circleM[1]= ampObj.Ogain_m;
@@ -788,7 +786,7 @@ function  OperatingCirclesDialog (){
     //               }
     //             else{
     //                  // document.getElementById("GL").value = "";
-    //                   $(OC).removeClass('active');
+    //                   document.getElementById("OC").classList.remove("active");
 
     //               }
                          
@@ -803,30 +801,30 @@ function  OperatingCirclesDialog (){
 
     function options_click() {
       console.log("options.click");
-        $(".modal-body #Z0").val(ampObj.Z0);
-        $(".modal-body #AVST").val(ampObj.AVStepAngle);
-        $(".modal-body #OPST").val(ampObj.OPStepAngle);
-        $(".modal-body #show_message").prop("checked",ampObj.show_message);
+        document.querySelector(".modal-body #Z0").value = ampObj.Z0;
+        document.querySelector(".modal-body #AVST").value = ampObj.AVStepAngle;
+        document.querySelector(".modal-body #OPST").value = ampObj.OPStepAngle;
+        document.querySelector(".modal-body #show_message").checked = ampObj.show_message;
         
-        $(".modal-body #stabilityColor").val(ampObj.stabilityColor);
-        $(".modal-body #gainColor").val(ampObj.gainColor);
-        $(".modal-body #noiseColor").val(ampObj.noiseColor);
+        document.querySelector(".modal-body #stabilityColor").value = ampObj.stabilityColor;
+        document.querySelector(".modal-body #gainColor").value = ampObj.gainColor;
+        document.querySelector(".modal-body #noiseColor").value = ampObj.noiseColor;
     }
 
     function optionValidate() {
-        val = $(".modal-body #Z0").val();
+        val = document.querySelector(".modal-body #Z0").value;
         if (isNumeric(val) && val > 0)  ampObj.Z0 = smithSourceObj.Z0 = smithLoadObj.Z0 = parseFloat(val) 
-        val = $(".modal-body #AVST").val();
+        val = document.querySelector(".modal-body #AVST").value;
         if (isNumeric(val) && val > 0)  ampObj.AVStepAngle = parseFloat(val) ;
-        val = $(".modal-body #OPST").val();
+        val = document.querySelector(".modal-body #OPST").value;
         if (isNumeric(val) && val > 0)  ampObj.OPStepAngle = parseFloat(val) ;
         if(document.getElementById("show_message").checked == true) ampObj.show_message = true;
         else ampObj.show_message = false;
-        val = $(".modal-body #stabilityColor").val();
+        val = document.querySelector(".modal-body #stabilityColor").value;
         ampObj.stabilityColor = smithSourceObj.circleColor[0]= smithLoadObj.circleColor[0] = val;
-        val = $(".modal-body #gainColor").val();
+        val = document.querySelector(".modal-body #gainColor").value;
         ampObj.gainColor = smithSourceObj.circleColor[1]= smithLoadObj.circleColor[1] = val;
-        val = $(".modal-body #noiseColor").val();
+        val = document.querySelector(".modal-body #noiseColor").value;
         ampObj.noiseColor = smithSourceObj.circleColor[2]= smithLoadObj.circleColor[2] = val;
          smithSourceObj.drawSmith(); smithLoadObj.drawSmith(); // clears canvas too
     }
@@ -842,7 +840,7 @@ function stability_dialog()
     var S12a = ampObj.S12A;
     var S22m = ampObj.S22M;
     var S22a = ampObj.S22A;
-    var $content = $('<div>\
+    var content = fragment('<div>\
         <label for="S11M">S11 [Mag/A]: <input type="number" id="S11M" value='+S11m+'  style="width:85px"/><input type="number" id="S11A" value='+S11a+' style="width:85px"/></label>\
         <br /><label for="S21M">S21 [Mag/A]: <input type="number" id="S21M" value='+S21m+' style="width:85px" /><input type="number" id="S21A" value='+S21a+' style="width:85px"</label>\
         <br /><label for="S12M">S12 [Mag/A]: <input type="number" id="S12M" value='+S12m+' style="width:85px" /><input type="number" id="S12A" value='+S12a+' style="width:85px" /></label>\
@@ -855,20 +853,20 @@ function stability_dialog()
     QSUI.open({
     title: "S-Parmeters Entry",
     small: true,
-    body: $content[0],
+    body: content,
         buttons: [{
             label: 'Calculate Stability',
             cssClass: 'btn-success',
             action: function () {
                 //dialogRef.setClosable(false);
-                var val0 = $content.find('#S11M').val();
-                var val1 = $content.find('#S11A').val();
-                var val2 = $content.find('#S21M').val();
-                var val3 = $content.find('#S21A').val();
-                var val4 = $content.find('#S12M').val();
-                var val5 = $content.find('#S12A').val();
-                var val6 = $content.find('#S22M').val();
-                var val7 = $content.find('#S22A').val();
+                var val0 = content.querySelector('#S11M').value;
+                var val1 = content.querySelector('#S11A').value;
+                var val2 = content.querySelector('#S21M').value;
+                var val3 = content.querySelector('#S21A').value;
+                var val4 = content.querySelector('#S12M').value;
+                var val5 = content.querySelector('#S12A').value;
+                var val6 = content.querySelector('#S22M').value;
+                var val7 = content.querySelector('#S22A').value;
                 if (isNumeric(val0)  && isNumeric(val1)  && isNumeric(val2)  && isNumeric(val3) && isNumeric(val4) 
                  && isNumeric(val5)  && isNumeric(val6)  && isNumeric(val7)) // validation
                 {
@@ -881,18 +879,18 @@ function stability_dialog()
                         ampObj.S22M = val6;
                         ampObj.S22A = val7;
                         ampObj.calculateStabilityCircles();
-                        $content.find('#K').val(ampObj.k);
-                        $content.find('#DELTA').val(ampObj.delta);
-                        $content.find('#RESULT').val(ampObj.stability_msg);
-                        $(SC).removeClass('disabled'); // enable the circle menus
-                        $(OC).removeClass('disabled');
-                        $(AC).removeClass('disabled');
+                        content.querySelector('#K').value = ampObj.k;
+                        content.querySelector('#DELTA').value = ampObj.delta;
+                        content.querySelector('#RESULT').value = ampObj.stability_msg;
+                        document.getElementById("SC").classList.remove("disabled"); // enable the circle menus
+                        document.getElementById("OC").classList.remove("disabled");
+                        document.getElementById("AC").classList.remove("disabled");
                         // dialogRef.close();
                 }
                 else {
-                        $(SC).addClass('disabled');
-                        $(OC).addClass('disabled');
-                        $(AC).addClass('disabled');
+                        document.getElementById("SC").classList.add("disabled");
+                        document.getElementById("OC").classList.add("disabled");
+                        document.getElementById("AC").classList.add("disabled");
                 }
                 return false;   // K, DELTA and RESULT are shown in this dialog
             }
@@ -917,7 +915,7 @@ function noise_dialog()
     var G0M = ampObj.G0M;
     var G0A = ampObj.G0A;
     var RN = ampObj.RN;
-    var $content = $('<div><label for="FM">Fmin [dB]: <input type="number" id="FM" value='+Fmin+'  style="width:100px" /> \
+    var content = fragment('<div><label for="FM">Fmin [dB]: <input type="number" id="FM" value='+Fmin+'  style="width:100px" /> \
         </label><br /><label for="GM">G0 [Mag]: <input type="number" id="GM" value='+G0M+' style="width:100px" />\
         </label><br /><label for="GA">G0 [Ang]: <input type="number" id="GA" value='+G0A+' style="width:100px" />\
         </label><br /><label for="RN">RN [Ohms]: <input type="number" id="RN" value='+RN+' style="width:100px" />\
@@ -925,15 +923,15 @@ function noise_dialog()
     QSUI.open({
     title: "Noise Parmeters Entry",
     small: true,
-    body: $content[0],
+    body: content,
         buttons: [{
             label: 'OK',
             cssClass: 'btn-success',
             action: function () {
-                var val0 = $content.find('#FM').val();
-                var val1 = $content.find('#GM').val();
-                var val2 = $content.find('#GA').val();
-                var val3 = $content.find('#RN').val();
+                var val0 = content.querySelector('#FM').value;
+                var val1 = content.querySelector('#GM').value;
+                var val2 = content.querySelector('#GA').value;
+                var val3 = content.querySelector('#RN').value;
                 if (isNumeric(val0)  && isNumeric(val1)  && isNumeric(val2)  && isNumeric(val3)) // validation
                 {
                         ampObj.Fmin = val0;
@@ -942,7 +940,7 @@ function noise_dialog()
                         ampObj.RN = val3;
                         //ampObj.NoiseCircles();
                         //dialogRef.setClosable(true);
-                        $(NC).removeClass('disabled');
+                        document.getElementById("NC").classList.remove("disabled");
                 }
                 else {
                         //alert(val);
@@ -964,13 +962,13 @@ function noise_dialog()
 }
 
 function TransferSourceImpedance_click() {
-if( $(TS).hasClass("active")){
-     $(TS).removeClass('active');
+if( document.getElementById("TS").classList.contains("active")){
+     document.getElementById("TS").classList.remove("active");
      localStorage.setItem("transferFlag", 'false');
   }
   else
   {
-    $(TS).addClass('active');
+    document.getElementById("TS").classList.add("active");
     var DataM = ampObj.DataSM;
     var DataQ = ampObj.DataSQ;
     var SourceReal = GToZRZ(DataM, DataQ, ampObj.Z0);
@@ -987,13 +985,13 @@ if( $(TS).hasClass("active")){
 }
 
 function TransferLoadImpedance_click() {
-  if( $(TL).hasClass("active")){
-     $(TL).removeClass('active');
+  if( document.getElementById("TL").classList.contains("active")){
+     document.getElementById("TL").classList.remove("active");
      localStorage.setItem("transferFlag", 'false');
   }
   else
   {
-    $(TL).addClass('active');
+    document.getElementById("TL").classList.add("active");
     var DataM = ampObj.DataLM;
     var DataQ = ampObj.DataLQ;
     var LoadReal = GToZRZ(DataM, DataQ, ampObj.Z0);
@@ -1056,7 +1054,10 @@ function back_click()
 }
 
 function openInNewTab(url) {
-    $("<a>").attr("href", url).attr("target", "_blank")[0].click();
+    var opener = document.createElement("a");
+    opener.href = url;
+    opener.target = "_blank";
+    opener.click();
 }
 
 

@@ -269,170 +269,52 @@ function ZtoGammaM(ZXR, ZXI) {
 }
 
 
-//Below is a simple jQuery plugin to catch a long click or long press:
-(function ($) {
-  $.fn.longClick = function (callback, timeout) {
-   // bind to element's mousedown event to track the longclick's beginning
-   $(this).mousedown(function (event) {
-    // save the initial event object
-    var initialEvent = event;
-    // set the delay after which the callback will be called
-    var timer = window.setTimeout(function () { callback(initialEvent); }, timeout);
-    // bind to global mouseup event for clearance
-    $(document).mouseup(function () {
-      // clear timer
-      window.clearTimeout(timer);
-      // unbind from global mouseup event
-      $(document).unbind("mouseup");
-      return true;
-      // use 'return false;' if you need to prevent default handler and
-      // stop event bubbling
+/* Builds a detached element from an HTML string, for dialog bodies. */
+function fragment(html) {
+    var host = document.createElement("div");
+    host.innerHTML = html;
+    return host.firstElementChild || host;
+}
+
+/* Delegated keypress for a set of inputs. */
+function onKeyPress(selector, handler) {
+    document.addEventListener("keypress", function (e) {
+        if (e.target && e.target.closest && e.target.closest(selector)) handler(e);
     });
-     return true;
-     // use 'return false;' if you need to prevent default handler and
-     // stop event bubbling
-   });
-  };
-})(jQuery);
-// usage
-// (function ($) {
-//   $("#someDiv").longClick(function (e) {
-//               alert($(e.target).attr("id") + " was clicked"); },
-//               1500);
-// })(jQuery);
+}
 
-//jQuery plugin to catch a taphold event
-(function ($) {
-  $.fn.taphold = function (callback, timeout) {
-   // bind to element's touchstart event to track the taphold's beginning
-   $(this).bind("touchstart", function (event) {
-    // save the initial event object
-    var initialEvent = event;
-    // set the delay after which the callback will be called
-    var timer = window.setTimeout(function () { callback(initialEvent); }, timeout);
-    // bind to global touchend and touchcancel events for clearance
-    $(document).bind("touchend touchcancel", function () {
-      // clear timer
-      window.clearTimeout(timer);
-      // unbind from touchend and touchcancel events
-      $(document).unbind("touchend touchcancel");
-      return true;
-      // use 'return false;' if you need to prevent default handler and
-      // stop event bubbling
+/*
+ * Press and hold, for opening the step-size dialog on a touch screen.
+ *
+ * This replaces a set of jQuery plugins that came with the original: longClick,
+ * taphold, longclick, isNullOrEmpty, isIPad, isIPhone and isAppleMobile. Only
+ * taphold was ever called, and pointer events cover mouse, touch and stylus in
+ * one path, so the device sniffing the others existed for is not needed.
+ *
+ * Delegated from the document, so it covers value boxes that do not exist yet.
+ */
+function onTapHold(selector, holdMs, callback) {
+    document.addEventListener("pointerdown", function (e) {
+        if (e.pointerType === "mouse") return;      // the mouse has double-click
+        var target = e.target.closest(selector);
+        if (!target) return;
+
+        var timer = setTimeout(function () {
+            cancel();
+            callback(target);
+        }, holdMs);
+
+        function cancel() {
+            clearTimeout(timer);
+            target.removeEventListener("pointerup", cancel);
+            target.removeEventListener("pointercancel", cancel);
+            target.removeEventListener("pointermove", cancel);
+        }
+        target.addEventListener("pointerup", cancel);
+        target.addEventListener("pointercancel", cancel);
+        target.addEventListener("pointermove", cancel);
     });
-    return true;
-    // use 'return false;' if you need to prevent default handler and
-    // stop event bubbling
-   });
-  };
-})(jQuery);
-//usage
-// (function ($) {
-//   $("#someDiv").taphold(function () {
-//                alert($(e.target).attr("id") + " was tapholded"); },
-//                1500);
-// })(jQuery);
-
-//Combined jQuery plugin to catch both long click and taphold events
-(function ($) {
- $.fn.longclick = function (callback, timeout) {
-   var isIPad = $.isIPad();
- 
-   var startEvents = isIPad ? "touchstart" :           "mousedown";
-   var endEvents   = isIPad ? "touchend touchcancel" : "mouseup";
- 
-   $(this).bind(startEvents, function (event) {
-    // save the initial event object
-    var initialEvent = event;
-    // set delay after which the callback will be called
-    var timer = window.setTimeout(function () { callback(initialEvent); }, timeout);
-    // bind to global event(s) for clearance
-    $(document).bind(endEvents, function () {
-        // clear timer
-        window.clearTimeout(timer);
-        // reset global event handlers
-        $(document).unbind(endEvents);
-        return true;
-        // use 'return false;' if you need to prevent default handler and
-        // stop event bubbling
-    });
-    return true;
-    // use 'return false;' if you need to prevent default handler and
-    // stop event bubbling
-   });
- };
-})(jQuery);
- 
-
-
-
-// usage
-// (function ($) {
-//     $("#someDiv").longclick(function () {
-//              alert($(e.target).attr("id") + " was clicked"); },
-//              1500);
-// })(jQuery);
-
-// similar to String.IsNullOrEmpty
-(function ($) {
-    $.isNullOrEmpty = function (str) {
-        return !str || $.trim(str) === ""; // the trim method is provided by jQuery
-    };
-})(jQuery);
-
-//usage
-// var res = $.isNullOrEmpty(''); // true
-// res = $.isNullOrEmpty("bla-bla-bla"); // false
-// res = $.isNullOrEmpty(null); // true
-// res = $.isNullOrEmpty(); // true
-//Below is a simple jQuery plugin to detect whether a page is opened in an iPad:
-(function ($) {
-    $.isIPad = function () {
-        return (typeof navigator != "undefined" &&
-               navigator && navigator.userAgent &&
-               navigator.userAgent.match(/iPad/i) != null);
-    };
-})(jQuery);
- 
-
-// usage
-// $(function(){
-//     if($.isIPad())
-//         alert('Hello, iPad');
-// });
-
-//The next plugin allows to detect an iPhone:
-(function ($) {
-    $.isIPhone = function () {
-        if(!$.isIPad())
-            return (typeof navigator != "undefined" &&
-               navigator && navigator.userAgent &&
-               (navigator.userAgent.match(/iPhone/i) != null ||
-                navigator.userAgent.match(/iPod/i) != null));
-        return false;
-    };
-})(jQuery);
- 
-//usage
-// $(function(){
-//     if($.isIPhone())
-//         alert('Hello, iPhone');
-// });
-//To detect any Apple mobile devices (iPad, iPhone or iPod) you can use the following jQuery plugin:
-(function ($) {
-    $.isAppleMobile = function () {
-        return (typeof navigator != "undefined" &&
-               navigator && navigator.userAgent &&
-               navigator.userAgent.match(/(iPad|iPhone|iPod)/i) != null);
-    };
-})(jQuery);
- 
-
-// usage
-// $(function(){
-//     if($.isAppleMobile())
-//         alert('Hello, Apple device');
-// });
+}
 
 // left: 37, up: 38, right: 39, down: 40,
 // spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36

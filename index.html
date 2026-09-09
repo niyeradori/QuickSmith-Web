@@ -23,8 +23,6 @@
   <link rel="apple-touch-icon" sizes="72x72" href="img/apple-icon-72x72.png" />
   <link rel="apple-touch-icon" sizes="114x114" href="img/apple-icon-114x114.png" />
   <link rel="apple-touch-icon" sizes="144x144" href="img/apple-icon-144x144.png" />
-  <script src="js/jquery-3.2.1.min.js"></script>
-  <script src="js/bootstrap3.min.js"></script>
    <!-- for file and canvas save compatibilty with Safari -->
   <script src="js/FileSaver.min.js"></script>  
   <script src="engine.js"></script>
@@ -699,14 +697,16 @@ smithObj.view = QSChart.mount("smithMain");
 
 
 
- $('document').ready(function () {
+ document.addEventListener('DOMContentLoaded', function () {
     //smithObj.test();
         console.log("init")
         window.name = "parent";
         //chart.currentDevicePixelRatio = window.devicePixelRatio || 1 ||  window.window.devicePixelRatio;
-    $('input[type=text]').bind('copy paste', function (e) {
-        e.preventDefault();
-    });   // this prenvents the copy/paste menu popping up in IOS when you touch the step box
+    // stops the copy/paste menu popping up on iOS when a step box is touched
+    Array.prototype.forEach.call(document.querySelectorAll('input[type=text]'), function (box) {
+        box.addEventListener("copy", function (e) { e.preventDefault(); });
+        box.addEventListener("paste", function (e) { e.preventDefault(); });
+    });
     var transferFlag = localStorage.getItem("transferFlag");
     if(transferFlag == 'true') 
     {
@@ -819,10 +819,10 @@ function onMouseMove(evt) {
                 document.getElementById("regions").src = ""
         }
         matchTipShown = true;
-        $("#matchtip").removeClass('hidden');
+        document.getElementById("matchtip").classList.remove("hidden");
     }
     if(matchTipShown==true && InCircleR((x-x1),(y-y1),25)==false) {
-         $("#matchtip").addClass('hidden')
+         document.getElementById("matchtip").classList.add("hidden")
         matchTipShown=false;
     }
     }
@@ -850,8 +850,8 @@ function onMouseClick(e) {
         }
     }
 
-$("#sweepColor").change(function(){
-  smithObj.sweepDatasets[0].color = $(this).val()
+document.getElementById("sweepColor").addEventListener("change", function () {
+  smithObj.sweepDatasets[0].color = this.value;
 });
 
     // called by redrawSmith function
@@ -860,22 +860,34 @@ $("#sweepColor").change(function(){
  * here is centring each component bitmap inside its ladder slot.
  */
 function resizeSchematic() {
-    var wh = $(".dropzoneh").width();
-    var hh = wh * 0.3279;
-    $(".dropzoneh").height(hh);
-    var wv = $(".dropzonev").width();
-    var hv = wv * 3.5;
-    $(".dropzonev").height(hv);
+    var hSlots = document.querySelectorAll(".dropzoneh");
+    var vSlots = document.querySelectorAll(".dropzonev");
+    if (!hSlots.length || !vSlots.length) return;
 
-    var w0 = $(".dropzonehimg").width();
-    var h0 = $(".dropzonehimg").height();
-    $(".dropzonehimg").parent().css({position: 'relative'});
-    $(".dropzonehimg").css({top: parseInt(hh/2-h0/2)+'px', left: parseInt(wh/2-w0/2)+'px', position:'absolute'});
+    var slotW = hSlots[0].clientWidth, slotH = slotW * 0.3279;
+    var stubW = vSlots[0].clientWidth, stubH = stubW * 3.5;
+    setHeight(hSlots, slotH);
+    setHeight(vSlots, stubH);
+    centreInSlot(".dropzonehimg", slotW, slotH);
+    centreInSlot(".dropzonevimg", stubW, stubH);
+}
 
-    var w1 = $(".dropzonevimg").width();
-    var h1 = $(".dropzonevimg").height();
-    $(".dropzonevimg").parent().css({position: 'relative'});
-    $(".dropzonevimg").css({top: parseInt(hv/2-h1/2)+'px', left: parseInt(wv/2-w1/2)+'px', position:'absolute'});
+function setHeight(nodes, px) {
+    for (var i = 0; i < nodes.length; i++) nodes[i].style.height = px + "px";
+}
+
+function centreInSlot(selector, slotW, slotH) {
+    var imgs = document.querySelectorAll(selector);
+    if (!imgs.length) return;
+    var w = imgs[0].offsetWidth, h = imgs[0].offsetHeight;
+    var top = Math.round(slotH / 2 - h / 2) + "px";
+    var left = Math.round(slotW / 2 - w / 2) + "px";
+    for (var i = 0; i < imgs.length; i++) {
+        imgs[i].parentNode.style.position = "relative";
+        imgs[i].style.position = "absolute";
+        imgs[i].style.top = top;
+        imgs[i].style.left = left;
+    }
 }
 
 function redrawSmith () {
@@ -956,23 +968,27 @@ function updateUI() {
         var spin_element;
         spin_element =  document.getElementById(id);
         spin_element.value= schObj.ELEMENT[i].value1;
-        if(schObj.ELEMENT[i].value1 < 0) $(spin_element).css('color','red');else $(spin_element).css('color','black');
+        if(schObj.ELEMENT[i].value1 < 0) spin_element.style.color = 'red';else spin_element.style.color = 'black';
+        // Slot 0 is the frequency and has no second value, so no E0a cell exists.
+        // jQuery quietly did nothing when a selector matched nothing; plain DOM
+        // needs to be asked.
+        var secondCell = document.querySelector("#" + id_a + "t");
+        var secondBox = document.getElementById(id_a);
         if(is1Component(schObj.ELEMENT[i].type)) 
         {  
-            if ($("#"+id_a+"t").css('visibility') !== 'hidden')  $("#"+id_a+"t").css({'visibility': 'hidden'});
+            if (secondCell) secondCell.style.visibility = "hidden";
         }
-        else
-        {   spin_element =  document.getElementById(id_a);
-            spin_element.value= schObj.ELEMENT[i].value2;
-            if ($("#"+id_a+"t").css('visibility') == 'hidden')  $("#"+id_a+"t").css({'visibility': 'visible'});
-            if(schObj.ELEMENT[i].value2 < 0) $(spin_element).css('color','red');else $(spin_element).css('color','black')
+        else if (secondBox)
+        {   secondBox.value = schObj.ELEMENT[i].value2;
+            if (secondCell) secondCell.style.visibility = "visible";
+            if(schObj.ELEMENT[i].value2 < 0) secondBox.style.color = 'red';else secondBox.style.color = 'black';
         }
     }
     for (var i = 1; i < 13; i++) 
         { 
             var imgv = isEven(i) ? "" :"v";
             document.getElementById("D"+i).src =  "img/"+schObj.ELEMENT[i].type+imgv+".bmp"; // src="img/rxv.bmp"
-            $("#" + "H" + i).text( schObj.ELEMENT[i].type.toUpperCase() + i);
+            document.querySelector("#H" + i).textContent =  schObj.ELEMENT[i].type.toUpperCase() + i;
         }
     if(schObj.termination == 'Single') document.getElementById('V1').style.borderColor='#808080';
     else  document.getElementById('V1').style.borderColor='red';
@@ -1119,7 +1135,7 @@ function handleFileImport(e) {
                 
             }
         reader.readAsText(file); 
-        $("#file-input1").val(null); // this clears the file read 
+        document.getElementById("file-input1").value = ""; // this clears the file read 
    }
    else
    {
@@ -1183,7 +1199,7 @@ function handleFileOpen(e) {
                 
             }
         reader.readAsText(file); 
-        $('input[type="file"]').val(null); // this clears the file read 
+        Array.prototype.forEach.call(document.querySelectorAll('input[type="file"]'), function (f) { f.value = ""; }); // this clears the file read 
    }
    else
    {
@@ -1243,8 +1259,8 @@ var start = function (e) {
         var dropElementType = e.target.id;
         console.log(" SETTING TARGET" + dropElementType);
         document.getElementById(e.target.id).style.border="3px solid red";
-        var w = $("#"+dropElementType).width();
-        var h = $("#"+dropElementType).height();
+        var w = document.getElementById(dropElementType).offsetWidth;
+        var h = document.getElementById(dropElementType).offsetHeight;
 
         e.dataTransfer.setDragImage(e.target, w/2, h/2);
         console.log("start");
@@ -1337,26 +1353,26 @@ var end = function(e) {
         var drpEleTOS = 0; if (dropElementType == "t" || dropElementType == "o" || dropElementType == "s") drpEleTOS = 1;
         var drpEleRXG = 0; if (dropElementType == "r" || dropElementType == "x" || dropElementType == "g" || dropElementType == "rx") drpEleRXG = 1; // for hiding Q label
         if( context == "new") {
-            $(".modal-body #V1").val(mySrcElement.getAttribute('data-value1')); // value 1 place holder assign
+            document.querySelector(".modal-body #V1").value = mySrcElement.getAttribute('data-value1'); // value 1 place holder assign
             document.getElementById("V1Label").textContent = mySrcElement.getAttribute('data-unit1');  // value 1 units display
             var val2 = mySrcElement.getAttribute('data-value2');
-            if (val2 == null) { $(".modal-body #V2").hide(); $(".modal-body #V2Label").hide(); }
+            if (val2 == null) { document.querySelector(".modal-body #V2").style.display = "none"; document.querySelector(".modal-body #V2Label").style.display = "none"; }
             else {
-                $(".modal-body #V2").show(); $(".modal-body #V2Label").show();    // value 2 show
-                $(".modal-body #V2").val(mySrcElement.getAttribute('data-value2'));   // value 2 place holder assign
+                document.querySelector(".modal-body #V2").style.display = ""; document.querySelector(".modal-body #V2Label").style.display = "";    // value 2 show
+                document.querySelector(".modal-body #V2").value = mySrcElement.getAttribute('data-value2');   // value 2 place holder assign
                 if (drpEleTOS == 0) document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2'); // value 1 units label
                 else document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2') + schObj.LU + "]:"; // value 2 units display
             }
         }
         else 
          {
-            $(".modal-body #V1").val(schObj.ELEMENT[targetIdNum].value1); // value 1 place holder assign
+            document.querySelector(".modal-body #V1").value = schObj.ELEMENT[targetIdNum].value1; // value 1 place holder assign
             document.getElementById("V1Label").textContent = mySrcElement.getAttribute('data-unit1');  // value 1 units display
             var val2 = mySrcElement.getAttribute('data-value2');
-            if (val2 == null) { $(".modal-body #V2").hide(); $(".modal-body #V2Label").hide(); }
+            if (val2 == null) { document.querySelector(".modal-body #V2").style.display = "none"; document.querySelector(".modal-body #V2Label").style.display = "none"; }
             else {
-                $(".modal-body #V2").show(); $(".modal-body #V2Label").show();    // value 2 show
-                $(".modal-body #V2").val(schObj.ELEMENT[targetIdNum].value2);   // value 2 place holder assign
+                document.querySelector(".modal-body #V2").style.display = ""; document.querySelector(".modal-body #V2Label").style.display = "";    // value 2 show
+                document.querySelector(".modal-body #V2").value = schObj.ELEMENT[targetIdNum].value2;   // value 2 place holder assign
                 if (drpEleTOS == 0) document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2'); // value 1 units label
                 else document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2') + schObj.LU + "]:"; // value 2 units display
             }
@@ -1364,20 +1380,20 @@ var end = function(e) {
 
 
         if (drpEleRXG == 1) {
-            $(".modal-body #Q").hide(); $(".modal-body #QLabel").hide();    // Q label and Q value hide for R and X
+            document.querySelector(".modal-body #Q").style.display = "none"; document.querySelector(".modal-body #QLabel").style.display = "none";    // Q label and Q value hide for R and X
         }
         else {
-            $(".modal-body #Q").show(); $(".modal-body #QLabel").show();    // Q label and Q value show for others
-            if( context == "new") $(".modal-body #Q").val(mySrcElement.getAttribute('data-q')); // Q value place holder assign for new element
-            else $(".modal-body #Q").val((schObj.ELEMENT[targetIdNum].q));  //Q value if the element is already loaded and being updated 
+            document.querySelector(".modal-body #Q").style.display = ""; document.querySelector(".modal-body #QLabel").style.display = "";    // Q label and Q value show for others
+            if( context == "new") document.querySelector(".modal-body #Q").value = mySrcElement.getAttribute('data-q'); // Q value place holder assign for new element
+            else document.querySelector(".modal-body #Q").value = (schObj.ELEMENT[targetIdNum].q);  //Q value if the element is already loaded and being updated 
         }
 
-        $(".modal-body #STEP").val(mySrcElement.getAttribute('data-step')); // step value place holder assign - hidden for now
+        document.querySelector(".modal-body #STEP").value = mySrcElement.getAttribute('data-step'); // step value place holder assign - hidden for now
 
         if (dropElementType == "w")  // in case of wire do not show the dialog, just reset values.
         {
-            $(".modal-body #V1").val(mySrcElement.getAttribute('data-value1'));
-            $(".modal-body #Q").val(mySrcElement.getAttribute('data-q'));
+            document.querySelector(".modal-body #V1").value = mySrcElement.getAttribute('data-value1');
+            document.querySelector(".modal-body #Q").value = mySrcElement.getAttribute('data-q');
             componentValidate();
         }
         else document.getElementById("componentsModal").showModal();                       // note that two parameter components can have two step values
@@ -1398,33 +1414,33 @@ var end = function(e) {
         var spin_element_a = document.getElementById(id_a);
         if(is1Component(eleType) == true) {
             // if($("#"+id_a+"t").hasClass('hidden')== false)   $("#"+id_a+"t").addClass('hidden'); // adding t because we are hidding the row; hiding touchspin does not work ?
-            if ($("#"+id_a+"t").css('visibility') !== 'hidden')  $("#"+id_a+"t").css({'visibility': 'hidden'});
+            if (document.querySelector("#"+id_a+"t").style.visibility !== 'hidden')  document.querySelector("#"+id_a+"t").style.visibility = "hidden";
             console.log("One element component =" + id);
         }
         else  // 2 element component
         {
-            if ($("#"+id_a+"t").css('visibility') == 'hidden')  $("#"+id_a+"t").css({'visibility': 'visible'});
+            if (document.querySelector("#"+id_a+"t").style.visibility == 'hidden')  document.querySelector("#"+id_a+"t").style.visibility = "visible";
             console.log("two element component =" + id_a);
         }
-        var val1 = $(".modal-body #V1").val();
+        var val1 = document.querySelector(".modal-body #V1").value;
         if (isNumeric(val1)) { 
             schObj.ELEMENT[eleNum].value1 = val1; spin_element.value = Number(val1).toFixed(2);
-            if(val1 < 0) $(spin_element).css('color','red');else $(spin_element).css('color','black'); // change color to red if negative
+            if(val1 < 0) spin_element.style.color = 'red';else spin_element.style.color = 'black'; // change color to red if negative
          }
-        var val2 = $(".modal-body #V2").val();
+        var val2 = document.querySelector(".modal-body #V2").value;
         console.log("val1 =" + val1 + " val2 =" + val2);
         if (val2 == "") { schObj.ELEMENT[eleNum].value2 = 0; spin_element_a.value = 0.00;}  // value2
         else if (isNumeric(val2)) {
             schObj.ELEMENT[eleNum].value2 = val2;
             spin_element_a.value = Number(val2).toFixed(2);
-            if(schObj.ELEMENT[eleNum].value2 < 0) $(spin_element_a).css('color','red');else $(spin_element_a).css('color','black'); // change color to red if negative
+            if(schObj.ELEMENT[eleNum].value2 < 0) spin_element_a.style.color = 'red';else spin_element_a.style.color = 'black'; // change color to red if negative
         }
         var drpEleRXG = 0; if (eleType == "r" || eleType == "x" || eleType == "g" || eleType == "rx") drpEleRXG = 1;
         if (drpEleRXG == 0) { // no Q for R,X,RX and G
-            var val3 = $(".modal-body #Q").val();
+            var val3 = document.querySelector(".modal-body #Q").value;
             if (isNumeric(val3)) schObj.ELEMENT[eleNum].q = val3;
         }
-        $("#" + "H" + eleNum).text( eleType.toUpperCase() + eleNum); // update the component reference number on the schematic pane
+        document.querySelector("#H" + eleNum).textContent =  eleType.toUpperCase() + eleNum; // update the component reference number on the schematic pane
         //schObj.ELEMENT[eleNum].tune = 1;  // default the tune element to the first variable
         //console.log(JSON.stringify(schObj));
         Zcalsweep();
@@ -1451,13 +1467,10 @@ var end = function(e) {
 //   $('input[name="spin2"]').taphold(function (e) {
 //                step_change($(e.target).attr("id"))  },
 //                1000);
-  $('input[name="spin1"]').taphold(function (e) {
-               step_change1($(e.target).attr("id"))  },
-               1000);
+  onTapHold('input[name="spin1"]', 1000, function (box) { step_change1(box.id); });
 
-$('input[name="spin2"]').on("keypress", function (e) {
-    // use e.which
-    var id1 = event.target.id;
+onKeyPress('input[name="spin2"]', function (e) {
+    var id1 = e.target.id;
     var spin_element = document.getElementById(id1);
     var second_element = false; var id; var idNum;
     if(id1.substr(-1)=='a')   { 
@@ -1555,7 +1568,7 @@ function setHint(id, text) {
             if (second_element == true)schObj.ELEMENT[idNum].value2 = spin_element.value; 
             else { if("E"+idNum == "E1" &&  spin_element.value < 0.00)spin_element.value=schObj.ELEMENT[idNum].value1 = "0.00"  ;
             else schObj.ELEMENT[idNum].value1 = spin_element.value;  }
-           if(spin_element.value < 0) $(spin_element).css('color','red');else $(spin_element).css('color','black')
+           if(spin_element.value < 0) spin_element.style.color = 'red';else spin_element.style.color = 'black'
 
         }
         Zcalsweep();
@@ -1568,28 +1581,28 @@ function setHint(id, text) {
     /***************OPTIONS MODAL****************************/
 
     function options_click() {
-        $(".modal-body #VF").val(schObj.VF);
-        $(".modal-body #Z0").val(schObj.Z0);
-        //  $(".modal-body #FREQ").val(schObj.FREQ);
-        $(".modal-body #FREQ").val(schObj.ELEMENT[0].value1);
-        $(".modal-body #TDF").val(schObj.TDF);
-        $(".modal-body #ST").val(schObj.ST);
-        $(".modal-body #SS").val(schObj.SS);
-        $(".modal-body #SST").val(schObj.SST);
+        document.querySelector(".modal-body #VF").value = schObj.VF;
+        document.querySelector(".modal-body #Z0").value = schObj.Z0;
+        //  document.querySelector(".modal-body #FREQ").value = schObj.FREQ;
+        document.querySelector(".modal-body #FREQ").value = schObj.ELEMENT[0].value1;
+        document.querySelector(".modal-body #TDF").value = schObj.TDF;
+        document.querySelector(".modal-body #ST").value = schObj.ST;
+        document.querySelector(".modal-body #SS").value = schObj.SS;
+        document.querySelector(".modal-body #SST").value = schObj.SST;
         // $("input[name='LOAD']").val(schObj.ELEMENT[1].type);
         // var radioValue = $("input[name='optradio']:checked").val();
         //  if (radioValue) {
         //   alert("Your are a - " + radioValue);
         //  }
         
-        $("#sweepColor").val(smithObj.sweepDatasets[0].color);
-        $("#dataColor").val(smithObj.sweepDatasets[1].color);
+        document.getElementById("sweepColor").value = smithObj.sweepDatasets[0].color;
+        document.getElementById("dataColor").value = smithObj.sweepDatasets[1].color;
        
-        $("#SE").val(schObj.SE);
+        document.getElementById("SE").value = schObj.SE;
  
-        // var conceptName = $('#aioConceptName').find(":selected").text();
-        $("#LU").val(schObj.LU);
-        $("#TER").val(schObj.termination);
+        // var conceptName = (function(sel){return sel.options[sel.selectedIndex].text;})(document.getElementById('aioConceptName'));
+        document.getElementById("LU").value = schObj.LU;
+        document.getElementById("TER").value = schObj.termination;
         if (schObj.termination == "Multiple")  document.getElementById('TER_FILE').style.display = 'block';
         else document.getElementById('TER_FILE').style.display = 'none';       
     }
@@ -1597,54 +1610,54 @@ function setHint(id, text) {
    function OnOptionSweepElemet_click()  // depending upon the tune element detemine where it needs a tune option or not ( incase of a two element)
    {
      // extract id
-     var sweep_element = $('#SE').find(":selected").text();
-     var index=   $("#SE").prop('selectedIndex');
-     console.log (" Current Sweep Element:" +  $('#SE').find(":selected").text() + " Index: "+ index );
+     var sweep_element = (function(sel){return sel.options[sel.selectedIndex].text;})(document.getElementById('SE'));
+     var index=   document.getElementById("SE").selectedIndex;
+     console.log (" Current Sweep Element:" +  (function(sel){return sel.options[sel.selectedIndex].text;})(document.getElementById('SE')) + " Index: "+ index );
      var eleType = schObj.ELEMENT[index].type;
      if( index > 0 && is2Component(eleType))
      {
        //show tune option  with the current tune value selected
-        $("#SE_TUNE").removeClass('hidden');
+        document.getElementById("SE_TUNE").classList.remove("hidden");
         switch (eleType) {
             case "rx":
-                $('#TUNE1a').text('Sweep R');
-                $('#TUNE2a').text('Sweep X');
+                document.getElementById('TUNE1a').textContent = 'Sweep R';
+                document.getElementById('TUNE2a').textContent = 'Sweep X';
                 break;
             case "g":
-                $('#TUNE1a').text('Sweep M');
-                $('#TUNE2a').text('Sweep A');
+                document.getElementById('TUNE1a').textContent = 'Sweep M';
+                document.getElementById('TUNE2a').textContent = 'Sweep A';
                 break;
             case "t":
             case "o":
             case "s":
-                $('#TUNE1a').text('Sweep Z0');
-                $('#TUNE2a').text('Sweep L');
+                document.getElementById('TUNE1a').textContent = 'Sweep Z0';
+                document.getElementById('TUNE2a').textContent = 'Sweep L';
                 break;
             case "src":
             case "prc":
-                $('#TUNE1a').text('Sweep R');
-                $('#TUNE2a').text('Sweep C');
+                document.getElementById('TUNE1a').textContent = 'Sweep R';
+                document.getElementById('TUNE2a').textContent = 'Sweep C';
                 break;
             case "slc":
             case "plc":
-                $('#TUNE1a').text('Sweep L');
-                $('#TUNE2a').text('Sweep C');
+                document.getElementById('TUNE1a').textContent = 'Sweep L';
+                document.getElementById('TUNE2a').textContent = 'Sweep C';
                 break;
             default:
-                $('#TUNE1a').text('Sweep 1');
-                $('#TUNE2a').text('Sweep 2');
+                document.getElementById('TUNE1a').textContent = 'Sweep 1';
+                document.getElementById('TUNE2a').textContent = 'Sweep 2';
         }
 
        if(schObj.ELEMENT[index].tune == 1) document.getElementById('TUNE1').checked = true;
        else document.getElementById('TUNE2').checked = true;     
      }    
-     else { $("#SE_TUNE").addClass('hidden'); schObj.ELEMENT[index].tune =1; }
+     else { document.getElementById("SE_TUNE").classList.add("hidden"); schObj.ELEMENT[index].tune =1; }
 
    }
 
     // this function shows hides the file dialog depending on Multi/Single termination
     function yesnoFileDialog() {
-        if ($(".modal-body #TER").val() == "Multiple")  document.getElementById('TER_FILE').style.display = 'block';
+        if (document.querySelector(".modal-body #TER").value == "Multiple")  document.getElementById('TER_FILE').style.display = 'block';
         else 
         {  
       
@@ -1665,23 +1678,23 @@ function setHint(id, text) {
     }
 
     function optionValidate() {
-        var val = $(".modal-body #VF").val();
+        var val = document.querySelector(".modal-body #VF").value;
         if (isNumeric(val) && val > 0 && val <= 1) schObj.VF = val;
-        val = $(".modal-body #Z0").val();
+        val = document.querySelector(".modal-body #Z0").value;
         if (isNumeric(val) && val > 0)  schObj.Z0 = smithObj.Z0 = parseFloat(val) 
-        val = $(".modal-body #FREQ").val();
+        val = document.querySelector(".modal-body #FREQ").value;
         if (isNumeric(val) && val > 0) { schObj.ELEMENT[0].value1 = val; document.getElementById("E0").value = Number(val).toFixed(2); }
-        val = $(".modal-body #TDF").val();
+        val = document.querySelector(".modal-body #TDF").value;
         if (isNumeric(val) && val > 0) schObj.TDF = val;
-        val = $(".modal-body #ST").val();
+        val = document.querySelector(".modal-body #ST").value;
         if (isNumeric(val) && val > 0) schObj.ST = val;
-        val = $(".modal-body #SS").val();
+        val = document.querySelector(".modal-body #SS").value;
         if (isNumeric(val) && val > 0) schObj.SS = val;
-        val = $(".modal-body #SST").val();
+        val = document.querySelector(".modal-body #SST").value;
         if (isNumeric(val) && val > 0) schObj.SST = val;
         // schObj.ELEMENT[1].type=$("input[name='LOAD']:checked").val();
-        schObj.SE = $('#SE').find(":selected").text(); // Sweep element
-        var index=   $("#SE").prop('selectedIndex');
+        schObj.SE = (function(sel){return sel.options[sel.selectedIndex].text;})(document.getElementById('SE')); // Sweep element
+        var index=   document.getElementById("SE").selectedIndex;
         var eleType = schObj.ELEMENT[index].type;
        if( index > 0 && is2Component(eleType))
        {
@@ -1690,9 +1703,9 @@ function setHint(id, text) {
        }    
 
 
-        schObj.LU = $('#LU').find(":selected").text(); // Length Units
+        schObj.LU = (function(sel){return sel.options[sel.selectedIndex].text;})(document.getElementById('LU')); // Length Units
         //console.log (schObj.LU );
-        if ($(".modal-body #TER").val() == "Multiple") {
+        if (document.querySelector(".modal-body #TER").value == "Multiple") {
             var selectedFile = document.getElementById('TER_FILE').files[0];
             console.log(selectedFile);
             // if (!selectedFile) {
@@ -1744,7 +1757,7 @@ function setHint(id, text) {
                     }
                     
                 reader.readAsText(selectedFile); 
-                $("#file-input1").val(null); // this clears the file read 
+                document.getElementById("file-input1").value = ""; // this clears the file read 
             }
         }
         else {
@@ -1762,7 +1775,7 @@ function setHint(id, text) {
         console.log(JSON.stringify(schObj));
         console.log(JSON.stringify(resultsObj));
         console.log(JSON.stringify(smithObj, chartStateOnly));
-        //alert("Validate " + $(".modal-body #VF").val());
+        //alert("Validate " + document.querySelector(".modal-body #VF").value);
         updateToolTip();//update tooltip as the length unit may have changed.
     }
 
@@ -2036,7 +2049,10 @@ window.addEventListener("hashchange", function () {
  * which wipes a shared design out of the address bar. Their onclick handlers
  * do all the work, so there is nothing to follow.
  */
-$(document).on("click", ".navbar a[href='#']", function (e) { e.preventDefault(); });
+document.addEventListener("click", function (e) {
+    var link = e.target.closest(".navbar a[href='#']");
+    if (link) e.preventDefault();
+});
 
 /* Restore a design from the address bar. Returns true if there was one. */
 function loadFromHash() {
@@ -2136,7 +2152,7 @@ function handleTouchstoneImport(e) {
         }
     };
     reader.readAsText(file);
-    $("#file-input2").val(null);
+    document.getElementById("file-input2").value = "";
 }
 document.getElementById("file-input2").addEventListener("change", handleTouchstoneImport, false);
 
