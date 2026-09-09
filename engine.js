@@ -318,6 +318,11 @@ var QSEngine = (function () {
             // load first, then one entry per populated slot, each carrying the
             // locus its element traced to get there
             nodes: nodes,
+            // The highest Q the network reaches on its way from the load to
+            // Zin. This is the figure a matching network is designed against:
+            // Example 6 specifies "a maximum input Q of 10" for its input
+            // match, and that is exactly this number.
+            loadedQ: loadedQ(nodes),
             Zin: withPolar(Zin),
             // The UI has always shown admittance in millisiemens.
             Yin: withPolar(cx(Yin.re * 1000, Yin.im * 1000)),
@@ -332,6 +337,20 @@ var QSEngine = (function () {
             maxSWR: Math.sqrt(vswr),
             minSWR: 1 / Math.sqrt(vswr)
         };
+    }
+
+    /*
+     * The highest Q the network reaches between the load and Zin. A matching
+     * network is designed against this: Example 6 specifies a maximum input Q
+     * of 10 for its input match, and this is that number.
+     */
+    function loadedQ(nodes) {
+        var worst = 0;
+        for (var i = 0; i < nodes.length; i++) {
+            var Z = nodes[i].Z;
+            if (Z.re > 0) worst = Math.max(worst, Math.abs(Z.im) / Z.re);
+        }
+        return worst;
     }
 
     function withPolar(z) {
@@ -618,10 +637,67 @@ var QSEngine = (function () {
             : { type: "l", value1: -1e9 / (w * B) };     // nH
     }
 
+    /* ==================================================== usable bandwidth
+     *
+     * The span around the working frequency over which VSWR stays inside a
+     * limit, which for a matching network is the question right after "does it
+     * match". Walks outwards in coarse steps until the limit is crossed, then
+     * bisects each edge.
+     *
+     * Returns { low, high, span } in MHz, or null when the current frequency is
+     * already outside the limit. A measured load only spans the frequencies it
+     * was measured over, so the search is held inside them.
+     */
+    function bandwidth(net, limit, options) {
+        options = options || {};
+        var centre = Number(net.frequency);
+        if (!(centre > 0) || !(limit > 1)) return null;
+
+        var lowest = options.min, highest = options.max;
+        if (net.termination === "Multiple" && net.gamData && net.gamData.dataX &&
+            net.gamData.dataX.length > 1) {
+            var xs = net.gamData.dataX;
+            lowest = Math.max(lowest || 0, Number(xs[0]));
+            highest = Math.min(highest || Infinity, Number(xs[xs.length - 1]));
+        }
+        if (!(lowest > 0)) lowest = centre / 8;
+        if (!(highest > 0) || !isFinite(highest)) highest = centre * 8;
+
+        function vswrAt(f) {
+            var probe = {};
+            for (var k in net) if (net.hasOwnProperty(k)) probe[k] = net[k];
+            probe.frequency = f;
+            return solve(probe).vswr;
+        }
+        if (!(vswrAt(centre) <= limit)) return null;
+
+        var low = edge(vswrAt, centre, lowest, limit);
+        var high = edge(vswrAt, centre, highest, limit);
+        return { low: low, high: high, span: high - low };
+    }
+
+    /* Walk from `from` towards `towards` until the limit breaks, then bisect. */
+    function edge(vswrAt, from, towards, limit) {
+        var inside = from, outside = null;
+        var steps = 40;
+        for (var i = 1; i <= steps; i++) {
+            var f = from + (towards - from) * (i / steps);
+            if (!(vswrAt(f) <= limit)) { outside = f; break; }
+            inside = f;
+        }
+        if (outside === null) return towards;          // still inside at the edge
+        for (var j = 0; j < 30; j++) {
+            var mid = (inside + outside) / 2;
+            if (vswrAt(mid) <= limit) inside = mid; else outside = mid;
+        }
+        return inside;
+    }
+
     return {
         solve: solve,
         equivalent: equivalent,
         matchToZ0: matchToZ0,
+        bandwidth: bandwidth,
         gammaToZ: gammaToZ,
         zToGamma: zToGamma,
         interpolate: interpolate,

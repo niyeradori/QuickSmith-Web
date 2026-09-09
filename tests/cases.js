@@ -181,12 +181,19 @@ var QS_CASES = [
     name: "Ex6i: 2N5642 input network matches 1.94+j1.1 @ 175 MHz",
     ref: "EXAMPLE_6.html",
     schFile: "sch/example_6I.sch",
-    assert: { ZinR: [50.0, 0.5], ZinI: [0.0, 0.5], VSWR: [1.0, 0.02] },
+    bandwidth: 2,
+    // AN721 designs this network to a maximum input Q of 10, so the loaded Q
+    // is a stated design figure and not just a pin.
+    assert: { ZinR: [50.0, 0.5], ZinI: [0.0, 0.5], VSWR: [1.0, 0.02], LoadedQ: [10.0, 0.1] },
     expect: {
       ZinR: [49.906496, 1e-4],
       ZinI: [-0.074089, 1e-4],
       VSWR: [1.002391, 1e-5],
-      ReturnLoss: [58.459, 2e-2]
+      ReturnLoss: [58.459, 2e-2],
+      LoadedQ: [10.088855, 1e-5],
+      BWLow: [168.545065, 1e-4],
+      BWHigh: [181.661803, 1e-4],
+      BWSpan: [13.116739, 2e-4]
     }
   },
   {

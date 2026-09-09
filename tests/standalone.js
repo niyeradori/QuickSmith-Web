@@ -49,6 +49,7 @@ near("L-network Zin.re", r.Zin.re, 50.468, 1e-3);
 near("L-network Zin.im", r.Zin.im, 0.1749, 1e-3);
 near("L-network VSWR", r.vswr, 1.009996, 1e-5);
 near("L-network insertion loss", r.insertionLoss, 0.000133, 5e-5);
+near("L-network loaded Q", r.loadedQ, 2.984513, 1e-5);
 
 /* A quarter-wave 75 ohm line transforms 25 ohms to 225 ohms. */
 r = QSEngine.solve({
@@ -83,7 +84,7 @@ r = QSEngine.solve({
 near("interpolated load VSWR", r.vswr, 1.295842, 1e-5);
 
 if (failures === 0) {
-    out("engine.js stands alone: 8 checks OK (no jQuery, no math.js, no DOM)");
+    out("engine.js stands alone: 9 checks OK (no jQuery, no math.js, no DOM)");
 } else {
     out("engine.js standalone: " + failures + " FAILED");
     if (typeof process !== "undefined") process.exitCode = 1;

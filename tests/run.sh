@@ -18,12 +18,14 @@ if command -v node >/dev/null 2>&1; then
     node tests/touchstone.js
     node tests/permalink.js
     node tests/render.js
+    node tests/plot.js
     exec node tests/run.js "$@"
 elif [ -x "$JSC" ]; then
     "$JSC" tests/standalone.js
     "$JSC" tests/touchstone.js
     "$JSC" tests/permalink.js
     "$JSC" tests/render.js
+    "$JSC" tests/plot.js
     exec "$JSC" tests/run.js -- "$@"
 else
     echo "No JavaScript engine found." >&2

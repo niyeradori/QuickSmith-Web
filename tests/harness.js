@@ -88,6 +88,7 @@ var QSHarness = (function () {
     var r = resultsObj.solution;
     if (!r || !r.nodes) return;
     m.NodeCount = r.nodes.length;
+    m.LoadedQ = r.loadedQ;
 
     var last = r.nodes[r.nodes.length - 1];
     m.NodesEndAtZin = (Math.abs(last.Z.re - r.Zin.re) < 1e-9 &&
@@ -233,6 +234,15 @@ var QSHarness = (function () {
 
     var single = measureAt(baseFreq);
     for (var k in single) if (single.hasOwnProperty(k)) metrics[k] = single[k];
+
+    // Usable bandwidth, only for cases that ask - it costs about seventy
+    // solves per limit, which is not worth spending on every sweep point.
+    if (c.bandwidth) {
+      var bw = QSEngine.bandwidth(currentNetwork(), c.bandwidth);
+      metrics.BWLow = bw ? bw.low : null;
+      metrics.BWHigh = bw ? bw.high : null;
+      metrics.BWSpan = bw ? bw.span : null;
+    }
     return metrics;
   }
 

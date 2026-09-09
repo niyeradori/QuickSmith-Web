@@ -31,6 +31,7 @@
   <script src="permalink.js"></script>
   <script src="common.js"></script>
   <script src="smith.js"></script>
+  <script src="plot.js"></script>
   <script src="sch.js"></script>
   <script src="js/DragDropTouch.js"></script>    
    <!-- ios-drag-drop.js does not trigger end ? -->
@@ -192,16 +193,6 @@
             <!-- </div> -->
           </ul>
         </li>
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Show<span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" onclick=showMarkerDialog()>Marker</a></li>
-            <li><a href="#" onclick=showTxEquivalents()>Equivalents </a></li>
-            <li><a href="#" id="elementPathsItem" onclick=toggleElementPaths()>&#10003; Element Paths</a></li>
-            <!-- <li><a href="#">Parallel Eq.</a></li>
-            <li><a href="#">Series Eq</a></li> -->
-          </ul>
-        </li>
         <!-- <li><a href="#" onclick= smithObj.drawSweep >Show Sweep</a></li> -->
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">Sweep<span class="caret"></span></a>
@@ -211,8 +202,6 @@
             <!-- <li><a><input type="checkbox" name="checkbox1" style="float: right;">Show Sweep</a></li> -->
           </ul>
         </li> 
-
-        <li><a href="#" onclick=autoMatch_click()>Match</a></li>
 
         <li class="dropdown ">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">Data<span class="caret"></span></a>
@@ -226,11 +215,9 @@
           </ul>
         </li> 
 
-        <li><a href="#" onclick= smithObj.drawAdmitanceCircles() >Admittance Circles</a></li>
       </ul>
        <!-- <button class="btn btn-default navbar-btn" onclick= smithObj.drawAdmitanceCircles() >Admittance</button>   -->
       <ul class="nav navbar-nav navbar-right">
-         <li class="" ><a href="#" onclick=IL_open_click() >IL</a></li>
         <li  ><a href="#" onclick=AMP_open_click()>Amp. Design</a></li>
         <li><a  class="dropdown-toggle" data-toggle="dropdown" href="#">Help</a>
             <ul class="dropdown-menu">
@@ -246,43 +233,66 @@
 
  <!-- ********************************SMITH WINDOW************************************************* -->
 <div class="container-fluid ">
-    <div class="row">
-        <div class="col-xl-8 col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: 0px">
-                    <!-- <h4 style = "font-weight:bold" >Smith Chart</h4> -->
-            <table>
-                <tr>
-                    <td><label  for="SM0" style="font-size:12px;"> SWR: </label> </td>
-                    <td><input id="SM0" type="text" value="0" name="spin1"  style="width: 100%" class="form-control input-sm" onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false"/></td>
-                    <td> &nbsp</td>
-                    <div>
-                        <td><label  for="SM1" class="" style="font-size:12px;">Q: </label> </td>
-                        <td  class=""  ><input id="SM1" type="text" value="0" name="spin1" style="width: 100%"  class="form-control input-sm " onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false"/></td>  
-                    </div>
-                    <td> &nbsp</td>
-                    <!-- <td><button type="button" class="btn btn-default btn-sm" style="height:27px" onclick= test() > Test </button></td> -->
-                    <td> <input type="text" id="Z1" value="Z:" class="form-control input-sm " style="width: 100%; color:blue; " readonly /></td>
-                </tr>
-            </table>
-            <!--<div id='parent_div_5'  >-->
-            <div id="smithMain" style="margin-top: 5px; margin-bottom: 5px;"></div>
-            <!--</div>-->
+    <div class="qs-main">
+        <!-- ********************************SMITH CHART COLUMN********************************* -->
+        <div class="qs-chart-col">
+            <div id="smithMain"></div>
+            <input type="text" id="Z1" value="Z:" class="qs-cursor" readonly title="Impedance under the pointer" />
+        </div>
+
+        <!-- ********************************READOUT COLUMN************************************* -->
+        <div class="qs-side">
+            <section class="qs-panel">
+                <h2>Readout</h2>
+                <dl class="qs-readout">
+                    <dt>Z<sub>in</sub> &#8486;</dt>  <dd id="ROzin">&mdash;</dd>
+                    <dt>Y<sub>in</sub> mS</dt>       <dd id="ROyin">&mdash;</dd>
+                    <dt>&#915;</dt>                  <dd id="ROgam">&mdash;</dd>
+                    <dt>VSWR</dt>                    <dd id="ROvswr" class="qs-key">&mdash;</dd>
+                    <dt>Return loss</dt>             <dd id="ROrl">&mdash;</dd>
+                    <dt>Insertion loss</dt>          <dd id="ROil">&mdash;</dd>
+                    <dt>Loaded Q</dt>                <dd id="ROq">&mdash;</dd>
+                    <dt id="RObwLabel">BW (VSWR &lt; 2)</dt> <dd id="RObw">&mdash;</dd>
+                </dl>
+                <button type="button" class="btn btn-sm qs-wide" onclick="showTxEquivalents()">All values and equivalents</button>
+            </section>
+
+            <section class="qs-panel">
+                <h2>Overlays</h2>
+                <div class="qs-overlay-row">
+                    <label for="SM0">VSWR circle</label>
+                    <input id="SM0" type="text" value="0" name="spin1" class="form-control input-sm" onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false" />
+                </div>
+                <div class="qs-overlay-row">
+                    <label for="SM1">Q circle</label>
+                    <input id="SM1" type="text" value="0" name="spin1" class="form-control input-sm" onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false" />
+                </div>
+                <div class="qs-overlay-row">
+                    <label for="OVadm">Admittance grid</label>
+                    <input id="OVadm" type="checkbox" onchange="smithObj.drawAdmitanceCircles()" />
+                </div>
+                <div class="qs-overlay-row">
+                    <label for="OVpaths">Element paths</label>
+                    <input id="OVpaths" type="checkbox" checked onchange="toggleElementPaths()" />
+                </div>
+                <div class="qs-overlay-row">
+                    <label for="OVmarker">Marker</label>
+                    <button type="button" id="OVmarker" class="btn btn-sm" onclick="showMarkerDialog()">Set&hellip;</button>
+                </div>
+            </section>
+
+            <section class="qs-panel qs-actions">
+                <button type="button" id="matchBtn" class="btn btn-primary qs-wide" onclick="autoMatch_click()">Auto-match to 50 &#8486;</button>
+                <button type="button" class="btn btn-sm qs-wide" onclick="shareLink_click()">Copy share link</button>
+            </section>
         </div>
                  <!-- ********************************SCHEMATIC WINDOW ************************************************* -->
-        <div class="col-xl-4 schematic"> 
+        <div class="qs-work schematic">
                     <!-- ********************************SCHEMATIC WINDOW  ROW 1************************************************* -->
-            <div style="margin-bottom: 5px;">
-                <table  >
-                    <tr>
-                        <td><label  for="E0" style="font-size:12px;"> Freq.MHz: </label> </td>
-                        <td><input id="E0" type="text" value="100" name="spin2"  style="width: 100%;" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td> 
-                        <td> &nbsp</td>
-                        <td><label  for="ZO" style="font-size:12px;">Zin.&#937: </label> </label> </td>
-                        <td><input id="ZO" type="text" value="0.0"  readonly class="form-control input-sm " /></td>
-                        <td> &nbsp</td>
-                        <td><label  class="" for="IL" style="font-size:12px;">IL.dB: </label></label> </td>
-                        <td><input  class=" form-control input-sm " id="IL" type="text" value="0.0" style="width: 100%;" readonly  /></td>
-                    </tr>
-                </table>
+            <div class="qs-freq">
+                <label for="E0">Frequency</label>
+                <input id="E0" type="text" value="100" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" />
+                <span class="qs-unit">MHz</span>
             </div>
             <!-- ********************************SCHEMATIC WINDOW ROW 1 END************************************************* -->  
             <!--width:527px-->
@@ -487,7 +497,38 @@
 
                     <p class="hint">To add a component, drag its icon onto a rectangular slot.<br>
                        To remove one, drag the wire <img src="img/w.bmp" class="img-thumbnail" style="margin:0 4px;vertical-align:middle" alt="wire"> onto it.</p>
+
         </div>   <!--schematic column end-->
+
+        <!-- ********************************RESPONSE PANEL***************************** -->
+        <section class="qs-panel qs-response">
+            <h2>Response</h2>
+            <div class="qs-sweep-row">
+                <label for="RSvar">Sweep</label>
+                <select class="form-control input-sm" id="RSvar" onchange="sweepSettingsChanged()">
+                    <option>Frequency</option>
+                    <option>Element 1</option>
+                    <option>Element 2</option>
+                    <option>Element 3</option>
+                    <option>Element 4</option>
+                    <option>Element 5</option>
+                    <option>Element 6</option>
+                    <option>Element 7</option>
+                    <option>Element 8</option>
+                    <option>Element 9</option>
+                    <option>Element 10</option>
+                    <option>Element 11</option>
+                    <option>Element 12</option>
+                </select>
+                <label for="RSstart">Start</label>
+                <input id="RSstart" type="text" value="1" class="form-control input-sm" onchange="sweepSettingsChanged()" />
+                <label for="RSstop">Stop</label>
+                <input id="RSstop" type="text" value="100" class="form-control input-sm" onchange="sweepSettingsChanged()" />
+                <label for="RSstep">Step</label>
+                <input id="RSstep" type="text" value="1" class="form-control input-sm" onchange="sweepSettingsChanged()" />
+            </div>
+            <div id="respPlot" class="qs-plot-host"></div>
+        </section>
     </div>   <!--row end-->
 </div>   <!--container end--> 
 
@@ -684,18 +725,6 @@ smithObj.view = QSChart.mount("smithMain");
         box.addEventListener("copy", function (e) { e.preventDefault(); });
         box.addEventListener("paste", function (e) { e.preventDefault(); });
     });
-    var transferFlag = localStorage.getItem("transferFlag");
-    if(transferFlag == 'true') 
-    {
-    console.log ("Transferflag present"); 
-    schObj.ELEMENT[1].value1 = parseFloat(localStorage.getItem("R1"));
-    schObj.ELEMENT[1].value2 = parseFloat(localStorage.getItem("Z1"));
-    //schObj.ELEMENT[13].value1 = parseFloat(localStorage.getItem("Z1"));
-    }
-    else  
-    {
-    console.log ( "Transferflag absent");
-    }
     resizeSchematic();
     // Set the load's step size before anything is restored. TouchSpin rounds
     // the field's current value to the new step, so doing this afterwards
@@ -706,6 +735,14 @@ smithObj.view = QSChart.mount("smithMain");
     // A shared link describes a specific design, so it wins over whatever
     // session happened to be saved in this browser.
     if (!loadFromHash()) get();
+
+    // An impedance handed over from the amplifier page has to be applied after
+    // the session is restored, not before, or restoring would overwrite it.
+    if (localStorage.getItem("transferFlag") == 'true') {
+        schObj.ELEMENT[1].value1 = parseFloat(localStorage.getItem("R1"));
+        schObj.ELEMENT[1].value2 = parseFloat(localStorage.getItem("Z1"));
+        localStorage.setItem("transferFlag", 'false');
+    }
     updateUI();
  
 
@@ -931,10 +968,23 @@ function set_click() {
 
 
 
+/* The overlay panel shows chart state, so it has to be re-read whenever that
+   state is restored from a session, a file or a share link. */
+function syncOverlayControls() {
+    document.getElementById("matchBtn").innerHTML =
+        "Auto-match to " + Number(schObj.Z0) + " \u2126";
+    document.getElementById("OVadm").checked = !!smithObj.showAdmittace;
+    document.getElementById("OVpaths").checked = smithObj.showElementArcs !== false;
+    document.getElementById("OVmarker").textContent =
+        smithObj.showMarker ? "On" : "Set\u2026";
+}
+
 // udates all the input UI elements on the chart
 function updateUI() {
     document.getElementById("SM0").value =  smithObj.vswrCircle;
     document.getElementById("SM1").value =  smithObj.qCircle;
+    syncOverlayControls();
+    syncSweepControls();
     smithObj.drawSmith();
 
     for (var i = 0; i < 13; i++)  
@@ -1199,7 +1249,6 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         var sign = getSign(resultsObj.OUTPUT[0].ZIout)
         var zi =  Number(Math.abs(resultsObj.OUTPUT[0].ZIout)).toFixed(3);
 
-        document.getElementById("ZO").value = zr+sign+zi+"i";
        // document.getElementById("ZIO").value = Number(resultsObj.OUTPUT[0].ZIout).toFixed(4);
         resultsObj.OUTPUT[1].calculate(); // calculate Ycal
         resultsObj.OUTPUT[2].calculate(); // calculate GAMCal
@@ -1211,7 +1260,6 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         resultsObj.OUTPUT[8].calculate(); // calculate TLCal
         resultsObj.OUTPUT[9].calculate(); // calculate MaxSWRCal
         resultsObj.OUTPUT[10].calculate(); // calculate MinSWRCal
-        document.getElementById("IL").value =  formatdB(resultsObj.OUTPUT[5].InsertionLoss); // update IL
         // incase of multiple terminations update the spinnertext of E1/E1a ( real/Imag M/Ang)
        // if(schObj.termination == 'Multiple') {
         document.getElementById("E1").value= Number(schObj.ELEMENT[1].value1).toFixed(2);
@@ -1227,7 +1275,113 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         smithObj.dataM = resultsObj.OUTPUT[2].GAMMag ; 
         smithObj.dataQ = resultsObj.OUTPUT[2].GAMAng ;
         smithObj.drawSmith();
+        updateReadout();
+        runResponse();
     }
+
+/*
+ * The readout panel. Everything here used to sit behind Show > Equivalents,
+ * which meant the two numbers a match is judged by, VSWR and loaded Q, were
+ * two clicks away from the tuning you were doing.
+ */
+function updateReadout() {
+    var r = resultsObj.solution;
+    if (!r) return;
+    var O = resultsObj.OUTPUT;
+
+    text("ROzin", cplx(r.Zin.re, r.Zin.im));
+    text("ROyin", cplx(r.Yin.re, r.Yin.im));
+    text("ROgam", Number(r.gamma.mag).toFixed(4) + " \u2220 " +
+                  Number(r.gamma.ang).toFixed(1) + "\u00b0");
+    text("ROvswr", Number(r.vswr).toFixed(4));
+    text("ROrl", formatdB(O[4].ReturnLoss) + " dB");
+    text("ROil", formatdB(O[5].InsertionLoss) + " dB");
+    text("ROq", Number(r.loadedQ).toFixed(2));
+
+    // Bandwidth is only a meaningful number while the network is inside the
+    // limit; outside it there is no band to measure.
+    var limit = Number(smithObj.vswrCircle) > 1 ? Number(smithObj.vswrCircle) : 2;
+    document.getElementById("RObwLabel").innerHTML =
+        "BW (VSWR &lt; " + (Math.round(limit * 100) / 100) + ")";
+    var bw = QSEngine.bandwidth(currentNetwork(), limit);
+    text("RObw", bw ? (Number(bw.span).toFixed(2) + " MHz") : "\u2014");
+}
+
+/* The panel edits the schematic's own sweep settings, so the Settings dialog
+   and the chart's sweep locus see the same numbers. */
+function sweepSettingsChanged() {
+    var start = document.getElementById("RSstart").value;
+    var stop = document.getElementById("RSstop").value;
+    var step = document.getElementById("RSstep").value;
+    if (isNumeric(start)) schObj.SS = start;
+    if (isNumeric(stop)) schObj.ST = stop;
+    if (isNumeric(step) && step > 0) schObj.SST = step;
+    schObj.SE = document.getElementById("RSvar").value;
+    syncSweepControls();
+    runResponse();
+}
+
+function syncSweepControls() {
+    document.getElementById("RSstart").value = schObj.SS;
+    document.getElementById("RSstop").value = schObj.ST;
+    document.getElementById("RSstep").value = schObj.SST;
+    document.getElementById("RSvar").value = schObj.SE || "Frequency";
+}
+
+function text(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = value;
+}
+
+function cplx(re, im) {
+    return Number(re).toFixed(3) + " " + getSign(im) + " j" + Math.abs(im).toFixed(3);
+}
+
+/*
+ * The response plot, which used to be a second window (InsertionLoss.html) and
+ * a copy of the schematic in local storage. It sweeps one variable, reads S21
+ * and S11 at each point, and puts the schematic back the way it found it.
+ */
+function runResponse() {
+    var host = document.getElementById("respPlot");
+    if (!host || typeof QSPlot === "undefined") return;
+
+    var which = schObj.SE || "Frequency";
+    var start = Number(schObj.SS);
+    var stop = Number(schObj.ST);
+    var step = Number(schObj.SST);
+    if (!isFinite(start) || !isFinite(stop) || !(step > 0) || stop <= start) {
+        QSPlot.render(host, {});
+        return;
+    }
+
+    var slot = (which === "Frequency") ? 0 : parseInt(which.split(" ")[1], 10);
+    var tuned = schObj.ELEMENT[slot].tune == 1 ? "value1" : "value2";
+    var was = schObj.ELEMENT[slot][tuned];
+
+    var points = Math.min(Math.floor((stop - start) / step) + 1, 1000);
+    var xs = [], s21 = [], s11 = [];
+    for (var i = 0; i < points; i++) {
+        var v = start + step * i;
+        schObj.ELEMENT[slot][tuned] = (slot === 0 && v <= 0) ? 1e-9 : v;
+        var r = Zcalsweep1();
+        xs.push(Math.round(v * 1e6) / 1e6);
+        s21.push(r.s21.db);
+        s11.push(20 * Math.log(Math.max(r.gamma.mag, 1e-12)) / Math.LN10);
+    }
+    schObj.ELEMENT[slot][tuned] = was;
+    Zcalsweep1();                       // leave the solver on the working point
+
+    QSPlot.render(host, {
+        x: xs,
+        xLabel: (which === "Frequency") ? "MHz" : which,
+        at: (which === "Frequency") ? Number(schObj.ELEMENT[0].value1) : undefined,
+        series: [
+            { label: "S21", data: s21, color: "var(--qs-a1)" },
+            { label: "S11", data: s11, color: "var(--qs-a2)" }
+        ]
+    });
+}
 
 // here target id is the id of the component
 var start = function (e) {
@@ -1753,6 +1907,9 @@ function setHint(id, text) {
         console.log(JSON.stringify(resultsObj));
         console.log(JSON.stringify(smithObj, chartStateOnly));
         //alert("Validate " + document.querySelector(".modal-body #VF").value);
+        syncSweepControls();   // the dialog edits the same sweep the panel shows
+        syncOverlayControls();
+        runResponse();
         updateToolTip();//update tooltip as the length unit may have changed.
     }
 
@@ -1871,8 +2028,6 @@ document.addEventListener("contextmenu", function (e) {
        is attributable element by element. */
     function toggleElementPaths() {
         smithObj.showElementArcs = !smithObj.showElementArcs;
-        document.getElementById("elementPathsItem").innerHTML =
-            (smithObj.showElementArcs ? "\u2713 " : "\u2007 ") + "Element Paths";
         smithObj.drawSmith();
     }
 
@@ -1894,6 +2049,7 @@ document.addEventListener("contextmenu", function (e) {
                     action: function () {
                         smithObj.showMarker = false;
                         smithObj.redrawSmith();
+                        syncOverlayControls();
                     }
                 },
                 {
@@ -1910,6 +2066,7 @@ document.addEventListener("contextmenu", function (e) {
                         smithObj.markerQ = a;
                         smithObj.showMarker = true;
                         smithObj.redrawSmith();
+                        syncOverlayControls();
                     }
                 }
             ]
@@ -2228,27 +2385,17 @@ function applyMatch(option) {
     updateUI();
 }
 
-function IL_open_click()
-{
- localStorage.setItem('schDataIL', JSON.stringify(schObj));
- //window.open("InsertionLoss.html","_top");
- //window.open('InsertionLoss.html','window name','width=250,height=600,screenX=25,screenY=25,resizable=yes,scrollbars=yes ',false); return false
- //function openInNewTab(url) {
-  //event.preventDefault();
-  var win = window.open("InsertionLoss.html");
-  return false;
-  //ShowPopup('InsertionLoss.html');
-  //win.focus();
-}
-
-
-
-function AMP_open_click(){
- localStorage.setItem('transferFlag', 'false');
- //window.open("AmplifierDesign.html","_self");
- //event.preventDefault();
- var win = window.open("AmplifierDesign.html");
- return false;
+/*
+ * Amplifier design is its own page, and it now opens in the same tab. It used
+ * to open a second window and hunt for its opener on the way back, which is
+ * the Firefox bug in todo.txt. The session is saved first, so the ladder is
+ * still there when you come back.
+ */
+function AMP_open_click() {
+    localStorage.setItem("transferFlag", "false");
+    set_click();
+    window.location.href = "AmplifierDesign.html";
+    return false;
 }
 
 

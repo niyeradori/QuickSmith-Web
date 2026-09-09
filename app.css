@@ -369,3 +369,161 @@ th {
    readable measure; the banner keeps its own sizing. */
 body > font { font-size: 15px; }
 body > font blockquote { max-width: 70ch; }
+
+/* ========================================================== three columns
+ *
+ * Chart, readout, workbench. The chart wants the most room, the readout is a
+ * fixed narrow strip of numbers, and the workbench (schematic plus response)
+ * takes what is left. Below 1200px the readout tucks under the chart; below
+ * 900px everything is one column, in the order you would read it: chart,
+ * numbers, schematic.
+ */
+.qs-main {
+    display: grid;
+    grid-template-columns: minmax(380px, 1.05fr) 260px minmax(360px, 1fr);
+    grid-template-areas: "chart side work"
+                         "resp  side work";
+    gap: 20px;
+    align-items: start;
+}
+
+@media (max-width: 1200px) {
+    .qs-main {
+        grid-template-columns: minmax(320px, 1fr) minmax(340px, 1fr);
+        grid-template-areas: "chart work"
+                             "side  work"
+                             "resp  work";
+    }
+}
+
+@media (max-width: 900px) {
+    .qs-main {
+        grid-template-columns: 1fr;
+        grid-template-areas: "chart" "side" "work" "resp";
+        gap: 16px;
+    }
+}
+
+.qs-chart-col { grid-area: chart; }
+.qs-side      { grid-area: side; }
+.qs-work      { grid-area: work; }
+.qs-response  { grid-area: resp; }
+
+.qs-chart-col, .qs-side, .qs-work, .qs-response { min-width: 0; }
+
+.qs-cursor {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    padding: 5px 8px;
+    font: 500 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--qs-vswr, #1f5fbf);
+    background: var(--qs-face, #fff);
+    border: 1px solid var(--qs-rim, #d9dde5);
+    border-radius: 5px;
+}
+
+/* ================================================================ panels */
+
+.qs-panel {
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    background: var(--qs-face, #fff);
+    border: 1px solid var(--qs-rim, #d9dde5);
+    border-radius: 10px;
+}
+.qs-panel h2 {
+    margin: 0 0 10px;
+    font: 600 11px/1 system-ui, sans-serif;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--qs-text, #6b7280);
+}
+.qs-wide { display: block; width: 100%; }
+.qs-actions .btn + .btn { margin-top: 8px; }
+
+/* ------------------------------------------------------------- readout */
+
+.qs-readout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 5px 10px;
+    margin: 0 0 12px;
+    align-items: baseline;
+}
+.qs-readout dt {
+    font-size: 12px;
+    color: var(--qs-text, #6b7280);
+    white-space: nowrap;
+}
+.qs-readout dd {
+    margin: 0;
+    text-align: right;
+    font: 500 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--qs-ink, #14181f);
+}
+.qs-readout dd.qs-key { color: var(--qs-vswr, #1f5fbf); font-weight: 600; }
+
+/* ------------------------------------------------------------ overlays */
+
+.qs-overlay-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 7px;
+}
+.qs-overlay-row label {
+    flex: 1;
+    font-weight: 400;
+    font-size: 13px;
+}
+.qs-overlay-row input[type="text"] { width: 74px; text-align: right; }
+.qs-overlay-row input[type="checkbox"] { width: 16px; height: 16px; margin: 0; }
+.qs-overlay-row .btn { min-width: 74px; }
+
+/* ------------------------------------------------- frequency, top of work */
+
+.qs-freq {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.qs-freq label { font-size: 13px; }
+.qs-freq .qs-spin { width: 150px; }
+.qs-freq input { text-align: right; }
+.qs-unit { color: var(--qs-text, #6b7280); font-size: 13px; }
+
+/* ------------------------------------------------------------- response */
+
+.qs-sweep-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    margin-bottom: 10px;
+}
+.qs-sweep-row label { font-size: 12px; color: var(--qs-text, #6b7280); font-weight: 400; }
+.qs-sweep-row select { width: auto; }
+.qs-sweep-row input { width: 62px; text-align: right; }
+.qs-overlay-row .qs-spin { width: 118px; }
+
+.qs-plot-host { min-height: 40px; }
+.qs-plot-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 560 / 270;
+    background: var(--qs-bg, #fbfbf9);
+    border-radius: 6px;
+}
+.qp-face { fill: var(--qs-face, #fff); stroke: var(--qs-rim, #d9dde5); stroke-width: 1; }
+.qp-grid { stroke: var(--qs-rim, #d9dde5); stroke-width: 1; opacity: .55; }
+.qp-tick { fill: var(--qs-text, #6b7280); font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; }
+.qp-axis { fill: var(--qs-text, #6b7280); font: 13px system-ui, sans-serif; }
+.qp-at { stroke: var(--qs-q, #8d3a9b); stroke-width: 1.2; stroke-dasharray: 4 4; opacity: .8; }
+.qp-trace { fill: none; stroke-width: 1.8; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.qp-empty { margin: 0; color: var(--qs-text, #6b7280); font-size: 13px; }
+
+.qp-legend { display: flex; gap: 14px; margin-top: 8px; font-size: 12px; color: var(--qs-text, #6b7280); }
+.qp-legend i { display: inline-block; width: 12px; height: 3px; margin-right: 5px; vertical-align: middle; border-radius: 2px; }

@@ -56,7 +56,7 @@ var schObj = {
  * Everything the UI reads. Populated in one go by Zcalsweep1().
  *
  * The per-metric calculate() entries are still here because index.html and
- * InsertionLoss.html call them by index; the solve happens once up front, so
+ * the results panel calls them by index; the solve happens once up front, so
  * all but OUTPUT[0] are now no-ops.
  */
 var resultsObj = {
@@ -82,10 +82,10 @@ function solved() { }
 /*
  * Solve the current schematic and publish every result.
  *
- * Keeps its old name because index.html and InsertionLoss.html both call it.
+ * Keeps its old name because index.html calls it from several places.
  */
-function Zcalsweep1() {
-    var r = QSEngine.solve({
+function currentNetwork() {
+    return {
         Z0: schObj.Z0,
         VF: schObj.VF,
         TDF: schObj.TDF,
@@ -94,7 +94,11 @@ function Zcalsweep1() {
         gamData: schObj.gamData,
         frequency: schObj.ELEMENT[0].value1,
         elements: schObj.ELEMENT
-    });
+    };
+}
+
+function Zcalsweep1() {
+    var r = QSEngine.solve(currentNetwork());
 
     // The full solution, kept for anything that needs more than the flat
     // OUTPUT fields - the chart draws its per-element arcs from r.nodes.
