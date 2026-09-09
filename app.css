@@ -516,7 +516,9 @@ body > font blockquote { max-width: 70ch; }
 }
 
 .qs-chart-col { grid-area: chart; }
-.qs-side      { grid-area: side; }
+/* a flex column so the input panel's offset is not swallowed by the margin
+   above it: adjacent margins collapse in normal flow, flex items' do not */
+.qs-side      { grid-area: side; display: flex; flex-direction: column; }
 .qs-work      { grid-area: work; }
 
 .qs-chart-col, .qs-side, .qs-work { min-width: 0; }
@@ -550,7 +552,16 @@ body > font blockquote { max-width: 70ch; }
     color: var(--qs-text, #6b7280);
 }
 .qs-wide { display: block; width: 100%; }
-.qs-actions .btn + .btn { margin-top: 8px; }
+
+/*
+ * The input reading. Zin and S11 are what the network is judged by, and the
+ * terminal they are measured at is a few pixels to the right of this panel,
+ * at the end of the second ladder row, so they get their own card at that
+ * height rather than a line in a list. Alignment is done in index.html by
+ * drawLadderWiring, which is already measuring that rail.
+ */
+.qs-input dd { font-size: 15px; }
+.qs-input .qs-readout { margin-bottom: 0; gap: 7px 10px; }
 
 /* ------------------------------------------------------------- readout */
 

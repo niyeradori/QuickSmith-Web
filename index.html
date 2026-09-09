@@ -108,9 +108,7 @@
 
 
 
-    .dragable{
-       padding: 0.75%; 
-    }
+    /* spacing between parts comes from the bin's flex gap now */
      /* .input-sm {
         height: 12px
         }  */
@@ -202,6 +200,8 @@
           </ul>
         </li> 
 
+        <li><a href="#" id="matchBtn" onclick=autoMatch_click()>Auto-match</a></li>
+
         <li class="dropdown ">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">Data<span class="caret"></span></a>
           <ul class="dropdown-menu">
@@ -279,9 +279,7 @@
                 </div>
                 <h2>Readout</h2>
                 <dl class="qs-readout">
-                    <dt>Z<sub>in</sub> &#8486;</dt>  <dd id="ROzin">&mdash;</dd>
                     <dt>Y<sub>in</sub> mS</dt>       <dd id="ROyin">&mdash;</dd>
-                    <dt>&#915;</dt>                  <dd id="ROgam">&mdash;</dd>
                     <dt>VSWR</dt>                    <dd id="ROvswr" class="qs-key">&mdash;</dd>
                     <dt>Return loss</dt>             <dd id="ROrl">&mdash;</dd>
                     <dt>Insertion loss</dt>          <dd id="ROil">&mdash;</dd>
@@ -315,9 +313,14 @@
                 </div>
             </section>
 
-            <section class="qs-panel qs-actions">
-                <button type="button" id="matchBtn" class="btn btn-primary qs-wide" onclick="autoMatch_click()">Auto-match to 50 &#8486;</button>
-                <button type="button" class="btn btn-sm qs-wide" onclick="shareLink_click()">Copy share link</button>
+            <!-- Zin, level with the second ladder row, which is where it
+                 is measured; drawLadderWiring() lines them up -->
+            <section class="qs-panel qs-input">
+                <h2>At the input</h2>
+                <dl class="qs-readout">
+                    <dt>Z<sub>in</sub> &#8486;</dt>  <dd id="ROzin">&mdash;</dd>
+                    <dt>S<sub>11</sub></dt>          <dd id="ROgam">&mdash;</dd>
+                </dl>
             </section>
         </div>
                  <!-- ********************************SCHEMATIC WINDOW ************************************************* -->
@@ -419,20 +422,20 @@
                         <div  style="background-color:white; clear: both; margin-top:10px; padding-left:5%;padding-right:5% ">
                             <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
                                 <img id="f"  data-value1="100" data-unit1="MHz" style="display:none;">
-                                <span id="r" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-r-v" width="20" height="70"/></svg></span>
-                                <span id="l" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-l-v" width="20" height="70"/></svg></span>
-                                <span id="c" class="dragable" data-value1="1" data-unit1="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-c-v" width="20" height="70"/></svg></span>
-                                <span id="x" class="dragable" data-value1="50" data-unit1="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-x-v" width="20" height="70"/></svg></span>                          
+                                <span id="r" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-r-v" width="20" height="70"/></svg></span>
+                                <span id="l" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-l-v" width="20" height="70"/></svg></span>
+                                <span id="c" class="dragable" data-value1="1" data-unit1="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-c-v" width="20" height="70"/></svg></span>
+                                <span id="x" class="dragable" data-value1="50" data-unit1="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-x-v" width="20" height="70"/></svg></span>                          
                                 <span id="w" class="dragable" data-value1="0" data-unit1="" data-q="100000" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg></span> 
                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>    
                         </div> <!--Component Zone 1 End-->                   
                             <!-- Component Zone 2 begin -->
                         <div  style="background-color:white; clear: both;padding-left:5%;padding-right:5%" >
                                 <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
-                                <span id="o" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="4" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-o-v" width="20" height="70"/></svg></span>
-                                <span id="s" class="dragable" data-value1="51" data-unit1="Char. Imp. [Ohms]:" data-value2="5" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-s-v" width="20" height="70"/></svg></span>
-                                <span id="g" class="dragable" data-value1="0.1" data-unit1="Mag." data-value2="10" data-unit2="Deg." data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-g-v" width="20" height="70"/></svg></span>
-                                <span id="rx" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="0.00" data-unit2="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-rx-v" width="20" height="70"/></svg></span>
+                                <span id="o" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="4" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-o-v" width="20" height="70"/></svg></span>
+                                <span id="s" class="dragable" data-value1="51" data-unit1="Char. Imp. [Ohms]:" data-value2="5" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-s-v" width="20" height="70"/></svg></span>
+                                <span id="g" class="dragable" data-value1="0.1" data-unit1="Mag." data-value2="10" data-unit2="Deg." data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-g-v" width="20" height="70"/></svg></span>
+                                <span id="rx" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="0.00" data-unit2="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-rx-v" width="20" height="70"/></svg></span>
                                 <span id="t" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="10" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-t-h"/></svg></span>
                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
                         </div> <!-- Component Zone 2 end -->
@@ -733,12 +736,6 @@ smithObj.view = QSChart.mount("smithMain");
     });
     QSSym.mount();
     resizeSchematic();
-    // the fold follows the ladder whatever moves it: a window resize, a value
-    // row collapsing, the parts bin rewrapping
-    if (window.ResizeObserver) {
-        new ResizeObserver(function () { drawLadderWiring(); })
-            .observe(document.querySelector(".ladder-row"));
-    }
     // Set the load's step size before anything is restored. TouchSpin rounds
     // the field's current value to the new step, so doing this afterwards
     // snapped a restored 1.94 ohm load down to 1.90 and quietly changed the
@@ -912,7 +909,9 @@ function resizeSchematic() {
  * then lands at the bottom left, and that is where Zin is looking in, so it
  * gets a terminal.
  *
- * Both ends move with the layout, so this is redrawn whenever the slots are.
+ * Both ends move with the layout, so this runs from resizeSchematic and from
+ * the two places that change the ladder's height. A ResizeObserver would be
+ * the tidy way to do it, but it never fires on this page.
  */
 function drawLadderWiring() {
     var row = document.querySelector(".ladder-row");
@@ -929,6 +928,7 @@ function drawLadderWiring() {
     // Side by side, slot 6 and slot 7 already meet in the middle: no fold.
     if (getComputedStyle(row).gridTemplateAreas.indexOf('"half-a half-b"') >= 0) {
         svg.innerHTML = "";
+        alignInputPanel(null);
         return;
     }
 
@@ -945,6 +945,33 @@ function drawLadderWiring() {
             'V' + yB + 'H' + right + '"/>' +
         '<path class="qs-fold" d="M' + left + ' ' + yB + 'H6"/>' +
         '<circle class="qs-port" cx="5" cy="' + yB + '" r="3"/>';
+
+    alignInputPanel(rb.top + hb.height / 2);
+}
+
+/*
+ * The input terminal sits at the left end of the second ladder row, which is
+ * right up against the readout column. Dropping the Zin panel down to the same
+ * height puts the reading beside the point it is taken at.
+ */
+function alignInputPanel(railY) {
+    var panel = document.querySelector(".qs-input");
+    var main = document.querySelector(".qs-main");
+    if (!panel || !main) return;
+    panel.style.marginTop = "0px";
+
+    // Only worth doing when the readout column is actually beside the ladder.
+    // Stacked on a narrow screen it sits above it, and there is nothing to
+    // line up with.
+    var sideBySide = getComputedStyle(main).gridTemplateAreas
+                        .indexOf('"chart side work"') >= 0;
+    if (railY === null || !sideBySide) return;
+
+    var gap = Math.round(railY - panel.getBoundingClientRect().top);
+    // It can be pushed down as far as the rail needs, but upwards only as far
+    // as closing the gap to the panel above it, so a tall column of numbers
+    // never sends it climbing over the overlays.
+    panel.style.marginTop = Math.max(-14, gap) + "px";
 }
 
 function setHeight(nodes, px) {
@@ -1037,7 +1064,7 @@ function collapseEmptyValueRows() {
 /* The overlay panel shows chart state, so it has to be re-read whenever that
    state is restored from a session, a file or a share link. */
 function syncOverlayControls() {
-    document.getElementById("matchBtn").innerHTML =
+    document.getElementById("matchBtn").textContent =
         "Auto-match to " + Number(schObj.Z0) + " \u2126";
     document.getElementById("OVadm").checked = !!smithObj.showAdmittace;
     document.getElementById("OVpaths").checked = smithObj.showElementArcs !== false;
@@ -1088,6 +1115,7 @@ function updateUI() {
 
     Zcalsweep();
     updateToolTip() ;
+    drawLadderWiring();     // value rows may have collapsed or come back
 }
 
 function get_click()
@@ -1633,6 +1661,7 @@ var end = function(e) {
         collapseEmptyValueRows();   // this may be the first two-value part in its row
         Zcalsweep();
         updateToolTip() ;
+        drawLadderWiring();         // which moves the rails
     }
 
     function reply_click(clicked_id, value) {
