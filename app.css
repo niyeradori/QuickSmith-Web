@@ -446,7 +446,7 @@ th {
  * shrinks the value boxes with it, which is the limit: they have to stay
  * comfortable to type in and step.
  */
-.ladder-half { min-width: 0; --qs-ladder: 92%; }
+.ladder-half { min-width: 0; --qs-ladder: 88%; }
 .ladder-half table,
 .ladder-half .dropzone {
     width: var(--qs-ladder);
