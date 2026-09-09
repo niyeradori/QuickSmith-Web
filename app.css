@@ -343,7 +343,11 @@ th {
  * the slot sizes it belongs with.
  */
 
-.dragable { cursor: grab; }
+/* The draggable part of a tray icon is the span around it: draggable is an
+   HTML attribute, and an <svg> is not an HTML element, so the browser ignored
+   it there and no drag ever started. */
+.dragable { display: inline-block; cursor: grab; }
+.dragable .icon { display: block; pointer-events: none; }
 .dragable:active { cursor: grabbing; }
 .dragable:hover { color: var(--qs-vswr, #1f5fbf); }
 .dragable.dragging { outline: 2px solid var(--qs-r, #b5342b); border-radius: 4px; }
