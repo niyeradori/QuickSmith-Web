@@ -375,7 +375,7 @@ th {
     position: relative;
     grid-template-columns: 1fr;
     grid-template-areas: "half-a" "tray" "half-b";
-    gap: 18px;
+    gap: 12px;
     /* lanes for the fold on the right and the input terminal on the left */
     padding: 0 20px 0 12px;
 }
@@ -591,16 +591,18 @@ body > font blockquote { max-width: 70ch; }
 .qs-overlay-row input[type="checkbox"] { width: 16px; height: 16px; margin: 0; }
 .qs-overlay-row .btn { min-width: 74px; }
 
-/* ------------------------------------------------- frequency, top of work */
+/* -------------------------------- frequency, at the top of the readout panel */
 
 .qs-freq {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--qs-rim, #e5e8ee);
 }
-.qs-freq label { font-size: 13px; }
-.qs-freq .qs-spin { width: 150px; }
+.qs-freq label { flex: 1; font-size: 13px; }
+.qs-freq .qs-spin { width: 122px; }
 .qs-freq input { text-align: right; }
 .qs-unit { color: var(--qs-text, #6b7280); font-size: 13px; }
 

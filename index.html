@@ -272,6 +272,11 @@
         <!-- ********************************READOUT COLUMN************************************* -->
         <div class="qs-side">
             <section class="qs-panel">
+                <div class="qs-freq">
+                    <label for="E0">Frequency</label>
+                    <input id="E0" type="text" value="100" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" />
+                    <span class="qs-unit">MHz</span>
+                </div>
                 <h2>Readout</h2>
                 <dl class="qs-readout">
                     <dt>Z<sub>in</sub> &#8486;</dt>  <dd id="ROzin">&mdash;</dd>
@@ -318,11 +323,7 @@
                  <!-- ********************************SCHEMATIC WINDOW ************************************************* -->
         <div class="qs-work schematic">
                     <!-- ********************************SCHEMATIC WINDOW  ROW 1************************************************* -->
-            <div class="qs-freq">
-                <label for="E0">Frequency</label>
-                <input id="E0" type="text" value="100" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" />
-                <span class="qs-unit">MHz</span>
-            </div>
+
             <!-- ********************************SCHEMATIC WINDOW ROW 1 END************************************************* -->  
             <!--width:527px-->
             <div class="row ladder-row">
@@ -353,27 +354,27 @@
                     <!--<br />-->
                     <div class="dropzone"  style=" overflow: hidden;margin-left: 0px; margin-top: 5px;">
                          
-                        <div id="V1" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)">
+                        <div id="S1" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)">
                             <!-- <svg style=" position: absolute; height:100%; width:100%;">
                                     <line id="line1" x1=50% y1=14% x2=100% y2=14% style="stroke:black;stroke-width:4px" />
                                     <line id="line1a" x1=50% y1=13% x2=50% y2=100% style="stroke:black;stroke-width:4px" />
                             </svg  >   -->
                             <svg id="D1" class="dropzonevimg" viewBox="0 0 20 70"><use href="#qs-sym-rx-v"/></svg>
                         </div>
-                        <div id="H2" class="dropzoneh"  draggable="false"   ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  > 
+                        <div id="S2" class="dropzoneh"  draggable="false"   ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  > 
                             <svg id="D2" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
                                                           
-                        <div id="V3" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
+                        <div id="S3" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
                             <svg id="D3" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="H4" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
+                        <div id="S4" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
                             <svg id="D4" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
-                        <div id="V5" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" > 
+                        <div id="S5" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" > 
                             <svg id="D5" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="H6" class="dropzoneh"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
+                        <div id="S6" class="dropzoneh"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
                             <svg id="D6" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
                            <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>    -->
@@ -418,20 +419,20 @@
                         <div  style="background-color:white; clear: both; margin-top:10px; padding-left:5%;padding-right:5% ">
                             <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
                                 <img id="f"  data-value1="100" data-unit1="MHz" style="display:none;">
-                                <span id="r" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-r-v"/></svg></span>
-                                <span id="l" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-l-v"/></svg></span>
-                                <span id="c" class="dragable" data-value1="1" data-unit1="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-c-v"/></svg></span>
-                                <span id="x" class="dragable" data-value1="50" data-unit1="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-x-v"/></svg></span>                          
+                                <span id="r" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-r-v" width="20" height="70"/></svg></span>
+                                <span id="l" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-l-v" width="20" height="70"/></svg></span>
+                                <span id="c" class="dragable" data-value1="1" data-unit1="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-c-v" width="20" height="70"/></svg></span>
+                                <span id="x" class="dragable" data-value1="50" data-unit1="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-x-v" width="20" height="70"/></svg></span>                          
                                 <span id="w" class="dragable" data-value1="0" data-unit1="" data-q="100000" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg></span> 
                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>    
                         </div> <!--Component Zone 1 End-->                   
                             <!-- Component Zone 2 begin -->
                         <div  style="background-color:white; clear: both;padding-left:5%;padding-right:5%" >
                                 <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
-                                <span id="o" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="4" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-o-v"/></svg></span>
-                                <span id="s" class="dragable" data-value1="51" data-unit1="Char. Imp. [Ohms]:" data-value2="5" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-s-v"/></svg></span>
-                                <span id="g" class="dragable" data-value1="0.1" data-unit1="Mag." data-value2="10" data-unit2="Deg." data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-g-v"/></svg></span>
-                                <span id="rx" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="0.00" data-unit2="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-rx-v"/></svg></span>
+                                <span id="o" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="4" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-o-v" width="20" height="70"/></svg></span>
+                                <span id="s" class="dragable" data-value1="51" data-unit1="Char. Imp. [Ohms]:" data-value2="5" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-s-v" width="20" height="70"/></svg></span>
+                                <span id="g" class="dragable" data-value1="0.1" data-unit1="Mag." data-value2="10" data-unit2="Deg." data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-g-v" width="20" height="70"/></svg></span>
+                                <span id="rx" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="0.00" data-unit2="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="57" viewBox="0 14 20 42"><use href="#qs-sym-rx-v" width="20" height="70"/></svg></span>
                                 <span id="t" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="10" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-t-h"/></svg></span>
                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
                         </div> <!-- Component Zone 2 end -->
@@ -461,8 +462,7 @@
                         </div> <!--MatchTip Zone 1 End-->                   
                     </div>   <!--MatchTip Zone End-->
 
-                    <p class="hint">To add a component, drag its icon onto a rectangular slot.<br>
-                       To remove one, drag the wire <svg class="qs-hint-sym" viewBox="0 0 61 20" width="46" height="15"><use href="#qs-sym-w-h"/></svg> onto it.</p>
+                    <p class="hint">Drag a part onto a slot &middot; drag the wire <svg class="qs-hint-sym" viewBox="0 0 61 20" width="40" height="13"><use href="#qs-sym-w-h"/></svg> onto one to clear it</p>
                 </div>   <!--tray end-->
 
                 <div class="ladder-half half-b">
@@ -486,22 +486,22 @@
                     <!--<br />-->
                     <div class="dropzone"  style= "overflow: hidden; margin-top: 5px; margin-left: 0px;">
                          <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   -->
-                        <div id="V7" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
+                        <div id="S7" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
                             <svg id="D7" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="H8" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  onDrop="return false"> 
+                        <div id="S8" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  onDrop="return false"> 
                             <svg id="D8" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
-                        <div id="V9" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
+                        <div id="S9" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
                             <svg id="D9" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="H10" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
+                        <div id="S10" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
                             <svg id="D10" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
-                        <div id="V11" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
+                        <div id="S11" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
                             <svg id="D11" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="H12" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
+                        <div id="S12" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
                             <svg id="D12" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
                          <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   -->
@@ -530,7 +530,6 @@
                             <th id='H11'>W11</th> 
                         </tr> 
                     </table>
-                        <br />
                 </div>   <!--ladder half 2 end-->
             </div>   <!--ladder row end-->
 
@@ -734,6 +733,12 @@ smithObj.view = QSChart.mount("smithMain");
     });
     QSSym.mount();
     resizeSchematic();
+    // the fold follows the ladder whatever moves it: a window resize, a value
+    // row collapsing, the parts bin rewrapping
+    if (window.ResizeObserver) {
+        new ResizeObserver(function () { drawLadderWiring(); })
+            .observe(document.querySelector(".ladder-row"));
+    }
     // Set the load's step size before anything is restored. TouchSpin rounds
     // the field's current value to the new step, so doing this afterwards
     // snapped a restored 1.94 ohm load down to 1.90 and quietly changed the
@@ -897,7 +902,7 @@ function resizeSchematic() {
     for (var i = 0; i < rows.length; i++) {
         rows[i].style.setProperty("--qs-rail", (slotH / 2 - 0.7) + "px");
     }
-    drawLadderWiring(slotH);
+    drawLadderWiring();
 }
 
 /*
@@ -909,12 +914,14 @@ function resizeSchematic() {
  *
  * Both ends move with the layout, so this is redrawn whenever the slots are.
  */
-function drawLadderWiring(slotH) {
+function drawLadderWiring() {
     var row = document.querySelector(".ladder-row");
     var svg = document.getElementById("ladderWiring");
     var a = document.querySelector(".half-a .dropzone");
     var b = document.querySelector(".half-b .dropzone");
-    if (!row || !svg || !a || !b) return;
+    var railA = document.querySelector(".half-a .dropzoneh");
+    var railB = document.querySelector(".half-b .dropzoneh");
+    if (!row || !svg || !a || !b || !railA || !railB) return;
 
     var box = row.getBoundingClientRect();
     svg.setAttribute("viewBox", "0 0 " + box.width + " " + box.height);
@@ -926,8 +933,9 @@ function drawLadderWiring(slotH) {
     }
 
     var ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
-    var yA = ra.top - box.top + slotH / 2;
-    var yB = rb.top - box.top + slotH / 2;
+    var ha = railA.getBoundingClientRect(), hb = railB.getBoundingClientRect();
+    var yA = ha.top - box.top + ha.height / 2;
+    var yB = hb.top - box.top + hb.height / 2;
     var right = ra.right - box.left;
     var turn = box.width - 9;
     var left = rb.left - box.left;
@@ -1007,6 +1015,25 @@ function set_click() {
 
 
 
+/*
+ * A row of second-value boxes only matters for parts that have two values, so
+ * it is hidden cell by cell. When none of a row's cells are showing, the row
+ * itself is worth reclaiming: three of the four are empty in most designs,
+ * which is over a hundred pixels of the schematic's height.
+ */
+function collapseEmptyValueRows() {
+    var rows = document.querySelectorAll(".ladder-half tr");
+    for (var i = 0; i < rows.length; i++) {
+        var cells = rows[i].querySelectorAll('td[id$="at"]');
+        if (!cells.length) continue;                  // not a second-value row
+        var anyShowing = false;
+        for (var j = 0; j < cells.length; j++) {
+            if (cells[j].style.visibility !== "hidden") anyShowing = true;
+        }
+        rows[i].hidden = !anyShowing;
+    }
+}
+
 /* The overlay panel shows chart state, so it has to be re-read whenever that
    state is restored from a session, a file or a share link. */
 function syncOverlayControls() {
@@ -1050,13 +1077,14 @@ function updateUI() {
             if(schObj.ELEMENT[i].value2 < 0) secondBox.style.color = 'red';else secondBox.style.color = 'black';
         }
     }
+    collapseEmptyValueRows();
     for (var i = 1; i < 13; i++) 
         { 
             QSSym.set(document.getElementById("D" + i), schObj.ELEMENT[i].type, !isEven(i));
             document.querySelector("#H" + i).textContent =  schObj.ELEMENT[i].type.toUpperCase() + i;
         }
-    if(schObj.termination == 'Single') document.getElementById('V1').style.borderColor='';
-    else  document.getElementById('V1').style.borderColor='red';
+    if(schObj.termination == 'Single') document.getElementById('S1').style.borderColor='';
+    else  document.getElementById('S1').style.borderColor='red';
 
     Zcalsweep();
     updateToolTip() ;
@@ -1602,6 +1630,7 @@ var end = function(e) {
         document.querySelector("#H" + eleNum).textContent =  eleType.toUpperCase() + eleNum; // update the component reference number on the schematic pane
         //schObj.ELEMENT[eleNum].tune = 1;  // default the tune element to the first variable
         //console.log(JSON.stringify(schObj));
+        collapseEmptyValueRows();   // this may be the first two-value part in its row
         Zcalsweep();
         updateToolTip() ;
     }
@@ -1896,19 +1925,19 @@ function setHint(id, text) {
                                 schObj.gamData.dataQ = phase_unwrap(gamObj.gamData.dataQ); // phase unwrap before entering - helps with interpolation
                                 if(schObj.gamData.dataX.length > 1){   // check if the data is more than 1 before setting to interpolation mode
                                     schObj.termination = "Multiple";      // we can check again before calculation
-                                    document.getElementById('V1').style.borderColor='red';
+                                    document.getElementById('S1').style.borderColor='red';
                                 }
                                 else 
                                 {
                                     schObj.termination = "Single";
-                                    document.getElementById('V1').style.borderColor= '';   
+                                    document.getElementById('S1').style.borderColor= '';   
                                 }
                             }
 
                         }
                         else {
                             schObj.termination = "Single";
-                            document.getElementById('V1').style.borderColor= '';
+                            document.getElementById('S1').style.borderColor= '';
                             ShowMessage_sm("QuickSmith","Failed to verify file");
                         }
                         Zcalsweep(); 
@@ -1926,7 +1955,7 @@ function setHint(id, text) {
             schObj.gamData.dataM = [];
             schObj.gamData.dataQ = [];
             // ShowMessage_sm("QuickSmith"," Termination Single");
-            document.getElementById('V1').style.borderColor= '';
+            document.getElementById('S1').style.borderColor= '';
             Zcalsweep();
         }
        
@@ -2299,7 +2328,7 @@ function handleTouchstoneImport(e) {
             schObj.ST = gam.dataX[gam.dataX.length - 1];
             schObj.SST = Number(Math.abs(schObj.ST - schObj.SS) / (gam.dataX.length - 1)).toFixed(4);
             schObj.ELEMENT[0].value1 = gam.dataX[0];
-            document.getElementById("V1").style.borderColor = "red";
+            document.getElementById("S1").style.borderColor = "red";
 
             updateUI();
             ShowMessage_sm("QuickSmith",
