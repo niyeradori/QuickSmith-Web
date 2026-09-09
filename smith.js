@@ -30,10 +30,16 @@ var QSChart = (function () {
     var seq = 0;
 
     /* Normalised grid values. Majors are labelled; minors carry the eye. */
+    /*
+     * The coarse chart: five constant-resistance circles and five reactance
+     * arcs each side, the set the rim and axis labels are drawn for. A paper
+     * Smith chart needs a fine grid because interpolating by eye is how you
+     * read a value off it. Here the value is already on screen - in the
+     * readout, and under the pointer - so the fine grid was decoration, and
+     * forty-two curves is a lot of decoration to lay a design over.
+     */
     var R_MAJOR = [0.2, 0.5, 1, 2, 5];
-    var R_MINOR = [0.1, 0.3, 0.4, 0.6, 0.8, 1.5, 3, 4, 10];
     var X_MAJOR = [0.2, 0.5, 1, 2, 5];
-    var X_MINOR = [0.1, 0.3, 0.4, 0.6, 0.8, 1.5, 3, 4, 10];
 
     /* ------------------------------------------------------------- styling */
 
@@ -71,9 +77,7 @@ var QSChart = (function () {
         ".qs-face{fill:var(--qs-face);stroke:var(--qs-rim);stroke-width:3}",
         ".qs-grid path,.qs-grid circle{fill:none;vector-effect:non-scaling-stroke}",
         ".qs-r-major{stroke:var(--qs-r);stroke-width:1.6;opacity:.85}",
-        ".qs-r-minor{stroke:var(--qs-r);stroke-width:1.1;opacity:.32}",
         ".qs-x-major{stroke:var(--qs-x);stroke-width:1.6;opacity:.85}",
-        ".qs-x-minor{stroke:var(--qs-x);stroke-width:1.1;opacity:.32}",
         ".qs-axis{stroke:var(--qs-x);stroke-width:1.6;opacity:.85}",
         ".qs-adm{stroke:var(--qs-adm);stroke-width:1.2;opacity:.55;",
         "stroke-dasharray:6 7;fill:none;vector-effect:non-scaling-stroke}",
@@ -376,8 +380,6 @@ var QSChart = (function () {
     function drawGrid(view) {
         var g = el("g", { "class": "qs-grid", "clip-path": view.clip }, view.root);
 
-        R_MINOR.forEach(function (r) { rCircle(g, r, "qs-r-minor"); });
-        X_MINOR.forEach(function (x) { xArc(g, x, "qs-x-minor"); xArc(g, -x, "qs-x-minor"); });
         R_MAJOR.forEach(function (r) { rCircle(g, r, "qs-r-major"); });
         X_MAJOR.forEach(function (x) { xArc(g, x, "qs-x-major"); xArc(g, -x, "qs-x-major"); });
 
@@ -655,7 +657,7 @@ var QSChart = (function () {
         rCircleGeometry: rCircleGeometry,
         xCircleGeometry: xCircleGeometry,
         xRimAngle: xRimAngle,
-        grid: { rMajor: R_MAJOR, rMinor: R_MINOR, xMajor: X_MAJOR, xMinor: X_MINOR },
+        grid: { rMajor: R_MAJOR, xMajor: X_MAJOR },
         AXIS: R
     };
 })();

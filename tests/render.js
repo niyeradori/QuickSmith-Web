@@ -118,7 +118,7 @@ var AXIS_RANGE = 1000;      // the pages declare this; the geometry helpers use 
 
 /* --------------------------------------------------------- 1. geometry */
 
-QSChart.grid.rMajor.concat(QSChart.grid.rMinor).forEach(function (r) {
+QSChart.grid.rMajor.forEach(function (r) {
     var c = QSChart.rCircleGeometry(r);
     // touches the rim at gamma = +1
     near("r=" + r + " reaches gamma=1", c.cx + c.r, AXIS_RANGE, 1e-9);
@@ -127,7 +127,7 @@ QSChart.grid.rMajor.concat(QSChart.grid.rMinor).forEach(function (r) {
          AXIS_RANGE * (r - 1) / (r + 1), 1e-9);
 });
 
-QSChart.grid.xMajor.concat(QSChart.grid.xMinor).forEach(function (x) {
+QSChart.grid.xMajor.forEach(function (x) {
     [x, -x].forEach(function (v) {
         var c = QSChart.xCircleGeometry(v);
         // passes through gamma = +1
@@ -202,9 +202,10 @@ var grid = QSChart.grid;
 ok("chart face drawn", countClass(svg, "qs-face") === 1);
 ok("major resistance circles", countClass(svg, "qs-r-major") === grid.rMajor.length,
    "got " + countClass(svg, "qs-r-major"));
-ok("minor resistance circles", countClass(svg, "qs-r-minor") === grid.rMinor.length);
+ok("no fine grid is drawn", countClass(svg, "qs-r-minor") === 0 &&
+                            countClass(svg, "qs-x-minor") === 0);
 ok("major reactance arcs", countClass(svg, "qs-x-major") === grid.xMajor.length * 2);
-ok("minor reactance arcs", countClass(svg, "qs-x-minor") === grid.xMinor.length * 2);
+
 ok("admittance grid shown when asked", countClass(svg, "qs-adm") > 0);
 ok("VSWR circle", countClass(svg, "qs-vswr") === 1);
 ok("Q circles", countClass(svg, "qs-q") === 2);
@@ -265,8 +266,7 @@ ok("outside the chart", InSmith(900, 900) === false);
 
 if (failures === 0) {
     out("chart renderer: geometry and a full render OK (" +
-        (grid.rMajor.length + grid.rMinor.length +
-         2 * (grid.xMajor.length + grid.xMinor.length)) + " grid curves checked)");
+        (grid.rMajor.length + 2 * grid.xMajor.length) + " grid curves checked)");
 } else {
     out("chart renderer: " + failures + " FAILED");
     if (typeof process !== "undefined") process.exitCode = 1;
