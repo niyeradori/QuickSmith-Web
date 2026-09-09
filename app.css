@@ -365,14 +365,26 @@ th {
  */
 .schematic { container-type: inline-size; }
 
+/*
+ * Stacked, the parts bin goes between the two halves: the drag you make most
+ * often is to slot 2, and from the bottom of the page that was the longest
+ * one on screen. Side by side there is no far half, so it goes underneath.
+ */
 .ladder-row {
     display: grid;
     grid-template-columns: 1fr;
+    grid-template-areas: "half-a" "tray" "half-b";
     gap: 18px;
 }
 @container (min-width: 620px) {
-    .ladder-row { grid-template-columns: 1fr 1fr; }
+    .ladder-row {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "half-a half-b" "tray tray";
+    }
 }
+.half-a { grid-area: half-a; }
+.half-b { grid-area: half-b; }
+.qs-tray { grid-area: tray; }
 
 .ladder-half { min-width: 0; }
 .ladder-half table { width: 100%; table-layout: fixed; border-collapse: collapse; }
@@ -380,21 +392,31 @@ th {
 
 .dropzone { overflow: hidden; }
 
-/* the component tray */
-.component { margin-top: 16px; }
-.component > div {
+/*
+ * The parts bin. One wrapping strip rather than the four stacked rows the
+ * markup groups them into, so that sitting between the halves it stays a
+ * divider instead of a wedge. display:contents keeps the grouping in the
+ * markup while letting every icon flow in one line.
+ */
+.qs-tray {
+    padding: 10px 12px;
+    background: var(--qs-face, #fff);
+    border: 1px solid var(--qs-rim, #d9dde5);
+    border-radius: 10px;
+}
+.component {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px 14px;
-    margin-bottom: 10px;
-    padding: 0 !important;
-    background: none !important;
+    justify-content: center;
+    gap: 8px 14px;
 }
+.component > div { display: contents; }
 .component .stretch { display: none !important; }
 
 .hint {
-    margin: 14px 0 0;
+    margin: 10px 0 0;
+    text-align: center;
     color: var(--qs-text, #6b7280);
     font-size: 13px;
     line-height: 1.7;

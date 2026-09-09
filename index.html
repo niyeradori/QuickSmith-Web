@@ -297,7 +297,7 @@
             <!--width:527px-->
             <div class="row ladder-row"> 
                 <!-- Dropzone1 -->
-                <div class="ladder-half">
+                <div class="ladder-half half-a">
                     <!-- <div class="spinzone" >  -->
                         <table style=" margin-left: 0px;  margin-bottom: 0px; width:100%; ">  
                             <tr class="">
@@ -375,7 +375,64 @@
                 </div>   <!--dropzone div 1 end--> 
                     
                 <!-- Dropzone2 begin -->
-                <div class="ladder-half">
+                <!-- The parts bin sits between the two halves, so the
+                     drag to either one is short. -->
+                <div class="qs-tray">
+                    <!--Component Zone Begin-->
+                    <div id="component-container" class="component">
+                        <!-- Note that here we are only storing the default values, the actual user input values are stored in the schObj JSON -->                  
+                        <!-- Component Zone 1 begin -->
+                        <div  style="background-color:white; clear: both; margin-top:10px; padding-left:5%;padding-right:5% ">
+                            <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
+                                <img id="f"  data-value1="100" data-unit1="MHz" style="display:none;">
+                                <span id="r" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-r-v"/></svg></span>
+                                <span id="l" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-l-v"/></svg></span>
+                                <span id="c" class="dragable" data-value1="1" data-unit1="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-c-v"/></svg></span>
+                                <span id="x" class="dragable" data-value1="50" data-unit1="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-x-v"/></svg></span>                          
+                                <span id="w" class="dragable" data-value1="0" data-unit1="" data-q="100000" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg></span> 
+                                <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>    
+                        </div> <!--Component Zone 1 End-->                   
+                            <!-- Component Zone 2 begin -->
+                        <div  style="background-color:white; clear: both;padding-left:5%;padding-right:5%" >
+                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
+                                <span id="o" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="4" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-o-v"/></svg></span>
+                                <span id="s" class="dragable" data-value1="51" data-unit1="Char. Imp. [Ohms]:" data-value2="5" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-s-v"/></svg></span>
+                                <span id="g" class="dragable" data-value1="0.1" data-unit1="Mag." data-value2="10" data-unit2="Deg." data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-g-v"/></svg></span>
+                                <span id="rx" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="0.00" data-unit2="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-rx-v"/></svg></span>
+                                <span id="t" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="10" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-t-h"/></svg></span>
+                                <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
+                        </div> <!-- Component Zone 2 end -->
+                            <!-- Component Zone 3 begin -->
+                        <div style="background-color:white;  clear: both;padding-left:5%;padding-right:5%" >
+                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
+                                <span id="slc" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-slc-h"/></svg></span>
+                                <span id="plc" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-plc-h"/></svg></span>
+                                <span id="src" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-src-h"/></svg></span>                        
+                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
+                        </div> <!--Component Zone 3 End-->
+                             <!-- Component Zone 4 begin -->
+                        <div style="background-color:white; clear: both;padding-left:5%;padding-right:5%" >
+                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
+                                <span id="prc" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-prc-h"/></svg></span>                           
+                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
+                        </div> <!--Component Zone 4 End-->
+                    </div>   <!--Component Zone End--> 
+                    <!--MatchTip Zone Begin--> 
+                    <div id="matchtip" class="hidden">
+                        <!-- MatchTip Zone 1 begin -->
+                        <div class="text-center">
+                            <h5 style="color:blue">Matching Tip</h5>
+                        </div>
+                        <div  class="text-center" style="background-color:white; clear: both; margin-top:20px; margin-bottom:20px; ">
+                            <img id="regions"  class="img-thumbnail" src="img/region3.png" >
+                        </div> <!--MatchTip Zone 1 End-->                   
+                    </div>   <!--MatchTip Zone End-->
+
+                    <p class="hint">To add a component, drag its icon onto a rectangular slot.<br>
+                       To remove one, drag the wire <svg class="qs-hint-sym" viewBox="0 0 61 20" width="46" height="15"><use href="#qs-sym-w-h"/></svg> onto it.</p>
+                </div>   <!--tray end-->
+
+                <div class="ladder-half half-b">
                     <table style=" width:100%;">  
                           <tr class="">
                             <th id='H8'>W8</th>
@@ -443,59 +500,6 @@
                         <br />
                 </div>   <!--ladder half 2 end-->
             </div>   <!--ladder row end-->
-
-                    <!--Component Zone Begin-->
-                    <div id="component-container" class="component">
-                        <!-- Note that here we are only storing the default values, the actual user input values are stored in the schObj JSON -->                  
-                        <!-- Component Zone 1 begin -->
-                        <div  style="background-color:white; clear: both; margin-top:10px; padding-left:5%;padding-right:5% ">
-                            <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
-                                <img id="f"  data-value1="100" data-unit1="MHz" style="display:none;">
-                                <span id="r" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-r-v"/></svg></span>
-                                <span id="l" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-l-v"/></svg></span>
-                                <span id="c" class="dragable" data-value1="1" data-unit1="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-c-v"/></svg></span>
-                                <span id="x" class="dragable" data-value1="50" data-unit1="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-x-v"/></svg></span>                          
-                                <span id="w" class="dragable" data-value1="0" data-unit1="" data-q="100000" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg></span> 
-                                <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>    
-                        </div> <!--Component Zone 1 End-->                   
-                            <!-- Component Zone 2 begin -->
-                        <div  style="background-color:white; clear: both;padding-left:5%;padding-right:5%" >
-                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
-                                <span id="o" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="4" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-o-v"/></svg></span>
-                                <span id="s" class="dragable" data-value1="51" data-unit1="Char. Imp. [Ohms]:" data-value2="5" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-s-v"/></svg></span>
-                                <span id="g" class="dragable" data-value1="0.1" data-unit1="Mag." data-value2="10" data-unit2="Deg." data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-g-v"/></svg></span>
-                                <span id="rx" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="0.00" data-unit2="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="91" viewBox="0 0 20 70"><use href="#qs-sym-rx-v"/></svg></span>
-                                <span id="t" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="10" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-t-h"/></svg></span>
-                                <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
-                        </div> <!-- Component Zone 2 end -->
-                            <!-- Component Zone 3 begin -->
-                        <div style="background-color:white;  clear: both;padding-left:5%;padding-right:5%" >
-                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
-                                <span id="slc" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-slc-h"/></svg></span>
-                                <span id="plc" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-plc-h"/></svg></span>
-                                <span id="src" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-src-h"/></svg></span>                        
-                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
-                        </div> <!--Component Zone 3 End-->
-                             <!-- Component Zone 4 begin -->
-                        <div style="background-color:white; clear: both;padding-left:5%;padding-right:5%" >
-                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
-                                <span id="prc" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-prc-h"/></svg></span>                           
-                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
-                        </div> <!--Component Zone 4 End-->
-                    </div>   <!--Component Zone End--> 
-                    <!--MatchTip Zone Begin--> 
-                    <div id="matchtip" class="hidden">
-                        <!-- MatchTip Zone 1 begin -->
-                        <div class="text-center">
-                            <h5 style="color:blue">Matching Tip</h5>
-                        </div>
-                        <div  class="text-center" style="background-color:white; clear: both; margin-top:20px; margin-bottom:20px; ">
-                            <img id="regions"  class="img-thumbnail" src="img/region3.png" >
-                        </div> <!--MatchTip Zone 1 End-->                   
-                    </div>   <!--MatchTip Zone End-->
-
-                    <p class="hint">To add a component, drag its icon onto a rectangular slot.<br>
-                       To remove one, drag the wire <svg class="qs-hint-sym" viewBox="0 0 61 20" width="46" height="15"><use href="#qs-sym-w-h"/></svg> onto it.</p>
 
         </div>   <!--schematic column end-->
 
