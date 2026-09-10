@@ -97,6 +97,8 @@ var QSChart = (function () {
         "opacity:.9;vector-effect:non-scaling-stroke}",
         ".qs-node{stroke:var(--qs-face);stroke-width:3}",
         ".qs-dot{fill:var(--qs-dot);stroke:var(--qs-face);stroke-width:5}",
+        ".qs-grab{fill:transparent;cursor:grab}",
+        ".qs-grab:active{cursor:grabbing}",
         ".qs-hover{fill:none;stroke:var(--qs-ui);stroke-width:1.4;opacity:.7}",
         ".qs-hover-text{fill:var(--qs-text);font:500 30px ui-monospace,SFMono-Regular,Menlo,monospace}",
 
@@ -238,9 +240,14 @@ var QSChart = (function () {
      * Wheel zooms about the cursor, drag pans, two fingers pinch. Panning is
      * only live while zoomed in, so ordinary use never fights the readout or
      * the double-click dialog.
+     *
+     * Dragging a node handle tunes that component instead: the pointer is
+     * captured on the svg rather than on the circle, so the redraw that
+     * follows every step does not pull the target out from under the gesture.
      */
     function addInteraction(view) {
         var svg = view.el, drag = null, pointers = {}, pinch = null;
+        var tuning = null;      // the slot whose node is being dragged
 
         svg.addEventListener("wheel", function (e) {
             e.preventDefault();
@@ -249,6 +256,17 @@ var QSChart = (function () {
         }, { passive: false });
 
         svg.addEventListener("pointerdown", function (e) {
+            // a node handle claims the gesture before panning can have it
+            var handle = e.target.closest && e.target.closest(".qs-grab");
+            if (handle) {
+                tuning = Number(handle.getAttribute("data-slot"));
+                // capture keeps the gesture even though the redraw replaces
+                // the handle under the pointer; it throws on a pointer the
+                // browser is not tracking, which must not kill the drag
+                try { svg.setPointerCapture(e.pointerId); } catch (err) { /* no capture */ }
+                e.preventDefault();
+                return;
+            }
             pointers[e.pointerId] = rawPoint(view, e);
             var ids = Object.keys(pointers);
             if (ids.length === 2) {
@@ -261,6 +279,13 @@ var QSChart = (function () {
         });
 
         svg.addEventListener("pointermove", function (e) {
+            if (tuning !== null) {
+                var t = pointerToChart(view, e);
+                if (view.owner && typeof view.owner.onTune === "function") {
+                    view.owner.onTune(tuning, { re: t.x / R, im: t.y / R });
+                }
+                return;
+            }
             if (pointers[e.pointerId]) pointers[e.pointerId] = rawPoint(view, e);
             var ids = Object.keys(pointers);
 
@@ -289,6 +314,7 @@ var QSChart = (function () {
             delete pointers[e.pointerId];
             if (Object.keys(pointers).length < 2) pinch = null;
             drag = null;
+            tuning = null;
         }
         svg.addEventListener("pointerup", release);
         svg.addEventListener("pointercancel", release);
@@ -541,10 +567,21 @@ var QSChart = (function () {
             var dot = el("circle", {
                 "class": "qs-node", cx: c.re * R, cy: -c.im * R, r: 13, fill: fill
             }, g);
-            el("title", {}, dot).textContent = (k === 0 ? "Load" :
-                String(nodes[k].type || "").toUpperCase() + nodes[k].slot) +
+            var name = (k === 0 ? "Load" :
+                String(nodes[k].type || "").toUpperCase() + nodes[k].slot);
+            el("title", {}, dot).textContent = name +
                 ": " + nodes[k].Z.re.toFixed(2) +
                 (nodes[k].Z.im >= 0 ? " + j" : " - j") + Math.abs(nodes[k].Z.im).toFixed(2);
+
+            // A node you can drag gets a handle far bigger than the dot: at
+            // this zoom the dot itself is about three pixels across.
+            if (QSEngine.canTune(nodes[k].type, nodes[k].slot)) {
+                var grab = el("circle", {
+                    "class": "qs-grab", "data-slot": nodes[k].slot,
+                    cx: c.re * R, cy: -c.im * R, r: 46
+                }, g);
+                el("title", {}, grab).textContent = "Drag to tune " + name;
+            }
         }
     }
 

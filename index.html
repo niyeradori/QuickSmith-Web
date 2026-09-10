@@ -1367,6 +1367,33 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
     }
 
 /*
+ * Dragging a node on the chart. The engine works out which value puts that
+ * node where the pointer is; from there it is the same path as typing the
+ * value in, so the ladder, the readout and the response plot all follow.
+ * A part that cannot be solved for - a line, a stub, a two-value pair -
+ * has no handle to grab in the first place.
+ */
+smithObj.onTune = function (slotIndex, gamma) {
+    var next = QSEngine.tuneTo(currentNetwork(), slotIndex, gamma);
+    if (!next) return;
+
+    var part = schObj.ELEMENT[slotIndex];
+    part.value1 = next.value1;
+    if (next.value2 !== undefined) part.value2 = next.value2;
+    showSlotValue(slotIndex);
+    Zcalsweep();
+};
+
+/* Put a slot's own numbers back in its boxes, the way updateUI would, but
+   without the full rebuild: this runs on every step of a drag. */
+function showSlotValue(i) {
+    var box = document.getElementById("E" + i);
+    if (box) box.value = Number(schObj.ELEMENT[i].value1).toFixed(2);
+    var second = document.getElementById("E" + i + "a");
+    if (second) second.value = Number(schObj.ELEMENT[i].value2).toFixed(2);
+}
+
+/*
  * The readout panel. Everything here used to sit behind Show > Equivalents,
  * which meant the two numbers a match is judged by, VSWR and loaded Q, were
  * two clicks away from the tuning you were doing.

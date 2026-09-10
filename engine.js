@@ -693,8 +693,107 @@ var QSEngine = (function () {
         return inside;
     }
 
+    /* ================================================================ tuning
+     *
+     * The inverse of one element: given where its node was dragged to, what
+     * value puts it there?
+     *
+     * A part can only move its node along its own locus. A series inductor
+     * adds +jX to whatever is behind it, so its node travels the constant
+     * resistance circle through that point and nowhere else; a shunt
+     * capacitor adds +jB, so its node travels a constant conductance circle.
+     * So a drag is not "put the node here" but "put it at the point on my
+     * locus nearest here", which is why only one part of the pointer's
+     * impedance is read. The rest of it is off the locus and no value of this
+     * component can reach it.
+     *
+     * Returns { value1, value2 } for the slot, or null for a part with no
+     * single value to solve for: a line or a stub, or a pair like a series
+     * LC, where the same point can be reached in infinitely many ways.
+     *
+     * The load is the exception. It is two free numbers, so it goes wherever
+     * it is put.
+     *
+     * The projection reads reactance alone. In series that is exact however
+     * lossy the part is, since a coil is X/Q + jX and the loss leaves the
+     * reactance untouched. In shunt it is not: the loss goes through 1/Z,
+     * which mixes conductance into susceptance, so the node lands about 1/Q
+     * off its locus - measured, 9e-6 at a Q of a million. That is far below
+     * what a hand on a mouse can express, and solving it exactly would make a
+     * drag depend on a number the user cannot see.
+     */
+    var TUNABLE = { r: 1, x: 1, l: 1, c: 1 };
+    var FLOOR = 1e-6;      // parts stay positive; dragging past the end pins there
+
+    /* Whether a node can be dragged at all, so the chart knows which ones to
+       offer a grab handle on. */
+    function canTune(type, index) {
+        if (index === 1) return type === "rx" || type === "g";
+        return !!TUNABLE[type];
+    }
+
+    function tuneTo(net, index, g) {
+        var ctx = normalise(net);
+        var el = slot(net, index);
+        var gam = cx(Number(g.re), Number(g.im));
+        var target = gammaToZ(gam, ctx.Z0);
+
+        if (index === 1) {
+            if (el.type === "rx") return { value1: target.re, value2: target.im };
+            if (el.type === "g") return { value1: cabs(gam), value2: cargDeg(gam) };
+            return null;
+        }
+        if (!TUNABLE[el.type]) return null;
+
+        var before = impedanceBefore(net, index);
+        if (!before) return null;
+
+        var value;
+        if (isShuntSlot(index)) {
+            var Yb = cinv(before), Yt = cinv(target);
+            value = shuntValue(el.type, Yt.re - Yb.re, Yt.im - Yb.im, ctx.w);
+        } else {
+            value = seriesValue(el.type, target.re - before.re, target.im - before.im, ctx.w);
+        }
+        return (value === null) ? null : { value1: value, value2: el.v2 };
+    }
+
+    /* What the slot sees looking back at the load. Wires leave it unchanged,
+       so the last node before this slot is the answer. */
+    function impedanceBefore(net, index) {
+        var nodes = solve(net).nodes, Z = null;
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].slot < index) Z = nodes[i].Z;
+        }
+        return Z ? cx(Z.re, Z.im) : null;
+    }
+
+    /* R and X are what this element has to add in series. */
+    function seriesValue(type, R, X, w) {
+        switch (type) {
+            case "r": return Math.max(R, 0);
+            case "x": return X;
+            case "l": return Math.max(X, FLOOR) / w * 1e9;           // nH
+            case "c": return 1 / (w * Math.max(-X, FLOOR)) * 1e12;   // pF
+        }
+        return null;
+    }
+
+    /* G and B are what it has to add in shunt. */
+    function shuntValue(type, G, B, w) {
+        switch (type) {
+            case "r": return 1 / Math.max(G, FLOOR);
+            case "x": return -1 / (Math.abs(B) < FLOOR ? FLOOR : B);
+            case "l": return 1 / (w * Math.max(-B, FLOOR)) * 1e9;    // nH
+            case "c": return Math.max(B, FLOOR) / w * 1e12;          // pF
+        }
+        return null;
+    }
+
     return {
         solve: solve,
+        tuneTo: tuneTo,
+        canTune: canTune,
         equivalent: equivalent,
         matchToZ0: matchToZ0,
         bandwidth: bandwidth,
