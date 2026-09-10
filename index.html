@@ -444,7 +444,7 @@
     
                                     <!--ground line div--> 
                       <div 
-                        class="block_1 hline-bottom" style="width: calc(100% - 12px);  margin-left: 12px; padding-bottom: 0px; border-bottom: 1.4px solid var(--qs-ink, #14181f); margin-bottom: 0px; z-index: 10;"> 
+                        class="block_1 hline-bottom"> 
                     </div>   
                             <!--<br />-->  
                             <!--width:527px-->
@@ -560,7 +560,7 @@
     
                                         <!--"width: 513px padding-bottom: 90px  border-bottom: 3px -->  <!--ground line div--> 
                     <div 
-                        class="block_1 hline-bottom" style="width: 100%;  padding-bottom: 0px; border-bottom: 1.4px solid var(--qs-ink, #14181f); margin-bottom: 0px; z-index: 100;"> 
+                        class="block_1 hline-bottom"> 
                     </div>
                             <!--<br />-->  
                             <!--width:527px-->
@@ -710,9 +710,9 @@ var smithObj = {
               "showAdmittace": false,  // DrawAdmittance
                drawAdmitanceCircles: function() { drawAdmitanceCircles(this);},
               //drawAdmitanceCircles: drawAdmitanceCircles,
-              "vswrCircle": 2.0, // draw VSWR circle
+              "vswrCircle": 1.0, // draw VSWR circle - 1 is a clean chart, nothing drawn
               drawVSWRCircles:  function() { drawVSWRCircles(this);},
-              "qCircle": 1.0, // draw Q circle
+              "qCircle": 0.0, // draw Q circle - 0 is a clean chart, nothing drawn
               drawQCircles: function() { drawQCircles(this);},
               "dataM": 0.0, // refection Coeffi Magnitude - to plot the sprite
               "dataQ": 0.0, // refection Coeffi Angle - to plot the sprite

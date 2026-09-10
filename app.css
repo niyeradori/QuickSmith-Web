@@ -475,6 +475,18 @@ th {
     margin-left: auto;
     margin-right: auto;
 }
+/*
+ * The ground rail under a ladder half has to begin and end exactly where the
+ * slots do, so it takes the same width and centring as the dropzone above it.
+ * It used to span the whole panel, which left it overhanging the ladder by up
+ * to 19px and by a different amount on each side.
+ */
+.ladder-half .hline-bottom {
+    width: var(--qs-ladder);
+    margin: 0 auto;
+    border-bottom: 1.4px solid var(--qs-ink, #14181f);
+}
+
 .ladder-half table { table-layout: fixed; border-collapse: collapse; }
 .ladder-half td { padding: 1px; }
 
