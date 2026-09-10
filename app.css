@@ -860,3 +860,18 @@ body > font blockquote { max-width: 70ch; }
 @container (min-width: 620px) {
     .qs-tray { margin-left: 0; }
 }
+
+/* ==================================================================== print
+ *
+ * Print Chart copies a standalone chart into #printArea. Hiding every direct
+ * child of body and showing that one keeps this independent of how the rest
+ * of the page happens to be laid out.
+ */
+#printArea { display: none; }
+
+@media print {
+    body > * { display: none !important; }
+    body > #printArea { display: block !important; }
+    #printArea svg { width: 100%; height: auto; }
+    @page { margin: 12mm; }
+}

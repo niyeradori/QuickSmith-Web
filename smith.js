@@ -43,7 +43,14 @@ var QSChart = (function () {
 
     /* ------------------------------------------------------------- styling */
 
-    var CSS = [
+    /*
+     * The palette lives apart from the drawing rules because an exported chart
+     * must not carry it. In a standalone .svg the root element is the svg
+     * itself, so a :root block in the file would outrank the literal colours
+     * written alongside it, and every export would come out in whatever theme
+     * the machine opening it happened to prefer.
+     */
+    var PALETTE = [
         ":root{--qs-bg:#dce3ed;--qs-face:#f6f8fc;--qs-ink:#2b3547;",
         "--qs-rim:#d3dae6;--qs-edge:#bdc7d8;--qs-r:#b5342b;--qs-x:#1f7a52;--qs-adm:#4a6fa5;",
         "--qs-vswr:#1f5fbf;--qs-accent:#1f5fbf;--qs-q:#8d3a9b;--qs-marker:#14181f;--qs-dot:#1f5fbf;",
@@ -67,7 +74,10 @@ var QSChart = (function () {
         "--qs-a1:#6aa4f5;--qs-a2:#e5776e;--qs-a3:#48c48d;--qs-a4:#c47fd0;",
         "--qs-a5:#e0a04a;--qs-a6:#4fc4d6}",
 
-        ":root[data-qs-theme=bench]{color-scheme:light}",
+        ":root[data-qs-theme=bench]{color-scheme:light}"
+    ].join("");
+
+    var CSS = [
         ".qs-wrap{position:relative;width:100%}",
         ".qs-svg{display:block;width:100%;height:auto;aspect-ratio:1/1;background:var(--qs-face);",
         "border:1px solid var(--qs-rim);border-radius:10px;","-webkit-user-select:none;user-select:none;",
@@ -122,7 +132,7 @@ var QSChart = (function () {
         if (document.getElementById("qs-chart-css")) return;
         var s = document.createElement("style");
         s.id = "qs-chart-css";
-        s.textContent = CSS;
+        s.textContent = PALETTE + CSS;
         document.head.appendChild(s);
     }
 
@@ -692,17 +702,30 @@ var QSChart = (function () {
      * live palette resolved to literal colours, because a detached document
      * has no custom properties to inherit.
      */
-    function toBlob(view, callback, scale) {
-        var px = Math.round((scale || 2) * 600);
+    /*
+     * The chart as a standalone SVG: vector, so it scales without going soft,
+     * and every drawing program reads it. The grab handles and the readout
+     * that follows the pointer come out - they are for the person driving the
+     * chart, not for the page it ends up on.
+     */
+    function toSVG(view, px) {
         var clone = view.el.cloneNode(true);
         clone.setAttribute("width", px);
         clone.setAttribute("height", px);
+        clone.setAttribute("xmlns", NS);
+        Array.prototype.forEach.call(clone.querySelectorAll(".qs-grab, .qs-hoverlayer"),
+            function (n) { n.parentNode.removeChild(n); });
 
         var style = document.createElementNS(NS, "style");
         style.textContent = CSS + resolvedVars(view);
         clone.insertBefore(style, clone.firstChild);
 
-        var markup = new XMLSerializer().serializeToString(clone);
+        return new XMLSerializer().serializeToString(clone);
+    }
+
+    function toBlob(view, callback, scale) {
+        var px = Math.round((scale || 2) * 600);
+        var markup = toSVG(view, px);
         var url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(markup);
 
         var img = new Image();
@@ -768,6 +791,7 @@ var QSChart = (function () {
         mount: mount,
         render: render,
         toBlob: toBlob,
+        toSVG: toSVG,
         pointerToChart: pointerToChart,
         currentTheme: currentTheme,
         rCircleGeometry: rCircleGeometry,

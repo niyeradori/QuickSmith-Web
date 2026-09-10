@@ -182,7 +182,9 @@
             <!-- <div class=""> -->
                 <li class=""><a href="#" onclick ="load_click()" >Load File</a></li> 
                 <li class="" ><a href="#" onclick ="save_click()" >Save File</a></li>
-                <li class=""><a href="#" onclick ="saveCanvas_click()" >Capture Chart</a></li>
+                <li class=""><a href="#" onclick ="saveCanvas_click()" >Capture Chart (PNG)</a></li>
+                <li class=""><a href="#" onclick ="saveSVG_click()" >Chart as SVG</a></li>
+                <li class=""><a href="#" onclick ="printChart_click()" >Print Chart</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="#" onclick ="shareLink_click()" >Copy Share Link</a></li> 
                 <!-- <li class=""><a href="#">Import</a></li>
@@ -205,6 +207,7 @@
           <ul class="dropdown-menu">
              <li><a href="#"  onclick=export_click()>Export Gamma</a></li>
              <li><a href="#"  onclick=exportTouchstone_click()>Export Touchstone</a></li>
+             <li><a href="#"  onclick=exportCSV_click()>Export Sweep (CSV)</a></li>
              <li><a href="#"  onclick=import_click()>Import Gamma</a></li>
              <li><a href="#"  onclick=importTouchstone_click()>Import Touchstone</a></li>
              <li><a href="#"  onclick=clear_import_click()>Clear</a></li>
@@ -549,6 +552,11 @@
 
     </div>   <!--row end-->
 </div>   <!--container end--> 
+
+<!-- Print Chart drops a standalone copy of the chart in here; @media print
+     hides everything else on the page and shows this. -->
+<div id="printArea" aria-hidden="true"></div>
+
 
     <audio id="audio" src="img/button-3.wav" autostart="false"> </audio>
  <!-- ************************MODAL OPTION DIALOG BEGINS************************************************************************************** -->
@@ -1155,6 +1163,91 @@ function saveCanvas_click(){
         if (blob) saveAs(blob, "QuickSmith.png");
         else ShowMessage_sm("QuickSmith", "Could not render the chart to an image.");
     });
+}
+
+/*
+ * The chart as vector art. It goes out in whatever theme is on screen, since
+ * that is the one you chose to design in, and it opens in Illustrator,
+ * Inkscape, a word processor or a browser without going soft at any size.
+ */
+function saveSVG_click(){
+    var markup = QSChart.toSVG(smithObj.view, 900);
+    saveAs(new Blob([markup], { type: "image/svg+xml;charset=utf-8" }), "QuickSmith.svg");
+}
+
+/*
+ * Paper is white, so this prints light whatever the screen is set to - nobody
+ * wants a black square out of a laser printer. The chart is copied into a div
+ * that only the print stylesheet shows, which keeps the rule to one line and
+ * independent of how the page is laid out.
+ */
+function printChart_click(){
+    var root = document.documentElement;
+    var was = root.getAttribute("data-qs-theme");
+    root.setAttribute("data-qs-theme", "bench");      // bench is the light one
+    var markup = QSChart.toSVG(smithObj.view, 900);   // reads the live palette
+    if (was) root.setAttribute("data-qs-theme", was); else root.removeAttribute("data-qs-theme");
+
+    document.getElementById("printArea").innerHTML = markup;
+    window.print();
+}
+
+/*
+ * The last sweep as a spreadsheet. The chart stores reflection coefficient and
+ * nothing else, so impedance, VSWR and return loss are worked out here from
+ * the same relations the readout uses - one row per point, ready to plot in
+ * whatever the rest of the report is written in.
+ */
+function sweepTable() {
+    var dataM = smithObj.sweepDatasets[0].dataM;
+    var dataQ = smithObj.sweepDatasets[0].dataQ;
+    var Z0 = parseFloat(schObj.Z0);
+    var start = parseFloat(schObj.SS), step = parseFloat(schObj.SST);
+    var rows = [];
+
+    for (var i = 0; i < dataM.length; i++) {
+        var mag = Number(dataM[i]), ang = Number(dataQ[i]);
+        var rad = ang * Math.PI / 180;
+        var Z = QSEngine.gammaToZ({ re: mag * Math.cos(rad), im: mag * Math.sin(rad) }, Z0);
+        rows.push([
+            start + step * i,
+            mag,
+            ang,
+            (mag >= 1) ? Infinity : (1 + mag) / (1 - mag),
+            (mag <= 0) ? Infinity : -20 * Math.log10(mag),
+            Z.re,
+            Z.im
+        ]);
+    }
+    return rows;
+}
+
+function exportCSV_click() {
+    if (!smithObj.sweepDatasets[0].dataM.length && schObj.SE === "Frequency") generateSweep();
+
+    var rows = sweepTable();
+    if (!rows.length) {
+        ShowMessage_sm("QuickSmith", "Run Sweep \u2192 Generate first; there is no data to export.");
+        return;
+    }
+
+    var xName = (schObj.SE === "Frequency")
+        ? "frequency_MHz"
+        : schObj.SE.replace(" ", "_") + "_value";
+    var lines = ["# QuickSmith sweep, Z0 = " + schObj.Z0 + " ohms",
+                 "# the sweep keeps gamma to four decimal places, so the columns " +
+                 "derived from it are good to about that",
+                 [xName, "gamma_mag", "gamma_deg", "vswr", "return_loss_dB",
+                  "Zin_real", "Zin_imag"].join(",")];
+
+    rows.forEach(function (r) {
+        lines.push(r.map(function (v) {
+            return isFinite(v) ? Number(v).toFixed(6) : "";
+        }).join(","));
+    });
+
+    saveAs(new Blob([lines.join("\n") + "\n"], { type: "text/csv;charset=utf-8" }),
+           "QuickSmith.csv");
 }
 
 // export the last sweep data as a gam file 
@@ -2760,6 +2853,10 @@ function lineDimensions_click() {
  * anything - a component sweep has no frequency axis.
  */
 function exportTouchstone_click() {
+    // A file of the network, not of whatever happens to be on the chart: if
+    // no sweep has been run, run one over the response range and export that.
+    if (!smithObj.sweepDatasets[0].dataM.length && schObj.SE === "Frequency") generateSweep();
+
     var dataM = smithObj.sweepDatasets[0].dataM;
     var dataQ = smithObj.sweepDatasets[0].dataQ;
     if (!dataM.length) {
