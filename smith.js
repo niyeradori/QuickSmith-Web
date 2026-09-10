@@ -44,8 +44,8 @@ var QSChart = (function () {
     /* ------------------------------------------------------------- styling */
 
     var CSS = [
-        ":root{--qs-bg:#e4e9f1;--qs-face:#fff;--qs-ink:#2b3547;",
-        "--qs-rim:#d9dee7;--qs-edge:#c3ccdb;--qs-r:#b5342b;--qs-x:#1f7a52;--qs-adm:#4a6fa5;",
+        ":root{--qs-bg:#dce3ed;--qs-face:#f6f8fc;--qs-ink:#2b3547;",
+        "--qs-rim:#d3dae6;--qs-edge:#bdc7d8;--qs-r:#b5342b;--qs-x:#1f7a52;--qs-adm:#4a6fa5;",
         "--qs-vswr:#1f5fbf;--qs-accent:#1f5fbf;--qs-q:#8d3a9b;--qs-marker:#14181f;--qs-dot:#1f5fbf;",
         "--qs-trace:#1f5fbf;--qs-plot:#2b3547;--qs-text:#6b7688;--qs-ui:#6b7688;",
         "--qs-a1:#1f5fbf;--qs-a2:#b5342b;--qs-a3:#1f7a52;--qs-a4:#8d3a9b;",
