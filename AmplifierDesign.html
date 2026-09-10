@@ -25,10 +25,6 @@
             -webkit-text-size-adjust: none;            
             -webkit-user-select: none;                  
         } 
-   /* makes readonly input background white */
-  input[readonly].form-control {
-          background-color: #FFF;
-      } 
 /* makes disabled links grey */
 .disabled,
 .disabled:visited ,
@@ -108,19 +104,19 @@
         <div class="col-xl-8 col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: 0px">
             <table>
                 <tr>
-                     <td><label  for="GS" > <font size="1"> Gs: </font> </label> </td>
+                     <td><label for="GS" class="qs-plane-label">Gs:</label> </td>
                     <td><input id="GS" type="text" value="0" name="spin4"  style="width: 100%" class="form-control input-sm" onchange="spin_changeAV(this.id)"  readonly /></td>
                     <td> &nbsp</td> 
-                     <td><label  for="GA" > <font size="1"> Ga[dB]: </font> </label> </td>
+                     <td><label for="GA" class="qs-plane-label">Ga[dB]:</label> </td>
                     <td><input id="GA" type="text" value="0" name="spin3"  style="width: 64px" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  /></td>
                     <td> &nbsp</td> 
                     </td>
                 </tr>
                 <tr>
-                    <td><label  for="ZS" > <font size="1"> Zs: </font> </label> </td>
+                    <td><label for="ZS" class="qs-plane-label">Zs:</label> </td>
                     <td><input id="ZS" type="text" value="0" name="spin4"  style="width: 100%" class="form-control input-sm" onchange="spin_changeAV(this.id)" readonly /></td>
                     <td> &nbsp</td>
-                    <td><label  for="FI" > <font size="1"> Fi[dB]: </font> </label> </td>
+                    <td><label for="FI" class="qs-plane-label">Fi[dB]:</label> </td>
                     <td><input id="FI" type="text" value="0" name="spin3"  style="width: 64px" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" /></td>
                     <td> &nbsp</td>
                     <!-- <td><button type="button" class="btn btn-default btn-sm" style="height:27px" onclick= test() > Test </button></td> -->
@@ -135,15 +131,15 @@
         <div class="col-xl-8 col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: 0px">
             <table>
                 <tr>
-                    <td><label  for="GL" > <font size="1"> Gl: </font> </label> </td>
+                    <td><label for="GL" class="qs-plane-label">Gl:</label> </td>
                     <td><input id="GL" type="text" value="0" name="spin4"  style="width: 100%" class="form-control input-sm"  onchange="spin_changeOP(this.id)" readonly /></td>
                     <td> &nbsp</td>
-                    <td><label  for="SWR" > <font size="1"> SWR: </font> </label> </td>
+                    <td><label for="SWR" class="qs-plane-label">SWR:</label> </td>
                     <td><input id="SWR" type="text" value="1.0" name="spin3"  style="width: 64px" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" /></td>
                     <td> &nbsp</td>
                 </tr>
                 <tr>
-                    <td><label  for="ZL" > <font size="1"> Zl: </font> </label> </td>
+                    <td><label for="ZL" class="qs-plane-label">Zl:</label> </td>
                     <td><input id="ZL" type="text" value="0" name="spin4"  style="width: 100%" class="form-control input-sm"  onchange="spin_changeOP(this.id)" readonly /></td>
                     <td> &nbsp</td>
                 </tr>

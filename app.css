@@ -826,6 +826,16 @@ th {
     margin-bottom: 10px;
 }
 .qs-sweep-row label { font-size: 12px; color: var(--qs-text, #6b7280); font-weight: 400; }
+
+/* The amplifier page's source and load plane readouts. These were <font
+   size="1">, which is the one way of setting a size the stylesheet cannot
+   reach, so they stayed 10px however the rest of the page was scaled. */
+.qs-plane-label {
+    font-size: 12px;
+    font-weight: 400;
+    white-space: nowrap;
+    color: var(--qs-text, #6b7280);
+}
 .qs-sweep-row select { width: auto; }
 .qs-sweep-row input { width: 62px; text-align: right; }
 .qs-overlay-row .qs-spin { width: 118px; }
