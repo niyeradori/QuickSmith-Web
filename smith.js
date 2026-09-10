@@ -44,10 +44,10 @@ var QSChart = (function () {
     /* ------------------------------------------------------------- styling */
 
     var CSS = [
-        ":root{--qs-bg:#f4f6f9;--qs-face:#fff;--qs-ink:#131823;",
+        ":root{--qs-bg:#e4e9f1;--qs-face:#fff;--qs-ink:#2b3547;",
         "--qs-rim:#d9dee7;--qs-edge:#c3ccdb;--qs-r:#b5342b;--qs-x:#1f7a52;--qs-adm:#4a6fa5;",
         "--qs-vswr:#1f5fbf;--qs-accent:#1f5fbf;--qs-q:#8d3a9b;--qs-marker:#14181f;--qs-dot:#1f5fbf;",
-        "--qs-trace:#1f5fbf;--qs-plot:#131823;--qs-text:#6b7688;--qs-ui:#6b7688;",
+        "--qs-trace:#1f5fbf;--qs-plot:#2b3547;--qs-text:#6b7688;--qs-ui:#6b7688;",
         "--qs-a1:#1f5fbf;--qs-a2:#b5342b;--qs-a3:#1f7a52;--qs-a4:#8d3a9b;",
         "--qs-a5:#b26a00;--qs-a6:#0f7f8f}",
 
