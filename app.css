@@ -252,12 +252,15 @@ input[type="color"] { width: 46px; height: 28px; padding: 2px; border: 1px solid
 .btn:hover { background: var(--qs-bg, #e9ecf1); text-decoration: none; }
 .btn-sm { padding: 4px 10px; font-size: 13px; }
 .btn-lg { padding: 9px 18px; font-size: 15px; }
+/* a filled button uses --qs-accent, which is the same blue in the light theme
+   but a deeper one in the dark, where the line blue behind white text left the
+   label at 2.5:1 */
 .btn-info, .btn-primary {
     color: #fff;
-    background: var(--qs-vswr, #1f5fbf);
-    border-color: var(--qs-vswr, #1f5fbf);
+    background: var(--qs-accent, #1f5fbf);
+    border-color: var(--qs-accent, #1f5fbf);
 }
-.btn-info:hover, .btn-primary:hover { filter: brightness(.92); background: var(--qs-vswr, #1f5fbf); }
+.btn-info:hover, .btn-primary:hover { filter: brightness(1.12); }
 .navbar-btn { margin: 0 4px; }
 
 .close {
@@ -509,7 +512,7 @@ th {
 .qs-tray {
     margin-left: -12px;
     padding: 10px 12px;
-    background: var(--qs-face, #fff);
+    background: var(--qs-bg, #fff);
     border: 1px solid var(--qs-rim, #d9dde5);
     border-radius: 10px;
 }
@@ -590,6 +593,22 @@ body > font blockquote { max-width: 70ch; }
 .qs-work      { grid-area: work; }
 
 .qs-chart-col, .qs-side, .qs-work { min-width: 0; }
+
+/*
+ * The workbench is a panel like everything else. Inside it the surfaces
+ * invert: the value fields and the parts bin sink to the page colour so they
+ * still read as things you reach into, and the stepper buttons come up to the
+ * panel colour so they read as keys either side of the number.
+ */
+.qs-work {
+    padding: 12px 14px;
+    background: var(--qs-face, #fff);
+    border: 1px solid var(--qs-rim, #d9dde5);
+    border-radius: 10px;
+}
+.qs-work .form-control { background: var(--qs-bg, #f6f7f9); }
+.qs-work .qs-spin > button { background: var(--qs-face, #f5f5f5); }
+.qs-work .qs-unit-tag { background: var(--qs-bg, #fff); }
 
 .qs-cursor {
     display: block;

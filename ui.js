@@ -36,7 +36,7 @@ var QSUI = (function () {
         ".qs-dialog button.qs-btn{font:inherit;padding:7px 16px;border-radius:7px;cursor:pointer;",
         "border:1px solid var(--qs-rim,#ccd2dc);background:var(--qs-bg,#f6f7f9);color:var(--qs-ink,#14181f)}",
         ".qs-dialog button.qs-btn:hover{background:var(--qs-rim,#eceff4)}",
-        ".qs-dialog button.qs-btn.qs-primary{background:var(--qs-vswr,#1f5fbf);border-color:var(--qs-vswr,#1f5fbf);color:#fff}",
+        ".qs-dialog button.qs-btn.qs-primary{background:var(--qs-accent,#1f5fbf);border-color:var(--qs-accent,#1f5fbf);color:#fff}",
         ".qs-dialog button.qs-btn.qs-primary:hover{filter:brightness(.92)}",
         ".qs-dialog button:focus-visible,.qs-dialog input:focus-visible{outline:2px solid var(--qs-vswr,#1f5fbf);",
         "outline-offset:2px}",
