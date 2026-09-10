@@ -737,6 +737,25 @@ body > font blockquote { max-width: 70ch; }
 .qs-freq input { text-align: right; }
 .qs-unit { color: var(--qs-text, #6b7280); font-size: 13px; }
 
+/* ------------------------------------------------------- guided examples
+ * The tour sits under the chart rather than over it, so nothing it is
+ * talking about is hidden while it talks.
+ */
+.qs-tour { border-color: var(--qs-a5, #b26a00); }
+.qs-tour-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.qs-tour-head h2 { margin: 0; color: var(--qs-a5, #b26a00); }
+.qs-tour-step {
+    flex: 1;
+    font: 500 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--qs-text, #6b7280);
+}
+.qs-tour-say { margin: 0 0 12px; font-size: 13px; line-height: 1.65; max-width: 62ch; }
+.qs-tour-nav { display: flex; gap: 8px; }
+.qs-tour-nav .btn { min-width: 78px; }
+.qs-tour-nav .btn[disabled] { opacity: .45; cursor: default; }
+.qs-tour-pick { text-align: left; margin-bottom: 8px; }
+.qs-tour-pick span { font-size: 12px; color: var(--qs-text); }
+
 /* ------------------------------------------------------------- response */
 
 .qs-sweep-row {

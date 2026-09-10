@@ -33,6 +33,7 @@
   <script src="smith.js"></script>
   <script src="plot.js"></script>
   <script src="symbols.js"></script>
+  <script src="tours.js"></script>
   <script src="sch.js"></script>
   <script src="js/DragDropTouch.js"></script>    
    <!-- ios-drag-drop.js does not trigger end ? -->
@@ -214,7 +215,8 @@
         <li><a  class="dropdown-toggle" data-toggle="dropdown" href="#">Help</a>
             <ul class="dropdown-menu">
                 <li><a href="qsmithfaq.html" target="_blank" >FAQ</a></li>
-                <li><a href="/help/examples/examples/EXAMPLES.html" target="_blank" >Examples</a></li>
+                <li><a href="#" onclick="chooseTour()">Guided examples</a></li>
+                <li><a href="/help/examples/examples/EXAMPLES.html" target="_blank" >Examples in full</a></li>
              </ul>
         </li>
         <li><a href="#" onclick="options_click(); document.getElementById('optionsModal').showModal()">Settings</a></li>
@@ -230,6 +232,20 @@
         <div class="qs-chart-col">
             <div id="smithMain"></div>
             <input type="text" id="Z1" value="Z:" class="qs-cursor" readonly title="Impedance under the pointer" />
+
+            <!-- a guided example, narrating the design it is building -->
+            <section id="tourPanel" class="qs-panel qs-tour" hidden>
+                <div class="qs-tour-head">
+                    <h2 id="tourTitle">Guided example</h2>
+                    <span id="tourStep" class="qs-tour-step"></span>
+                    <button type="button" class="close" onclick="endTour()" title="Close">&times;</button>
+                </div>
+                <p id="tourSay" class="qs-tour-say"></p>
+                <div class="qs-tour-nav">
+                    <button type="button" class="btn btn-sm" id="tourBack" onclick="tourStep(-1)">Back</button>
+                    <button type="button" class="btn btn-sm btn-primary" id="tourNext" onclick="tourStep(1)">Next</button>
+                </div>
+            </section>
 
             <!-- ********************************RESPONSE PANEL***************************** -->
             <section class="qs-panel qs-response">
@@ -1329,6 +1345,79 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         updateReadout();
         runResponse();
     }
+
+/* ==================================================== guided examples
+ *
+ * A tour rebuilds one of the worked examples an element at a time, saying
+ * what each one does. The data is in tours.js; this drives the schematic
+ * from it, which means a tour goes through exactly the same path as any
+ * other edit and nothing needs to know a tour is running.
+ */
+var tour = null, tourAt = 0;
+
+function chooseTour() {
+    var list = document.createElement("div");
+    QSTours.all.forEach(function (t) {
+        var row = document.createElement("button");
+        row.type = "button";
+        row.className = "btn qs-wide qs-tour-pick";
+        row.innerHTML = "<strong>" + t.title + "</strong><br><span>" +
+            t.source + " \u00b7 " + t.steps.length + " steps</span>";
+        row.addEventListener("click", function () { QSUI.close(dlg); startTour(t.id); });
+        list.appendChild(row);
+    });
+    var dlg = QSUI.open({ title: "Guided examples", body: list, small: true });
+}
+
+function startTour(id) {
+    tour = QSTours.byId(id);
+    if (!tour) return;
+    schObj.Z0 = smithObj.Z0 = tour.Z0;
+    schObj.LU = tour.LU;
+    schObj.termination = "Single";
+    tourAt = 0;
+    showTourStep();
+}
+
+function tourStep(by) {
+    if (!tour) return;
+    tourAt = Math.max(0, Math.min(tour.steps.length, tourAt + by));
+    showTourStep();
+}
+
+function showTourStep() {
+    if (!tour) return;
+    var els = QSTours.elementsAt(tour, tourAt);
+    for (var i = 0; i <= 12; i++) copyElement(schObj.ELEMENT[i], els[i]);
+    updateUI();
+
+    var panel = document.getElementById("tourPanel");
+    panel.hidden = false;
+    document.getElementById("tourTitle").textContent = tour.title;
+    document.getElementById("tourStep").textContent = tourAt === 0
+        ? tour.source
+        : "step " + tourAt + " of " + tour.steps.length;
+    document.getElementById("tourSay").textContent = tourAt === 0
+        ? tour.opening
+        : (tourAt === tour.steps.length
+            ? tour.steps[tourAt - 1].say + "  " + tour.closing
+            : tour.steps[tourAt - 1].say);
+    document.getElementById("tourBack").disabled = tourAt === 0;
+    document.getElementById("tourNext").disabled = tourAt === tour.steps.length;
+}
+
+function copyElement(target, from) {
+    target.type = from.type;
+    target.value1 = from.value1;
+    target.value2 = from.value2;
+    target.q = from.q;
+    target.tune = from.tune;
+}
+
+function endTour() {
+    tour = null;
+    document.getElementById("tourPanel").hidden = true;
+}
 
 /*
  * Dragging a node on the chart. The engine works out which value puts that

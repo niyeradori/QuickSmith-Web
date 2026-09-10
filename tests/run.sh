@@ -21,6 +21,7 @@ if command -v node >/dev/null 2>&1; then
     node tests/plot.js
     node tests/symbols.js
     node tests/tune.js
+    node tests/tours.js
     exec node tests/run.js "$@"
 elif [ -x "$JSC" ]; then
     "$JSC" tests/standalone.js
@@ -30,6 +31,7 @@ elif [ -x "$JSC" ]; then
     "$JSC" tests/plot.js
     "$JSC" tests/symbols.js
     "$JSC" tests/tune.js
+    "$JSC" tests/tours.js
     exec "$JSC" tests/run.js -- "$@"
 else
     echo "No JavaScript engine found." >&2
