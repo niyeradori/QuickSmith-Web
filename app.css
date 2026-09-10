@@ -471,6 +471,26 @@ th {
 .ladder-half table { table-layout: fixed; border-collapse: collapse; }
 .ladder-half td { padding: 1px; }
 
+/*
+ * A value box over the slot it belongs to. The tables are three equal cells,
+ * but a series slot is only a quarter of the row, so a box that filled its
+ * cell overhung the slot by the width of the shunt slot beside it. Three
+ * quarters of the cell is exactly a series slot, hung on whichever side that
+ * slot is on: to the right in the first half, to the left in the second,
+ * which is read backwards. The shunt boxes already line up on the slot's edge,
+ * since a shunt slot is far narrower than any box you could type in.
+ */
+.ladder-half table:first-of-type .qs-spin { width: 75%; }
+
+/* A series slot is a quarter of the row, so its box is narrower than a shunt
+   one and the stepper has to give the number room: smaller keys, tighter
+   padding. Without this "38.12" clips to "38.1". */
+.ladder-half table:first-of-type .qs-spin > button { width: 20px; }
+.ladder-half table:first-of-type .qs-spin > input { padding-left: 4px; padding-right: 4px; }
+.ladder-half table:first-of-type .qs-unit-tag { padding: 0 2px; font-size: 9px; }
+.half-a table:first-of-type .qs-spin { margin-left: auto; margin-right: 0; }
+.half-b table:first-of-type .qs-spin { margin-left: 0; margin-right: auto; }
+
 /* On a narrow panel every pixel goes to the controls instead: the value boxes
    are down to about fifty pixels there, which is as small as they can be and
    still hold "38.12". The compaction is a wide-screen luxury. */
