@@ -655,6 +655,14 @@ body > font blockquote { max-width: 70ch; }
     font-size: 13px;
 }
 .qs-overlay-row input[type="text"] { width: 74px; text-align: right; }
+
+/*
+ * Each overlay's value in the colour of the curve it draws, matching the
+ * dashed circles on the chart. No extra ink: it saves the reader working out
+ * which number goes with which ring.
+ */
+#SM0 { color: var(--qs-vswr, #1f5fbf); font-weight: 600; }
+#SM1 { color: var(--qs-q, #8d3a9b); font-weight: 600; }
 .qs-overlay-row input[type="checkbox"] { width: 16px; height: 16px; margin: 0; }
 .qs-overlay-row .btn { min-width: 74px; }
 
