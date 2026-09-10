@@ -1,0 +1,18 @@
+# QuickSmith - https://quicksmith.online
+
+User-agent: *
+Allow: /
+
+# Scratch pages that predate the site and have nothing to do with QuickSmith.
+# They are still served, but they should not be indexed against this domain.
+Disallow: /clean.html
+Disallow: /convert.html
+Disallow: /error.html
+Disallow: /index_template.html
+Disallow: /inputform.html
+Disallow: /treatment-counter.html
+Disallow: /Revallis_RF_Calculators.html
+Disallow: /Revallis%20RF%20Calculators_files/
+Disallow: /tests/
+
+Sitemap: https://quicksmith.online/sitemap.xml
