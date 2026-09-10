@@ -317,6 +317,9 @@ input[type="color"] { width: 46px; height: 28px; padding: 2px; border: 1px solid
  * next to the values, and no longer competing with the red the chart uses for
  * constant resistance.
  */
+/* which slot the component dialog is editing, same blue as the designator */
+.qs-ref { color: var(--qs-adm, #4a6fa5); }
+
 th {
     font: 500 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
     letter-spacing: .04em;
