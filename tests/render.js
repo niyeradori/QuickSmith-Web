@@ -83,6 +83,8 @@ Object.defineProperty(Node.prototype, "firstChild", {
 var registry = {};
 var document = {
     head: new Node("head"),
+    // smith.js settles the palette and the theme as it loads, which needs both
+    documentElement: new Node("html"),
     createElement: function (t) { return new Node(t); },
     createElementNS: function (ns, t) { return new Node(t, ns); },
     getElementById: function (id) { return registry[id] || null; }

@@ -142,9 +142,6 @@ var QSChart = (function () {
 
         var wrap = document.createElement("div");
         wrap.className = "qs-wrap";
-        var stored = null;
-        try { stored = localStorage.getItem("qsChartTheme"); } catch (e) { stored = null; }
-        if (stored) document.documentElement.setAttribute("data-qs-theme", stored);
         target.parentNode.replaceChild(wrap, target);
 
         var svg = el("svg", {
@@ -213,10 +210,7 @@ var QSChart = (function () {
     }
 
     function currentTheme(view) {
-        var set = document.documentElement.getAttribute("data-qs-theme");
-        if (set) return set;
-        return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)
-            ? "analyzer" : "bench";
+        return document.documentElement.getAttribute("data-qs-theme") || "analyzer";
     }
 
     function applyTransform(view) {
@@ -648,6 +642,20 @@ var QSChart = (function () {
     function xRimAngle(x) {
         return 2 * Math.atan(1 / x) * 180 / Math.PI;
     }
+
+    /*
+     * Dark is the default, and a stored choice from the palette button wins.
+     * Both the palette and the choice are applied as this file loads rather
+     * than when the chart mounts, so the page never paints light first and
+     * then switches. This file is in <head>, so document.head and
+     * documentElement are both there already.
+     */
+    installStyles();
+    (function () {
+        var stored = null;
+        try { stored = localStorage.getItem("qsChartTheme"); } catch (e) { stored = null; }
+        document.documentElement.setAttribute("data-qs-theme", stored || "analyzer");
+    })();
 
     return {
         mount: mount,
