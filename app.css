@@ -612,6 +612,10 @@ body > font blockquote { max-width: 70ch; }
 }
 .qs-wide { display: block; width: 100%; }
 
+/* A button inside a panel is a label too, so it sits at label weight with the
+   rest of them. The values are what should catch the eye. */
+.qs-panel .btn { color: var(--qs-text, #6b7280); }
+
 /*
  * The input reading. Zin and S11 are what the network is judged by, and the
  * terminal they are measured at is a few pixels to the right of this panel,
@@ -656,6 +660,7 @@ body > font blockquote { max-width: 70ch; }
     flex: 1;
     font-weight: 400;
     font-size: 13px;
+    color: var(--qs-text, #6b7280);
 }
 .qs-overlay-row input[type="text"] { width: 74px; text-align: right; }
 
