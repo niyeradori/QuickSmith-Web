@@ -170,8 +170,9 @@ var QSHarness = (function () {
    */
   function matchMetrics(spec) {
     var Z0 = spec.Z0 === undefined ? 50 : spec.Z0;
-    var sols = QSEngine.matchToZ0(spec.load, Z0, spec.freq);
-    var m = { MatchCount: sols.length, MatchWorstGamma: 0, MatchNSeriesFirst: 0 };
+    var sols = QSEngine.matchToZ0(spec.load, Z0, spec.freq, spec.q);
+    var m = { MatchCount: sols.length, MatchWorstGamma: 0, MatchNSeriesFirst: 0,
+              MatchWorstQError: 0, MatchThreeElement: 0 };
     if (!sols.length) return m;
 
     m.MatchBestQ = sols[0].q;
@@ -185,6 +186,13 @@ var QSHarness = (function () {
       elements[1] = { type: "rx", value1: spec.load.re, value2: spec.load.im };
       var r = QSEngine.solve({ Z0: Z0, frequency: spec.freq, elements: elements });
       m.MatchWorstGamma = Math.max(m.MatchWorstGamma, r.gamma.mag);
+
+      // A Pi or a T is asked for at a particular Q, so the network it gives
+      // back has to come out at that Q, not merely match.
+      if (/^(Pi|T)/.test(s.topology)) {
+        m.MatchThreeElement++;
+        m.MatchWorstQError = Math.max(m.MatchWorstQError, Math.abs(r.loadedQ - spec.q));
+      }
     });
     return m;
   }

@@ -648,6 +648,39 @@ var QS_CASES = [
     match: { load: { re: 120, im: 85 }, Z0: 75, freq: 433 },
     assert: { MatchWorstGamma: [0, 1e-5], MatchCount: [2, 0] }
   },
+  /*
+   * Pi and T. An L-network's Q is whatever the transformation makes it; these
+   * are asked for at a Q, so the test is not only that they match but that
+   * they come out at the Q that was requested.
+   *
+   * The tolerances are the same 1e-5 the L-network cases use, and for the same
+   * reason: the harness builds the parts the way the program does, with the
+   * default Q of a million, so what is left is the components' own loss and
+   * not the design. Solved with ideal parts the same networks land at 1e-11.
+   */
+  {
+    id: "match-pi-and-t",
+    name: "Pi and T match at exactly the Q they were asked for",
+    ref: "engine.js matchToZ0 with a target Q",
+    match: { load: { re: 25, im: -18 }, freq: 140, q: 5 },
+    assert: { MatchWorstGamma: [0, 1e-4], MatchWorstQError: [0, 1e-3] },
+    expect: { MatchThreeElement: [4, 0] }
+  },
+  {
+    id: "match-pi-and-t-high-q",
+    name: "A higher Q is a narrower network, and still exact",
+    ref: "engine.js matchToZ0 with a target Q",
+    match: { load: { re: 1.94, im: 1.1 }, freq: 175, q: 12 },
+    assert: { MatchWorstGamma: [0, 1e-4], MatchWorstQError: [0, 1e-3] },
+    expect: { MatchThreeElement: [4, 0] }
+  },
+  {
+    id: "match-q-below-the-l-network",
+    name: "A Q below the L-network's own is not on offer",
+    ref: "engine.js matchToZ0 - there is no virtual resistance that far in",
+    match: { load: { re: 1.94, im: 1.1 }, freq: 175, q: 2 },
+    expect: { MatchThreeElement: [0, 0] }
+  },
   {
     id: "match-already-matched",
     name: "Auto-match on an already-matched load offers nothing to add",

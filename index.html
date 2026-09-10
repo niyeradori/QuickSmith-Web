@@ -2454,6 +2454,9 @@ document.getElementById("file-input2").addEventListener("change", handleTouchsto
  * loaded Q first. Nothing is applied until the user picks one - the point of a
  * Smith chart is to see the transformation, not to have it done invisibly.
  */
+/* The Q last asked for, so reopening the dialog remembers it. */
+var matchQ = "";
+
 function autoMatch_click() {
     var solution = resultsObj.solution;
     if (!solution) { Zcalsweep(); solution = resultsObj.solution; }
@@ -2461,7 +2464,8 @@ function autoMatch_click() {
     var ZL = solution.load;
     var Z0 = parseFloat(schObj.Z0);
     var freq = parseFloat(schObj.ELEMENT[0].value1);
-    var options = QSEngine.matchToZ0(ZL, Z0, freq);
+    var wanted = parseFloat(matchQ);
+    var options = QSEngine.matchToZ0(ZL, Z0, freq, wanted);
 
     var header = "Load " + ZL.re.toFixed(3) + (ZL.im >= 0 ? " + j" : " - j") +
                  Math.abs(ZL.im).toFixed(3) + " Ω to " + Z0 + " Ω at " +
@@ -2480,6 +2484,32 @@ transmission line or a three-element network.");
     head.textContent = header;
     wrap.appendChild(head);
 
+    /*
+     * An L-network's Q is whatever the transformation makes it. Ask for one
+     * and you get Pi and T networks too, which have the third element needed
+     * to hit it. Below the L-network's own Q there is nothing to offer.
+     */
+    var ask = document.createElement("div");
+    ask.style.cssText = "display:flex;align-items:center;gap:8px;padding:8px 0;" +
+                        "border-top:1px solid var(--qs-rim,#e5e8ee)";
+    var askLabel = document.createElement("label");
+    askLabel.setAttribute("for", "matchQ");
+    askLabel.style.cssText = "flex:1;font-size:13px;color:var(--qs-text,#7b8496)";
+    askLabel.textContent = "Loaded Q for a Pi or T (blank for L only)";
+    var askInput = document.createElement("input");
+    askInput.type = "text";
+    askInput.id = "matchQ";
+    askInput.value = matchQ;
+    askInput.style.width = "70px";
+    askInput.addEventListener("change", function () {
+        matchQ = askInput.value;
+        QSUI.close(dlg);
+        autoMatch_click();
+    });
+    ask.appendChild(askLabel);
+    ask.appendChild(askInput);
+    wrap.appendChild(ask);
+
     var dlg = null;
     options.forEach(function (option) {
         var parts = option.elements.filter(function (el) { return el.type !== "w"; })
@@ -2497,9 +2527,10 @@ transmission line or a three-element network.");
 
         var meta = document.createElement("div");
         meta.style.cssText = "color:#7b8496;font-size:12px;margin-top:3px";
-        meta.textContent = (option.topology === "series-shunt"
-            ? "series then shunt" : "shunt then series") +
-            "   \u00b7   loaded Q " + option.q.toFixed(2);
+        var shape = option.topology === "series-shunt" ? "series then shunt"
+                  : option.topology === "shunt-series" ? "shunt then series"
+                  : option.topology;
+        meta.textContent = shape + "   \u00b7   loaded Q " + option.q.toFixed(2);
 
         var apply = document.createElement("button");
         apply.type = "button";
@@ -2520,7 +2551,12 @@ transmission line or a three-element network.");
     var foot = document.createElement("p");
     foot.style.cssText = "color:#7b8496;font-size:12px;margin:14px 0 0";
     foot.textContent = "Applying clears the rest of the ladder, because the match is " +
-                       "calculated from the load outwards. Lower Q means wider bandwidth.";
+                       "calculated from the load outwards. Lower Q means wider bandwidth." +
+                       (isFinite(wanted) && wanted > 0 && !options.some(function (o) {
+                            return /^(Pi|T)/.test(o.topology); })
+                        ? " A Q of " + wanted + " is below what this transformation can do, " +
+                          "so no Pi or T is possible."
+                        : "");
     wrap.appendChild(foot);
 
     dlg = QSUI.open({ title: "Match to " + Z0 + " \u03a9", body: wrap });

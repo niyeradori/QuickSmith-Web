@@ -558,10 +558,89 @@ var QSEngine = (function () {
      * Returns solutions ordered by loaded Q, lowest first - the widest
      * bandwidth match is usually the one you want.
      */
-    function matchToZ0(ZL, Z0, freq) {
+    /*
+     * Pi and T, which need a Q because they have room for one.
+     *
+     * An L-network has no spare freedom: two elements, two conditions, and
+     * its loaded Q falls out of the ratio it has to transform. Whether that Q
+     * suits you is not your choice. A third element buys the freedom back,
+     * and by convention it is spent on Q, which is the whole reason to reach
+     * for a Pi or a T: to hold the bandwidth open, or to close it down.
+     *
+     * Both are two L-networks back to back through a virtual resistance at
+     * the middle. A T steps up to it from both ends, so Rv sits above both; a
+     * Pi steps down, so Rv sits below both. Q is set by whichever side has
+     * further to go, and that fixes Rv:
+     *
+     *      T:   Rv = min(RL, Z0) * (1 + Q^2)
+     *      Pi:  Rv = max(RL, Z0) / (1 + Q^2)
+     *
+     * So a Q below the L-network's own is not available: there is no Rv that
+     * far in, and the caller gets nothing back rather than a network that
+     * does not match.
+     *
+     * Each shape comes in two forms, mirror images: series L with shunt C, or
+     * series C with shunt L. Both match at the design frequency and differ
+     * either side of it.
+     */
+    function teeSolutions(ZL, Z0, freq, Q) {
+        var out = [], RL = ZL.re, XL = ZL.im;
+        var Rv = Math.min(RL, Z0) * (1 + Q * Q);
+        if (Rv < RL - 1e-9 || Rv < Z0 - 1e-9) return out;      // Q is too low
+
+        var Q1 = Math.sqrt(Math.max(Rv / RL - 1, 0));
+        var Q2 = Math.sqrt(Math.max(Rv / Z0 - 1, 0));
+
+        [1, -1].forEach(function (sign) {
+            out.push({
+                topology: sign > 0 ? "T, series L" : "T, series C",
+                q: Math.max(Q1, Q2),
+                elements: [
+                    assign({ slot: 2 }, seriesElement(sign * Q1 * RL - XL, freq)),
+                    assign({ slot: 3 }, shuntElement(sign * (Q1 + Q2) / Rv, freq)),
+                    assign({ slot: 4 }, seriesElement(sign * Q2 * Z0, freq))
+                ]
+            });
+        });
+        return out;
+    }
+
+    function piSolutions(ZL, Z0, freq, Q) {
+        var out = [];
+        var Y = cinv(cx(ZL.re, ZL.im));
+        var Rp = 1 / Y.re, BL = Y.im;              // the load as a parallel R and B
+        var Rv = Math.max(Rp, Z0) / (1 + Q * Q);
+        if (Rv > Rp + 1e-9 || Rv > Z0 + 1e-9) return out;      // Q is too low
+
+        var Q1 = Math.sqrt(Math.max(Rp / Rv - 1, 0));
+        var Q2 = Math.sqrt(Math.max(Z0 / Rv - 1, 0));
+
+        [1, -1].forEach(function (sign) {
+            out.push({
+                topology: sign > 0 ? "Pi, shunt C" : "Pi, shunt L",
+                q: Math.max(Q1, Q2),
+                elements: [
+                    { slot: 2, type: "w", value1: 0 },
+                    assign({ slot: 3 }, shuntElement(sign * Q1 / Rp - BL, freq)),
+                    assign({ slot: 4 }, seriesElement(sign * (Q1 + Q2) * Rv, freq)),
+                    assign({ slot: 5 }, shuntElement(sign * Q2 / Z0, freq))
+                ]
+            });
+        });
+        return out;
+    }
+
+    function matchToZ0(ZL, Z0, freq, targetQ) {
         var out = [];
         var RL = ZL.re, XL = ZL.im;
         if (!(RL > 0) || !(Z0 > 0) || !(freq > 0)) return out;
+
+        // A Pi or a T is only on offer once a Q has been asked for, since
+        // without one there is nothing to choose and the L-network is simpler.
+        if (isFinite(targetQ) && targetQ > 0) {
+            out = out.concat(teeSolutions(ZL, Z0, freq, targetQ),
+                             piSolutions(ZL, Z0, freq, targetQ));
+        }
 
         var magsq = RL * RL + XL * XL;
         var GL = RL / magsq, BL = -XL / magsq;
