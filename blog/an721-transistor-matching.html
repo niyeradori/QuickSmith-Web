@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AN721 large signal transistor matching, worked through | QuickSmith</title>
+<meta name="description" content="Motorola AN721 section 4.2, worked on an interactive Smith chart. Matching a 1.94 + j1.1 ohm transistor input to 50 ohms at a loaded Q of 10, and working out the collector load resistance before matching the output.">
+<link rel="canonical" href="https://quicksmith.online/blog/an721-transistor-matching.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/blog/an721-transistor-matching.html">
+<meta property="og:title" content="AN721 large signal transistor matching, worked through | QuickSmith">
+<meta property="og:description" content="AN721 section 4.2 on a chart you can drag, input and output networks.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/smith.ico">
+<link href="../app.css" rel="stylesheet">
+<link href="../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../smith.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Matching a 2N5642: the AN721 input and output networks",
+  "description": "Motorola AN721 section 4.2, worked on an interactive Smith chart. Matching a 1.94 + j1.1 ohm transistor input to 50 ohms at a loaded Q of 10, and working out the collector load resistance before matching the output.",
+  "image": "https://quicksmith.online/img/og-card.png",
+  "author": {
+    "@type": "Person",
+    "name": "Nathan Iyer"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "QuickSmith"
+  },
+  "datePublished": "2026-09-10",
+  "mainEntityOfPage": "https://quicksmith.online/blog/an721-transistor-matching.html"
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">
+        <img src="../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="index.html">Articles</a></li>
+      <li><a href="../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">Article</p>
+<h1>Matching a 2N5642: the AN721 input and output networks</h1>
+
+<p class="doc-lede">
+  Motorola's AN721 is one of the most copied application notes in RF, and
+  section 4.2 is the reason. Here is that design worked through on a chart you
+  can drag, with both the input and the output network.
+</p>
+
+<h2>The problem</h2>
+
+<p>
+  Match a <strong>2N5642</strong> to deliver 20 W between a 50 ohm source and a
+  50 ohm load at <strong>175 MHz</strong>, from a 28 V supply, with a maximum
+  input Q of 10.
+</p>
+
+<p>
+  Two separate matching jobs: the input side, where the transistor's base looks
+  like almost nothing, and the output side, where you have to work out what the
+  collector wants to see before you can match to it.
+</p>
+
+<h2>The input: 1.94 + j1.1 ohms</h2>
+
+<p>
+  That number comes off the data sheet, and it is the interesting part of this
+  example. Under drive, the base of a power transistor looks like about two
+  ohms. You are transforming 50 ohms down by a factor of 25, which is a hard
+  thing to do gracefully.
+</p>
+
+<p>
+  Set the load to 1.94 + j1.1 and the frequency to 175 MHz. The dot sits jammed
+  against the left edge of the chart, which is what a two ohm load looks like.
+  VSWR is 25.8:1.
+</p>
+
+<p>
+  Draw a <strong>Q circle of 10</strong> in the Overlays panel, because that is
+  a design constraint here and not an afterthought. AN721 specifies a maximum
+  input Q of 10, and the whole point of drawing it is that you can see when you
+  are about to violate it.
+</p>
+
+<h3>Three components</h3>
+
+<p>
+  <strong>Series inductor first.</strong> It climbs the constant resistance
+  circle through the load. You stop when you reach the Q circle, not when it
+  looks nice: 16.8 nH gets you to a loaded Q of 10.09, which is the budget,
+  spent.
+</p>
+
+<p>
+  <strong>Shunt capacitor next.</strong> This is the one that does the actual
+  transformation, swinging round the constant conductance circle until it meets
+  the 50 ohm constant resistance circle. 38.12 pF.
+</p>
+
+<p>
+  <strong>Series capacitor last.</strong> Now the real part is right and only
+  reactance is left over, so a series capacitor slides down the 50 ohm circle
+  into the centre. 10.52 pF.
+</p>
+
+<aside class="doc-result">
+  <h2>AN721 input match</h2>
+  <ul>
+    <li>Frequency  175 MHz</li>
+    <li>Load       1.94 + j1.1 ohm</li>
+    <li>L2         16.8 nH</li>
+    <li>C3         38.12 pF</li>
+    <li>C4         10.52 pF</li>
+    <li></li>
+    <li>Zin 49.906 - j0.074 ohm,  VSWR 1.0024</li>
+    <li>loaded Q 10.09,  2:1 bandwidth 13.12 MHz (168.5 to 181.7)</li>
+  </ul>
+</aside>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxNzUsImUiOltbMSwicngiLDEuOTQsMS4xXSxbMiwibCIsMTYuOCwwXSxbMywiYyIsMzguMTIsMF0sWzQsImMiLDEwLjUyLDBdXSwiYyI6eyJzIjoyLCJxIjoxMH19">Open the input match</a>
+
+<p>
+  Look at that bandwidth: 13 MHz out of 175. That is a loaded Q of 10 for you,
+  and it is exactly why AN721 sets a ceiling on it. Push the Q higher and the
+  amplifier stops working at the edges of the band; let it go lower and you
+  cannot make the transformation with three components.
+</p>
+
+<h2>The output: work out the load first</h2>
+
+<p>
+  The output side has a step before the matching, and it is the step people
+  skip. You are not matching the transistor's output impedance. You are
+  presenting the collector with the resistance it needs to see in order to
+  deliver 20 W without the collector voltage swinging into saturation.
+</p>
+
+<p>
+  <code>Rc = (Vcc - Vce(sat))^2 / (2 x Pout)</code>
+</p>
+
+<p>
+  With 28 V and 20 W out, that is 15.6 ohms. This is a design choice, not a
+  measurement: you are choosing the load line.
+</p>
+
+<p>
+  Then the transistor's own output capacitance, 40 pF from the data sheet, sits
+  in parallel with it. Convert that parallel combination to its series
+  equivalent and you get <strong>10.6 - j7.3 ohms</strong>, which is what the
+  matching network actually sees.
+</p>
+
+<p>
+  QuickSmith will do that conversion for you: put in the parallel pair and use
+  <strong>All values and equivalents</strong> in the readout, which prints the
+  series and parallel forms of the same impedance side by side.
+</p>
+
+<h3>Then it is an ordinary two element match</h3>
+
+<aside class="doc-result">
+  <h2>AN721 output match</h2>
+  <ul>
+    <li>Frequency  175 MHz</li>
+    <li>Load       10.6 - j7.3 ohm</li>
+    <li>L2         25.3 nH</li>
+    <li>C3         35 pF</li>
+    <li></li>
+    <li>Zin 50.319 - j0.039 ohm,  VSWR 1.0064</li>
+  </ul>
+</aside>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxNzUsImUiOltbMSwicngiLDEwLjYsLTcuM10sWzIsImwiLDI1LjMsMF0sWzMsImMiLDM1LDBdXSwiYyI6eyJzIjoyfX0">Open the output match</a>
+
+<p>
+  Two components instead of three, because 10.6 ohms to 50 ohms is a ratio of
+  five rather than twenty five, and the L-network's natural Q of about 2 is
+  already inside budget. Nothing needed constraining.
+</p>
+
+<h2>What this example teaches that a simpler one does not</h2>
+
+<ul>
+  <li>
+    <strong>The load is a design decision, not a given.</strong> On the output
+    side you calculated the resistance from the power and supply you wanted.
+    Change the power and the whole network changes.
+  </li>
+  <li>
+    <strong>Device parasitics are part of the load.</strong> The 40 pF of
+    collector capacitance is not something to compensate for later. It goes
+    into the number you match to.
+  </li>
+  <li>
+    <strong>Q is a specification.</strong> Drawing the Q circle first and
+    stopping the first inductor when it touches is a different way of working
+    from picking values and checking afterwards.
+  </li>
+  <li>
+    <strong>Big transformation ratios need three components.</strong> Twenty
+    five to one through two elements would have put the loaded Q near 5, which
+    sounds better, but it cannot be done with the values available and it is
+    not what the note calls for.
+  </li>
+</ul>
+
+<h2>Following along</h2>
+
+<p>
+  Both networks are in <strong>Help &rarr; Guided examples</strong> as tours
+  that build them a component at a time, saying what each one does. The written
+  versions are
+  <a href="../help/examples/examples/EXAMPLE_6.html">Example 6</a> and
+  <a href="../help/examples/examples/OUTPUT_MATCH.html">the output match</a>.
+</p>
+
+<p>
+  Every number above is re-solved by the regression suite on each run, against
+  what AN721 states, so the prose here and what the program computes cannot
+  drift apart.
+</p>
+
+<nav class="doc-nav">
+  <span><a href="index.html">&#9664; All articles</a></span>
+  <span><a href="component-q-and-real-inductors.html">Component Q: what a real inductor does &#9654;</a></span>
+</nav>
+
+</main>
+</div>
+</body>
+</html>

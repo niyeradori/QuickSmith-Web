@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Match a real antenna from a nanoVNA .s1p file | QuickSmith</title>
+<meta name="description" content="Import a Touchstone .s1p from a nanoVNA and use the measured curve as the load, so you match a band rather than a point. A dipole taken from 3.88:1 down to 1.84:1 across 100 to 200 MHz with two components.">
+<link rel="canonical" href="https://quicksmith.online/blog/nanovna-touchstone-smith-chart.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/blog/nanovna-touchstone-smith-chart.html">
+<meta property="og:title" content="Match a real antenna from a nanoVNA .s1p file | QuickSmith">
+<meta property="og:description" content="Import a .s1p and match against what your antenna actually does across the band.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/smith.ico">
+<link href="../app.css" rel="stylesheet">
+<link href="../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../smith.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Reading a nanoVNA measurement into a Smith chart",
+  "description": "Import a Touchstone .s1p from a nanoVNA and use the measured curve as the load, so you match a band rather than a point. A dipole taken from 3.88:1 down to 1.84:1 across 100 to 200 MHz with two components.",
+  "image": "https://quicksmith.online/img/og-card.png",
+  "author": {
+    "@type": "Person",
+    "name": "Nathan Iyer"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "QuickSmith"
+  },
+  "datePublished": "2026-09-10",
+  "mainEntityOfPage": "https://quicksmith.online/blog/nanovna-touchstone-smith-chart.html"
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">
+        <img src="../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="index.html">Articles</a></li>
+      <li><a href="../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">Article</p>
+<h1>Reading a nanoVNA measurement into a Smith chart</h1>
+
+<p class="doc-lede">
+  A nanoVNA gives you a Touchstone file. QuickSmith reads it as the load, which
+  means you can design a match against what your antenna actually does across
+  the band, rather than against one impedance you typed in.
+</p>
+
+<h2>Get the file out of the analyser</h2>
+
+<p>
+  Every VNA exports Touchstone, and for a one-port measurement you want a
+  <code>.s1p</code>. On a nanoVNA it is Save, then the s1p option. On the PC
+  software it is usually File, Export. What lands on the SD card looks like
+  this:
+</p>
+
+<aside class="doc-result">
+  <h2>dipole.s1p, the first few lines</h2>
+  <ul>
+    <li>! Dipole antenna, 100-200 MHz, reflection coefficient at the feedpoint.</li>
+    <li># MHZ S MA R 50</li>
+    <li>  100.0000  0.590000    -86.2710</li>
+    <li>  105.0000  0.530000    -61.9870</li>
+    <li>  110.0000  0.590000    -72.2680</li>
+  </ul>
+</aside>
+
+<p>
+  The line beginning with <code>#</code> is the option line: frequency in MHz,
+  S-parameters, magnitude and angle, referenced to 50 ohms. Everything on it is
+  optional and the defaults are GHz, S, MA, 50 ohms, which catches people out
+  when a file that looks fine reads back a thousand times off.
+</p>
+
+<p>
+  If your analyser wrote the file against 75 ohms and you work in 50, do not
+  edit it by hand. QuickSmith renormalises on import.
+</p>
+
+<h2>Read it in</h2>
+
+<p>
+  <strong>Data &rarr; Import Touchstone</strong>, pick the file, and S11 becomes
+  the load. Not one impedance: the whole measured curve, interpolated between
+  the points you measured, so the load changes as the frequency changes. The
+  sweep range is set to the range of the file.
+</p>
+
+<p>
+  This dipole is not in good shape at the bottom of the band:
+</p>
+
+<aside class="doc-result">
+  <h2>The antenna as measured</h2>
+  <ul>
+    <li>100 MHz   Zin 25.64 - j46.31   VSWR 3.88</li>
+    <li>150 MHz   Zin 38.12 - j17.56   VSWR 1.62</li>
+    <li>200 MHz   Zin 26.67 - j13.10   VSWR 2.05</li>
+    <li></li>
+    <li>worst across 100 to 200 MHz:  VSWR 3.878 at 100 MHz</li>
+  </ul>
+</aside>
+
+<h2>Match a band, not a point</h2>
+
+<p>
+  This is where a measured load changes how you work. You cannot get VSWR
+  1.0000 across a band, and chasing it at one frequency will usually make
+  another frequency worse. The goal is different: get the whole band
+  <strong>inside a circle</strong>.
+</p>
+
+<p>
+  So set the <strong>VSWR circle</strong> overlay to 2, run
+  <strong>Sweep &rarr; Generate</strong>, and look at where the swept trace
+  sits relative to that circle. You are no longer aiming at a point, you are
+  herding a curve.
+</p>
+
+<p>
+  For this antenna, two components do it: 32 nH in series to drag the curve
+  towards the middle, then a 25 ohm shorted stub 95 degrees long to fold it
+  back on itself. Folding is the trick with wideband matching, because the
+  frequency dependence of the stub partly cancels the frequency dependence of
+  the antenna.
+</p>
+
+<aside class="doc-result">
+  <h2>Before and after, worst case over 100 to 200 MHz</h2>
+  <ul>
+    <li>bare antenna              VSWR 3.878  at 100 MHz</li>
+    <li>with L 32 nH and the stub VSWR 1.836  at 105 MHz</li>
+  </ul>
+</aside>
+
+<p>
+  From 3.9:1 down to 1.84:1 across a 2:1 frequency range, with two parts. In
+  mismatch loss terms that is about 1.9 dB down to about 0.4 dB at the worst
+  point in the band.
+</p>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxNTAsIlRERiI6MTUwLCJMVSI6IkRlZ3JlZXMiLCJTUyI6MTAwLCJTVCI6MjAwLCJ0ZXJtaW5hdGlvbiI6Ik11bHRpcGxlIiwiZSI6W1sxLCJyeCIsMCwwXSxbMiwibCIsMzIsMF0sWzMsInMiLDI1LDk1XV0sImciOltbMTAwLDEwNSwxMTAsMTIwLDEzMCwxNDAsMTUwLDE2MCwxNzAsMTgwLDE5MCwyMDBdLFswLjU5LDAuNTMsMC41OSwwLjU4MSwwLjQ5LDAuMzcyLDAuMjM2LDAuMTgzLDAuMTg3LDAuMjMxLDAuMjQ0LDAuMzQ0XSxbLTg2LjI3MSwtNjEuOTg3LC03Mi4yNjgsLTU2LjQ1NiwtODEuNzYsLTEwMi42MjIsLTExMi44LC0xMTkuNzUzLC0xMjIuODksLTExNy4xMiwtMTI4LC0xNDAuOThdXSwiYyI6eyJzIjoyfX0">Open the measured antenna and its match</a>
+
+<p>
+  That link carries the measurement itself, which is worth pausing on. The
+  share link holds the twelve measured points as well as the network, so what
+  opens is not an idealised model of the antenna, it is your antenna.
+</p>
+
+<h2>Send the answer back out</h2>
+
+<p>
+  <strong>Data &rarr; Export Touchstone</strong> writes the matched network back
+  out as a <code>.s1p</code>, so whatever you use next reads it. If you have not
+  run a sweep it runs one first, so the file describes the circuit rather than
+  whatever happened to be on the chart.
+</p>
+
+<p>
+  <strong>Data &rarr; Export Sweep (CSV)</strong> gives you the same thing as a
+  spreadsheet, one row per point, with impedance, VSWR and return loss worked
+  out for you.
+</p>
+
+<h2>Things that go wrong</h2>
+
+<ul>
+  <li>
+    <strong>The trace looks like noise.</strong> Check the option line. A file
+    with no <code>#</code> line defaults to GHz, so a 145 MHz measurement is
+    read as 145 GHz.
+  </li>
+  <li>
+    <strong>The impedances look wrong but plausible.</strong> The file was
+    probably taken against a different reference impedance. QuickSmith
+    renormalises what it imports, but if you edited the numbers by hand you may
+    have half-converted them.
+  </li>
+  <li>
+    <strong>The match is beautiful and the antenna still does not work.</strong>
+    A matching network makes the transmitter happy. It does not make a
+    resistive loss into radiation. A dummy load is a perfect match too.
+  </li>
+  <li>
+    <strong>Too few points.</strong> The load is interpolated between what you
+    measured, so a coarse sweep through a sharp resonance will lie to you.
+    Twelve points across an octave, as here, is enough for a broad dipole and
+    nothing like enough for a high-Q loop.
+  </li>
+</ul>
+
+<p>
+  There is a sample <code>.s1p</code> in the <code>touchstone</code> folder if
+  you want to try the flow before you go and measure something. It is the same
+  dipole used here, and the same measurement as
+  <a href="../help/examples/examples/EXAMPLE_4.html">Example 4</a>.
+</p>
+
+<nav class="doc-nav">
+  <span><a href="index.html">&#9664; All articles</a></span>
+  <span><a href="insertion-loss-return-loss-mismatch-loss.html">Insertion loss, return loss and mismatch loss &#9654;</a></span>
+</nav>
+
+</main>
+</div>
+</body>
+</html>

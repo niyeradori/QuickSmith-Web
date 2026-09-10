@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insertion loss vs return loss vs mismatch loss | QuickSmith</title>
+<meta name="description" content="A lossless quarter wave line can show 0.695 dB of insertion loss without dissipating anything. What each of the three losses actually measures, worked through with numbers, and the rules of thumb worth remembering.">
+<link rel="canonical" href="https://quicksmith.online/blog/insertion-loss-return-loss-mismatch-loss.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/blog/insertion-loss-return-loss-mismatch-loss.html">
+<meta property="og:title" content="Insertion loss vs return loss vs mismatch loss | QuickSmith">
+<meta property="og:description" content="A lossless line can show 0.695 dB of insertion loss without dissipating anything. Here is why.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/smith.ico">
+<link href="../app.css" rel="stylesheet">
+<link href="../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../smith.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Insertion loss, return loss and mismatch loss are three different things",
+  "description": "A lossless quarter wave line can show 0.695 dB of insertion loss without dissipating anything. What each of the three losses actually measures, worked through with numbers, and the rules of thumb worth remembering.",
+  "image": "https://quicksmith.online/img/og-card.png",
+  "author": {
+    "@type": "Person",
+    "name": "Nathan Iyer"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "QuickSmith"
+  },
+  "datePublished": "2026-09-10",
+  "mainEntityOfPage": "https://quicksmith.online/blog/insertion-loss-return-loss-mismatch-loss.html"
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">
+        <img src="../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="index.html">Articles</a></li>
+      <li><a href="../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">Article</p>
+<h1>Insertion loss, return loss and mismatch loss are three different things</h1>
+
+<p class="doc-lede">
+  These three get used interchangeably and they are not the same thing. One of
+  them can be large while nothing at all is being dissipated, which is the
+  detail that causes most of the confusion.
+</p>
+
+<h2>The short version</h2>
+
+<ul>
+  <li><strong>Return loss</strong> is how much of the incident power comes
+      back. It is a property of the mismatch, in dB, and bigger is better.</li>
+  <li><strong>Mismatch loss</strong> is how much of the incident power never
+      gets in. It is the same mismatch, counted the other way round, and it is
+      not dissipated anywhere. It went home.</li>
+  <li><strong>Insertion loss</strong> is how much less power reaches the load
+      with the network in place than without it. Depending on who is talking,
+      it may or may not include the mismatch.</li>
+</ul>
+
+<h2>A mismatch with nothing to dissipate in it</h2>
+
+<p>
+  Here is the case that settles the argument. Take a perfectly lossless 75 ohm
+  transmission line, exactly a quarter wave long, and put a perfect 50 ohm
+  resistor on the end of it. Feed it from a 50 ohm source.
+</p>
+
+<p>
+  There is nothing in that circuit that can turn power into heat except the
+  load, and the load is the thing you are trying to deliver power to. Yet:
+</p>
+
+<aside class="doc-result">
+  <h2>Lossless 75 ohm quarter wave into a 50 ohm load</h2>
+  <ul>
+    <li>Zin           112.500 ohm</li>
+    <li>VSWR          2.2500</li>
+    <li>Return loss   8.299 dB</li>
+    <li>Insertion loss 0.695 dB</li>
+  </ul>
+</aside>
+
+<p>
+  0.695 dB of insertion loss, and not one milliwatt of it became heat. The
+  quarter wave transformed 50 ohms up to 112.5 ohms, the source sees a
+  mismatch, and 0.695 dB of what the source wanted to deliver is reflected back
+  into it. That is mismatch loss wearing an insertion loss badge.
+</p>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxMDAsIkxVIjoiRGVncmVlcyIsImUiOltbMSwicngiLDUwLDBdLFsyLCJ0Iiw3NSw5MF1dLCJjIjp7InMiOjJ9fQ">Open this circuit in QuickSmith</a>
+
+<p>
+  Make the line half a wave instead and it becomes transparent: Zin is 50 ohms
+  again, VSWR 1.0000, insertion loss 0.000 dB. Same lossless line, same load,
+  and the loss went away because the mismatch went away. If the 0.695 dB had
+  been dissipation, doubling the length would have doubled it.
+</p>
+
+<h2>Mismatch loss only depends on the mismatch</h2>
+
+<p>
+  It does not care which way the mismatch goes, or what caused it:
+</p>
+
+<aside class="doc-result">
+  <h2>A bare resistor on the end of a 50 ohm system</h2>
+  <ul>
+    <li> 25 ohm load   VSWR 2.0   RL 9.542 dB   loss 0.512 dB</li>
+    <li>100 ohm load   VSWR 2.0   RL 9.542 dB   loss 0.512 dB</li>
+    <li>150 ohm load   VSWR 3.0   RL 6.021 dB   loss 1.249 dB</li>
+    <li>200 ohm load   VSWR 4.0   RL 4.437 dB   loss 1.938 dB</li>
+  </ul>
+</aside>
+
+<p>
+  25 ohms and 100 ohms are both a 2:1 mismatch and both cost 0.512 dB. Worth
+  keeping in your head: <strong>a 2:1 VSWR costs about half a dB</strong>, 3:1
+  costs 1.25 dB, 4:1 costs about 2 dB. Which is why chasing a 1.5:1 down to
+  1.2:1 is usually a waste of a Saturday, and why a 4:1 is worth fixing.
+</p>
+
+<h2>Loss that really is loss</h2>
+
+<p>
+  Now put a lossy component in. Same L-network matching 500 ohms to 50 ohms at
+  100 MHz, once with an ideal inductor and once with a Q of 30:
+</p>
+
+<aside class="doc-result">
+  <h2>500 to 50 ohm L-network at 100 MHz</h2>
+  <ul>
+    <li>ideal inductor    Zin 50.468 + j0.175   VSWR 1.0100   loss 0.000 dB</li>
+    <li>inductor Q = 30   Zin 55.494 + j0.175   VSWR 1.1099   loss 0.424 dB</li>
+  </ul>
+</aside>
+
+<p>
+  0.424 dB of genuine heat. Notice the second effect, which people forget: the
+  lossy inductor also <strong>moved the match</strong>. Its series resistance
+  is part of the circuit, so Zin went from 50.5 to 55.5 ohms and the VSWR
+  degraded from 1.01 to 1.11. A real component does not just cost you power, it
+  detunes you.
+</p>
+
+<h2>What QuickSmith reports, and why</h2>
+
+<p>
+  The <strong>Insertion loss</strong> figure in the readout is a
+  <strong>transducer</strong> loss: power delivered to the load, compared with
+  the power that a matched load would have taken from the same source. The
+  source is the characteristic impedance, 50 ohms by default, and the
+  termination is whatever load you set.
+</p>
+
+<p>
+  That means it counts mismatch as well as dissipation, which is why the
+  lossless quarter wave above reads 0.695 dB. It is the definition that answers
+  the question you usually have, which is "how much less power reaches my load
+  because of this thing", rather than "how lossy is this two-port in
+  isolation".
+</p>
+
+<p>
+  It also means the test that a lossless matched network reads exactly
+  <strong>0.000 dB</strong> is a real test, and the regression suite runs it:
+  build a network that matches its load out of ideal parts and the number has
+  to be zero, not nearly zero.
+</p>
+
+<h2>Doing the arithmetic yourself</h2>
+
+<p>
+  All three come from the same reflection coefficient, so if you have one you
+  have all of them.
+</p>
+
+<ul>
+  <li>Return loss in dB is <code>-20 log |gamma|</code></li>
+  <li>Mismatch loss in dB is <code>-10 log (1 - |gamma|^2)</code></li>
+  <li>VSWR is <code>(1 + |gamma|) / (1 - |gamma|)</code></li>
+</ul>
+
+<p>
+  A perfect match makes gamma zero, so return loss is infinite. QuickSmith
+  prints an infinity sign there rather than a very large number, which is not
+  a display trick: an early version floored gamma at 1e-36 and could never
+  report a perfect match, and fixing that is one of the things the test suite
+  now holds in place.
+</p>
+
+<nav class="doc-nav">
+  <span><a href="index.html">&#9664; All articles</a></span>
+  <span><a href="match-antenna-to-50-ohms.html">Matching an antenna to 50 ohms &#9654;</a></span>
+</nav>
+
+</main>
+</div>
+</body>
+</html>

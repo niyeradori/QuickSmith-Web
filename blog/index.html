@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Articles on Smith charts, impedance matching and RF layout | QuickSmith</title>
-<meta name="description" content="Practical articles on impedance matching, Smith charts and getting an RF design onto a board: track widths, matching network topologies, bandwidth and Q, and reading measurements from a network analyser.">
+<meta name="description" content="Practical articles on impedance matching and Smith charts: matching an antenna to 50 ohms, choosing between L, Pi and T networks, trace widths on FR-4, reading a nanoVNA measurement, and what component Q really costs.">
 <link rel="canonical" href="https://quicksmith.online/blog/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="QuickSmith">
@@ -46,26 +46,119 @@
 <h1>Articles</h1>
 <p class="doc-lede">
   Notes on impedance matching and on getting an RF design off the chart and
-  onto a board. Where an article describes a circuit, it ends with a link that
+  onto a board. Where an article describes a circuit it ends with a link that
   opens that circuit in the program, so you can pull it apart rather than take
-  our word for it.
+  our word for it. Every number in them goes through the solver before it goes
+  into the prose.
 </p>
 
-<h2>Latest</h2>
+<h2>Start here</h2>
+
+<h3><a href="match-antenna-to-50-ohms.html">How to match an antenna to 50 ohms on a Smith chart</a></h3>
+<p>
+  From a VNA reading to two components. Why a series part and a shunt part move
+  you along different circles, how to find every two element match at once, and
+  how to choose between four networks that are identical at the design
+  frequency but differ by a factor of three in bandwidth.
+</p>
+
+<h3><a href="what-the-smith-chart-shows.html">What the Smith chart is actually showing you</a></h3>
+<p>
+  The impedance plane folded into a circle so that infinity fits on the page.
+  Where the constant resistance and constant reactance circles come from, and
+  why that geometry is the reason each kind of component moves you the way it
+  does.
+</p>
+
+<h3><a href="insertion-loss-return-loss-mismatch-loss.html">Insertion loss, return loss and mismatch loss are three different things</a></h3>
+<p>
+  A perfectly lossless quarter wave line can show 0.695 dB of insertion loss
+  without turning a single milliwatt into heat. What each of the three actually
+  measures, and the rules of thumb worth carrying around.
+</p>
+
+<h2>Designing a network</h2>
+
+<h3><a href="l-pi-or-t-matching-network.html">L, Pi or T: choosing a matching network and what it costs in bandwidth</a></h3>
+<p>
+  An L-network's Q is fixed by the impedance ratio and you get no say. Pi and T
+  add a third component so you can choose it. What that buys, what it costs,
+  and how to pick between Pi and T on practical grounds.
+</p>
+
+<h3><a href="q-circles-and-bandwidth.html">Q circles: why your match works at one frequency and nowhere else</a></h3>
+<p>
+  Loaded Q is the highest ratio of reactance to resistance along your element
+  path, and it is what sets the bandwidth. How to see it on the chart, and how
+  to design to a bandwidth instead of discovering one afterwards.
+</p>
+
+<h3><a href="component-q-and-real-inductors.html">Component Q: what a real inductor does to your match</a></h3>
+<p>
+  Real parts do not just cost you power, they move your match. How much a given
+  component Q costs, why a high Q network is punished three times harder for
+  the same components, and what Q to assume for parts you can buy.
+</p>
+
+<h3><a href="single-stub-matching.html">Single stub matching, worked end to end</a></h3>
+<p>
+  Matching 10 - j15 ohms to 50 ohms at 1 GHz with a series line and an open
+  stub. Why a line rotates rather than transforms, and how to convert published
+  air lengths onto a real board.
+</p>
+
+<h2>Getting it onto a board</h2>
 
 <h3><a href="50-ohm-trace-width-fr4.html">50 ohm trace width on FR-4, and where that number comes from</a></h3>
 <p>
-  On 1.6 mm FR-4 a 50 ohm microstrip is about 3.08 mm wide. Why it is that
-  number, why the third decimal place is not real, what an etch tolerance
-  actually costs you, and how to turn a matching network into a track width
-  and a length.
+  About 3.08 mm on 1.6 mm FR-4. Why the third decimal place is not real, what
+  an etch tolerance actually costs you, and how to turn a matching network into
+  a track width and a length.
+</p>
+
+<h3><a href="nanovna-touchstone-smith-chart.html">Reading a nanoVNA measurement into a Smith chart</a></h3>
+<p>
+  Import a Touchstone <code>.s1p</code> and use the measured curve as the load,
+  so you match a band rather than a point. A dipole taken from 3.88:1 down to
+  1.84:1 across 100 to 200 MHz with two components.
+</p>
+
+<h2>Amplifiers</h2>
+
+<h3><a href="an721-transistor-matching.html">Matching a 2N5642: the AN721 input and output networks</a></h3>
+<p>
+  Motorola AN721 section 4.2 on a chart you can drag. Transforming a 1.94 +
+  j1.1 ohm transistor input to 50 ohms at a loaded Q of 10, and working out
+  what the collector needs to see before matching the output.
+</p>
+
+<h3><a href="stability-gain-and-noise-circles.html">Stability circles and the gain versus noise trade-off</a></h3>
+<p>
+  Three questions in order: will it oscillate, how much gain can I have, how
+  quiet can it be at that gain. Rollett's K and |Delta| worked from real
+  S-parameters, and why the gain and noise optima are never the same impedance.
+</p>
+
+<h2>About the tool</h2>
+
+<h3><a href="share-a-working-circuit.html">Share a working circuit instead of a screenshot</a></h3>
+<p>
+  Copy Share Link puts the whole design in a web address, measured loads
+  included. Nothing is uploaded and nothing expires, because the design is the
+  string.
+</p>
+
+<h3><a href="rebuilding-a-1993-program.html">A 1993 Windows program, rebuilt for the browser</a></h3>
+<p>
+  What it took to rebuild the solver, the chart and the tests without changing
+  how the program is used, and the five real defects the regression suite found
+  before anything was rewritten.
 </p>
 
 <h2>Elsewhere on the site</h2>
 <p>
   The <a href="../help/examples/examples/EXAMPLES.html">worked examples</a> go
-  through seven designs from the textbooks, from a two element L-network to
-  stub matching and amplifier design. The
+  through seven designs from the textbooks. The
   <a href="../qsmithfaq.html">FAQ</a> covers how to drive the program itself.
 </p>
 

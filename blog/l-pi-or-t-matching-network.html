@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L network vs Pi vs T matching network, and bandwidth | QuickSmith</title>
+<meta name="description" content="An L-network&#x27;s Q is fixed by the impedance ratio. Pi and T add a third component so you can choose it. What that buys, what it costs in bandwidth, and how to pick between Pi and T.">
+<link rel="canonical" href="https://quicksmith.online/blog/l-pi-or-t-matching-network.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/blog/l-pi-or-t-matching-network.html">
+<meta property="og:title" content="L network vs Pi vs T matching network, and bandwidth | QuickSmith">
+<meta property="og:description" content="An L-network&#x27;s Q is fixed by the impedance ratio. Pi and T let you choose it.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/smith.ico">
+<link href="../app.css" rel="stylesheet">
+<link href="../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../smith.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "L, Pi or T: choosing a matching network and what it costs in bandwidth",
+  "description": "An L-network's Q is fixed by the impedance ratio. Pi and T add a third component so you can choose it. What that buys, what it costs in bandwidth, and how to pick between Pi and T.",
+  "image": "https://quicksmith.online/img/og-card.png",
+  "author": {
+    "@type": "Person",
+    "name": "Nathan Iyer"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "QuickSmith"
+  },
+  "datePublished": "2026-09-10",
+  "mainEntityOfPage": "https://quicksmith.online/blog/l-pi-or-t-matching-network.html"
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">
+        <img src="../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="index.html">Articles</a></li>
+      <li><a href="../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">Article</p>
+<h1>L, Pi or T: choosing a matching network and what it costs in bandwidth</h1>
+
+<p class="doc-lede">
+  An L-network's Q is whatever the transformation makes it. You do not get a
+  say. Pi and T networks add a third component, and that third component is
+  what buys you the choice.
+</p>
+
+<h2>The L-network has no free parameter</h2>
+
+<p>
+  Two components, two things to satisfy (get the real part right, cancel the
+  imaginary part), so the values are determined. Take 5 ohms to 50 ohms at
+  100 MHz:
+</p>
+
+<aside class="doc-result">
+  <h2>5 ohms to 50 ohms, L-network</h2>
+  <ul>
+    <li>series L 23.87 nH,  shunt C 95.49 pF    Q 3.00   BW 25.0 MHz</li>
+    <li>series C 106.10 pF, shunt L 26.53 nH    Q 3.00   BW 25.9 MHz</li>
+  </ul>
+</aside>
+
+<p>
+  Both have a Q of 3.00, and that is not a coincidence. For an L-network the
+  loaded Q comes straight out of the impedance ratio:
+</p>
+
+<p>
+  <code>Q = sqrt(Rhigh / Rlow - 1)</code>
+</p>
+
+<p>
+  Ten to one here, so the square root of nine, so 3. Change the ratio and the Q
+  changes with it. Keep the ratio and there is nothing you can do about the Q,
+  because there is no third value to move.
+</p>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxMDAsImUiOltbMSwicngiLDUsMF0sWzIsImwiLDIzLjg3LDBdLFszLCJjIiw5NS40OSwwXV0sImMiOnsicyI6MiwicSI6M319">Open the L-network</a>
+
+<h2>Adding a third component</h2>
+
+<p>
+  The trick in both Pi and T is a <strong>virtual resistance</strong>: an
+  intermediate impedance that exists nowhere in the circuit, which you
+  transform to and then from, using two L-networks back to back.
+</p>
+
+<ul>
+  <li>A <strong>T</strong> transforms up to a virtual resistance higher than
+      both ends: <code>Rv = min(R1, R2) x (1 + Q^2)</code></li>
+  <li>A <strong>Pi</strong> transforms down to one lower than both ends:
+      <code>Rv = max(R1, R2) / (1 + Q^2)</code></li>
+</ul>
+
+<p>
+  Pick Q, and the virtual resistance follows, and the components follow from
+  that. Since you chose the Q, you got the bandwidth you asked for. That is the
+  entire point of the third component.
+</p>
+
+<h2>What it costs</h2>
+
+<p>
+  Ask QuickSmith for a target Q in the Auto-match dialog and it offers Pi and T
+  networks alongside the L. The same 5 to 50 ohm transformation:
+</p>
+
+<aside class="doc-result">
+  <h2>5 ohms to 50 ohms, by target Q</h2>
+  <ul>
+    <li>Q  3   L-network                                        BW 25.0 MHz</li>
+    <li>Q  5   T: L 39.79nH, C 76.70pF, L 100.66nH              BW 12.8 MHz</li>
+    <li>Q  8   T: L 63.66nH, C 50.66pF, L 186.63nH              BW  7.2 MHz</li>
+    <li>Q 12   T: L 95.49nH, C 34.41pF, L 292.39nH              BW  4.6 MHz</li>
+  </ul>
+</aside>
+
+<p>
+  Bandwidth is roughly inversely proportional to Q, as you would expect. Note
+  which direction the third component takes you: <strong>a Pi or a T only ever
+  narrows things</strong>. You cannot ask for a Q below what the L-network
+  already achieves, because there is no virtual resistance that far in.
+  QuickSmith says so rather than offering you something that does not exist.
+</p>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxMDAsImUiOltbMSwicngiLDUsMF0sWzIsImwiLDYzLjY2LDBdLFszLCJjIiw1MC42NiwwXSxbNCwibCIsMTg2LjYzLDBdXSwiYyI6eyJzIjoyLCJxIjo4fX0">Open the T-network at Q = 8</a>
+
+<h2>So why would you ever want narrower?</h2>
+
+<p>
+  Three reasons, and none of them is the match.
+</p>
+
+<p>
+  <strong>Selectivity.</strong> If the matching network is also your filter,
+  a higher Q means more attenuation of the neighbours. Transmitter output
+  networks are often Pi networks chosen for exactly this: match, and knock
+  down the second harmonic on the way.
+</p>
+
+<p>
+  <strong>Component values you can actually buy.</strong> A wide transformation
+  ratio through a single L-network can land you on a 2 pF capacitor where stray
+  capacitance is 1 pF, or a 3 nH inductor where the lead is 3 nH. Pushing the
+  Q up moves the values somewhere sane. Look at the Q of 12 row: a 34 pF and a
+  95 nH are ordinary parts.
+</p>
+
+<p>
+  <strong>Splitting an awkward ratio.</strong> Two moderate transformations
+  back to back are often kinder than one violent one, particularly if you have
+  to build it on a board where parasitics matter.
+</p>
+
+<h2>Pi or T?</h2>
+
+<p>
+  They are equivalent in what they achieve, so choose on practicalities.
+</p>
+
+<ul>
+  <li>
+    A <strong>T</strong> has series elements at both ends, so it is easy to get
+    DC through, or to block DC with a series capacitor if that is what you
+    want.
+  </li>
+  <li>
+    A <strong>Pi</strong> has shunt elements at both ends, which is convenient
+    when you have parasitic capacitance to swallow at each end anyway, such as
+    a transistor's output capacitance. You absorb it into the network instead
+    of fighting it.
+  </li>
+  <li>
+    Look at the component values. In the example above, the Pi at Q of 8 wants
+    a 746 pF capacitor, and the T wants 50 pF. At 100 MHz the T is the more
+    comfortable build.
+  </li>
+</ul>
+
+<h2>Rules of thumb</h2>
+
+<ul>
+  <li>L-network Q is <code>sqrt(ratio - 1)</code> and you cannot change it.</li>
+  <li>Pi and T can only make Q higher, never lower.</li>
+  <li>Higher Q means narrower bandwidth, more selectivity, and more loss for
+      the same component Q. That last one is worth its own article.</li>
+  <li>If you need a lower Q than the L-network gives, you need a
+      <strong>multi-section</strong> network: two L-networks in cascade going
+      through a virtual resistance <em>between</em> the two ends rather than
+      outside them. QuickSmith will not design that for you automatically, but
+      the ladder has twelve slots and nothing stops you doing it by hand.</li>
+</ul>
+
+<nav class="doc-nav">
+  <span><a href="index.html">&#9664; All articles</a></span>
+  <span><a href="nanovna-touchstone-smith-chart.html">Reading a nanoVNA measurement into a Smith chart &#9654;</a></span>
+</nav>
+
+</main>
+</div>
+</body>
+</html>

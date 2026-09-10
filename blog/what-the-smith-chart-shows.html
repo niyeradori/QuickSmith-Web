@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smith chart explained: circles, arcs and why components move you | QuickSmith</title>
+<meta name="description" content="The Smith chart is the right half of the impedance plane folded into a circle. Where the constant resistance and constant reactance circles come from, and why a series part and a shunt part move you along different ones.">
+<link rel="canonical" href="https://quicksmith.online/blog/what-the-smith-chart-shows.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/blog/what-the-smith-chart-shows.html">
+<meta property="og:title" content="Smith chart explained: circles, arcs and why components move you | QuickSmith">
+<meta property="og:description" content="One idea drawn carefully: the impedance plane folded so infinity fits on the page.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/smith.ico">
+<link href="../app.css" rel="stylesheet">
+<link href="../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../smith.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "What the Smith chart is actually showing you",
+  "description": "The Smith chart is the right half of the impedance plane folded into a circle. Where the constant resistance and constant reactance circles come from, and why a series part and a shunt part move you along different ones.",
+  "image": "https://quicksmith.online/img/og-card.png",
+  "author": {
+    "@type": "Person",
+    "name": "Nathan Iyer"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "QuickSmith"
+  },
+  "datePublished": "2026-09-10",
+  "mainEntityOfPage": "https://quicksmith.online/blog/what-the-smith-chart-shows.html"
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">
+        <img src="../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="index.html">Articles</a></li>
+      <li><a href="../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">Article</p>
+<h1>What the Smith chart is actually showing you</h1>
+
+<p class="doc-lede">
+  The Smith chart looks like an eye test. It is actually one simple idea drawn
+  carefully: the whole right half of the impedance plane, folded into a circle
+  so that infinity fits on the page.
+</p>
+
+<h2>The fold</h2>
+
+<p>
+  Impedance is awkward to plot. Resistance runs from zero to infinity and
+  reactance from minus infinity to plus infinity, so any honest graph of it
+  runs off the paper immediately.
+</p>
+
+<p>
+  So plot the reflection coefficient instead:
+</p>
+
+<p>
+  <code>gamma = (Z - Z0) / (Z + Z0)</code>
+</p>
+
+<p>
+  For any passive load, gamma has a magnitude of 1 or less. The infinite
+  half-plane becomes a disc of radius one, and everything fits. The chart is
+  that disc, with the old impedance grid drawn on top of it, bent by the fold.
+</p>
+
+<p>
+  Three landmarks fall out immediately:
+</p>
+
+<ul>
+  <li><strong>Centre</strong>: gamma is zero, Z equals Z0. The match.</li>
+  <li><strong>Far left</strong>: gamma is -1, a short circuit.</li>
+  <li><strong>Far right</strong>: gamma is +1, an open circuit.</li>
+  <li><strong>The rim</strong>: |gamma| is 1, all the power comes back.
+      Everything on the rim is purely reactive.</li>
+</ul>
+
+<h2>Where the circles come from</h2>
+
+<p>
+  The curved grid is not decoration. Lines of constant resistance in the
+  impedance plane become circles under the fold, and so do lines of constant
+  reactance. You can work out exactly where.
+</p>
+
+<aside class="doc-result">
+  <h2>Constant resistance circles, normalised to Z0</h2>
+  <ul>
+    <li>r = 0.2   centre 0.1667, 0   radius 0.8333   meets the axis at -0.6667</li>
+    <li>r = 0.5   centre 0.3333, 0   radius 0.6667   meets the axis at -0.3333</li>
+    <li>r = 1     centre 0.5000, 0   radius 0.5000   meets the axis at  0.0000</li>
+    <li>r = 2     centre 0.6667, 0   radius 0.3333   meets the axis at  0.3333</li>
+    <li>r = 5     centre 0.8333, 0   radius 0.1667   meets the axis at  0.6667</li>
+  </ul>
+</aside>
+
+<p>
+  A constant resistance circle has centre <code>r/(1+r)</code> and radius
+  <code>1/(1+r)</code>. Every one of them passes through the far right point,
+  which is the open circuit, because any resistance with infinite reactance
+  looks like an open. The r = 1 circle passes through the centre, which is why
+  it matters so much in matching: it is the set of impedances whose real part
+  is already right.
+</p>
+
+<aside class="doc-result">
+  <h2>Constant reactance arcs</h2>
+  <ul>
+    <li>x = 0.5   centre 1, 2.0   radius 2.0</li>
+    <li>x = 1     centre 1, 1.0   radius 1.0</li>
+    <li>x = 2     centre 1, 0.5   radius 0.5</li>
+  </ul>
+</aside>
+
+<p>
+  These are the arcs that curve away above and below. Centre
+  <code>(1, 1/x)</code>, radius <code>1/|x|</code>. Above the axis is
+  inductive, below is capacitive, and the axis itself is purely resistive.
+  These are the ones the regression suite checks by arithmetic, because a chart
+  drawn slightly wrong is very hard to see and very easy to trust.
+</p>
+
+<h2>Which is why components move you the way they do</h2>
+
+<p>
+  Now the useful part. A component in series adds reactance and cannot touch
+  resistance. So it moves you <strong>along a constant resistance
+  circle</strong>: up for an inductor, down for a capacitor.
+</p>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxMDAsImUiOltbMSwicngiLDI1LDBdLFsyLCJsIiw2MCwwXV19">Open a 25 ohm load with a series inductor</a>
+
+<p>
+  A component in shunt adds susceptance and cannot touch conductance. So it
+  moves you along a constant <em>conductance</em> circle, which is the same
+  family of circles mirrored about the centre. Turn on
+  <strong>Admittance grid</strong> in the Overlays panel and they appear.
+</p>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxMDAsImUiOltbMSwicngiLDI1LDBdLFszLCJjIiw2MCwwXV19">Open the same load with a shunt capacitor</a>
+
+<p>
+  That is the entire vocabulary. Series moves you round one family, shunt
+  round the other, and matching is finding a route between them that ends in
+  the middle. Everything else on the chart is bookkeeping.
+</p>
+
+<h2>Feeling it rather than reading it</h2>
+
+<p>
+  There is a faster way to internalise this than reading about it. Put a
+  component in the ladder, then grab its node on the chart and pull.
+</p>
+
+<p>
+  It will not go where you drag it. It goes to the nearest point on
+  <em>its own curve</em>, because that is the only place that component can
+  put it. Drag a series part and you slide round a constant resistance circle.
+  Drag a shunt part and you slide round a constant conductance circle. Ten
+  seconds of that teaches more than a page of this.
+</p>
+
+<h2>And the transmission line, which does neither</h2>
+
+<p>
+  A length of line does not add series or shunt anything. It rotates the whole
+  reflection coefficient about the centre, clockwise as you move away from the
+  load, at constant radius: one complete turn per half wavelength.
+</p>
+
+<p>
+  Constant radius means constant |gamma|, which means constant VSWR. A lossless
+  line does not improve or worsen the match, it just moves it around the clock.
+  That is why the VSWR circle overlay is so useful with lines: your dot travels
+  along it rather than across it.
+</p>
+
+<h2>What the colours are for</h2>
+
+<p>
+  In QuickSmith each component draws its own arc in its own colour, from the
+  node before it to the node after. So the path from the load to Zin is
+  attributable: you can see which part did which piece of the journey, and when
+  a network does not do what you expected, you can see which part is not
+  pulling its weight.
+</p>
+
+<p>
+  If you want a guided version, <strong>Help &rarr; Guided examples</strong>
+  walks through the worked designs one component at a time, saying what each
+  one does and why it goes where it goes. Example 1 is exactly the exercise in
+  this article: one part at a time, watching the trace.
+</p>
+
+<nav class="doc-nav">
+  <span><a href="index.html">&#9664; All articles</a></span>
+  <span><a href="single-stub-matching.html">Single stub matching, worked end to end &#9654;</a></span>
+</nav>
+
+</main>
+</div>
+</body>
+</html>

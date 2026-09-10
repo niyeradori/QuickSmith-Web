@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Single stub matching on the Smith chart, worked example | QuickSmith</title>
+<meta name="description" content="Matching 10 - j15 ohms to 50 ohms at 1 GHz with a series line and an open stub. Why a line rotates rather than transforms, how to pick the length, and how to convert published air lengths onto a real board.">
+<link rel="canonical" href="https://quicksmith.online/blog/single-stub-matching.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/blog/single-stub-matching.html">
+<meta property="og:title" content="Single stub matching on the Smith chart, worked example | QuickSmith">
+<meta property="og:description" content="A series line and an open stub, from 10 - j15 ohms to 50 ohms at 1 GHz.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/smith.ico">
+<link href="../app.css" rel="stylesheet">
+<link href="../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../smith.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Single stub matching, worked end to end",
+  "description": "Matching 10 - j15 ohms to 50 ohms at 1 GHz with a series line and an open stub. Why a line rotates rather than transforms, how to pick the length, and how to convert published air lengths onto a real board.",
+  "image": "https://quicksmith.online/img/og-card.png",
+  "author": {
+    "@type": "Person",
+    "name": "Nathan Iyer"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "QuickSmith"
+  },
+  "datePublished": "2026-09-10",
+  "mainEntityOfPage": "https://quicksmith.online/blog/single-stub-matching.html"
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">
+        <img src="../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="index.html">Articles</a></li>
+      <li><a href="../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">Article</p>
+<h1>Single stub matching, worked end to end</h1>
+
+<p class="doc-lede">
+  Above a gigahertz or so, a length of line is a cheaper component than an
+  inductor, and a lot more repeatable. Here is the standard two element
+  distributed match, worked all the way through.
+</p>
+
+<h2>The problem</h2>
+
+<p>
+  Match <strong>10 - j15 ohms</strong> to 50 ohms at <strong>1 GHz</strong>,
+  using transmission lines only. This is Example 3 from the QuickSmith help,
+  and it is the shape of a hundred textbook exercises.
+</p>
+
+<h2>Why lines behave differently</h2>
+
+<p>
+  A lumped part changes one thing about the impedance. A length of line rotates
+  the reflection coefficient <strong>around the centre of the chart</strong>,
+  clockwise, at constant radius, one full turn per half wavelength.
+</p>
+
+<p>
+  That is the whole trick. A line does not change how badly matched you are, it
+  changes <em>where</em> the mismatch sits. So you rotate until the mismatch is
+  somewhere convenient, and then cancel it.
+</p>
+
+<p>
+  Convenient means the <strong>constant conductance circle through the
+  centre</strong>, because from anywhere on that circle a single shunt element
+  takes you to 50 ohms. Turn on <strong>Admittance grid</strong> in the
+  Overlays panel and you can see it.
+</p>
+
+<h2>Step one: rotate</h2>
+
+<p>
+  Drop a series transmission line, type 30 for its impedance, and walk the
+  length up from zero. The dot swings round the chart. Stop when it crosses the
+  circle you are aiming for. That happens at 56.4 mm, which at 1 GHz in air is
+  67.73 degrees, a bit under a fifth of a wavelength.
+</p>
+
+<p>
+  Why 30 ohms rather than 50? Because the load is a long way down and to the
+  left, and a lower impedance line moves you across the useful part of the
+  chart more directly. There is nothing sacred about it; try 50 and you will
+  find a solution too, at a different length.
+</p>
+
+<h2>Step two: cancel</h2>
+
+<p>
+  Now you are on the right circle but not at the centre: there is susceptance
+  left over. Cancel it with a shunt element.
+</p>
+
+<p>
+  A <strong>stub</strong> is a short piece of line hanging off the main line,
+  open or shorted at the far end, and it behaves as a pure reactance whose
+  value you set by choosing the length. Open stubs are easier on a board
+  because you do not need a via to ground; shorted stubs are shorter for the
+  same job and give you a DC path, which is sometimes what you want for a bias.
+</p>
+
+<p>
+  An open 30 ohm stub, 38.5 mm long, which is 46.23 degrees, takes it to the
+  middle.
+</p>
+
+<aside class="doc-result">
+  <h2>The answer</h2>
+  <ul>
+    <li>Load                    10 - j15 ohm at 1 GHz</li>
+    <li>Series line   T2        Z0 30 ohm, 56.4 mm  (67.73 deg)</li>
+    <li>Open stub     O3        Z0 30 ohm, 38.5 mm  (46.23 deg)</li>
+    <li></li>
+    <li>Zin 50.169 - j0.226 ohm,  VSWR 1.0056</li>
+  </ul>
+</aside>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxMDAwLCJMVSI6Ik1pbGxpTWV0ZXJzIiwiZSI6W1sxLCJyeCIsMTAsLTE1XSxbMiwidCIsMzAsNTYuNF0sWzMsIm8iLDMwLDM4LjVdXSwiYyI6eyJzIjoyfX0">Open this circuit in QuickSmith</a>
+
+<h2>Those lengths are for air</h2>
+
+<p>
+  This is the step that catches people. Published stub lengths almost always
+  assume a velocity factor of 1, which is to say free space. Put the same
+  design on a board and it is wrong, because the wave travels slower.
+</p>
+
+<p>
+  What carries across is the <strong>electrical length in degrees</strong>.
+  67.73 and 46.23 degrees are the design. The millimetres are a consequence of
+  whatever you build it in.
+</p>
+
+<p>
+  On 1.6 mm FR-4, a 30 ohm microstrip is 6.59 mm wide and has an effective
+  dielectric constant of 3.559, so the wave travels at 0.53 c:
+</p>
+
+<aside class="doc-result">
+  <h2>The same design on 1.6 mm FR-4</h2>
+  <ul>
+    <li>30 ohm line    6.590 mm wide,  eeff 3.559,  VF 0.530</li>
+    <li>Series line T2  67.73 deg  -&gt;  29.895 mm</li>
+    <li>Open stub   O3  46.23 deg  -&gt;  20.407 mm</li>
+    <li></li>
+    <li>still VSWR 1.0057</li>
+  </ul>
+</aside>
+
+<p>
+  Half the length, same circuit. <strong>Data &rarr; Microstrip and coax</strong>
+  does that conversion for you, and there is
+  <a href="50-ohm-trace-width-fr4.html">a whole article</a> on what it does and
+  where the numbers come from.
+</p>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxMDAwLCJWRiI6MC41MzAwNDksIkxVIjoiTWlsbGlNZXRlcnMiLCJlIjpbWzEsInJ4IiwxMCwtMTVdLFsyLCJ0IiwzMCwyOS44OTQ4XSxbMywibyIsMzAsMjAuNDA2OV1dLCJjIjp7InMiOjJ9fQ">Open the FR-4 version</a>
+
+<h2>Single stub, double stub, and what to worry about</h2>
+
+<ul>
+  <li>
+    <strong>A single stub can match anything</strong>, given a line long enough
+    to rotate with. That is not true of a two element lumped network, which has
+    regions it cannot reach.
+  </li>
+  <li>
+    <strong>Double stub tuners</strong> exist because a single stub needs the
+    stub at a specific distance from the load, which is awkward if the distance
+    is fixed by mechanics. Two stubs at fixed positions with adjustable lengths
+    give you the freedom back, at the cost of a region they cannot match.
+  </li>
+  <li>
+    <strong>Bandwidth is worse than it looks.</strong> A line's electrical
+    length is proportional to frequency, so both parts drift together and
+    faster than lumped parts do. Sweep it before you believe it.
+  </li>
+  <li>
+    <strong>Watch the proportions.</strong> A 30 ohm line on 1.6 mm FR-4 is
+    6.6 mm wide and 29.9 mm long. That is a quarter as wide as it is long,
+    which is stretching what "line" means. A thinner board, or a higher
+    impedance, keeps you honest.
+  </li>
+</ul>
+
+<p>
+  If you want to see it built up one component at a time, with the reasoning at
+  each step, <strong>Help &rarr; Guided examples</strong> has this design as a
+  tour.
+</p>
+
+<nav class="doc-nav">
+  <span><a href="index.html">&#9664; All articles</a></span>
+  <span><a href="q-circles-and-bandwidth.html">Q circles and bandwidth &#9654;</a></span>
+</nav>
+
+</main>
+</div>
+</body>
+</html>

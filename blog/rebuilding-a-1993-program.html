@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rebuilding QuickSmith: a 1993 RF tool, modernised | QuickSmith</title>
+<meta name="description" content="QuickSmith was written in 1993 in Visual Basic and ported to the web in 2011. What it took to rebuild the solver, the chart and the tests without changing how it is used, and the five real defects the regression suite found on the way.">
+<link rel="canonical" href="https://quicksmith.online/blog/rebuilding-a-1993-program.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/blog/rebuilding-a-1993-program.html">
+<meta property="og:title" content="Rebuilding QuickSmith: a 1993 RF tool, modernised | QuickSmith">
+<meta property="og:description" content="Written in 1993 for Windows 3.1. Rebuilt in 2026 without changing how it is used.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/smith.ico">
+<link href="../app.css" rel="stylesheet">
+<link href="../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../smith.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "A 1993 Windows program, rebuilt for the browser",
+  "description": "QuickSmith was written in 1993 in Visual Basic and ported to the web in 2011. What it took to rebuild the solver, the chart and the tests without changing how it is used, and the five real defects the regression suite found on the way.",
+  "image": "https://quicksmith.online/img/og-card.png",
+  "author": {
+    "@type": "Person",
+    "name": "Nathan Iyer"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "QuickSmith"
+  },
+  "datePublished": "2026-09-10",
+  "mainEntityOfPage": "https://quicksmith.online/blog/rebuilding-a-1993-program.html"
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">
+        <img src="../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="index.html">Articles</a></li>
+      <li><a href="../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">Article</p>
+<h1>A 1993 Windows program, rebuilt for the browser</h1>
+
+<p class="doc-lede">
+  QuickSmith was written in 1993, for Windows 3.1, in Visual Basic. It was
+  ported to the web around 2011. In 2026 the whole thing was rebuilt underneath
+  without changing how it is used. Here is what that involved and what it
+  turned up.
+</p>
+
+<h2>What it was</h2>
+
+<p>
+  The 2011 port worked, and people used it, but it had accumulated the usual
+  archaeology: jQuery, Bootstrap 3, math.js, Chart.js, bootbox, qTip2,
+  jquery.contextMenu, a long-click plugin. The Smith chart was drawn on a
+  canvas. The component symbols were 1-bit <code>.bmp</code> files from 1993,
+  61 by 20 pixels for a series part and 20 by 70 for a shunt one. The solver
+  was a direct transcription of the Visual Basic, including a ladder recursion
+  and a second, separate node-voltage walk for insertion loss.
+</p>
+
+<p>
+  None of that is a criticism. It is what a program looks like after
+  thirty years of being useful.
+</p>
+
+<h2>Rule one: write the tests first</h2>
+
+<p>
+  The first thing built was not code, it was a regression suite. Every case
+  comes from a worked example that already shipped with the program, so the
+  tests encode what QuickSmith is <em>supposed</em> to compute rather than what
+  it currently happens to compute.
+</p>
+
+<p>
+  The golden values were not captured from the program's own output. They were
+  computed from a separate model of the ladder network written from the element
+  equations, and only then confirmed to agree. Otherwise you are not testing,
+  you are photographing.
+</p>
+
+<p>
+  That distinction paid for itself immediately, because the suite found four
+  real defects before anything was rewritten:
+</p>
+
+<ul>
+  <li>
+    A parallel equivalent calculation used <code>Qu ^ 2</code>, which in
+    JavaScript is a bitwise XOR rather than a square. It had been wrong since
+    the port.
+  </li>
+  <li>
+    Insertion loss was referenced to the real part of the load impedance
+    instead of to Z0, so it was not a transducer loss at all.
+  </li>
+  <li>
+    Results were stored as sixteen significant digit strings and re-parsed on
+    every read.
+  </li>
+  <li>
+    Reflection coefficient was floored at 1e-36, so a perfect match could never
+    report infinite return loss.
+  </li>
+</ul>
+
+<p>
+  And a fifth, the worst: a transmission line was reduced to a lumped series
+  impedance when computing the transfer function. That is correct for Zin and
+  wrong for insertion loss. A lossless 75 ohm quarter wave into a 50 ohm load
+  reported 4.22 dB where the right answer is 0.695 dB, its mismatch loss. The
+  solver now cascades every element as an ABCD matrix, so a lumped part, a stub
+  and a line all go through one code path.
+</p>
+
+<h2>Rule two: the solver knows nothing about the page</h2>
+
+<p>
+  <code>engine.js</code> is pure functions over plain data. No DOM, no jQuery,
+  no external library. It runs on <code>Math</code> plus about forty lines of
+  complex arithmetic.
+</p>
+
+<p>
+  There is a test whose only job is to load <code>engine.js</code> and
+  <em>nothing else at all</em> and solve a few known networks. If the solver
+  ever reaches back out for the page, that test fails first with a
+  ReferenceError. It is a cheap way to keep a boundary honest.
+</p>
+
+<h2>Rule three: no build step</h2>
+
+<p>
+  It is static files. Open <code>index.html</code> and it runs. There is no
+  bundler, no transpiler, no package manifest, nothing to install and nothing
+  to rot. The test runner uses Node if you have it and otherwise falls back to
+  the JavaScriptCore shell that ships with macOS, so the suite runs on a
+  machine with no toolchain at all.
+</p>
+
+<p>
+  For a program that has already outlived two operating systems, that felt like
+  the point.
+</p>
+
+<h2>What went and what arrived</h2>
+
+<p>
+  The libraries went. Chart.js was replaced by about 180 lines that draw the
+  response graph. The dialog plugins were replaced by native
+  <code>&lt;dialog&gt;</code>. Bootstrap's 121 KB of CSS became a stylesheet
+  that keeps the class names the markup already had, so it was a swap rather
+  than a rewrite of every page.
+</p>
+
+<p>
+  The canvas chart became SVG, which means it is crisp at any zoom, it pans and
+  pinches, and it can be exported as vector art. The component bitmaps became
+  drawn symbols. The four bitmap "matching aid" images became a live line under
+  the chart that names the one or two components that would take you to the
+  centre, updated as you edit.
+</p>
+
+<p>
+  Then things that were not possible before: drag a node on the chart and the
+  engine solves backwards for the value that puts it under your pointer. Ask
+  the auto-matcher for a particular loaded Q and get Pi and T networks as well
+  as L. Undo and redo over the whole design. A guided tour that rebuilds a
+  worked example one component at a time. Substrate dimensions, so a design
+  comes out as a track width and a length.
+</p>
+
+<h2>The thing that kept happening</h2>
+
+<p>
+  One bug shape came up again and again: <strong>a colour written into the
+  markup or the JavaScript before the palette existed</strong>. Invisible for
+  years, because it happened to match the light theme. Then dark mode arrived
+  and each one lit up.
+</p>
+
+<p>
+  The wordmark had <code>color:blue</code> inline, which beat the stylesheet.
+  Nineteen colours in the dialog code were literals. The slot values were set
+  to <code>black</code> on every redraw. The amplifier page had its own rule
+  making read-only fields white, which in dark mode gave four white boxes with
+  pale grey text in them, the four numbers that page exists to report.
+</p>
+
+<p>
+  A related shape: <strong>one token doing two jobs</strong>. A single variable
+  was serving as both the panel seam colour and the slot outline colour, so
+  making one look right made the other look wrong. The fix is always the same
+  and always slightly annoying: split the token.
+</p>
+
+<h2>What is still true</h2>
+
+<p>
+  It is the same program. You drag a component onto a slot, type a value, and
+  watch the dot move. The <code>.sch</code> file format is unchanged, so files
+  saved in 1993 still open. The worked examples are the same examples with the
+  same numbers, and those numbers are now re-solved on every test run so the
+  documentation cannot quietly drift away from the code.
+</p>
+
+<p>
+  There are 50 cases and 174 checks in the main suite, plus separate suites for
+  the chart geometry, the response plot, the component symbols, Touchstone
+  parsing, share links, drag tuning, the guided examples, undo and redo, and
+  the microstrip and coax models.
+</p>
+
+<p>
+  It is all on <a href="https://github.com/niyeradori/QuickSmith-Web">GitHub</a>,
+  it is free, and it runs in the browser you already have.
+</p>
+
+<nav class="doc-nav">
+  <span><a href="index.html">&#9664; All articles</a></span>
+  <span><a href="share-a-working-circuit.html">Share a working circuit instead of a screenshot &#9654;</a></span>
+</nav>
+
+</main>
+</div>
+</body>
+</html>
