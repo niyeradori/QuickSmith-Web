@@ -222,7 +222,7 @@ a:hover { text-decoration: underline; }
     font: inherit;
     color: var(--qs-ink, #14181f);
     background: var(--qs-face, #fff);
-    border: 1px solid var(--qs-rim, #ccd2dc);
+    border: 1px solid var(--qs-edge, #ccd2dc);
     border-radius: 5px;
 }
 .form-control:focus { border-color: var(--qs-vswr, #1f5fbf); outline: none; }
@@ -245,7 +245,7 @@ input[type="color"] { width: 46px; height: 28px; padding: 2px; border: 1px solid
     font: inherit;
     color: var(--qs-ink, #14181f);
     background: var(--qs-face, #f5f5f5);
-    border: 1px solid var(--qs-rim, #ccd2dc);
+    border: 1px solid var(--qs-edge, #ccd2dc);
     border-radius: var(--qs-radius);
     cursor: pointer;
 }
@@ -395,7 +395,7 @@ th {
     font: 500 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
     color: var(--qs-text, #6b7280);
     background: var(--qs-face, #fff);
-    border: 1px solid var(--qs-rim, #ccd2dc);
+    border: 1px solid var(--qs-edge, #ccd2dc);
     border-left: 0;
     border-right: 0;
     white-space: nowrap;
