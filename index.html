@@ -34,6 +34,7 @@
   <script src="plot.js"></script>
   <script src="symbols.js"></script>
   <script src="tours.js"></script>
+  <script src="history.js"></script>
   <script src="sch.js"></script>
   <script src="js/DragDropTouch.js"></script>    
    <!-- ios-drag-drop.js does not trigger end ? -->
@@ -171,6 +172,9 @@
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">File<span class="caret"></span></a>
           <ul class="dropdown-menu">
+            <li id="undoItem"><a href="#" onclick ="undo_click()">Undo <span class="qs-shortcut">⌘Z</span></a></li>
+            <li id="redoItem"><a href="#" onclick ="redo_click()">Redo <span class="qs-shortcut">⇧⌘Z</span></a></li>
+            <li role="separator" class="divider"></li>
             <li><a href="#" onclick ="new_click()">New Session</a></li>
             <li><a href="#" onclick ="set_click()" >Save Session</a></li>
             <li><a href="#" onclick ="get_click()" >Restore Session</a></li>   
@@ -743,6 +747,12 @@ smithObj.view = QSChart.mount("smithMain");
     // snapped a restored 1.94 ohm load down to 1.90 and quietly changed the
     // answer.
     QSUI.setStep(document.getElementById("E1"), 0.1); // the load steps by 0.1
+
+    // the menu hints say what this keyboard actually uses
+    if (!/Mac|iPhone|iPad/.test(navigator.platform)) {
+        document.querySelector("#undoItem .qs-shortcut").textContent = "Ctrl+Z";
+        document.querySelector("#redoItem .qs-shortcut").textContent = "Ctrl+Shift+Z";
+    }
 
     // A shared link describes a specific design, so it wins over whatever
     // session happened to be saved in this browser.
@@ -1344,7 +1354,83 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         smithObj.drawSmith();
         updateReadout();
         runResponse();
+        recordHistory();
     }
+
+/* ========================================================= undo and redo
+ *
+ * Every edit in the program ends at Zcalsweep(), so that is the only place
+ * history has to be told anything. It takes a snapshot of schObj and keeps
+ * it if it differs from the one already on top; an edit that changes nothing
+ * costs nothing.
+ *
+ * Undo re-applies an old schObj through copy_schObj(), the same door a file
+ * or a share link comes in by, and the redraw that follows records the state
+ * it just restored - which is a no-op, because it is already on top.
+ */
+var designHistory = QSHistory.create();
+
+/*
+ * The design as a string, in a fixed shape. Stringifying schObj straight off
+ * would work most of the time but not always: a .sch file, a share link and a
+ * guided example each leave a slightly different set of keys behind, and the
+ * load carries no q until something writes one. Two states describing the same
+ * circuit have to compare equal, or every undo would leave a stray entry.
+ */
+function designState() {
+    var out = { Z0: schObj.Z0, VF: schObj.VF, TDF: schObj.TDF, LU: schObj.LU,
+                SS: schObj.SS, ST: schObj.ST, SST: schObj.SST, SE: schObj.SE,
+                termination: schObj.termination, ELEMENT: [] };
+    for (var i = 0; i <= 12; i++) {
+        var e = schObj.ELEMENT[i];
+        out.ELEMENT.push({ index: i, type: e.type,
+                           value1: Number(e.value1), value2: Number(e.value2),
+                           q: Number(e.q) || 1000000, tune: 1 });
+    }
+    // a measured load is part of the design; nothing else in gamData is
+    if (schObj.termination === "Multiple") out.gamData = schObj.gamData;
+    return JSON.stringify(out);
+}
+
+function recordHistory() {
+    designHistory.record(designState());
+    syncHistoryControls();
+}
+
+function applyHistory(state) {
+    if (!state) return;
+    copy_schObj(JSON.parse(state));
+    updateUI();
+    syncHistoryControls();
+}
+
+/* Undoing while a tour is up closes it first: the narration describes the
+ * ladder, and once you start undoing it no longer does. */
+function undo_click() { if (tour) endTour(); applyHistory(designHistory.undo()); }
+function redo_click() { if (tour) endTour(); applyHistory(designHistory.redo()); }
+
+function syncHistoryControls() {
+    var undoItem = document.getElementById("undoItem");
+    if (!undoItem) return;              // the amplifier page shares some of this
+    undoItem.classList.toggle("disabled", !designHistory.canUndo());
+    document.getElementById("redoItem").classList.toggle("disabled", !designHistory.canRedo());
+}
+
+/*
+ * Ctrl/Cmd+Z is taken for the design even when a value box has focus. The
+ * boxes hold single numbers, so the browser's own undo inside one is worth
+ * very little, and after typing a value the box keeps focus - which would
+ * otherwise be exactly the moment the shortcut stopped working. A dialog on
+ * screen is left alone.
+ */
+document.addEventListener("keydown", function (e) {
+    if (!(e.metaKey || e.ctrlKey) || e.altKey) return;
+    var key = String(e.key).toLowerCase();
+    if (key !== "z" && key !== "y") return;
+    if (document.querySelector("dialog[open]")) return;
+    e.preventDefault();
+    if (key === "y" || e.shiftKey) redo_click(); else undo_click();
+});
 
 /* ==================================================== guided examples
  *
@@ -1389,7 +1475,12 @@ function showTourStep() {
     if (!tour) return;
     var els = QSTours.elementsAt(tour, tourAt);
     for (var i = 0; i <= 12; i++) copyElement(schObj.ELEMENT[i], els[i]);
+    // Back and Next are the tour's own history. Undo should take you back to
+    // your design, not walk you through somebody else's, so the steps are held
+    // out of the stack and the whole tour lands as one entry when it closes.
+    designHistory.hold();
     updateUI();
+    designHistory.release();
 
     var panel = document.getElementById("tourPanel");
     panel.hidden = false;
@@ -1417,6 +1508,7 @@ function copyElement(target, from) {
 function endTour() {
     tour = null;
     document.getElementById("tourPanel").hidden = true;
+    recordHistory();        // the circuit the tour built, as one undoable step
 }
 
 /*
@@ -1434,7 +1526,15 @@ smithObj.onTune = function (slotIndex, gamma) {
     part.value1 = next.value1;
     if (next.value2 !== undefined) part.value2 = next.value2;
     showSlotValue(slotIndex);
+    // a drag solves on every pointer move; hold history until it is over so
+    // the whole gesture is one undo and not a hundred
+    designHistory.hold();
     Zcalsweep();
+};
+
+smithObj.onTuneEnd = function () {
+    designHistory.release();
+    recordHistory();
 };
 
 /* Put a slot's own numbers back in its boxes, the way updateUI would, but

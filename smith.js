@@ -319,6 +319,10 @@ var QSChart = (function () {
             delete pointers[e.pointerId];
             if (Object.keys(pointers).length < 2) pinch = null;
             drag = null;
+            // the whole drag is one edit, so the owner is told where it ended
+            if (tuning !== null && view.owner && typeof view.owner.onTuneEnd === "function") {
+                view.owner.onTuneEnd(tuning);
+            }
             tuning = null;
         }
         svg.addEventListener("pointerup", release);

@@ -145,6 +145,13 @@ a:hover { text-decoration: underline; }
     background: var(--qs-rim, #e5e8ee);
 }
 
+/* An item with nowhere to go stays listed, so the shortcut beside it is still
+   discoverable, but it is plainly not on offer. */
+.dropdown-menu > li.disabled > a { color: var(--qs-text, #9aa1ad); cursor: default; }
+.dropdown-menu > li.disabled > a:hover { background: none; }
+
+.qs-shortcut { float: right; margin-left: 22px; color: var(--qs-text, #9aa1ad); font-size: 12px; }
+
 /* ------------------------------------------------ small-screen menu toggle */
 
 .navbar-toggle {
