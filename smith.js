@@ -93,6 +93,11 @@ var QSChart = (function () {
         "stroke-linecap:round;vector-effect:non-scaling-stroke}",
         ".qs-plot{stroke:var(--qs-plot);stroke-width:2.4;fill:none;stroke-linejoin:round;",
         "vector-effect:non-scaling-stroke}",
+        // amber, so the suggestion is not mistaken for the Q circle it
+        // would otherwise share a colour and a dash pattern with
+        ".qs-next{fill:none;stroke:var(--qs-a5);stroke-width:3;stroke-dasharray:7 7;",
+        "stroke-linecap:round;vector-effect:non-scaling-stroke}",
+        ".qs-nexttext{fill:var(--qs-a5)}",
         ".qs-arc{fill:none;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;",
         "opacity:.9;vector-effect:non-scaling-stroke}",
         ".qs-node{stroke:var(--qs-face);stroke-width:3}",
@@ -383,6 +388,10 @@ var QSChart = (function () {
         if (me.data) polyline(traces, me.plotDatasets[0], "qs-plot", me.plotDatasets[0].color);
 
         drawElementArcs(me, view.root);
+        // over the arcs, not under them: the suggestion often retraces the
+        // same circle an element is already on, since a series part never
+        // changes resistance, and underneath it simply disappeared
+        drawNextMove(me, view.root);
 
         var pt = polar(me.dataM, me.dataQ);
         el("circle", { "class": "qs-dot", cx: pt.x, cy: -pt.y, r: 22 }, view.root);
@@ -539,6 +548,63 @@ var QSChart = (function () {
      * from the load to Zin is attributable element by element. This is the
      * thing a Smith chart is for.
      */
+    /*
+     * The move that would finish the match, drawn from where the design
+     * actually is.
+     *
+     * This replaces four bitmaps of the four regions of the chart, which said
+     * what shape of network suits a load in each one. Same idea, except it is
+     * about this design rather than the general case: it runs the matcher from
+     * the present Zin and draws the path the remaining elements would take, so
+     * the answer is the arc you would get, at the values you would use. When
+     * there is nothing left to do it draws nothing, which is the other half of
+     * the lesson.
+     */
+    function drawNextMove(me, parent) {
+        if (!me.showNextMove) return;
+        var solution = (typeof resultsObj !== "undefined") ? resultsObj.solution : null;
+        if (!solution || !solution.Zin) return;
+        if (solution.gamma.mag < 0.02) return;              // already matched
+
+        var Z0 = Number(me.Z0) || solution.Z0 || 50;
+        var best = QSEngine.matchToZ0(solution.Zin, Z0, solution.frequency)[0];
+        if (!best) return;
+
+        // Solve the two elements as if the present Zin were the load, which
+        // gives their arcs for free rather than repeating the geometry here.
+        var elements = [];
+        elements[1] = { type: "rx", value1: solution.Zin.re, value2: solution.Zin.im };
+        best.elements.forEach(function (e) {
+            elements[e.slot] = { type: e.type, value1: e.value1, value2: 0 };
+        });
+        var ghost = QSEngine.solve({ Z0: Z0, frequency: solution.frequency, elements: elements });
+
+        var g = el("g", { "class": "qs-hintpath" }, parent);
+        for (var i = 1; i < ghost.nodes.length; i++) {
+            var path = ghost.nodes[i].path;
+            if (!path || path.length < 2) continue;
+            var pts = [];
+            for (var j = 0; j < path.length; j++) {
+                pts.push((path[j].re * R).toFixed(1) + "," + (-path[j].im * R).toFixed(1));
+            }
+            el("polyline", { "class": "qs-next", points: pts.join(" ") }, g);
+        }
+
+        var named = best.elements.filter(function (e) { return e.type !== "w"; })
+            .map(function (e) {
+                return (isShunt(e.slot) ? "shunt " : "series ") + e.type.toUpperCase() +
+                       " " + Number(e.value1).toFixed(1) +
+                       (e.type === "l" ? " nH" : " pF");
+            }).join(", then ");
+        var caption = el("text", {
+            "class": "qs-label-sm qs-nexttext", x: -R * 1.06, y: R * 1.02,
+            "text-anchor": "start"
+        }, g);
+        caption.textContent = "next: " + named;
+    }
+
+    function isShunt(slot) { return slot % 2 === 1; }
+
     function drawElementArcs(me, parent) {
         if (me.showElementArcs === false) return;
         var solution = (typeof resultsObj !== "undefined") ? resultsObj.solution : null;

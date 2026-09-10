@@ -302,6 +302,10 @@
                     <input id="OVpaths" type="checkbox" checked onchange="toggleElementPaths()" />
                 </div>
                 <div class="qs-overlay-row">
+                    <label for="OVnext">Next move</label>
+                    <input id="OVnext" type="checkbox" checked onchange="toggleNextMove()" />
+                </div>
+                <div class="qs-overlay-row">
                     <label for="OVmarker">Marker</label>
                     <button type="button" id="OVmarker" class="btn btn-sm" onclick="showMarkerDialog()">Set&hellip;</button>
                 </div>
@@ -447,17 +451,6 @@
                                  <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
                         </div> <!--Component Zone 4 End-->
                     </div>   <!--Component Zone End--> 
-                    <!--MatchTip Zone Begin--> 
-                    <div id="matchtip" class="hidden">
-                        <!-- MatchTip Zone 1 begin -->
-                        <div class="text-center">
-                            <h5 style="color:blue">Matching Tip</h5>
-                        </div>
-                        <div  class="text-center" style="background-color:white; clear: both; margin-top:20px; margin-bottom:20px; ">
-                            <img id="regions"  class="img-thumbnail" src="img/region3.png" >
-                        </div> <!--MatchTip Zone 1 End-->                   
-                    </div>   <!--MatchTip Zone End-->
-
                     <p class="hint">Drag a part onto a slot &middot; drag the wire <svg class="qs-hint-sym" viewBox="0 0 61 20" width="40" height="13"><use href="#qs-sym-w-h"/></svg> onto one to clear it</p>
                 </div>   <!--tray end-->
 
@@ -646,6 +639,7 @@ var smithObj = {
               "view" : null,   // the QSChart mount, set once the DOM is ready
               "title": '',
               "showElementArcs": true,  // one coloured arc per component, load to Zin
+              "showNextMove": true,     // the move that would finish the match
               "showAdmittace": false,  // DrawAdmittance
                drawAdmitanceCircles: function() { drawAdmitanceCircles(this);},
               //drawAdmitanceCircles: drawAdmitanceCircles,
@@ -706,7 +700,6 @@ var smithObj = {
                test: function() { test(this);},
           };
 
-var matchTipShown = false;
 smithObj.view = QSChart.mount("smithMain");
 
  function test(context){
@@ -812,36 +805,6 @@ function onMouseMove(evt) {
     else  document.getElementById("Z1").value ="Z:";
     if( isMobile ) return;    
    
-    // matching tool tip, when the sprite is hovered depending upon its regions the matching network is shown (see FAQ figure) in the MatchTip area
-    var x1 = resultsObj.OUTPUT[2].GAMRout*AXIS_RANGE;
-    var y1 = resultsObj.OUTPUT[2].GAMIout*AXIS_RANGE;
-    //console.log ("m = " + m + " InCircleR((x-x1),(y-y1) " + x1  +"  "+ y1 + "  "+ x +"  "+ y +" inSmith " +inSmith + " matchTipShown" + matchTipShown );
-    if(m > 0.045 && InCircleR((x-x1),(y-y1),25) && inSmith && !matchTipShown)  {
-        var region = getRegion(x1,y1);
-        //console.log ("region = " + region);
-        switch(region) {
-            case 1:
-                document.getElementById("regions").src = "img/region1.png";
-                break;
-            case 2:
-                document.getElementById("regions").src = "img/region2.png"
-                break;
-            case 3:
-                document.getElementById("regions").src = "img/region3.png"
-                break;
-            case 4:
-                document.getElementById("regions").src = "img/region4.png"
-                break;
-            default:
-                document.getElementById("regions").src = ""
-        }
-        matchTipShown = true;
-        document.getElementById("matchtip").classList.remove("hidden");
-    }
-    if(matchTipShown==true && InCircleR((x-x1),(y-y1),25)==false) {
-         document.getElementById("matchtip").classList.add("hidden")
-        matchTipShown=false;
-    }
     }
 
 function onMouseClick(e) {
@@ -1061,6 +1024,7 @@ function syncOverlayControls() {
         "Auto-match to " + Number(schObj.Z0) + " \u2126";
     document.getElementById("OVadm").checked = !!smithObj.showAdmittace;
     document.getElementById("OVpaths").checked = smithObj.showElementArcs !== false;
+    document.getElementById("OVnext").checked = smithObj.showNextMove !== false;
     document.getElementById("OVmarker").textContent =
         smithObj.showMarker ? "On" : "Set\u2026";
 }
@@ -2185,6 +2149,11 @@ document.addEventListener("contextmenu", function (e) {
        is attributable element by element. */
     function toggleElementPaths() {
         smithObj.showElementArcs = !smithObj.showElementArcs;
+        smithObj.drawSmith();
+    }
+
+    function toggleNextMove() {
+        smithObj.showNextMove = !smithObj.showNextMove;
         smithObj.drawSmith();
     }
 
