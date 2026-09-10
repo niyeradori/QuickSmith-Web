@@ -63,7 +63,10 @@ a:hover { text-decoration: underline; }
     gap: 8px;
     font-size: 17px;
     font-weight: 600;
-    color: var(--qs-vswr, #1f5fbf);
+    /* the wordmark reads as text, not as a link: near-white on the dark bar,
+       near-black on the light one. It carried an inline color:blue that beat
+       the palette and left it almost invisible in the dark theme. */
+    color: var(--qs-ink, #131823);
     padding: 8px 10px 8px 0;
     white-space: nowrap;
 }
