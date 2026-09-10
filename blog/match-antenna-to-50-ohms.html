@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to match an antenna to 50 ohms on a Smith chart</title>
+<meta name="description" content="From a VNA reading to two components. Why a series part and a shunt part move you along different circles, how to find every two element match at once, and how to choose between four networks that are identical at the design frequency.">
+<link rel="canonical" href="https://quicksmith.online/blog/match-antenna-to-50-ohms.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/blog/match-antenna-to-50-ohms.html">
+<meta property="og:title" content="How to match an antenna to 50 ohms on a Smith chart">
+<meta property="og:description" content="From a VNA reading to two components, on the Smith chart.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/smith.ico">
+<link href="../app.css" rel="stylesheet">
+<link href="../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../smith.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "How to match an antenna to 50 ohms on a Smith chart",
+  "description": "From a VNA reading to two components. Why a series part and a shunt part move you along different circles, how to find every two element match at once, and how to choose between four networks that are identical at the design frequency.",
+  "image": "https://quicksmith.online/img/og-card.png",
+  "author": {
+    "@type": "Person",
+    "name": "Nathan Iyer"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "QuickSmith"
+  },
+  "datePublished": "2026-09-10",
+  "mainEntityOfPage": "https://quicksmith.online/blog/match-antenna-to-50-ohms.html"
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">
+        <img src="../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="index.html">Articles</a></li>
+      <li><a href="../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">Article</p>
+<h1>How to match an antenna to 50 ohms on a Smith chart</h1>
+
+<p class="doc-lede">
+  You have measured an antenna and it is not 50 ohms. Here is how to get from
+  that reading to two components and a part number, using a Smith chart, in
+  about a minute.
+</p>
+
+<h2>Start with the measurement</h2>
+
+<p>
+  Say a 145 MHz whip reads <strong>25 - j40 ohms</strong> at the feedpoint.
+  That is a real number off a real analyser: a little under half the resistance
+  you want, and capacitive, which is what a whip cut slightly short does.
+</p>
+
+<p>
+  Drop an <strong>RX</strong> chip on the load slot, type 25 and -40, set the
+  frequency to 145 MHz, and the chart puts a dot where that impedance lives:
+  below the centre line, left of centre. The readout says VSWR 3.49. Nobody is
+  happy with that.
+</p>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxNDUsImUiOltbMSwicngiLDI1LC00MF1dLCJjIjp7InMiOjJ9fQ">Open the bare antenna in QuickSmith</a>
+
+<h2>What matching actually means</h2>
+
+<p>
+  The centre of the chart is 50 ohms. Matching is moving the dot there, and
+  every component you add moves it along one particular curve and no other.
+</p>
+
+<ul>
+  <li>A <strong>series</strong> part cannot change the resistance, only the
+      reactance, so it slides the dot round a circle of constant resistance.</li>
+  <li>A <strong>shunt</strong> part cannot change the conductance, only the
+      susceptance, so it slides the dot round a circle of constant
+      conductance.</li>
+</ul>
+
+<p>
+  That constraint is the whole game. You are not steering freely, you are
+  changing trains at stations. The standard two element recipe is: get onto the
+  circle that passes through the centre, then ride that circle to the middle.
+</p>
+
+<h2>Let the program find it</h2>
+
+<p>
+  You do not have to work out which train. Press
+  <strong>Auto-match to 50 &#8486;</strong> and QuickSmith solves it in closed
+  form, giving every two element network that lands exactly on 50 ohms:
+</p>
+
+<aside class="doc-result">
+  <h2>Four ways to match 25 - j40 at 145 MHz</h2>
+  <ul>
+    <li>shunt L 39.34 nH  then series C 24.86 pF</li>
+    <li>shunt L 136.28 nH then series L 48.47 nH</li>
+    <li>series L 71.35 nH then shunt C 21.95 pF</li>
+    <li>series L 16.46 nH then shunt L 54.88 nH</li>
+  </ul>
+</aside>
+
+<p>
+  There are always at most four, because there are two orders (series first or
+  shunt first) and each has two solutions. All four are exact. All four give
+  VSWR 1.0000 at 145 MHz. So how do you choose?
+</p>
+
+<h2>Choosing between them</h2>
+
+<p>
+  Not on the match, because the match is identical. On everything else.
+</p>
+
+<p>
+  <strong>Bandwidth</strong> is the big one, and it is not obvious from the
+  component values. Sweeping each of those four networks and asking where VSWR
+  crosses 2:1:
+</p>
+
+<aside class="doc-result">
+  <h2>2:1 VSWR bandwidth, same match, four networks</h2>
+  <ul>
+    <li>series L 71.35 nH, shunt C 21.95 pF   -&gt;   77 MHz   ( 99.9 to 177.4)</li>
+    <li>shunt L 39.34 nH,  series C 24.86 pF  -&gt;  105 MHz   (116.5 to 221.4)</li>
+    <li>shunt L 136.28 nH, series L 48.47 nH  -&gt;  176 MHz   ( 61.2 to 237.3)</li>
+    <li>series L 16.46 nH, shunt L 54.88 nH   -&gt;  269 MHz   ( 91.6 to 360.3)</li>
+  </ul>
+</aside>
+
+<p>
+  A factor of three and a half between the narrowest and the widest, from
+  networks that are identical at the design frequency. That is worth knowing
+  before you order parts.
+</p>
+
+<p>
+  Then the practical things. Does the network need to pass DC to a bias tee, or
+  block it? Series C blocks, series L passes. Is one of the values awkward?
+  16.46 nH is a few turns of wire and hard to hold accurately; 71.35 nH is a
+  comfortable chip inductor. Do you want a low pass shape, which also helps
+  with harmonics, or a high pass one, which keeps lightning and static off the
+  front end?
+</p>
+
+<p>
+  For a 2 m whip the low pass version is the usual answer: series inductor,
+  shunt capacitor, harmonics attenuated on the way out.
+</p>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxNDUsImUiOltbMSwicngiLDI1LC00MF0sWzIsImwiLDcxLjM1LDBdLFszLCJjIiwyMS45NSwwXV0sImMiOnsicyI6Mn19">Open the matched antenna in QuickSmith</a>
+
+<h2>Doing it by hand instead</h2>
+
+<p>
+  Auto-match is quick, but the chart is where the understanding lives, and
+  QuickSmith will coach you through it. Under the chart there is a line that
+  reads something like:
+</p>
+
+<p>
+  <code>next: series L 71.4 nH, then shunt C 22.0 pF</code>
+</p>
+
+<p>
+  That is the shortest way from wherever the dot is now to the centre, and it
+  updates as you edit. Drop a series inductor in slot 2, and as you walk its
+  value up with the spin buttons you can watch the dot climb the constant
+  resistance circle. When it crosses the circle through the centre, stop. Add a
+  shunt capacitor and walk that up until the dot lands in the middle.
+</p>
+
+<p>
+  You can also just grab the dot and pull it. Every component puts a handle on
+  its node, and dragging one solves backwards for the value that puts the node
+  under your pointer. Try dragging a series part and you will find it will only
+  go round its own circle, which is the constraint above, made physical.
+</p>
+
+<h2>Check it before you build it</h2>
+
+<p>
+  A match at one frequency is easy. Confirm it is a match across the band you
+  care about:
+</p>
+
+<ul>
+  <li>Set the <strong>VSWR circle</strong> overlay to 2, so you can see the
+      target region rather than guess at it.</li>
+  <li>Set the Response sweep to your band and watch the return loss curve, not
+      just the single number.</li>
+  <li>Look at <strong>Loaded Q</strong> and <strong>BW (VSWR &lt; 2)</strong>
+      in the readout. Those are computed from the network you actually have.</li>
+</ul>
+
+<p>
+  If the bandwidth is too narrow, you generally need a lower Q transformation,
+  which usually means a smaller impedance jump, which usually means fixing the
+  antenna rather than the network. A matching network can transform an
+  impedance. It cannot make a badly resonant antenna into a good one.
+</p>
+
+<nav class="doc-nav">
+  <span><a href="index.html">&#9664; All articles</a></span>
+  <span><a href="50-ohm-trace-width-fr4.html">50 ohm trace width on FR-4 &#9654;</a></span>
+</nav>
+
+</main>
+</div>
+</body>
+</html>

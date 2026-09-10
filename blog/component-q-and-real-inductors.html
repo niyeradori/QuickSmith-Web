@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inductor Q and matching network loss | QuickSmith</title>
+<meta name="description" content="A real inductor does not just cost you power, it moves your match. How much loss a given component Q costs, why a high Q network is punished harder for the same parts, and what Q to assume for real components.">
+<link rel="canonical" href="https://quicksmith.online/blog/component-q-and-real-inductors.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/blog/component-q-and-real-inductors.html">
+<meta property="og:title" content="Inductor Q and matching network loss | QuickSmith">
+<meta property="og:description" content="A real inductor does not just cost you power, it moves your match.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/smith.ico">
+<link href="../app.css" rel="stylesheet">
+<link href="../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../smith.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Component Q: what a real inductor does to your match",
+  "description": "A real inductor does not just cost you power, it moves your match. How much loss a given component Q costs, why a high Q network is punished harder for the same parts, and what Q to assume for real components.",
+  "image": "https://quicksmith.online/img/og-card.png",
+  "author": {
+    "@type": "Person",
+    "name": "Nathan Iyer"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "QuickSmith"
+  },
+  "datePublished": "2026-09-10",
+  "mainEntityOfPage": "https://quicksmith.online/blog/component-q-and-real-inductors.html"
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">
+        <img src="../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="index.html">Articles</a></li>
+      <li><a href="../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">Article</p>
+<h1>Component Q: what a real inductor does to your match</h1>
+
+<p class="doc-lede">
+  Most free matching calculators assume perfect components. Real inductors have
+  a Q somewhere between 15 and 150, and the difference does not just cost you
+  power, it moves your match.
+</p>
+
+<h2>Two things go wrong, not one</h2>
+
+<p>
+  A real inductor is an inductor with a resistance in series with it. The
+  ratio of the two is Q, at the frequency you are working at. Put one into a
+  matching network and:
+</p>
+
+<ul>
+  <li>Some of your power turns into heat in that resistance.</li>
+  <li>That resistance is <em>part of the circuit</em>, so the impedance the
+      network presents is not what you designed.</li>
+</ul>
+
+<p>
+  The second one surprises people. Here is a matched L-network, 5 ohms to
+  50 ohms at 100 MHz, with the inductor Q swept and nothing else changed:
+</p>
+
+<aside class="doc-result">
+  <h2>5 to 50 ohm L-network, inductor Q swept</h2>
+  <ul>
+    <li>ideal    Zin 49.99 + j0.02    VSWR 1.0005   loss 0.000 dB</li>
+    <li>Q 150    Zin 49.20 - j0.56    VSWR 1.0199   loss 0.086 dB</li>
+    <li>Q 100    Zin 48.81 - j0.85    VSWR 1.0299   loss 0.129 dB</li>
+    <li>Q  60    Zin 48.06 - j1.39    VSWR 1.0499   loss 0.214 dB</li>
+    <li>Q  30    Zin 46.25 - j2.63    VSWR 1.0999   loss 0.424 dB</li>
+    <li>Q  15    Zin 42.97 - j4.71    VSWR 1.1999   loss 0.828 dB</li>
+  </ul>
+</aside>
+
+<p>
+  At a Q of 15 the match has drifted from 1.0005 to 1.20 and you are down
+  0.83 dB. Neither number is catastrophic, but if you designed for a perfect
+  1.0 and measured 1.2 on the bench, you would spend an afternoon looking for a
+  mistake that is not there.
+</p>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxMDAsImUiOltbMSwicngiLDUsMF0sWzIsImwiLDIzLjg3LDAsMzBdLFszLCJjIiw5NS40OSwwXV0sImMiOnsicyI6Mn19">Open the same network with a Q of 30 inductor</a>
+
+<h2>The loss depends on the network's Q, not just the part's</h2>
+
+<p>
+  This is the rule worth carrying around. A higher Q network circulates more
+  reactive current for the same delivered power, so the same imperfect
+  component dissipates more.
+</p>
+
+<p>
+  Same load, same 100 MHz, same inductors. The only change is the topology:
+</p>
+
+<aside class="doc-result">
+  <h2>The same component Q in two networks</h2>
+  <ul>
+    <li>L-network,  loaded Q 3</li>
+    <li>   inductors Q 100   VSWR 1.030   loss 0.129 dB</li>
+    <li>   inductors Q  60   VSWR 1.050   loss 0.214 dB</li>
+    <li>   inductors Q  30   VSWR 1.100   loss 0.424 dB</li>
+    <li></li>
+    <li>T-network,  loaded Q 8</li>
+    <li>   inductors Q 100   VSWR 1.093   loss 0.440 dB</li>
+    <li>   inductors Q  60   VSWR 1.154   loss 0.724 dB</li>
+    <li>   inductors Q  30   VSWR 1.304   loss 1.401 dB</li>
+  </ul>
+</aside>
+
+<p>
+  Same parts, three times the loss, because the network stores more energy for
+  the same throughput. So the useful figure of merit is the ratio of your
+  network's loaded Q to your components' unloaded Q. Keep the network Q well
+  below the component Q and the loss stays small. Let them approach each other
+  and it does not.
+</p>
+
+<p>
+  This is the hidden cost in the <a href="l-pi-or-t-matching-network.html">Pi
+  and T article</a>. A high Q network buys you selectivity and comfortable
+  component values, and it charges you in dissipation.
+</p>
+
+<h2>What Q to actually use</h2>
+
+<p>
+  Q is frequency dependent and part dependent, so the honest answer is to look
+  at the datasheet curve at your frequency. As a starting point:
+</p>
+
+<ul>
+  <li><strong>Wirewound chip inductors</strong>, VHF: 40 to 90.</li>
+  <li><strong>Multilayer chip inductors</strong>: 15 to 40. Cheap, small,
+      lossy.</li>
+  <li><strong>Air wound coils</strong>, made properly: 150 to 300. This is why
+      transmitter output networks still use them.</li>
+  <li><strong>C0G/NP0 capacitors</strong>: 1000 and up. High enough that you can
+      usually leave capacitors ideal and only worry about inductors.</li>
+  <li><strong>X7R capacitors</strong>: don't, not in a matching network.</li>
+</ul>
+
+<p>
+  That last pair is why the examples above only degrade the inductor. In most
+  RF matching networks the inductor is the lossy part by an order of magnitude,
+  and modelling the capacitor as perfect costs you almost nothing in accuracy.
+</p>
+
+<h2>Putting it in the model</h2>
+
+<p>
+  Every component slot in QuickSmith carries its own Q. Double-click a
+  component, or drop a new one, and the dialog has a Q field. The default is
+  1000000, which is ideal in all but name.
+</p>
+
+<p>
+  Set it to something real and everything downstream follows: the node moves,
+  the insertion loss appears in the readout, the response sweep changes shape.
+  The regression suite has a case for this, because it is easy to get wrong in
+  a way that hides: a <em>series</em> part round-trips through the solver
+  exactly regardless of its Q, since loss does not touch reactance, but a
+  <em>shunt</em> part lands about 1/Q away from where an ideal one would.
+</p>
+
+<h2>One more place it bites</h2>
+
+<p>
+  <a href="../help/examples/examples/EXAMPLE_5.html">Example 5</a> is a five
+  pole low-pass filter, and it is the clearest demonstration of what component Q
+  does to a design that is not a match at all. The published design asks for
+  60 dB down at 100 MHz. With the real Q values on the parts, it gives 53.25 dB,
+  and about 0.75 dB of loss through the passband that an ideal design would not
+  have.
+</p>
+
+<p>
+  Nobody did anything wrong. That is just what the parts cost.
+</p>
+
+<nav class="doc-nav">
+  <span><a href="index.html">&#9664; All articles</a></span>
+  <span><a href="what-the-smith-chart-shows.html">What the Smith chart is actually showing you &#9654;</a></span>
+</nav>
+
+</main>
+</div>
+</body>
+</html>

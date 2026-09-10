@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuickSmith &mdash; Regression Tests</title>
+<style>
+  :root {
+    --bg: #0f1420; --panel: #161c2b; --line: #26304a;
+    --ink: #e6ebf5; --muted: #8f9dbb;
+    --pass: #35d29a; --fail: #ff6b6b; --accent: #5b9dff;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 32px 24px 64px;
+    background: var(--bg); color: var(--ink);
+    font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0 0 24px; font-size: 14px; }
+  .summary {
+    display: flex; gap: 28px; align-items: baseline; flex-wrap: wrap;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 22px;
+  }
+  .summary b { font-size: 26px; font-variant-numeric: tabular-nums; }
+  .summary .k { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+  .ok  b { color: var(--pass); }
+  .bad b { color: var(--fail); }
+  .case {
+    border: 1px solid var(--line); border-left: 3px solid var(--pass);
+    background: var(--panel); border-radius: 8px;
+    padding: 12px 16px; margin-bottom: 10px;
+  }
+  .case.fail { border-left-color: var(--fail); }
+  .case h2 { font-size: 15px; font-weight: 600; margin: 0; display: flex; gap: 10px; align-items: baseline; }
+  .tag { font: 600 11px/1 var(--mono); letter-spacing: .08em; padding: 4px 7px; border-radius: 4px; }
+  .tag.pass { background: rgba(53,210,154,.15); color: var(--pass); }
+  .tag.fail { background: rgba(255,107,107,.15); color: var(--fail); }
+  .ref { color: var(--muted); font-size: 12px; margin: 5px 0 0 50px; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 2px 50px; width: calc(100% - 50px); }
+  td { font: 12.5px/1.5 var(--mono); padding: 3px 10px 3px 0; color: var(--muted);
+       font-variant-numeric: tabular-nums; }
+  td.key { color: var(--ink); }
+  tr.bad td { color: var(--fail); }
+  .err { color: var(--fail); font: 12.5px var(--mono); margin-left: 50px; }
+  .note { color: var(--muted); font-size: 13px; margin-top: 26px; border-top: 1px solid var(--line); padding-top: 16px; }
+  code { font: 12.5px var(--mono); background: rgba(91,157,255,.12); color: var(--accent);
+         padding: 2px 5px; border-radius: 4px; }
+  button { font: inherit; background: var(--accent); color: #0b1220; border: 0;
+           padding: 7px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>QuickSmith regression suite</h1>
+  <p class="sub">
+    Drives the real solver (<code>engine.js</code>, through the <code>sch.js</code> adapter)
+    against the worked examples in <code>help/examples/examples/</code>.
+  </p>
+
+  <div id="summary" class="summary"><span class="k">Running&hellip;</span></div>
+  <div id="results"></div>
+
+  <p class="note">
+    Needs to be served over HTTP so the <code>.sch</code> fixtures can be fetched &mdash;
+    from the repo root run <code>python3 -m http.server 8000</code> and open
+    <code>http://localhost:8000/tests/</code>.
+    Headless equivalent: <code>./tests/run.sh</code>.
+    <label style="display:block;margin-top:12px">
+      <input type="checkbox" id="verbose"> show passing checks too
+    </label>
+  </p>
+</div>
+
+<script src="../engine.js"></script>
+<script src="../common.js"></script>
+<script src="../sch.js"></script>
+<script src="../amp.js"></script>
+<script src="harness.js"></script>
+<script src="cases.js"></script>
+<script>
+/* The .sch fixtures have to be in memory before the (synchronous) harness runs. */
+var FIXTURES = {};
+
+function neededFiles(cases) {
+  var seen = {};
+  cases.forEach(function (c) { if (c.schFile) seen[c.schFile] = 1; });
+  return Object.keys(seen);
+}
+
+Promise.all(neededFiles(QS_CASES).map(function (rel) {
+  return fetch("../" + rel).then(function (r) {
+    if (!r.ok) throw new Error(rel + ": HTTP " + r.status);
+    return r.text();
+  }).then(function (t) { FIXTURES[rel] = t; });
+})).then(function () {
+  render(QSHarness.runAll(QS_CASES, function (rel) { return FIXTURES[rel]; }));
+}).catch(function (e) {
+  document.getElementById("summary").innerHTML =
+    '<span class="k" style="color:var(--fail)">Could not load fixtures &mdash; ' +
+    e.message + '. Serve this over HTTP (see below).</span>';
+});
+
+function fmt(x) {
+  if (x === null || x === undefined) return "&lt;missing&gt;";
+  if (typeof x !== "number" || !isFinite(x)) return String(x);
+  return (Math.abs(x) >= 1e6 || (x !== 0 && Math.abs(x) < 1e-4))
+    ? x.toExponential(4) : x.toFixed(6);
+}
+
+function render(results) {
+  var pass = 0, checks = 0, badChecks = 0;
+  results.forEach(function (r) {
+    if (r.pass) pass++;
+    checks += r.checks.length;
+    r.checks.forEach(function (c) { if (!c.pass) badChecks++; });
+  });
+  var failed = results.length - pass;
+
+  document.getElementById("summary").innerHTML =
+    '<div class="ok"><b>' + pass + '</b> <span class="k">passed</span></div>' +
+    '<div class="' + (failed ? "bad" : "ok") + '"><b>' + failed + '</b> <span class="k">failed</span></div>' +
+    '<div><b>' + (checks - badChecks) + '/' + checks + '</b> <span class="k">checks</span></div>';
+
+  document.getElementById("results").innerHTML = results.map(function (r) {
+    var rows = r.checks.map(function (c) {
+      return '<tr class="' + (c.pass ? "" : "bad") + '" data-pass="' + c.pass + '">' +
+             '<td class="key">' + c.key + '</td>' +
+             '<td>' + c.kind + '</td>' +
+             '<td>want ' + fmt(c.expected) + ' &plusmn; ' + c.tol + '</td>' +
+             '<td>got ' + fmt(c.actual) + '</td></tr>';
+    }).join("");
+    return '<div class="case ' + (r.pass ? "" : "fail") + '">' +
+      '<h2><span class="tag ' + (r.pass ? "pass" : "fail") + '">' +
+        (r.pass ? "PASS" : "FAIL") + '</span>' + r.name + '</h2>' +
+      (r.ref ? '<div class="ref">' + r.ref + '</div>' : "") +
+      (r.error ? '<div class="err">ERROR: ' + r.error + '</div>' : "") +
+      '<table>' + rows + '</table></div>';
+  }).join("");
+
+  applyVerbose();
+}
+
+function applyVerbose() {
+  var show = document.getElementById("verbose").checked;
+  Array.prototype.forEach.call(document.querySelectorAll('tr[data-pass="true"]'), function (tr) {
+    tr.style.display = show ? "" : "none";
+  });
+}
+document.getElementById("verbose").addEventListener("change", applyVerbose);
+</script>
+</body>
+</html>

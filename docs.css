@@ -1,0 +1,184 @@
+/*
+ * QuickSmith document pages.
+ * =============================================================================
+ *
+ * The FAQ and the worked examples. Both are prose rather than program, so they
+ * want a measure, a scale and a rhythm that app.css has no reason to carry.
+ *
+ * Colour comes from the same custom properties everything else uses, declared
+ * in smith.js, so a document page follows whatever palette the chart is set to.
+ * Load app.css first, then this.
+ */
+
+.doc-wrap {
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    gap: 40px;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 8px 20px 80px;
+}
+/* a page with no contents beside it just gets the measure */
+.doc-wrap.doc-solo { grid-template-columns: minmax(0, 1fr); max-width: 860px; }
+
+/* ------------------------------------------------------------- the contents */
+
+/* It follows you down the page, which is the whole point of having one in
+   front of two dozen questions. */
+.doc-toc {
+    position: sticky;
+    top: 16px;
+    align-self: start;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    font-size: 13px;
+}
+.doc-toc h2 {
+    margin: 0 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--qs-text, #7b8496);
+}
+.doc-toc ol { margin: 0 0 18px; padding: 0; list-style: none; }
+.doc-toc li { margin: 0 0 6px; }
+.doc-toc a { color: var(--qs-ink, #14181f); }
+.doc-toc a:hover { color: var(--qs-vswr, #1f5fbf); }
+/* On a wide screen the contents is simply there, so the disclosure it is built
+   from has nothing to disclose and its marker is in the way. */
+.doc-toc > summary { display: none; }
+
+/* ----------------------------------------------------------------- the prose */
+
+.doc-body { max-width: 68ch; font-size: 14.5px; line-height: 1.7; }
+.doc-body h1 { margin: 4px 0 6px; font-size: 26px; letter-spacing: -.01em; }
+.doc-body h2 {
+    margin: 42px 0 14px;
+    padding-top: 18px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--qs-text, #7b8496);
+    border-top: 1px solid var(--qs-rim, #e5e8ee);
+}
+.doc-body h3 { margin: 26px 0 8px; font-size: 16px; font-weight: 600; }
+.doc-body p { margin: 0 0 12px; }
+.doc-body ul { margin: 0 0 12px; padding-left: 20px; }
+.doc-body li { margin-bottom: 5px; }
+.doc-body strong { font-weight: 600; }
+.doc-body code, .doc-body kbd {
+    font: 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    padding: 2px 5px;
+    border-radius: 4px;
+    background: var(--qs-face, #eef2f9);
+    border: 1px solid var(--qs-rim, #e5e8ee);
+}
+
+.doc-lede { margin: 0 0 34px; color: var(--qs-text, #7b8496); }
+.doc-kicker {
+    margin: 0 0 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--qs-a5, #b26a00);
+}
+
+/* a component icon sitting in a line of prose */
+.doc-sym {
+    display: inline-block;
+    vertical-align: middle;
+    height: 22px;
+    width: auto;
+    margin: 0 2px;
+    color: var(--qs-ink, #14181f);
+}
+
+/* ------------------------------------------------------------- set-off bits */
+
+/* The example screenshots and the matching map are scans on white, from long
+   before there was a dark palette. They get their own plate so they stay
+   readable whatever the rest of the page is doing. */
+.doc-figure {
+    margin: 18px 0 22px;
+    padding: 14px;
+    background: #fff;
+    border: 1px solid var(--qs-rim, #e5e8ee);
+    border-radius: 10px;
+}
+.doc-figure img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+.doc-figure figcaption {
+    margin-top: 10px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #5a6272;
+}
+
+/* The answer. Every worked example ends in a short list of values, and that is
+   what most people came for, so it does not get buried in a paragraph. */
+.doc-result {
+    margin: 22px 0;
+    padding: 14px 18px;
+    background: var(--qs-face, #f6f8fc);
+    border: 1px solid var(--qs-rim, #e5e8ee);
+    border-left: 3px solid var(--qs-a5, #b26a00);
+    border-radius: 8px;
+}
+.doc-result h2 {
+    margin: 0 0 8px;
+    padding: 0;
+    border: 0;
+    font-size: 11px;
+    color: var(--qs-a5, #b26a00);
+}
+.doc-result ul { margin: 0; padding: 0; list-style: none; }
+.doc-result li {
+    margin: 0 0 3px;
+    font: 13.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--qs-ink, #14181f);
+    /* these lists are small tables of numbers, so runs of spaces are how the
+       columns line up; pre-wrap keeps them and still wraps on a narrow screen */
+    white-space: pre-wrap;
+}
+
+/* The whole point of a worked example on the web rather than in a PDF. */
+.doc-open {
+    display: inline-block;
+    margin: 6px 0 26px;
+    padding: 9px 16px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--qs-accent, #1f5fbf);
+    border: 1px solid var(--qs-accent, #1f5fbf);
+    border-radius: 7px;
+}
+.doc-open:hover { filter: brightness(.92); text-decoration: none; color: #fff; }
+
+.doc-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 16px;
+    font-size: 13px;
+    border-top: 1px solid var(--qs-rim, #e5e8ee);
+}
+
+@media (max-width: 860px) {
+    .doc-wrap { grid-template-columns: 1fr; gap: 10px; padding: 4px 16px 60px; }
+    .doc-toc { position: static; max-height: none; padding: 10px 0 4px; }
+    .doc-toc > summary {
+        display: list-item;
+        cursor: pointer;
+        padding: 8px 0;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        color: var(--qs-text, #7b8496);
+    }
+    .doc-toc[open] > summary { margin-bottom: 8px; }
+    .doc-body { font-size: 15px; }
+}

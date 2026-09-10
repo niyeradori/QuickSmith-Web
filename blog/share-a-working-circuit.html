@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share an impedance matching design as a link | QuickSmith</title>
+<meta name="description" content="Copy Share Link puts the whole design in a web address: frequency, load, every component, even a measured Touchstone load. Nothing is uploaded and nothing expires, because the design is the string.">
+<link rel="canonical" href="https://quicksmith.online/blog/share-a-working-circuit.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/blog/share-a-working-circuit.html">
+<meta property="og:title" content="Share an impedance matching design as a link | QuickSmith">
+<meta property="og:description" content="The design is the string. Nothing is uploaded and nothing expires.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/smith.ico">
+<link href="../app.css" rel="stylesheet">
+<link href="../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../smith.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Share a working circuit instead of a screenshot",
+  "description": "Copy Share Link puts the whole design in a web address: frequency, load, every component, even a measured Touchstone load. Nothing is uploaded and nothing expires, because the design is the string.",
+  "image": "https://quicksmith.online/img/og-card.png",
+  "author": {
+    "@type": "Person",
+    "name": "Nathan Iyer"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "QuickSmith"
+  },
+  "datePublished": "2026-09-10",
+  "mainEntityOfPage": "https://quicksmith.online/blog/share-a-working-circuit.html"
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">
+        <img src="../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="index.html">Articles</a></li>
+      <li><a href="../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">Article</p>
+<h1>Share a working circuit instead of a screenshot</h1>
+
+<p class="doc-lede">
+  Somebody posts a screenshot of a Smith chart and asks why their match is not
+  working. Now everybody guesses, because a picture of a circuit is not a
+  circuit. There is a better way to ask.
+</p>
+
+<h2>The whole design goes in the address</h2>
+
+<p>
+  <strong>File &rarr; Copy Share Link</strong> puts the frequency, the load,
+  every component with its Q, the length units, the sweep range and the chart
+  overlays into a web address. Open that address and the design is rebuilt
+  exactly, in whatever browser, with no account and nothing to install.
+</p>
+
+<p>
+  A four component match comes to about 120 characters. Here is a real one:
+</p>
+
+<p>
+  <code>quicksmith.online/#eyJ2IjoxLCJmIjoxMDAsImUiOltbMSwicngiLDUwMCww...</code>
+</p>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxMDAsImUiOltbMSwicngiLDUwMCwwXSxbMywiYyIsOS41LDBdLFs0LCJsIiwyNDAsMF1dLCJjIjp7InMiOjJ9fQ">That link, opened</a>
+
+<p>
+  It is not a reference to a design stored on a server. The design
+  <em>is</em> the string. Nothing is uploaded, nothing expires, and there is no
+  database that can lose it. Paste it in an email in ten years and it will
+  still work as long as the page is still there.
+</p>
+
+<h2>What it is good for</h2>
+
+<p>
+  <strong>Asking a question properly.</strong> "Here is my antenna and here is
+  what I tried" as a link, instead of a screenshot and a list of values that
+  somebody has to retype. The person answering can move a value and see what
+  happens, which is the difference between a guess and an answer.
+</p>
+
+<p>
+  <strong>Answering one.</strong> Reply with a link to the fixed version. They
+  can see what you changed by opening both.
+</p>
+
+<p>
+  <strong>Teaching.</strong> Every worked example on this site ends with
+  <em>Open this circuit in QuickSmith</em>, and every article that describes a
+  network does the same. That is a share link. A reader can take the design
+  apart rather than trust the prose, which is a much better position to put
+  them in.
+</p>
+
+<p>
+  <strong>Notes to yourself.</strong> A link in a lab notebook or a ticket is a
+  complete record of what you tried, and unlike a screenshot it is still
+  editable next month.
+</p>
+
+<h2>Measured loads travel too</h2>
+
+<p>
+  If your load is a Touchstone file rather than a typed impedance, the measured
+  points go into the link as well. That makes it longer, a few hundred
+  characters rather than a hundred, and it means what the other person opens is
+  <em>your antenna</em> and not an idealisation of it.
+</p>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxNTAsIlRERiI6MTUwLCJMVSI6IkRlZ3JlZXMiLCJTUyI6MTAwLCJTVCI6MjAwLCJ0ZXJtaW5hdGlvbiI6Ik11bHRpcGxlIiwiZSI6W1sxLCJyeCIsMCwwXSxbMiwibCIsMzIsMF0sWzMsInMiLDI1LDk1XV0sImciOltbMTAwLDEwNSwxMTAsMTIwLDEzMCwxNDAsMTUwLDE2MCwxNzAsMTgwLDE5MCwyMDBdLFswLjU5LDAuNTMsMC41OSwwLjU4MSwwLjQ5LDAuMzcyLDAuMjM2LDAuMTgzLDAuMTg3LDAuMjMxLDAuMjQ0LDAuMzQ0XSxbLTg2LjI3MSwtNjEuOTg3LC03Mi4yNjgsLTU2LjQ1NiwtODEuNzYsLTEwMi42MjIsLTExMi44LC0xMTkuNzUzLC0xMjIuODksLTExNy4xMiwtMTI4LC0xNDAuOThdXSwiYyI6eyJzIjoyfX0">A measured dipole and its match, in one link</a>
+
+<h2>What is deliberately not in it</h2>
+
+<p>
+  The link is trimmed hard, because a long URL gets mangled by mail clients and
+  chat apps. Empty ladder slots are dropped. Values are rounded to six
+  significant figures. Settings still at their defaults are left out entirely,
+  so a design at 50 ohms with a velocity factor of 1 carries neither.
+</p>
+
+<p>
+  That trimming is checked rather than assumed. Every case in the regression
+  suite encodes a design, decodes it, solves <em>both</em>, and requires the
+  answers to agree. The claim is not that the string looks right, it is that
+  the design survives the round trip.
+</p>
+
+<h2>The other ways out</h2>
+
+<p>
+  A link is the right thing for a conversation. For other jobs:
+</p>
+
+<ul>
+  <li><strong>File &rarr; Save File</strong> writes a <code>.sch</code>, which
+      is the actual file format and the thing to keep if you care about it.</li>
+  <li><strong>File &rarr; Chart as SVG</strong> gives vector art for a report,
+      and <strong>Print Chart</strong> prints just the chart in the light
+      palette whatever your screen is set to.</li>
+  <li><strong>Data &rarr; Export Touchstone</strong> writes the network as an
+      <code>.s1p</code> for whatever tool comes next, and
+      <strong>Export Sweep (CSV)</strong> gives you the numbers as a
+      spreadsheet.</li>
+  <li><strong>File &rarr; Save Session</strong> keeps your work in this browser
+      across a reload, which is not sharing but is the thing people actually
+      want when they close a tab by accident.</li>
+</ul>
+
+<h2>A small request</h2>
+
+<p>
+  If you answer RF questions on a forum, in a club newsletter, on Stack
+  Exchange, try replying with a working circuit instead of a picture of one.
+  It costs one menu item, and the person on the other end gets something they
+  can turn the knobs on.
+</p>
+
+<nav class="doc-nav">
+  <span><a href="index.html">&#9664; All articles</a></span>
+  <span><a href="stability-gain-and-noise-circles.html">Stability circles and the gain versus noise trade-off &#9654;</a></span>
+</nav>
+
+</main>
+</div>
+</body>
+</html>

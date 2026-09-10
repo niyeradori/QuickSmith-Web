@@ -1,0 +1,881 @@
+/*
+ * QuickSmith page styles.
+ * =============================================================================
+ *
+ * Replaces Bootstrap 3 (121 KB of CSS for a menu bar, a two-column layout and
+ * some inputs). The class names are the ones the markup already carries, so
+ * this is a swap rather than a rewrite of every page.
+ *
+ * Colour comes from the same custom properties the chart uses, declared in
+ * smith.js, so the palette switch in the chart's corner dresses the whole page.
+ * Fallbacks cover the moment before the chart mounts.
+ */
+
+:root {
+    color-scheme: light dark;
+    --qs-nav-h: 52px;
+    --qs-radius: 7px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--qs-bg, #fbfbf9);
+    color: var(--qs-ink, #14181f);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-text-size-adjust: 100%;
+}
+
+a { color: var(--qs-vswr, #1f5fbf); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--qs-vswr, #1f5fbf); outline-offset: 2px; }
+
+/* ============================================================== menu bar */
+
+.navbar {
+    position: relative;   /* the Auto-match button centres against this */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    min-height: var(--qs-nav-h);
+    padding: 0 14px;
+    margin-bottom: 14px;
+    background: var(--qs-face, #fff);
+    border-bottom: 1px solid var(--qs-rim, #d9dde5);
+}
+
+.navbar .container-fluid {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    flex-wrap: wrap;
+    padding: 0;
+}
+
+.navbar-header { display: flex; align-items: center; }
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 17px;
+    font-weight: 600;
+    /* the wordmark reads as text, not as a link: near-white on the dark bar,
+       near-black on the light one. It carried an inline color:blue that beat
+       the palette and left it almost invisible in the dark theme. */
+    color: var(--qs-ink, #131823);
+    padding: 8px 10px 8px 0;
+    white-space: nowrap;
+}
+.navbar-brand:hover { text-decoration: none; }
+.navbar-brand img { width: 26px; height: 26px; }
+
+.nav, .navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+}
+.navbar-right { margin-left: auto; }
+#matchBtn {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+.nav > li { position: relative; }
+.nav > li > a {
+    display: block;
+    padding: 9px 12px;
+    border-radius: var(--qs-radius);
+    color: var(--qs-ink, #14181f);
+    white-space: nowrap;
+}
+.nav > li > a:hover { background: var(--qs-bg, #f0f2f5); text-decoration: none; }
+.nav > li.disabled > a { color: var(--qs-text, #9aa1ad); pointer-events: none; }
+.nav > li.active > a { color: var(--qs-vswr, #1f5fbf); font-weight: 600; }
+
+.caret {
+    display: inline-block;
+    margin-left: 5px;
+    border: 4px solid transparent;
+    border-top-color: currentColor;
+    vertical-align: middle;
+    opacity: .55;
+}
+
+/* --------------------------------------------------------- dropdown menus */
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    z-index: 900;
+    top: 100%;
+    left: 0;
+    min-width: 190px;
+    margin: 2px 0 0;
+    padding: 5px;
+    list-style: none;
+    background: var(--qs-face, #fff);
+    border: 1px solid var(--qs-rim, #d9dde5);
+    border-radius: 9px;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, .35);
+}
+.navbar-right .dropdown-menu { left: auto; right: 0; }
+.open > .dropdown-menu { display: block; }
+
+.dropdown-menu > li > a {
+    display: block;
+    padding: 7px 11px;
+    border-radius: 5px;
+    color: var(--qs-ink, #14181f);
+    white-space: nowrap;
+}
+.dropdown-menu > li > a:hover { background: var(--qs-bg, #eef2f9); text-decoration: none; }
+.dropdown-menu .divider {
+    height: 1px;
+    margin: 5px 3px;
+    background: var(--qs-rim, #e5e8ee);
+}
+
+/* An item with nowhere to go stays listed, so the shortcut beside it is still
+   discoverable, but it is plainly not on offer. */
+.dropdown-menu > li.disabled > a { color: var(--qs-text, #9aa1ad); cursor: default; }
+.dropdown-menu > li.disabled > a:hover { background: none; }
+
+.qs-shortcut { float: right; margin-left: 22px; color: var(--qs-text, #9aa1ad); font-size: 12px; }
+
+/* ------------------------------------------------ small-screen menu toggle */
+
+.navbar-toggle {
+    display: none;
+    margin-left: auto;
+    padding: 8px 9px;
+    background: none;
+    border: 1px solid var(--qs-rim, #d9dde5);
+    border-radius: var(--qs-radius);
+    cursor: pointer;
+}
+.navbar-toggle .icon-bar {
+    display: block;
+    width: 20px;
+    height: 2px;
+    margin: 4px 0;
+    background: var(--qs-ink, #14181f);
+    border-radius: 1px;
+}
+
+@media (max-width: 820px) {
+    .navbar-toggle { display: block; }
+    .navbar-collapse.collapse { display: none; width: 100%; }
+    .navbar-collapse.collapse.in { display: block; }
+    .navbar-collapse .nav { flex-direction: column; align-items: stretch; padding-bottom: 8px; }
+    .navbar-right { margin-left: 0; }
+    /* stacked, it is just another item in the opened menu */
+    #matchBtn { position: static; transform: none; display: block; width: 100%; margin: 8px 0; }
+    /* a dropdown in the stacked menu opens in flow rather than floating */
+    .navbar-collapse .dropdown-menu { position: static; box-shadow: none; border: 0; padding-left: 14px; }
+}
+
+/* ================================================================ layout */
+
+.container-fluid {
+    width: 100%;
+    max-width: 1680px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.row { display: flex; flex-wrap: wrap; gap: 20px; }
+.row > [class*="col-"] { flex: 1 1 320px; min-width: 0; }
+
+/* The chart takes a little more room than the schematic when there is room
+   for both; below that they stack. */
+.col-xl-8 { flex: 1 1 460px; }
+.col-xl-4 { flex: 1 1 380px; }
+
+@media (max-width: 900px) {
+    .row { gap: 14px; }
+    .row > [class*="col-"] { flex: 1 1 100%; }
+}
+
+.text-center { text-align: center; }
+.hidden { display: none !important; }
+
+/*
+ * Bootstrap's responsive utilities hid half the program on a phone. The layout
+ * reflows now, so only the things that genuinely need a pointer stay hidden.
+ */
+@media (max-width: 560px) {
+    .hidden-xs { display: none !important; }
+}
+@media (max-width: 820px) {
+    .hidden-sm { display: none !important; }
+}
+
+/* ================================================================ inputs */
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 5px 8px;
+    font: inherit;
+    color: var(--qs-ink, #14181f);
+    background: var(--qs-face, #fff);
+    border: 1px solid var(--qs-edge, #ccd2dc);
+    border-radius: 5px;
+}
+.form-control:focus { border-color: var(--qs-vswr, #1f5fbf); outline: none; }
+.form-control[readonly] { background: var(--qs-bg, #f6f7f9); }
+.input-sm { padding: 4px 7px; font-size: 13px; }
+
+.form-group { margin-bottom: 12px; }
+label { font-weight: 600; }
+.checkbox label, .radio-inline { font-weight: 400; }
+.radio-inline { display: inline-flex; align-items: center; gap: 5px; margin-right: 14px; }
+
+select.form-control { appearance: auto; }
+input[type="color"] { width: 46px; height: 28px; padding: 2px; border: 1px solid var(--qs-rim, #ccd2dc); border-radius: 5px; background: var(--qs-face, #fff); }
+
+/* ============================================================== buttons */
+
+.btn {
+    display: inline-block;
+    padding: 7px 14px;
+    font: inherit;
+    color: var(--qs-ink, #14181f);
+    background: var(--qs-face, #f5f5f5);
+    border: 1px solid var(--qs-edge, #ccd2dc);
+    border-radius: var(--qs-radius);
+    cursor: pointer;
+}
+.btn:hover { background: var(--qs-bg, #e9ecf1); text-decoration: none; }
+.btn-sm { padding: 4px 10px; font-size: 13px; }
+.btn-lg { padding: 9px 18px; font-size: 15px; }
+/* a filled button uses --qs-accent, which is the same blue in the light theme
+   but a deeper one in the dark, where the line blue behind white text left the
+   label at 2.5:1 */
+.btn-info, .btn-primary {
+    color: #fff;
+    background: var(--qs-accent, #1f5fbf);
+    border-color: var(--qs-accent, #1f5fbf);
+}
+.btn-info:hover, .btn-primary:hover { filter: brightness(1.12); }
+.navbar-btn { margin: 0 4px; }
+
+.close {
+    padding: 0 4px;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--qs-text, #8b93a3);
+    background: none;
+    border: 0;
+    cursor: pointer;
+}
+.close:hover { color: var(--qs-ink, #14181f); }
+
+/* ====================================================== dialog internals
+ * The settings and component dialogs still carry Bootstrap's section class
+ * names inside QSUI's <dialog>.
+ */
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--qs-rim, #e5e8ee);
+}
+.modal-title { flex: 1; margin: 0; font-size: 15px; font-weight: 600; }
+.modal-header .close { margin-left: auto; order: 2; }
+.modal-body { padding: 16px 18px; max-height: 62vh; overflow: auto; }
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 12px 18px;
+    border-top: 1px solid var(--qs-rim, #e5e8ee);
+}
+.modal-body label { display: block; margin-bottom: 9px; font-weight: 500; }
+.modal-body input[type="text"], .modal-body input[type="number"] {
+    padding: 5px 8px;
+    font: inherit;
+    border: 1px solid var(--qs-rim, #ccd2dc);
+    border-radius: 5px;
+    background: var(--qs-face, #fff);
+    color: var(--qs-ink, #14181f);
+}
+
+.img-thumbnail {
+    padding: 3px;
+    background: var(--qs-face, #fff);
+    border: 1px solid var(--qs-rim, #d9dde5);
+    border-radius: 5px;
+}
+
+/* ============================================================== schematic */
+
+
+/*
+ * Reference designators, L2 and C3 and the rest. They name a part rather than
+ * telling you anything about it, so they sit in the palette's soft blue: quiet
+ * next to the values, and no longer competing with the red the chart uses for
+ * constant resistance.
+ */
+/* which slot the component dialog is editing, same blue as the designator */
+.qs-ref { color: var(--qs-adm, #4a6fa5); }
+
+th {
+    font: 500 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: .04em;
+    color: var(--qs-adm, #4a6fa5);
+    text-align: center;
+    padding: 2px 0;
+}
+
+/*
+ * Component symbols. They are strokes in currentColor now (see symbols.js),
+ * so a slot follows the page theme instead of sitting on an opaque white
+ * rectangle, and an empty shunt slot is genuinely empty.
+ */
+.dropzonehimg, .dropzonevimg, .dragable, .qs-hint-sym, .qs-preview {
+    color: var(--qs-ink, #14181f);
+    overflow: visible;
+}
+
+/*
+ * The series rail. A series symbol's leads reach both edges of its own slot,
+ * but the shunt slots sitting between them broke the line. Each shunt slot
+ * carries the piece of rail that crosses it, which joins the row into one
+ * circuit and puts a T where the branch hangs off. The height comes from
+ * resizeSchematic, the only place that knows how tall a slot ended up.
+ */
+.dropzonev::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--qs-rail, -10px);
+    height: 1.4px;
+    background: var(--qs-ink, #14181f);
+    pointer-events: none;
+}
+
+/*
+ * A symbol fills its slot, which is sized to the frame it is drawn in (61:20
+ * for series, 20:70 for shunt - the same shapes the bitmaps had). Its leads
+ * reach the slot edges, so the ladder reads as one circuit rather than a row
+ * of small parts floating in boxes. The rule itself is in index.html, next to
+ * the slot sizes it belongs with.
+ */
+
+/* The draggable part of a tray icon is the span around it: draggable is an
+   HTML attribute, and an <svg> is not an HTML element, so the browser ignored
+   it there and no drag ever started. */
+.dragable { display: inline-block; cursor: grab; }
+.dragable .icon { display: block; pointer-events: none; }
+.dragable:active { cursor: grabbing; }
+.dragable:hover { color: var(--qs-vswr, #1f5fbf); }
+.dragable.dragging { outline: 2px solid var(--qs-r, #b5342b); border-radius: 4px; }
+
+/*
+ * On a narrow panel the unit costs width the value needs, so the stepper gives
+ * some back: smaller buttons, tighter padding. Without this "38.12 pF" in a
+ * 124px cell clips the number, which is worse than having no unit at all.
+ */
+@container (max-width: 470px) {
+    .ladder-half .qs-spin > button { width: 20px; }
+    .ladder-half .qs-spin > input { padding-left: 3px; padding-right: 3px; }
+    .ladder-half .qs-unit-tag { padding: 0 2px; font-size: 9px; }
+}
+
+/* the unit beside a slot's value, inside the stepper next to the + button */
+.qs-unit-tag {
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    font: 500 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--qs-text, #6b7280);
+    background: var(--qs-face, #fff);
+    border: 1px solid var(--qs-edge, #ccd2dc);
+    border-left: 0;
+    border-right: 0;
+    white-space: nowrap;
+}
+
+.qs-hint-sym { vertical-align: middle; margin: 0 4px; }
+.qs-preview { width: 20px; height: 70px; padding: 3px; }
+
+/* ================================================================= ladder
+ *
+ * The two halves sit side by side only when the schematic panel itself is wide
+ * enough for them, which is a question about the panel and not about the
+ * window. A container query asks exactly that, so the ladder stacks on a phone
+ * and on a narrow desktop column alike, and all twelve slots stay reachable
+ * either way. Bootstrap's answer was to hide the second half below 768px.
+ */
+.schematic { container-type: inline-size; }
+
+/*
+ * Stacked, the parts bin goes between the two halves: the drag you make most
+ * often is to slot 2, and from the bottom of the page that was the longest
+ * one on screen. Side by side there is no far half, so it goes underneath.
+ */
+.ladder-row {
+    display: grid;
+    position: relative;
+    grid-template-columns: 1fr;
+    grid-template-areas: "half-a" "tray" "half-b";
+    gap: 12px;
+    /* lanes for the fold on the right and the input terminal on the left */
+    padding: 0 20px 0 12px;
+}
+
+.qs-wiring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+}
+.qs-fold { fill: none; stroke: var(--qs-ink, #14181f); stroke-width: 1.4;
+           stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.qs-port { fill: var(--qs-ink, #14181f); stroke: none; }
+@container (min-width: 620px) {
+    .ladder-row {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "half-a half-b" "tray tray";
+    }
+    .ladder-row { padding: 0; }
+}
+.half-a { grid-area: half-a; }
+.half-b { grid-area: half-b; }
+.qs-tray { grid-area: tray; }
+
+
+/*
+ * How much of the panel the ladder itself takes. Everything about a slot is
+ * derived from this: a series slot is a quarter of the row wide and 20/61 of
+ * that tall, a shunt slot is 8.23% wide and 3.5 times that tall, and the
+ * symbol fills whatever it lands in. So this one number sets how long and how
+ * thick every slot is, and how tall the schematic ends up. Turning it down
+ * shrinks the value boxes with it, which is the limit: they have to stay
+ * comfortable to type in and step.
+ */
+.ladder-half { min-width: 0; --qs-ladder: 92%; }
+.ladder-half table,
+.ladder-half .dropzone {
+    width: var(--qs-ladder);
+    margin-left: auto;
+    margin-right: auto;
+}
+.ladder-half table { table-layout: fixed; border-collapse: collapse; }
+.ladder-half td { padding: 1px; }
+
+/*
+ * A value box over the slot it belongs to. The tables are three equal cells,
+ * but a series slot is only a quarter of the row, so a box that filled its
+ * cell overhung the slot by the width of the shunt slot beside it. Three
+ * quarters of the cell is exactly a series slot, hung on whichever side that
+ * slot is on: to the right in the first half, to the left in the second,
+ * which is read backwards. The shunt boxes already line up on the slot's edge,
+ * since a shunt slot is far narrower than any box you could type in.
+ */
+.ladder-half table:first-of-type .qs-spin { width: 75%; }
+
+/* A series slot is a quarter of the row, so its box is narrower than a shunt
+   one and the stepper has to give the number room: smaller keys, tighter
+   padding. Without this "38.12" clips to "38.1". */
+.ladder-half table:first-of-type .qs-spin > button { width: 20px; }
+.ladder-half table:first-of-type .qs-spin > input { padding-left: 4px; padding-right: 4px; }
+.ladder-half table:first-of-type .qs-unit-tag { padding: 0 2px; font-size: 9px; }
+.half-a table:first-of-type .qs-spin { margin-left: auto; margin-right: 0; }
+.half-b table:first-of-type .qs-spin { margin-left: 0; margin-right: auto; }
+
+/* On a narrow panel every pixel goes to the controls instead: the value boxes
+   are down to about fifty pixels there, which is as small as they can be and
+   still hold "38.12". The compaction is a wide-screen luxury. */
+@container (max-width: 470px) {
+    .ladder-half { --qs-ladder: 100%; }
+}
+
+/*
+ * A row of slots. Flex rather than floats, because the second row is read
+ * backwards when the halves are stacked.
+ */
+.dropzone { display: flex; align-items: flex-start; overflow: hidden; }
+.dropzoneh, .dropzonev { flex: none; float: none; }
+
+/*
+ * The ladder is one wire, folded once. Stacked, the second row runs right to
+ * left, so slot 7 sits under slot 6 where the fold is, and slot 12 (the input,
+ * where Zin is looking in) ends up at the bottom left with the readout under
+ * it. Side by side the two halves already meet in the middle, so both rows
+ * read the same way there.
+ */
+.half-b .dropzone { flex-direction: row-reverse; }
+.half-b table { direction: rtl; }
+.half-b table td, .half-b table th { direction: ltr; }
+
+@container (min-width: 620px) {
+    .half-b .dropzone { flex-direction: row; }
+    .half-b table { direction: ltr; }
+}
+
+/*
+ * The parts bin. One wrapping strip rather than the four stacked rows the
+ * markup groups them into, so that sitting between the halves it stays a
+ * divider instead of a wedge. display:contents keeps the grouping in the
+ * markup while letting every icon flow in one line.
+ */
+/* nothing runs down the left lane beside the bin, so it takes that back:
+   every pixel of width here is a pixel off the height, because the icons wrap */
+.qs-tray {
+    margin-left: -12px;
+    padding: 10px 12px;
+    background: var(--qs-bg, #fff);
+    border: 1px solid var(--qs-rim, #d9dde5);
+    border-radius: 10px;
+}
+.component {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 10px;
+}
+.component > div { display: contents; }
+.component .stretch { display: none !important; }
+
+.hint {
+    margin: 10px 0 0;
+    text-align: center;
+    color: var(--qs-text, #6b7280);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+#matchtip h5 { margin: 0 0 8px; color: var(--qs-vswr, #1f5fbf); }
+
+/* the menu bar's two groups share one row until the layout collapses */
+.navbar-collapse { display: flex; align-items: center; gap: 8px; flex: 1; }
+
+/* ========================================================== three columns
+ *
+ * Chart, readout, workbench. The chart wants the most room, the readout is a
+ * fixed narrow strip of numbers, and the workbench (schematic plus response)
+ * takes what is left. Below 1200px the readout tucks under the chart; below
+ * 900px everything is one column, in the order you would read it: chart,
+ * numbers, schematic.
+ */
+/*
+ * Three columns, one row: chart and its response plot, the overlays, and the
+ * workbench. One row matters - the schematic is much taller than the chart,
+ * and a column spanning two rows stretches them both, which left a hole under
+ * the chart. Narrower, the workbench drops to its own full-width row, where
+ * the ladder is wide enough to put its two halves side by side.
+ */
+.qs-main {
+    display: grid;
+    grid-template-columns: minmax(380px, 1.05fr) 262px minmax(360px, 1fr);
+    grid-template-areas: "chart side work";
+    gap: 20px;
+    align-items: start;
+}
+
+@media (max-width: 1200px) {
+    /* the chart is square, so it is capped rather than given every spare
+       pixel; the overlays take the slack */
+    .qs-main {
+        grid-template-columns: minmax(320px, 620px) minmax(250px, 1fr);
+        grid-template-areas: "chart side"
+                             "work  work";
+    }
+}
+
+@media (max-width: 900px) {
+    .qs-main {
+        grid-template-columns: 1fr;
+        grid-template-areas: "chart" "side" "work";
+        gap: 16px;
+    }
+}
+
+.qs-chart-col { grid-area: chart; }
+/* a flex column so the input panel's offset is not swallowed by the margin
+   above it: adjacent margins collapse in normal flow, flex items' do not */
+.qs-side      { grid-area: side; display: flex; flex-direction: column; }
+.qs-work      { grid-area: work; }
+
+.qs-chart-col, .qs-side, .qs-work { min-width: 0; }
+
+/*
+ * The workbench is a panel like everything else. Inside it the surfaces
+ * invert: the value fields and the parts bin sink to the page colour so they
+ * still read as things you reach into, and the stepper buttons come up to the
+ * panel colour so they read as keys either side of the number.
+ */
+.qs-work {
+    padding: 12px 14px;
+    background: var(--qs-face, #fff);
+    border: 1px solid var(--qs-rim, #d9dde5);
+    border-radius: 10px;
+}
+.qs-work .form-control { background: var(--qs-bg, #f6f7f9); }
+.qs-work .qs-spin > button { background: var(--qs-face, #f5f5f5); }
+.qs-work .qs-unit-tag { background: var(--qs-bg, #fff); }
+
+.qs-cursor {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    padding: 5px 8px;
+    font: 500 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--qs-vswr, #1f5fbf);
+    background: var(--qs-face, #fff);
+    border: 1px solid var(--qs-rim, #d9dde5);
+    border-radius: 5px;
+}
+
+/* ================================================================ panels */
+
+.qs-panel {
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    background: var(--qs-face, #fff);
+    border: 1px solid var(--qs-rim, #d9dde5);
+    border-radius: 10px;
+}
+.qs-panel h2 {
+    margin: 0 0 10px;
+    font: 600 11px/1 system-ui, sans-serif;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--qs-text, #6b7280);
+}
+.qs-wide { display: block; width: 100%; }
+
+/* A button inside a panel is a label too, so it sits at label weight with the
+   rest of them. The values are what should catch the eye. */
+.qs-panel .btn { color: var(--qs-text, #6b7280); }
+
+/*
+ * The input reading. Zin and S11 are what the network is judged by, and the
+ * terminal they are measured at is a few pixels to the right of this panel,
+ * at the end of the second ladder row, so they get their own card at that
+ * height rather than a line in a list. Alignment is done in index.html by
+ * drawLadderWiring, which is already measuring that rail.
+ */
+.qs-input dd { font-size: 15px; }
+.qs-input .qs-readout { margin-bottom: 0; gap: 7px 10px; }
+
+/* ------------------------------------------------------------- readout */
+
+.qs-readout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 5px 10px;
+    margin: 0 0 12px;
+    align-items: baseline;
+}
+.qs-readout dt {
+    font-size: 12px;
+    color: var(--qs-text, #6b7280);
+    white-space: nowrap;
+}
+.qs-readout dd {
+    margin: 0;
+    text-align: right;
+    font: 500 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--qs-ink, #14181f);
+}
+.qs-readout dd.qs-key { color: var(--qs-vswr, #1f5fbf); font-weight: 600; }
+
+/* ------------------------------------------------------------ overlays */
+
+.qs-overlay-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 7px;
+}
+.qs-overlay-row label {
+    flex: 1;
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--qs-text, #6b7280);
+}
+.qs-overlay-row input[type="text"] { width: 74px; text-align: right; }
+
+/*
+ * Each overlay's value in the colour of the curve it draws, matching the
+ * dashed circles on the chart. No extra ink: it saves the reader working out
+ * which number goes with which ring.
+ */
+#SM0 { color: var(--qs-vswr, #1f5fbf); font-weight: 600; }
+#SM1 { color: var(--qs-q, #8d3a9b); font-weight: 600; }
+.qs-overlay-row input[type="checkbox"] { width: 16px; height: 16px; margin: 0; }
+.qs-overlay-row .btn { min-width: 74px; }
+
+/* -------------------------------- frequency, at the top of the readout panel */
+
+.qs-freq {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--qs-rim, #e5e8ee);
+}
+.qs-freq label { flex: 1; font-size: 13px; }
+.qs-freq .qs-spin { width: 122px; }
+.qs-freq input { text-align: right; }
+.qs-unit { color: var(--qs-text, #6b7280); font-size: 13px; }
+
+/* ------------------------------------------------------- guided examples
+ * The tour sits under the chart rather than over it, so nothing it is
+ * talking about is hidden while it talks.
+ */
+.qs-tour { border-color: var(--qs-a5, #b26a00); }
+.qs-tour-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.qs-tour-head h2 { margin: 0; color: var(--qs-a5, #b26a00); }
+.qs-tour-step {
+    flex: 1;
+    font: 500 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--qs-text, #6b7280);
+}
+.qs-tour-say { margin: 0 0 12px; font-size: 13px; line-height: 1.65; max-width: 62ch; }
+.qs-tour-nav { display: flex; gap: 8px; }
+.qs-tour-nav .btn { min-width: 78px; }
+.qs-tour-nav .btn[disabled] { opacity: .45; cursor: default; }
+
+/* ------------------------------------------------ the substrate calculator */
+
+.qs-board-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 18px;
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--qs-rim, #e5e8ee);
+}
+.qs-board-form label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    font-size: 13px;
+    color: var(--qs-text, #7b8496);
+}
+/* ui.js injects its dialog styles at run time, so they outrank a plain class
+   in this file; name the dialog too and the width sticks. */
+.qs-dialog .qs-board-form input[type="text"] { width: 76px; }
+.qs-board-form select {
+    font: inherit;
+    padding: 5px 8px;
+    color: var(--qs-ink, #14181f);
+    background: var(--qs-face, #fff);
+    border: 1px solid var(--qs-edge, #ccd2dc);
+    border-radius: 6px;
+}
+
+.qs-board-note { font-size: 12px; line-height: 1.6; color: var(--qs-text, #7b8496); margin: 12px 0 0; }
+
+.qs-board-table {
+    width: 100%;
+    margin-top: 12px;
+    border-collapse: collapse;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 13px;
+}
+.qs-board-table th {
+    padding: 0 0 5px;
+    text-align: right;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--qs-text, #7b8496);
+}
+.qs-board-table td {
+    padding: 5px 0;
+    text-align: right;
+    border-top: 1px solid var(--qs-rim, #e5e8ee);
+    color: var(--qs-ink, #14181f);
+}
+.qs-board-table th:first-child,
+.qs-board-table td:first-child { text-align: left; color: var(--qs-accent, #1f5fbf); }
+.qs-board .qs-btn { margin-top: 12px; }
+.qs-tour-pick { text-align: left; margin-bottom: 8px; }
+.qs-tour-pick span { font-size: 12px; color: var(--qs-text); }
+
+/* ------------------------------------------------------------- response */
+
+.qs-sweep-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    margin-bottom: 10px;
+}
+.qs-sweep-row label { font-size: 12px; color: var(--qs-text, #6b7280); font-weight: 400; }
+
+/* The amplifier page's source and load plane readouts. These were <font
+   size="1">, which is the one way of setting a size the stylesheet cannot
+   reach, so they stayed 10px however the rest of the page was scaled. */
+.qs-plane-label {
+    font-size: 12px;
+    font-weight: 400;
+    white-space: nowrap;
+    color: var(--qs-text, #6b7280);
+}
+.qs-sweep-row select { width: auto; }
+.qs-sweep-row input { width: 62px; text-align: right; }
+.qs-overlay-row .qs-spin { width: 118px; }
+
+.qs-plot-host { min-height: 40px; }
+.qs-plot-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 560 / 270;
+    background: var(--qs-bg, #fbfbf9);
+    border-radius: 6px;
+}
+.qp-face { fill: var(--qs-face, #fff); stroke: var(--qs-rim, #d9dde5); stroke-width: 1; }
+.qp-grid { stroke: var(--qs-rim, #d9dde5); stroke-width: 1; opacity: .55; }
+.qp-tick { fill: var(--qs-text, #6b7280); font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; }
+.qp-axis { fill: var(--qs-text, #6b7280); font: 13px system-ui, sans-serif; }
+.qp-at { stroke: var(--qs-q, #8d3a9b); stroke-width: 1.2; stroke-dasharray: 4 4; opacity: .8; }
+.qp-trace { fill: none; stroke-width: 1.8; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.qp-empty { margin: 0; color: var(--qs-text, #6b7280); font-size: 13px; }
+
+.qp-legend { display: flex; gap: 14px; margin-top: 8px; font-size: 12px; color: var(--qs-text, #6b7280); }
+.qp-legend i { display: inline-block; width: 12px; height: 3px; margin-right: 5px; vertical-align: middle; border-radius: 2px; }
+
+/* side by side there are no lanes, so the bin has nothing to reclaim */
+@container (min-width: 620px) {
+    .qs-tray { margin-left: 0; }
+}
+
+/* ==================================================================== print
+ *
+ * Print Chart copies a standalone chart into #printArea. Hiding every direct
+ * child of body and showing that one keeps this independent of how the rest
+ * of the page happens to be laid out.
+ */
+#printArea { display: none; }
+
+@media print {
+    body > * { display: none !important; }
+    body > #printArea { display: block !important; }
+    #printArea svg { width: 100%; height: auto; }
+    @page { margin: 12mm; }
+}

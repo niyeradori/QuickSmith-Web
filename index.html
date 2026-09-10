@@ -11,39 +11,68 @@
     gtag('config', 'UA-130803555-1');
     </script>
 
-    <meta name="description" content="QuickSmith - Free Interactive Open Source Smith chart for Web and Mobile for impedance matching - A Tutorial">
-    <meta name="keywords" content="Online, free, interactive, open source, impedance matching, RF design, SmithChart, Smith Chart, Transmission line, Reflection coefficients,interactive, impedance, GITHUB, softwarre">
     <meta charset="utf-8" />
   <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"> -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6.0, minimum-scale=.25, user-scalable=yes"/>
-  <title>QuickSmith</title>
-  <link href="img/smith.ico" rel="icon" >
-  <link href="css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
-  <link href="css/jquery.bootstrap-touchspin.css" rel="stylesheet" type="text/css" media="all"/>
-  <link href="css/jquery.contextMenu.css" rel="stylesheet" type="text/css" media="screen">
-  <link href="css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css" />
-  <link href="css/jquery.qtip.min.css" rel="stylesheet" type="text/css" />
+
+  <title>QuickSmith: a free online Smith chart for impedance matching</title>
+  <meta name="description" content="Build a matching network on an interactive Smith chart in your browser. Drag components onto the ladder, read VSWR, Q and bandwidth live, and import Touchstone files from a VNA. Free and open source.">
+  <link rel="canonical" href="https://quicksmith.online/">
+
+  <!-- Link previews. The card is a real screenshot of the program with a
+       worked L-network on it, generated from a share link. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="QuickSmith">
+  <meta property="og:url" content="https://quicksmith.online/">
+  <meta property="og:title" content="QuickSmith: a free online Smith chart for impedance matching">
+  <meta property="og:description" content="Build a matching network on an interactive Smith chart in your browser. Free and open source.">
+  <meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A Smith chart with a two-element matching network traced on it, beside the QuickSmith name.">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Tells a search engine what this page is rather than making it guess from
+       the prose: a free web application, in the engineering category. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "QuickSmith",
+    "url": "https://quicksmith.online/",
+    "applicationCategory": "EngineeringApplication",
+    "operatingSystem": "Any browser",
+    "description": "An interactive Smith chart for impedance matching. Build a ladder network, read VSWR, return loss, loaded Q and bandwidth, sweep frequency, and import Touchstone measurements from a network analyser.",
+    "image": "https://quicksmith.online/img/og-card.png",
+    "isAccessibleForFree": true,
+    "license": "https://github.com/niyeradori/QuickSmith-Web/blob/master/LICENSE.md",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Nathan Iyer" },
+    "softwareHelp": "https://quicksmith.online/qsmithfaq.html"
+  }
+  </script>
+
+  <link href="img/smith.ico" rel="icon">
+  <link href="app.css" rel="stylesheet">
   <link rel="apple-touch-icon" sizes="57x57" href="img/apple-icon-57x57.png" />
   <link rel="apple-touch-icon" sizes="72x72" href="img/apple-icon-72x72.png" />
   <link rel="apple-touch-icon" sizes="114x114" href="img/apple-icon-114x114.png" />
   <link rel="apple-touch-icon" sizes="144x144" href="img/apple-icon-144x144.png" />
-  <script src="js/jquery-3.2.1.min.js"></script>
-  <script src="js/bootstrap3.min.js"></script>
-  <script src="js/math.min.js"></script>
-  <script src="js/jquery.bootstrap-touchspin_ni.js"></script>
    <!-- for file and canvas save compatibilty with Safari -->
   <script src="js/FileSaver.min.js"></script>  
-  <script src="js/canvas-toBlob.js"></script>
+  <script src="engine.js"></script>
+  <script src="ui.js"></script>
+  <script src="touchstone.js"></script>
+  <script src="permalink.js"></script>
   <script src="common.js"></script>
   <script src="smith.js"></script>
+  <script src="plot.js"></script>
+  <script src="symbols.js"></script>
+  <script src="tours.js"></script>
+  <script src="history.js"></script>
+  <script src="line.js"></script>
   <script src="sch.js"></script>
-  <script src="js/jquery.contextMenu.js"></script>
   <script src="js/DragDropTouch.js"></script>    
-  <script src="js/bootstrap-dialog.min.js"></script>
-  <script src="js/bootbox.min.js"></script>
-  <script type="text/javascript" src="js/jquery.qtip.min.js"></script>
-
-  
    <!-- ios-drag-drop.js does not trigger end ? -->
     <!-- <script src="js/ios-drag-drop.js"></script>   -->
   <!-- <script src="js/jquery.longclick-1.0.min.js"></script> -->
@@ -79,27 +108,23 @@
         }  */
 
   
-      th {
-          text-align: center;
-          font-weight: normal;
-          /* font-family: Arial; */
-          font-size: 12px;
-          color: brown;
-      }
+      /* designators are styled in app.css, with the rest of the ladder */
         /* the issue with max-height is that the image is no longer in the center */
         .dropzoneh {
           width: 25%;  /* 81px;  */
           height: 27px;   /*27px;   */
           max-height : 54px;
-          border: 1px solid #808080;
+          border: 1px solid var(--qs-edge, #808080);
           float: left;
           position: relative;   /* for SVG - not being used currently */
           z-index: 1;
       }
 
-      .dropzonehimg {
-          width: 61px;  /* 61px;  */
-          height: 20px;  /* 20px;  */
+      /* the symbol fills its slot; see app.css for why */
+      .dropzonehimg, .dropzonevimg {
+          display: block;
+          width: 100%;
+          height: 100%;
           z-index: 10;
       }
 
@@ -107,21 +132,15 @@
           width: 8.23%;     /* 27px;  */
           height: 91px;    /* 91px;  */
           max-height : 182px;
-          border: 1px solid #808080;
+          border: 1px solid var(--qs-edge, #808080);
           float: left;
           z-index: 1;
           position: relative;   /* for SVG */
       }
 
-      .dropzonevimg {
-          width: 20px;     /* 20px;  */
-          height: 70px;     /* 70px;  */
-          z-index: 10;
-       }
 
-    .dragable{
-       padding: 0.75%; 
-    }
+
+    /* spacing between parts comes from the bin's flex gap now */
      /* .input-sm {
         height: 12px
         }  */
@@ -132,11 +151,6 @@
      
 
 
-/* this removes padding and margin for drawing images */
- .nopadding {
-   padding: 0 !important;
-   margin: 0 !important;
-}
 
 /* .widthdemo {
     width:20px;
@@ -185,7 +199,7 @@
        <!-- <a class="navbar-brand" href="#"><img src="img/smith.ico">QuickSmith</a>  -->
        <a class="navbar-brand" href="#" onclick ="redrawSmith()">
           <img src="img/smith.ico" style="display: inline-block; margin-top:-7px; width:32px; height:32px">  
-        <span style="display: inline-block; color:blue">QuickSmith</span>
+        <span style="display: inline-block">QuickSmith</span>
      </a> 
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
@@ -194,25 +208,23 @@
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">File<span class="caret"></span></a>
           <ul class="dropdown-menu">
+            <li id="undoItem"><a href="#" onclick ="undo_click()">Undo <span class="qs-shortcut">⌘Z</span></a></li>
+            <li id="redoItem"><a href="#" onclick ="redo_click()">Redo <span class="qs-shortcut">⇧⌘Z</span></a></li>
+            <li role="separator" class="divider"></li>
             <li><a href="#" onclick ="new_click()">New Session</a></li>
             <li><a href="#" onclick ="set_click()" >Save Session</a></li>
             <li><a href="#" onclick ="get_click()" >Restore Session</a></li>   
-            <!-- <div class="hidden-xs"> -->
-                <li class="hidden-xs"><a href="#" onclick ="load_click()" >Load File</a></li> 
-                <li class="hidden-xs" ><a href="#" onclick ="save_click()" >Save File</a></li>
-                <li class="hidden-xs"><a href="#" onclick ="saveCanvas_click()" >Capture Chart</a></li> 
-                <!-- <li class="hidden-xs"><a href="#">Import</a></li>
-                <li class="hidden-xs" ><a href="#">Export</a></li> -->
+            <!-- <div class=""> -->
+                <li class=""><a href="#" onclick ="load_click()" >Load File</a></li> 
+                <li class="" ><a href="#" onclick ="save_click()" >Save File</a></li>
+                <li class=""><a href="#" onclick ="saveCanvas_click()" >Capture Chart (PNG)</a></li>
+                <li class=""><a href="#" onclick ="saveSVG_click()" >Chart as SVG</a></li>
+                <li class=""><a href="#" onclick ="printChart_click()" >Print Chart</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#" onclick ="shareLink_click()" >Copy Share Link</a></li> 
+                <!-- <li class=""><a href="#">Import</a></li>
+                <li class="" ><a href="#">Export</a></li> -->
             <!-- </div> -->
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Show<span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" onclick=showMarkerDialog()>Marker</a></li>
-            <li><a href="#"onclick=showTxEquivalents()>Equivalents </a></li>
-            <!-- <li><a href="#">Parallel Eq.</a></li>
-            <li><a href="#">Series Eq</a></li> -->
           </ul>
         </li>
         <!-- <li><a href="#" onclick= smithObj.drawSweep >Show Sweep</a></li> -->
@@ -225,29 +237,35 @@
           </ul>
         </li> 
 
-        <li class="dropdown hidden-xs hidden-sm ">
+        <li class="dropdown ">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">Data<span class="caret"></span></a>
           <ul class="dropdown-menu">
-             <li><a href="#"  onclick=export_click()>Export</a></li>
-             <li><a href="#"  onclick=import_click()>Import</a></li>
+             <li><a href="#"  onclick=export_click()>Export Gamma</a></li>
+             <li><a href="#"  onclick=exportTouchstone_click()>Export Touchstone</a></li>
+             <li><a href="#"  onclick=exportCSV_click()>Export Sweep (CSV)</a></li>
+             <li><a href="#"  onclick=import_click()>Import Gamma</a></li>
+             <li><a href="#"  onclick=importTouchstone_click()>Import Touchstone</a></li>
              <li><a href="#"  onclick=clear_import_click()>Clear</a></li>
+             <li role="separator" class="divider"></li>
+             <li><a href="#"  onclick=lineDimensions_click()>Microstrip and coax…</a></li>
             <!-- <li><a><input type="checkbox" name="checkbox1" style="float: right;">Show Sweep</a></li> -->
           </ul>
         </li> 
 
-        <li><a href="#" onclick= smithObj.drawAdmitanceCircles() >Admittance Circles</a></li>
       </ul>
-       <!-- <button class="btn btn-default navbar-btn" onclick= smithObj.drawAdmitanceCircles() >Admittance</button>   -->
+      <button type="button" id="matchBtn" class="btn btn-primary navbar-btn" onclick="autoMatch_click()">Auto-match to 50 &#8486;</button>
+
       <ul class="nav navbar-nav navbar-right">
-         <li class="hidden-xs" ><a href="#" onclick=IL_open_click() ><span class="glyphicon glyphicon-stats"></span> IL</a></li>
-        <li  ><a href="#" onclick=AMP_open_click()><span class="glyphicon glyphicon-pencil"></span>Amp. Design</a></li>
-        <li><a  class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-question-sign">Help</span></a>
+        <li  ><a href="#" onclick=AMP_open_click()>Amp. Design</a></li>
+        <li><a href="blog/" target="_blank">Articles</a></li>
+        <li><a  class="dropdown-toggle" data-toggle="dropdown" href="#">Help</a>
             <ul class="dropdown-menu">
-                <li><a href="qsmithfaq.html" target="_blank" ><span class="glyphicon glyphicon-book"></span> FAQ</a></li>
-                <li><a href="/help/examples/examples/EXAMPLES.html" target="_blank" ><span class="glyphicon glyphicon-book"></span> Examples</a></li>
+                <li><a href="qsmithfaq.html" target="_blank" >FAQ</a></li>
+                <li><a href="#" onclick="chooseTour()">Guided examples</a></li>
+                <li><a href="/help/examples/examples/EXAMPLES.html" target="_blank" >Examples in full</a></li>
              </ul>
         </li>
-        <li><a href="#" data-toggle="modal" data-target="#optionsModal" onclick ="options_click()"><span class="glyphicon glyphicon-list-alt"></span></a></li>
+        <li><a href="#" onclick="options_click(); document.getElementById('optionsModal').showModal()">Settings</a></li>
       </ul>
     </div>
   </div>
@@ -255,52 +273,130 @@
 
  <!-- ********************************SMITH WINDOW************************************************* -->
 <div class="container-fluid ">
-    <div class="row">
-        <div class="col-xl-8 col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: 0px">
-                    <!-- <h4 style = "font-weight:bold" >Smith Chart</h4> -->
-            <table>
-                <tr>
-                    <td><label  for="SM0" style="font-size:12px;"> SWR: </label> </td>
-                    <td><input id="SM0" type="text" value="0" name="spin1"  style="width: 100%" class="form-control input-sm" onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false"/></td>
-                    <td> &nbsp</td>
-                    <div>
-                        <td><label  for="SM1" class="hidden-xs" style="font-size:12px;">Q: </label> </td>
-                        <td  class="hidden-xs"  ><input id="SM1" type="text" value="0" name="spin1" style="width: 100%"  class="form-control input-sm " onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false"/></td>  
-                    </div>
-                    <td> &nbsp</td>
-                    <!-- <td><button type="button" class="btn btn-default btn-sm" style="height:27px" onclick= test() > Test </button></td> -->
-                    <td> <input type="text" id="Z1" value="Z:" class="form-control input-sm " style="width: 100%; color:blue; " readonly /></td>
-                </tr>
-            </table>
-            <!--<div id='parent_div_5'  >-->
-            <canvas id="smithMain"  style="float: left; margin-top: 5px;margin-bottom: 5px;"></canvas>
-            <!--</div>-->
+    <div class="qs-main">
+        <!-- ********************************SMITH CHART COLUMN********************************* -->
+        <div class="qs-chart-col">
+            <div id="smithMain"></div>
+            <input type="text" id="Z1" value="Z:" class="qs-cursor" readonly title="Impedance under the pointer" />
+
+            <!-- a guided example, narrating the design it is building -->
+            <section id="tourPanel" class="qs-panel qs-tour" hidden>
+                <div class="qs-tour-head">
+                    <h2 id="tourTitle">Guided example</h2>
+                    <span id="tourStep" class="qs-tour-step"></span>
+                    <button type="button" class="close" onclick="endTour()" title="Close">&times;</button>
+                </div>
+                <p id="tourSay" class="qs-tour-say"></p>
+                <div class="qs-tour-nav">
+                    <button type="button" class="btn btn-sm" id="tourBack" onclick="tourStep(-1)">Back</button>
+                    <button type="button" class="btn btn-sm btn-primary" id="tourNext" onclick="tourStep(1)">Next</button>
+                </div>
+            </section>
+
+            <!-- ********************************RESPONSE PANEL***************************** -->
+            <section class="qs-panel qs-response">
+                <h2>Response</h2>
+                <div class="qs-sweep-row">
+                    <label for="RSvar">Sweep</label>
+                    <select class="form-control input-sm" id="RSvar" onchange="sweepSettingsChanged()">
+                        <option>Frequency</option>
+                        <option>Element 1</option>
+                        <option>Element 2</option>
+                        <option>Element 3</option>
+                        <option>Element 4</option>
+                        <option>Element 5</option>
+                        <option>Element 6</option>
+                        <option>Element 7</option>
+                        <option>Element 8</option>
+                        <option>Element 9</option>
+                        <option>Element 10</option>
+                        <option>Element 11</option>
+                        <option>Element 12</option>
+                    </select>
+                    <label for="RSstart">Start</label>
+                    <input id="RSstart" type="text" value="1" class="form-control input-sm" onchange="sweepSettingsChanged()" />
+                    <label for="RSstop">Stop</label>
+                    <input id="RSstop" type="text" value="100" class="form-control input-sm" onchange="sweepSettingsChanged()" />
+                    <label for="RSstep">Step</label>
+                    <input id="RSstep" type="text" value="1" class="form-control input-sm" onchange="sweepSettingsChanged()" />
+                </div>
+                <div id="respPlot" class="qs-plot-host"></div>
+            </section>
+        </div>
+
+        <!-- ********************************READOUT COLUMN************************************* -->
+        <div class="qs-side">
+            <section class="qs-panel">
+                <div class="qs-freq">
+                    <label for="E0">Frequency</label>
+                    <input id="E0" type="text" value="100" name="spin2" class="form-control input-sm" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" />
+                    <span class="qs-unit">MHz</span>
+                </div>
+                <h2>Readout</h2>
+                <dl class="qs-readout">
+                    <dt>Z<sub>in</sub> &#8486;</dt>  <dd id="ROzin">&mdash;</dd>
+                    <dt>Y<sub>in</sub> mS</dt>       <dd id="ROyin">&mdash;</dd>
+                    <dt>VSWR</dt>                    <dd id="ROvswr" class="qs-key">&mdash;</dd>
+                    <dt>Return loss</dt>             <dd id="ROrl">&mdash;</dd>
+                    <dt>Insertion loss</dt>          <dd id="ROil">&mdash;</dd>
+                    <dt>Loaded Q</dt>                <dd id="ROq">&mdash;</dd>
+                    <dt id="RObwLabel">BW (VSWR &lt; 2)</dt> <dd id="RObw">&mdash;</dd>
+                </dl>
+                <button type="button" class="btn btn-sm qs-wide" onclick="showTxEquivalents()">All values and equivalents</button>
+            </section>
+
+            <section class="qs-panel">
+                <h2>Overlays</h2>
+                <div class="qs-overlay-row">
+                    <label for="SM0">VSWR circle</label>
+                    <input id="SM0" type="text" value="0" name="spin1" class="form-control input-sm" onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false" />
+                </div>
+                <div class="qs-overlay-row">
+                    <label for="SM1">Q circle</label>
+                    <input id="SM1" type="text" value="0" name="spin1" class="form-control input-sm" onchange="spin_change1(this.id)" ondblclick="step_change1(this.id)" onDrop="return false" />
+                </div>
+                <div class="qs-overlay-row">
+                    <label for="OVadm">Admittance grid</label>
+                    <input id="OVadm" type="checkbox" onchange="smithObj.drawAdmitanceCircles()" />
+                </div>
+                <div class="qs-overlay-row">
+                    <label for="OVpaths">Element paths</label>
+                    <input id="OVpaths" type="checkbox" checked onchange="toggleElementPaths()" />
+                </div>
+                <div class="qs-overlay-row">
+                    <label for="OVnext">Next move</label>
+                    <input id="OVnext" type="checkbox" checked onchange="toggleNextMove()" />
+                </div>
+                <div class="qs-overlay-row">
+                    <label for="OVmarker">Marker</label>
+                    <button type="button" id="OVmarker" class="btn btn-sm" onclick="showMarkerDialog()">Set&hellip;</button>
+                </div>
+            </section>
+
+            <!-- Zin, level with the second ladder row, which is where it
+                 is measured; drawLadderWiring() lines them up -->
+            <section class="qs-panel qs-input">
+                <h2>At the input</h2>
+                <dl class="qs-readout">
+                    <dt>Z<sub>in</sub> &#8486;</dt>  <dd id="ROzinPort">&mdash;</dd>
+                </dl>
+            </section>
         </div>
                  <!-- ********************************SCHEMATIC WINDOW ************************************************* -->
-        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-xs-12" style="background-color:white;" > 
+        <div class="qs-work schematic">
                     <!-- ********************************SCHEMATIC WINDOW  ROW 1************************************************* -->
-            <div nopadding style="margin-left: -13px;  margin-bottom: 5px;">
-                <table  >
-                    <tr>
-                        <td><label  for="E0" style="font-size:12px;"> Freq.MHz: </label> </td>
-                        <td><input id="E0" type="text" value="100" name="spin2"  style="width: 100%;" class="form-control input-sm " onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false" /></td> 
-                        <td> &nbsp</td>
-                        <td><label  for="ZO" style="font-size:12px;">Zin.&#937: </label> </label> </td>
-                        <td><input id="ZO" type="text" value="0.0"  readonly class="form-control input-sm " /></td>
-                        <td> &nbsp</td>
-                        <td><label  class="hidden-xs" for="IL" style="font-size:12px;">IL.dB: </label></label> </td>
-                        <td><input  class="hidden-xs form-control input-sm " id="IL" type="text" value="0.0" style="width: 100%;" readonly  /></td>
-                    </tr>
-                </table>
-            </div>
+
             <!-- ********************************SCHEMATIC WINDOW ROW 1 END************************************************* -->  
             <!--width:527px-->
-            <div class="row " > 
+            <div class="row ladder-row">
+                <!-- the fold from slot 6 round to slot 7, and the input port
+                     at the far end of slot 12; drawn by drawLadderWiring() -->
+                <svg id="ladderWiring" class="qs-wiring" aria-hidden="true"></svg>
                 <!-- Dropzone1 -->
-                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 nopadding" style="background-color:white;">
+                <div class="ladder-half half-a">
                     <!-- <div class="spinzone" >  -->
-                        <table style=" margin-left: 0px;  margin-bottom: 0px; width:100%; ">  
-                            <tr class="hidden-xs">
+                        <table style="  margin-bottom: 0px; ">  
+                            <tr class="">
                                 <th id='H2'>W2</th>
                                 <th id='H4'>W4</th>
                                 <th id='H6'>W6</th>
@@ -318,42 +414,42 @@
                         </table>
                     <!-- </div>  -->
                     <!--<br />-->
-                    <div class="dropzone"  style=" overflow: hidden;margin-left: 0px; margin-top: 5px;">
+                    <div class="dropzone"  style=" overflow: hidden; margin-top: 5px;">
                          
-                        <div id="V1" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)">
+                        <div id="S1" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)">
                             <!-- <svg style=" position: absolute; height:100%; width:100%;">
                                     <line id="line1" x1=50% y1=14% x2=100% y2=14% style="stroke:black;stroke-width:4px" />
                                     <line id="line1a" x1=50% y1=13% x2=50% y2=100% style="stroke:black;stroke-width:4px" />
                             </svg  >   -->
-                            <img id="D1" src="img/rxv.bmp"  class="dropzonevimg"  >
+                            <svg id="D1" class="dropzonevimg" viewBox="0 0 20 70"><use href="#qs-sym-rx-v"/></svg>
                         </div>
-                        <div id="H2" class="dropzoneh"  draggable="false"   ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  > 
-                            <img id="D2" src="img/w.bmp"  class="dropzonehimg" >
+                        <div id="S2" class="dropzoneh"  draggable="false"   ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  > 
+                            <svg id="D2" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
                                                           
-                        <div id="V3" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
-                            <img id="D3" src="img/wv.bmp"  class="dropzonevimg"  >
+                        <div id="S3" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
+                            <svg id="D3" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="H4" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
-                            <img id="D4" src="img/w.bmp"  class="dropzonehimg"  >
+                        <div id="S4" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
+                            <svg id="D4" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
-                        <div id="V5" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" > 
-                            <img id="D5" src="img/wv.bmp" class="dropzonevimg" >
+                        <div id="S5" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" > 
+                            <svg id="D5" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="H6" class="dropzoneh"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
-                            <img id="D6" src="img/w.bmp" class="dropzonehimg" >
+                        <div id="S6" class="dropzoneh"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
+                            <svg id="D6" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
                            <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>    -->
                     </div> 
     
                                     <!--ground line div--> 
                       <div 
-                        class="block_1 hline-bottom" style="width: calc(100% - 12px);  margin-left: 12px; padding-bottom: 0px; border-bottom: 3px solid #000; margin-bottom: 0px; z-index: 10;"> 
+                        class="block_1 hline-bottom" style="width: calc(100% - 12px);  margin-left: 12px; padding-bottom: 0px; border-bottom: 1.4px solid var(--qs-ink, #14181f); margin-bottom: 0px; z-index: 10;"> 
                     </div>   
                             <!--<br />-->  
                             <!--width:527px-->
-                      <!-- <div class="spinzone" style=" margin-left: 0px;  margin-top: 50px;" >   -->
-                        <table style=" margin-left: 0px;  margin-top: 5px; width:100%; margin-bottom: 6px;">
+                      <!-- <div class="spinzone" style="   margin-top: 50px;" >   -->
+                        <table style="  margin-top: 5px; margin-bottom: 6px;">
                             <tr>
                                 <td><input id="E1" type="text" value="50" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)"  onDrop="return false" /></td>
                                 <td><input id="E3" type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
@@ -365,7 +461,7 @@
                                 <td id="E5at"  style = "visibility: hidden"><input id="E5a"  type="text" value="0" name="spin2" class=" form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                             </tr>
 
-                            <tr class="hidden-xs">
+                            <tr class="">
                                 <th id='H1'>RX1</th>
                                 <th id='H3'>W3</th>
                                 <th id='H5'>W5</th> 
@@ -375,9 +471,54 @@
                 </div>   <!--dropzone div 1 end--> 
                     
                 <!-- Dropzone2 begin -->
-                <div class=" hidden-xs col-sm-12 col-md-6 col-lg-6 col-xl-6 nopadding " style="background-color:white; margin-left: 8px;  ">
-                    <table style=" width:100%;">  
-                          <tr class="hidden-xs">
+                <!-- The parts bin sits between the two halves, so the
+                     drag to either one is short. -->
+                <div class="qs-tray">
+                    <!--Component Zone Begin-->
+                    <div id="component-container" class="component">
+                        <!-- Note that here we are only storing the default values, the actual user input values are stored in the schObj JSON -->                  
+                        <!-- Component Zone 1 begin -->
+                        <div  style="background-color:white; clear: both; margin-top:10px; padding-left:5%;padding-right:5% ">
+                            <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
+                                <img id="f"  data-value1="100" data-unit1="MHz" style="display:none;">
+                                <span id="r" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-r-v" width="20" height="70"/></svg></span>
+                                <span id="l" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-l-v" width="20" height="70"/></svg></span>
+                                <span id="c" class="dragable" data-value1="1" data-unit1="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-c-v" width="20" height="70"/></svg></span>
+                                <span id="x" class="dragable" data-value1="50" data-unit1="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-x-v" width="20" height="70"/></svg></span>                          
+                                <span id="w" class="dragable" data-value1="0" data-unit1="" data-q="100000" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg></span> 
+                                <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>    
+                        </div> <!--Component Zone 1 End-->                   
+                            <!-- Component Zone 2 begin -->
+                        <div  style="background-color:white; clear: both;padding-left:5%;padding-right:5%" >
+                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
+                                <span id="o" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="4" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-o-v" width="20" height="70"/></svg></span>
+                                <span id="s" class="dragable" data-value1="51" data-unit1="Char. Imp. [Ohms]:" data-value2="5" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-s-v" width="20" height="70"/></svg></span>
+                                <span id="g" class="dragable" data-value1="0.1" data-unit1="Mag." data-value2="10" data-unit2="Deg." data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-g-v" width="20" height="70"/></svg></span>
+                                <span id="rx" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="0.00" data-unit2="Reactance [Ohms]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="27" height="82" viewBox="0 10 20 61"><use href="#qs-sym-rx-v" width="20" height="70"/></svg></span>
+                                <span id="t" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="10" data-unit2="Length [" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-t-h"/></svg></span>
+                                <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
+                        </div> <!-- Component Zone 2 end -->
+                            <!-- Component Zone 3 begin -->
+                        <div style="background-color:white;  clear: both;padding-left:5%;padding-right:5%" >
+                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
+                                <span id="slc" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-slc-h"/></svg></span>
+                                <span id="plc" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-plc-h"/></svg></span>
+                                <span id="src" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-src-h"/></svg></span>                        
+                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
+                        </div> <!--Component Zone 3 End-->
+                             <!-- Component Zone 4 begin -->
+                        <div style="background-color:white; clear: both;padding-left:5%;padding-right:5%" >
+                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
+                                <span id="prc" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" draggable="true" ondragstart="return start(event)" ondragend="return end(event)"><svg class="icon" width="80" height="27" viewBox="0 0 61 20"><use href="#qs-sym-prc-h"/></svg></span>                           
+                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
+                        </div> <!--Component Zone 4 End-->
+                    </div>   <!--Component Zone End--> 
+                    <p class="hint">Drag a part onto a slot &middot; drag the wire <svg class="qs-hint-sym" viewBox="0 0 61 20" width="40" height="13"><use href="#qs-sym-w-h"/></svg> onto one to clear it</p>
+                </div>   <!--tray end-->
+
+                <div class="ladder-half half-b">
+                    <table >  
+                          <tr class="">
                             <th id='H8'>W8</th>
                             <th id='H10'>W10</th>
                             <th id='H12'>W12</th>
@@ -394,36 +535,36 @@
                         </tr>
                     </table>
                     <!--<br />-->
-                    <div class="dropzone"  style= "overflow: hidden; margin-top: 5px; margin-left: 0px;">
+                    <div class="dropzone"  style= "overflow: hidden; margin-top: 5px; ">
                          <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   -->
-                        <div id="V7" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
-                            <img id="D7" src="img/wv.bmp" class="dropzonevimg">
+                        <div id="S7" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
+                            <svg id="D7" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="H8" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  onDrop="return false"> 
-                            <img id="D8" src="img/w.bmp" class="dropzonehimg">
+                        <div id="S8" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  onDrop="return false"> 
+                            <svg id="D8" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
-                        <div id="V9" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
-                            <img id="D9" src="img/wv.bmp" class="dropzonevimg">
+                        <div id="S9" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
+                            <svg id="D9" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="H10"  src="img/w.bmp" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
-                            <img id="D10"src="img/w.bmp" class="dropzonehimg">
+                        <div id="S10" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
+                            <svg id="D10" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
-                        <div id="V11" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
-                            <img id="D11" src="img/wv.bmp" class="dropzonevimg">
+                        <div id="S11" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
+                            <svg id="D11" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="H12"  src="img/w.bmp" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
-                            <img id="D12"src="img/w.bmp" class="dropzonehimg">
+                        <div id="S12" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
+                            <svg id="D12" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
                          <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   -->
                     </div> 
     
                                         <!--"width: 513px padding-bottom: 90px  border-bottom: 3px -->  <!--ground line div--> 
                     <div 
-                        class="block_1 hline-bottom" style="width: 100%; margin-left: 0px; padding-bottom: 0px; border-bottom: 3px solid #000; margin-bottom: 0px; z-index: 100;"> 
+                        class="block_1 hline-bottom" style="width: 100%;  padding-bottom: 0px; border-bottom: 1.4px solid var(--qs-ink, #14181f); margin-bottom: 0px; z-index: 100;"> 
                     </div>
                             <!--<br />-->  
                             <!--width:527px-->
-                    <table style=" margin-top: 5px;  margin-left: 0px; width:100%">
+                    <table style=" margin-top: 5px;  ">
                         <tr>
                             <td><input id="E7"  type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                             <td><input id="E9"  type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
@@ -434,83 +575,30 @@
                             <td id="E9at"  style = "visibility: hidden"><input id="E9a" type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                             <td id="E11at" style = "visibility: hidden"><input id="E11a" type="text" value="0" name="spin2" class="form-control input-sm username_field" onchange="spin_change(this.id)" ondblclick="step_change(this.id)" onDrop="return false"/></td>
                         </tr>
-                         <tr class="hidden-xs">
+                         <tr class="">
                             <th id='H7'>W7 </th>
                             <th id='H9'>W9 </th> 
                             <th id='H11'>W11</th> 
                         </tr> 
                     </table>
-                        <br />
-                </div>   <!--dropzone div 2 end-->  
-                    <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span> -->
-                    <br style="clear: both;" />
-                    <!--Component Zone Begin--> 
-                    <div id="component-container" class="component col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" style="margin-top:0px">
-                        <!-- Note that here we are only storing the default values, the actual user input values are stored in the schObj JSON -->                  
-                        <!-- Component Zone 1 begin -->
-                        <div  style="background-color:white; clear: both; margin-top:10px; padding-left:5%;padding-right:5% ">
-                            <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
-                                <img id="f"  data-value1="100" data-unit1="MHz" style="display:none;">
-                                <img id="r"  class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-q="1000000" data-step="1"  data-img="img/r.bmp" data-imgv="img/rv.bmp" class="icon" src="img/rv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
-                                <img id="l"  class="dragable" data-value1="1" data-unit1="Indutance nH:" data-q="1000000" data-step="1" data-img="img/l.bmp" data-imgv="img/lv.bmp" class="icon" src="img/lv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
-                                <img id="c"  class="dragable"  data-value1="1" data-unit1="Capacitance [pF]:" data-q="1000000" data-step="1" data-img="img/c.bmp" data-imgv="img/cv.bmp" class="icon" src="img/cv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
-                                <img id="x"  class="dragable" data-value1="50" data-unit1="Reactance [Ohms]:" data-q="1000000" data-step="1" data-img="img/x.bmp" data-imgv="img/xv.bmp" class="icon" src="img/xv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">                          
-                                <img id="w" class="dragable" data-value1="0" data-unit1="" data-q="100000" data-img="img/w.bmp" data-imgv="img/wv.bmp" class="icon" src="img/w.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="80" height="27"> 
-                                <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>    
-                        </div> <!--Component Zone 1 End-->                   
-                            <!-- Component Zone 2 begin -->
-                        <div  style="background-color:white; clear: both;padding-left:5%;padding-right:5%" >
-                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
-                                <img id="o" class="dragable" data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="4" data-unit2="Length [" data-q="1000000" data-step="1" data-img="img/o.bmp" data-imgv="img/o.bmp" class="icon" src="img/o.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
-                                <img id="s" class="dragable" data-value1="51" data-unit1="Char. Imp. [Ohms]:" data-value2="5" data-unit2="Length [" data-q="1000000" data-step="1" data-img="img/s.bmp" data-imgv="img/s.bmp" class="icon" src="img/s.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
-                                <img id="g"  class="dragable" data-value1="0.1" data-unit1="Mag." data-value2="10" data-unit2="Deg." data-q="1000000" data-step="1" data-img="img/g.bmp"  data-imgv="img/gv.bmp" class="icon" src="img/gv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
-                                <img id="rx" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="0.00" data-unit2="Reactance [Ohms]:" data-q="1000000" data-step="1" data-img="img/rx.bmp" data-imgv="img/rxv.bmp" class="icon" src="img/rxv.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="27" height="91">
-                                <img id="t"  class="dragable"data-value1="50" data-unit1="Char. Imp. [Ohms]:" data-value2="10" data-unit2="Length [" data-q="1000000" data-step="1" data-img="img/t.bmp" data-imgv="img/t.bmp" class="icon" src="img/t.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="80" height="27">
-                                <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
-                        </div> <!-- Component Zone 2 end -->
-                            <!-- Component Zone 3 begin -->
-                        <div style="background-color:white;  clear: both;padding-left:5%;padding-right:5%" >
-                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
-                                <img id="slc" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" data-img="img/slc.bmp" data-imgv="img/slcv.bmp" class="icon" src="img/slc.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="80" height="27">
-                                <img id="plc" class="dragable" data-value1="1" data-unit1="Indutance nH:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" data-img="img/plc.bmp" data-imgv="img/plcv.bmp" class="icon" src="img/plc.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="80" height="27">
-                                <img id="src" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" data-img="img/src.bmp" data-imgv="img/srcv.bmp" class="icon" src="img/src.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="80" height="27">                        
-                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
-                        </div> <!--Component Zone 3 End-->
-                             <!-- Component Zone 4 begin -->
-                        <div style="background-color:white; clear: both;padding-left:5%;padding-right:5%" >
-                                <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>  -->
-                                <img id="prc" class="dragable" data-value1="50" data-unit1="Resistance [Ohms]:" data-value2="2" data-unit2="Capacitance [pF]:" data-q="1000000" data-step="1" data-img="img/prc.bmp"  data-imgv="img/prcv.bmp" class="icon" src="img/prc.bmp" draggable="true" ondragstart="return start(event)" ondragend="return end(event)" width="80" height="27">                           
-                                 <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
-                        </div> <!--Component Zone 4 End-->
-                    </div>   <!--Component Zone End--> 
-                    <!--MatchTip Zone Begin--> 
-                    <div id="matchtip" class=" hidden hidden-xs  col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" style="margin-top:0px">
-                        <!-- MatchTip Zone 1 begin -->
-                        <div class="text-center">
-                            <h5 style="color:blue">Matching Tip</h5>
-                        </div>
-                        <div  class="text-center" style="background-color:white; clear: both; margin-top:20px; margin-bottom:20px; ">
-                            <img id="regions"  class="img-thumbnail" src="img/region3.png" >
-                        </div> <!--MatchTip Zone 1 End-->                   
-                    </div>   <!--MatchTip Zone End--> 
-            </div>  <!--schematic row div--> 
-                 </div>   <!-- drag-drop message--> 
-                    <p>To add components, drag and drop component icons on the rectangular slots. </br>
-                           To remove components, drag and drop the "Wire or Null" <IMG SRC="img/w.bmp" class="img-thumbnail" style="margin:4px">icon. </p>
-                </div>
-        </div>   <!--schematic window div-->       
-                       
-    </div> <!--container row div--> 
-</div>  <!--container --> 
+                </div>   <!--ladder half 2 end-->
+            </div>   <!--ladder row end-->
+
+        </div>   <!--schematic column end-->
+
+    </div>   <!--row end-->
+</div>   <!--container end--> 
+
+<!-- Print Chart drops a standalone copy of the chart in here; @media print
+     hides everything else on the page and shows this. -->
+<div id="printArea" aria-hidden="true"></div>
+
 
     <audio id="audio" src="img/button-3.wav" autostart="false"> </audio>
  <!-- ************************MODAL OPTION DIALOG BEGINS************************************************************************************** -->
-    <div id="optionsModal" class="modal fade" role="dialog">
-        <div class="modal-dialog modal-sm">
-            <!-- Options/Settings Modal content-->
-            <div class="modal-content">
+    <dialog id="optionsModal" class="qs-dialog qs-small">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="close" onclick="this.closest('dialog').close()">&times;</button>
                     <h4 class="modal-title">Settings</h4>
                 </div>
                 <div class="modal-body">
@@ -559,7 +647,7 @@
                             <option>Wave Lengths</option>
                         </select>
                     </div>
-                    <div class="form-group hidden-xs hidden-sm"  >
+                    <div class="form-group"  >
                         <label for="TER">Termination:</label>
                         <select class="form-control" id="TER" onclick="javascript:yesnoFileDialog();">
                             <option>Single</option>
@@ -571,32 +659,24 @@
                     <br /> 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" onclick="optionValidate()" > OK </button>
+                    <button type="button" class="btn btn-default btn-lg" onclick="optionValidate(); this.closest('dialog').close()"> OK </button>
                 </div>
-            </div>
-        </div>
-    </div>
+    </dialog>
 <!-- ************************MODAL OPTION DIALOG ENDS************************************************************************************** -->
 
 <!-- ************************MODAL COMPONENT DIALOG BEGINS************************************************************************************** -->
-    <div id="componentsModal" class="modal fade" role="dialog">
-        <div class="modal-dialog modal-sm">
-            <!-- Options/Settings Modal content-->
-            <div class="modal-content">
+    <dialog id="componentsModal" class="qs-dialog qs-small">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <div> <br />
-                        <h4 style="text-align:left;float:left;color:blue;">Ele. Num:&nbsp;</h4>
-                        <h4 id="cmodalEnum" style="text-align:right;float:left;color:red;">1</h4>
-                        <h4 id="cmodalType" style="text-align:right;float:right;color:red;">R&nbsp;&nbsp;&nbsp;&nbsp;</h4>
-                        <h4 style="text-align:left;float:right;color:blue;">Type:&nbsp;</h4>
-                        <h4 style="clear:both;" />
-                    </div>
+                    <button type="button" class="close" onclick="this.closest('dialog').close()">&times;</button>
+                    <h4 class="modal-title" style="margin:0">
+                        Slot <span id="cmodalEnum" class="qs-ref">1</span>
+                        &middot; <span id="cmodalType" class="qs-ref">R</span>
+                    </h4>
                 </div>
                 <div class="modal-body">
                     <br />
                         <label id="imgLabel" for="IMG">SomeText</label>
-                        <img src="img/qsmith.bmp" id="IMG" class="img-thumbnail float-left" /><br /><br />
+                        <svg id="IMG" class="img-thumbnail qs-preview" viewBox="0 0 20 70"></svg><br /><br />
                         <label id="V1Label" for="V1">Value2: </label>
                         <input type="text" id="V1" value="" style="width:100px" /><br />
                         <label id="V2Label" for="V2">Value2: </label>
@@ -607,29 +687,26 @@
                         <input type="text" id="STEP" value="" style="width:100px" hidden /><br /> <br />
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" onclick="componentValidate()"> OK </button>
+                    <button type="button" class="btn btn-default btn-lg" onclick="componentValidate(); this.closest('dialog').close()"> OK </button>
                 </div>
-            </div>
-        </div>
-    </div>
+    </dialog>
     <!-- ************************MODAL COMPONENT DIALOG ENDS************************************************************************************** -->
   <input id="file-input" type="file" name="name" style="display: none;" />     <!-- this for helping with file load -->
   <input id="file-input1" type="file" name="name" style="display: none;" />     <!-- this for helping with gam export -->
+  <input id="file-input2" type="file" name="name" accept=".s1p,.s2p,.S1P,.S2P" style="display: none;" />  <!-- Touchstone import -->
   <!-- <a href="https://www.w3schools.com">w3schools.com</a> -->
   <!-- <img src="img/qsmith.png">
   <div class="content">This is an awesome picture of qsmith</div> -->
 <script>
 /*************************SMITH CHART********************************************************************************/
-var sprite = new Image();
-sprite.src = "img/sphere.png";  
 const AXIS_RANGE = 1000;
-var resize_done = false;  // this is to avoid half shape canvas draw sometime when an attempt is made to draw with out scaling first
-var chart= {"width": 300, "height" : 300,  "currentDevicePixelRatio" : 1, "devicePixelRatio" : 1 };
 var isMobile = false; //initiate as false
 // schObj is used to save schematic - for load file to work it needs to be less the 1024 bytes and the first key should be "ver"
 var smithObj = {
-              "ctx" : null,
+              "view" : null,   // the QSChart mount, set once the DOM is ready
               "title": '',
+              "showElementArcs": true,  // one coloured arc per component, load to Zin
+              "showNextMove": true,     // the move that would finish the match
               "showAdmittace": false,  // DrawAdmittance
                drawAdmitanceCircles: function() { drawAdmitanceCircles(this);},
               //drawAdmitanceCircles: drawAdmitanceCircles,
@@ -690,8 +767,7 @@ var smithObj = {
                test: function() { test(this);},
           };
 
-var matchTipShown = false;
-smithObj.ctx = document.getElementById("smithMain").getContext('2d');
+smithObj.view = QSChart.mount("smithMain");
 
  function test(context){
     context.vswrCircle = '3.0';
@@ -701,30 +777,42 @@ smithObj.ctx = document.getElementById("smithMain").getContext('2d');
 
 
 
- $('document').ready(function () {
+ document.addEventListener('DOMContentLoaded', function () {
     //smithObj.test();
         console.log("init")
         window.name = "parent";
         //chart.currentDevicePixelRatio = window.devicePixelRatio || 1 ||  window.window.devicePixelRatio;
-    $('input[type=text]').bind('copy paste', function (e) {
-        e.preventDefault();
-    });   // this prenvents the copy/paste menu popping up in IOS when you touch the step box
-    var transferFlag = localStorage.getItem("transferFlag");
-    if(transferFlag == 'true') 
-    {
-    console.log ("Transferflag present"); 
-    schObj.ELEMENT[1].value1 = parseFloat(localStorage.getItem("R1"));
-    schObj.ELEMENT[1].value2 = parseFloat(localStorage.getItem("Z1"));
-    //schObj.ELEMENT[13].value1 = parseFloat(localStorage.getItem("Z1"));
+    // stops the copy/paste menu popping up on iOS when a step box is touched
+    Array.prototype.forEach.call(document.querySelectorAll('input[type=text]'), function (box) {
+        box.addEventListener("copy", function (e) { e.preventDefault(); });
+        box.addEventListener("paste", function (e) { e.preventDefault(); });
+    });
+    QSSym.mount();
+    resizeSchematic();
+    // Set the load's step size before anything is restored. TouchSpin rounds
+    // the field's current value to the new step, so doing this afterwards
+    // snapped a restored 1.94 ohm load down to 1.90 and quietly changed the
+    // answer.
+    QSUI.setStep(document.getElementById("E1"), 0.1); // the load steps by 0.1
+
+    // the menu hints say what this keyboard actually uses
+    if (!/Mac|iPhone|iPad/.test(navigator.platform)) {
+        document.querySelector("#undoItem .qs-shortcut").textContent = "Ctrl+Z";
+        document.querySelector("#redoItem .qs-shortcut").textContent = "Ctrl+Shift+Z";
     }
-    else  
-    {
-    console.log ( "Transferflag absent");
+
+    // A shared link describes a specific design, so it wins over whatever
+    // session happened to be saved in this browser.
+    if (!loadFromHash()) get();
+
+    // An impedance handed over from the amplifier page has to be applied after
+    // the session is restored, not before, or restoring would overwrite it.
+    if (localStorage.getItem("transferFlag") == 'true') {
+        schObj.ELEMENT[1].value1 = parseFloat(localStorage.getItem("R1"));
+        schObj.ELEMENT[1].value2 = parseFloat(localStorage.getItem("Z1"));
+        localStorage.setItem("transferFlag", 'false');
     }
-    resize(smithObj.ctx.canvas)// Smith chart drawn here
-    get(); // restore the last session if saved earlier
     updateUI();
-    $(E1).trigger("touchspin.updatesettings", { step: 0.1 }); // make load element(RX(R)/G(Mag)) step size 0.1
  
 
     // device detection
@@ -773,18 +861,14 @@ function onMouseMove(evt) {
      //var mouseY = e.clientY-smithObj.ctx.canvas.offsetTop ;  // this is off by about 80px in this version but works with the stand alone component ?
      // var mouseX = e.layerX; // this seems like working // does not work well with firefox
      // var mouseY = e.layerY; // layerX returns the horizontal coordinate of the event relative to the current layer.
-    var m = getMousePosition(evt,chart);
-    var mouseX = m.x;
-    var mouseY  = m.y;
-    //console.log( "mouseX =" + mouseX + " mouseY =" + mouseY  );
-    var descaled = descale(mouseX,mouseY);
-    var x= descaled.x;
-    var y=descaled.y;
+    var p = QSChart.pointerToChart(smithObj.view, evt);
+    var x = p.x;
+    var y = p.y;
     var inSmith = InSmith(x,y)
     if (inSmith) {
-        var r1 = math.sqrt(((x*x)+(y*y))); // convert to polar form
+        var r1 = Math.sqrt(((x*x)+(y*y))); // convert to polar form
         var q;
-        if(r1==0) q=0 ; else q= 180*math.asin(y/r1)/Math.PI;
+        if(r1==0) q=0 ; else q= 180*Math.asin(y/r1)/Math.PI;
         if(x < 0 && y >=0) q= 180-q; if(x<0 && y<0) q= -180-q;  // Adjust for the second and third quadrant
         var m= r1/AXIS_RANGE; 
         var ZR= GToZR(m,q);
@@ -794,159 +878,151 @@ function onMouseMove(evt) {
     else  document.getElementById("Z1").value ="Z:";
     if( isMobile ) return;    
    
-    // matching tool tip, when the sprite is hovered depending upon its regions the matching network is shown (see FAQ figure) in the MatchTip area
-    var x1 = resultsObj.OUTPUT[2].GAMRout*AXIS_RANGE;
-    var y1 = resultsObj.OUTPUT[2].GAMIout*AXIS_RANGE;
-    //console.log ("m = " + m + " InCircleR((x-x1),(y-y1) " + x1  +"  "+ y1 + "  "+ x +"  "+ y +" inSmith " +inSmith + " matchTipShown" + matchTipShown );
-    if(m > 0.045 && InCircleR((x-x1),(y-y1),25) && inSmith && !matchTipShown)  {
-        var region = getRegion(x1,y1);
-        //console.log ("region = " + region);
-        switch(region) {
-            case 1:
-                document.getElementById("regions").src = "img/region1.png";
-                break;
-            case 2:
-                document.getElementById("regions").src = "img/region2.png"
-                break;
-            case 3:
-                document.getElementById("regions").src = "img/region3.png"
-                break;
-            case 4:
-                document.getElementById("regions").src = "img/region4.png"
-                break;
-            default:
-                document.getElementById("regions").src = ""
-        }
-        matchTipShown = true;
-        $("#matchtip").removeClass('hidden');
-    }
-    if(matchTipShown==true && InCircleR((x-x1),(y-y1),25)==false) {
-         $("#matchtip").addClass('hidden')
-        matchTipShown=false;
-    }
     }
 
 function onMouseClick(e) {
     if( isMobile ) return;
     // var mouseX = e.layerX; // this seems like working
     // var mouseY = e.layerY; // layerX returns the horizontal coordinate of the event relative to the current layer.
-    var m = getMousePosition(e,chart);
-    var mouseX = m.x;
-    var mouseY  = m.y;
-    var descaled = descale(mouseX,mouseY);
-    var x= descaled.x;
-    var y=descaled.y;
-    var r1 = math.sqrt(((x*x)+(y*y))); // convert to polar form
+    var p = QSChart.pointerToChart(smithObj.view, e);
+    var x = p.x;
+    var y = p.y;
+    var r1 = Math.sqrt(((x*x)+(y*y))); // convert to polar form
     var q;
-    if(r1==0) q=0 ; else q= 180*math.asin(y/r1)/Math.PI;
+    if(r1==0) q=0 ; else q= 180*Math.asin(y/r1)/Math.PI;
 	if(x < 0 && y >=0) q= 180-q; if(x<0 && y<0) q= -180-q;  // Adjust for the second and third quadrant
     var m = r1/AXIS_RANGE; 
-    var str1;
     if (InSmith(x,y) == true) {
        // var msg =  x + " ," + y +"i";
-        if (m == 0)  m = 1e-16;
         if (m == 1)  m = 0.9999999999;
         var swr = (1 + m) / (1 - m);
-        var S11 = -20 * (Math.log(m) / Math.log(10));
-        if (S11 >= 720)  str1 = " > "; else str1 = "";
-        var msg = "Gamma [Mag]: " + Number(m).toFixed(2) + "\n" + "Gamma [Ang]: " + Number(q).toFixed(2) + '&#176' + '\n' + "VSWR: " + Number(swr).toFixed(2) + '\n' + "Return Loss: " + str1 + Number(S11).toFixed(2) + " dB" ; 
+        var S11 = (m <= 0) ? Infinity : -20 * Math.log10(m);
+        var msg = "Gamma [Mag]: " + Number(m).toFixed(2) + "\n" + "Gamma [Ang]: " + Number(q).toFixed(2) + '&#176' + '\n' + "VSWR: " + Number(swr).toFixed(2) + '\n' + "Return Loss: " + formatdB(S11, 2) + " dB" ; 
         ShowMessage_sm("QuickSmith",msg);
         //console.log("x= " + x + "y= " + y );
         }
     }
 
-$("#sweepColor").change(function(){
-  smithObj.sweepDatasets[0].color = $(this).val()
+document.getElementById("sweepColor").addEventListener("change", function () {
+  smithObj.sweepDatasets[0].color = this.value;
 });
 
     // called by redrawSmith function
-function resize(canvas) {
-   // Our canvas must cover full height of screen
-   // regardless of the resolution
-  // var ht = window.innerHeight;
-  // var wd = window.innerWidth ;
-   var ht =  getMaximumHeight (canvas);
-   var wd =  getMaximumWidth (canvas);
-   const aspectRatio = true;
-   //var width = Math.max(0, Math.floor(window.innerWidth));
-   //var height = Math.max(0, Math.floor(aspectRatio ? width / aspectRatio : window.innerHeight));
-   var width = Math.max(0, Math.floor(wd));
-   var height = Math.max(0, Math.floor(aspectRatio ? width / aspectRatio : ht));
-  // width = width - 40;
-  // height = height - 40;
-   //var ratio = canvas.width/canvas.height;
-   //ratio =1;
-   //var width = height * ratio;
-    console.log( "NewWidth = " + width);
-    console.log( "NewHeight = " + height);
-    smithObj.ctx.canvas.width =chart.width= width;
-    smithObj.ctx.canvas.height =chart.height = height;
-    smithObj.ctx.canvas.style.width = width+'px';
-    smithObj.ctx.canvas.style.height = height+'px';
-    retinaScale(chart, smithObj);  
-    /* resize schematic elements */
-    // effort to center the schematic image inside each rectangle dropzone area
-    console.log( " schematic element width: " +$(".dropzoneh").width() );
-    var wh = $(".dropzoneh").width();
-    var aspect_ratio = 0.3279;
-    var hh = wh*aspect_ratio;
-    $(".dropzoneh").height(hh);
-    var wv = $(".dropzonev").width();
-    aspect_ratio = 3.5;
-    var hv = wv*aspect_ratio;
-    $(".dropzonev").height(hv);
+/*
+ * The chart is SVG now and sizes itself from its viewBox, so all that is left
+ * here is centring each component bitmap inside its ladder slot.
+ */
+function resizeSchematic() {
+    var hSlots = document.querySelectorAll(".dropzoneh");
+    var vSlots = document.querySelectorAll(".dropzonev");
+    if (!hSlots.length || !vSlots.length) return;
 
-    var w0 = $(".dropzonehimg").width();
-    var h0 = $(".dropzonehimg").height();
-    var w3 = parseInt(wh/2-w0/2);
-    var h3 = parseInt(hh/2-h0/2);
-    $(".dropzonehimg").parent().css({position: 'relative'});
-    $(".dropzonehimg").css({top: h3+'px', left: w3+'px', position:'absolute'});
+    // 61:20 and 20:70 are the frames the symbols are drawn in; keeping the
+    // slots to the same shape lets each symbol simply fill its slot.
+    var slotH = hSlots[0].clientWidth * 20 / 61;
+    setHeight(hSlots, slotH);
+    setHeight(vSlots, vSlots[0].clientWidth * 70 / 20);
 
+    // and the rail runs along the row at the height those symbols draw it
+    var rows = document.querySelectorAll(".dropzone");
+    for (var i = 0; i < rows.length; i++) {
+        rows[i].style.setProperty("--qs-rail", (slotH / 2 - 0.7) + "px");
+    }
+    drawLadderWiring();
+}
 
-    var w1 = $(".dropzonevimg").width();
-    var h1 = $(".dropzonevimg").height();
-    var w2 = parseInt(wv/2-w1/2);
-    var h2 = parseInt(hv/2-h1/2);
-    $(".dropzonevimg").parent().css({position: 'relative'});
-    // $(".dropzonevimg").css({top: hh/2-w1/2+'px', left: w2+'px', position:'absolute'});
-    $(".dropzonevimg").css({top: h2+'px', left: w2+'px', position:'absolute'});
+/*
+ * The ladder is one wire folded once. When the halves are stacked the second
+ * row is read backwards (see app.css), so slot 7 sits under slot 6 and the two
+ * rails are joined by a U down the right-hand lane. The far end of slot 12
+ * then lands at the bottom left, and that is where Zin is looking in, so it
+ * gets a terminal.
+ *
+ * Both ends move with the layout, so this runs from resizeSchematic and from
+ * the two places that change the ladder's height. A ResizeObserver would be
+ * the tidy way to do it, but it never fires on this page.
+ */
+function drawLadderWiring() {
+    var row = document.querySelector(".ladder-row");
+    var svg = document.getElementById("ladderWiring");
+    var a = document.querySelector(".half-a .dropzone");
+    var b = document.querySelector(".half-b .dropzone");
+    var railA = document.querySelector(".half-a .dropzoneh");
+    var railB = document.querySelector(".half-b .dropzoneh");
+    if (!row || !svg || !a || !b || !railA || !railB) return;
 
-        //svg.children[0].x1.baseVal.value = 20;
-    // console.log(" svg2"+ svg.x1.baseVal.value);
+    var box = row.getBoundingClientRect();
+    svg.setAttribute("viewBox", "0 0 " + box.width + " " + box.height);
 
-    // var line2 = document.getElementById("line2");
-    // console.log(line2);
-    // //line2.setAttribute("style", "x1: 0");
-    // line2.setAttribute("x1", 0);
-    // line2.setAttribute("y1", hh/2);
-    // line2.setAttribute("x2", wh);
-    // line2.setAttribute("y2", hh/2);
-    resize_done = true;
+    // Side by side, slot 6 and slot 7 already meet in the middle: no fold.
+    if (getComputedStyle(row).gridTemplateAreas.indexOf('"half-a half-b"') >= 0) {
+        svg.innerHTML = "";
+        alignInputPanel(null);
+        return;
+    }
+
+    var ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+    var ha = railA.getBoundingClientRect(), hb = railB.getBoundingClientRect();
+    var yA = ha.top - box.top + ha.height / 2;
+    var yB = hb.top - box.top + hb.height / 2;
+    var right = ra.right - box.left;
+    var turn = box.width - 9;
+    var left = rb.left - box.left;
+
+    svg.innerHTML =
+        '<path class="qs-fold" d="M' + right + ' ' + yA + 'H' + turn +
+            'V' + yB + 'H' + right + '"/>' +
+        '<path class="qs-fold" d="M' + left + ' ' + yB + 'H6"/>' +
+        '<circle class="qs-port" cx="5" cy="' + yB + '" r="3"/>';
+
+    alignInputPanel(rb.top + hb.height / 2);
+}
+
+/*
+ * The input terminal sits at the left end of the second ladder row, which is
+ * right up against the readout column. Dropping the Zin panel down to the same
+ * height puts the reading beside the point it is taken at.
+ */
+function alignInputPanel(railY) {
+    var panel = document.querySelector(".qs-input");
+    var main = document.querySelector(".qs-main");
+    if (!panel || !main) return;
+    panel.style.marginTop = "0px";
+
+    // Only worth doing when the readout column is actually beside the ladder.
+    // Stacked on a narrow screen it sits above it, and there is nothing to
+    // line up with.
+    var sideBySide = getComputedStyle(main).gridTemplateAreas
+                        .indexOf('"chart side work"') >= 0;
+    if (railY === null || !sideBySide) return;
+
+    var gap = Math.round(railY - panel.getBoundingClientRect().top);
+    // It can be pushed down as far as the rail needs, but upwards only as far
+    // as closing the gap to the panel above it, so a tall column of numbers
+    // never sends it climbing over the overlays.
+    panel.style.marginTop = Math.max(-14, gap) + "px";
+}
+
+function setHeight(nodes, px) {
+    for (var i = 0; i < nodes.length; i++) nodes[i].style.height = px + "px";
 }
 
 function redrawSmith () {
-    console.log("Redrawing smith1 Begin");
-    //if(ctx==null) return;
-    var ctx = smithObj.ctx;
-    if(ctx ==null) return;
-   
-    resize(ctx.canvas)
-     console.log("Redrawing smith2 End");
-   // ctx.clearRect(0,0,smithObj.ctx.canvas.width,smithObj.ctx.canvas.height);
-    smithObj.drawSmith(); // clears canvas too
+    if (!smithObj.view) return;
+    resizeSchematic();
+    smithObj.drawSmith();
 }
 
 
-smithObj.ctx.canvas.addEventListener("mousemove", onMouseMove, false);
-smithObj.ctx.canvas.addEventListener("dblclick", onMouseClick, false);
+smithObj.view.el.addEventListener("mousemove", onMouseMove, false);
+smithObj.view.el.addEventListener("dblclick", onMouseClick, false);
 //window.addEventListener('load', smithObj.redrawSmith, false);  //  not necessary duplicates $('document').ready(function () at the top
 window.addEventListener('resize',smithObj.redrawSmith, false); // resize,clear and redraw
 
 
 function step_change1(id1) {
     var element = document.getElementById(id1);
-    var current_val = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
+    var current_val = QSUI.getStep(element);
     // // var val = prompt("Enter Step Size", current_val);
     // // if (isNumeric(val) == true) {
     // //     $(element).trigger("touchspin.updatesettings", { step: val })
@@ -968,17 +1044,17 @@ function spin_change1(id1) {
         }  
     }
 
-  $('input[name="spin1"]').TouchSpin({
-      min: 0,
-      max: 1000000000,
-      step:1,
-      decimals: 2,
-      boostat: 5,
-      maxboostedstep: 10,
-      verticalbuttons: false
-  });
+  QSUI.attachAll('input[name="spin1"]', { min: 0, max: 1e9, step: 1, decimals: 2 });
 
 /*********************SCHEMATIC SCRIPT********************************************************************/
+
+/*
+ * smithObj.view is a live DOM handle, so it is skipped when the object is
+ * serialised - it would be circular, and it is not state worth restoring.
+ */
+function chartStateOnly(key, value) {
+    return key === "view" ? undefined : value;
+}
 
 function set_click() {
     // save state to local storage
@@ -989,16 +1065,49 @@ function set_click() {
     smithObj.sweepDatasets[0].dataQ.splice(0,smithObj.sweepDatasets[0].dataQ.length);
     smithObj.plotDatasets[0].dataM.splice(0,smithObj.plotDatasets[0].dataM.length); // clear Plot data
     smithObj.plotDatasets[0].dataQ.splice(0,smithObj.plotDatasets[0].dataQ.length);
-    localStorage.setItem('smithData', JSON.stringify(smithObj));
+    localStorage.setItem('smithData', JSON.stringify(smithObj, chartStateOnly));
     //console.log(JSON.stringify(smithObj));
 }
 
 
 
+/*
+ * A row of second-value boxes only matters for parts that have two values, so
+ * it is hidden cell by cell. When none of a row's cells are showing, the row
+ * itself is worth reclaiming: three of the four are empty in most designs,
+ * which is over a hundred pixels of the schematic's height.
+ */
+function collapseEmptyValueRows() {
+    var rows = document.querySelectorAll(".ladder-half tr");
+    for (var i = 0; i < rows.length; i++) {
+        var cells = rows[i].querySelectorAll('td[id$="at"]');
+        if (!cells.length) continue;                  // not a second-value row
+        var anyShowing = false;
+        for (var j = 0; j < cells.length; j++) {
+            if (cells[j].style.visibility !== "hidden") anyShowing = true;
+        }
+        rows[i].hidden = !anyShowing;
+    }
+}
+
+/* The overlay panel shows chart state, so it has to be re-read whenever that
+   state is restored from a session, a file or a share link. */
+function syncOverlayControls() {
+    document.getElementById("matchBtn").textContent =
+        "Auto-match to " + Number(schObj.Z0) + " \u2126";
+    document.getElementById("OVadm").checked = !!smithObj.showAdmittace;
+    document.getElementById("OVpaths").checked = smithObj.showElementArcs !== false;
+    document.getElementById("OVnext").checked = smithObj.showNextMove !== false;
+    document.getElementById("OVmarker").textContent =
+        smithObj.showMarker ? "On" : "Set\u2026";
+}
+
 // udates all the input UI elements on the chart
 function updateUI() {
     document.getElementById("SM0").value =  smithObj.vswrCircle;
     document.getElementById("SM1").value =  smithObj.qCircle;
+    syncOverlayControls();
+    syncSweepControls();
     smithObj.drawSmith();
 
     for (var i = 0; i < 13; i++)  
@@ -1009,29 +1118,34 @@ function updateUI() {
         var spin_element;
         spin_element =  document.getElementById(id);
         spin_element.value= schObj.ELEMENT[i].value1;
-        if(schObj.ELEMENT[i].value1 < 0) $(spin_element).css('color','red');else $(spin_element).css('color','black');
+        if(schObj.ELEMENT[i].value1 < 0) spin_element.style.color = 'var(--qs-r)';else spin_element.style.color = '';
+        // Slot 0 is the frequency and has no second value, so no E0a cell exists.
+        // jQuery quietly did nothing when a selector matched nothing; plain DOM
+        // needs to be asked.
+        var secondCell = document.querySelector("#" + id_a + "t");
+        var secondBox = document.getElementById(id_a);
         if(is1Component(schObj.ELEMENT[i].type)) 
         {  
-            if ($("#"+id_a+"t").css('visibility') !== 'hidden')  $("#"+id_a+"t").css({'visibility': 'hidden'});
+            if (secondCell) secondCell.style.visibility = "hidden";
         }
-        else
-        {   spin_element =  document.getElementById(id_a);
-            spin_element.value= schObj.ELEMENT[i].value2;
-            if ($("#"+id_a+"t").css('visibility') == 'hidden')  $("#"+id_a+"t").css({'visibility': 'visible'});
-            if(schObj.ELEMENT[i].value2 < 0) $(spin_element).css('color','red');else $(spin_element).css('color','black')
+        else if (secondBox)
+        {   secondBox.value = schObj.ELEMENT[i].value2;
+            if (secondCell) secondCell.style.visibility = "visible";
+            if(schObj.ELEMENT[i].value2 < 0) secondBox.style.color = 'var(--qs-r)';else secondBox.style.color = '';
         }
     }
+    collapseEmptyValueRows();
     for (var i = 1; i < 13; i++) 
         { 
-            var imgv = isEven(i) ? "" :"v";
-            document.getElementById("D"+i).src =  "img/"+schObj.ELEMENT[i].type+imgv+".bmp"; // src="img/rxv.bmp"
-            $("#" + "H" + i).text( schObj.ELEMENT[i].type.toUpperCase() + i);
+            QSSym.set(document.getElementById("D" + i), schObj.ELEMENT[i].type, !isEven(i));
+            document.querySelector("#H" + i).textContent =  schObj.ELEMENT[i].type.toUpperCase() + i;
         }
-    if(schObj.termination == 'Single') document.getElementById('V1').style.borderColor='#808080';
-    else  document.getElementById('V1').style.borderColor='red';
+    if(schObj.termination == 'Single') document.getElementById('S1').style.borderColor='';
+    else  document.getElementById('S1').style.borderColor='red';
 
     Zcalsweep();
     updateToolTip() ;
+    drawLadderWiring();     // value rows may have collapsed or come back
 }
 
 function get_click()
@@ -1081,9 +1195,95 @@ function save_click() {
 }
 
 function saveCanvas_click(){
-    smithObj.ctx.canvas.toBlob(function(blob) {
-        saveAs(blob, "QuickSmith.png");
+    QSChart.toBlob(smithObj.view, function(blob) {
+        if (blob) saveAs(blob, "QuickSmith.png");
+        else ShowMessage_sm("QuickSmith", "Could not render the chart to an image.");
     });
+}
+
+/*
+ * The chart as vector art. It goes out in whatever theme is on screen, since
+ * that is the one you chose to design in, and it opens in Illustrator,
+ * Inkscape, a word processor or a browser without going soft at any size.
+ */
+function saveSVG_click(){
+    var markup = QSChart.toSVG(smithObj.view, 900);
+    saveAs(new Blob([markup], { type: "image/svg+xml;charset=utf-8" }), "QuickSmith.svg");
+}
+
+/*
+ * Paper is white, so this prints light whatever the screen is set to - nobody
+ * wants a black square out of a laser printer. The chart is copied into a div
+ * that only the print stylesheet shows, which keeps the rule to one line and
+ * independent of how the page is laid out.
+ */
+function printChart_click(){
+    var root = document.documentElement;
+    var was = root.getAttribute("data-qs-theme");
+    root.setAttribute("data-qs-theme", "bench");      // bench is the light one
+    var markup = QSChart.toSVG(smithObj.view, 900);   // reads the live palette
+    if (was) root.setAttribute("data-qs-theme", was); else root.removeAttribute("data-qs-theme");
+
+    document.getElementById("printArea").innerHTML = markup;
+    window.print();
+}
+
+/*
+ * The last sweep as a spreadsheet. The chart stores reflection coefficient and
+ * nothing else, so impedance, VSWR and return loss are worked out here from
+ * the same relations the readout uses - one row per point, ready to plot in
+ * whatever the rest of the report is written in.
+ */
+function sweepTable() {
+    var dataM = smithObj.sweepDatasets[0].dataM;
+    var dataQ = smithObj.sweepDatasets[0].dataQ;
+    var Z0 = parseFloat(schObj.Z0);
+    var start = parseFloat(schObj.SS), step = parseFloat(schObj.SST);
+    var rows = [];
+
+    for (var i = 0; i < dataM.length; i++) {
+        var mag = Number(dataM[i]), ang = Number(dataQ[i]);
+        var rad = ang * Math.PI / 180;
+        var Z = QSEngine.gammaToZ({ re: mag * Math.cos(rad), im: mag * Math.sin(rad) }, Z0);
+        rows.push([
+            start + step * i,
+            mag,
+            ang,
+            (mag >= 1) ? Infinity : (1 + mag) / (1 - mag),
+            (mag <= 0) ? Infinity : -20 * Math.log10(mag),
+            Z.re,
+            Z.im
+        ]);
+    }
+    return rows;
+}
+
+function exportCSV_click() {
+    if (!smithObj.sweepDatasets[0].dataM.length && schObj.SE === "Frequency") generateSweep();
+
+    var rows = sweepTable();
+    if (!rows.length) {
+        ShowMessage_sm("QuickSmith", "Run Sweep \u2192 Generate first; there is no data to export.");
+        return;
+    }
+
+    var xName = (schObj.SE === "Frequency")
+        ? "frequency_MHz"
+        : schObj.SE.replace(" ", "_") + "_value";
+    var lines = ["# QuickSmith sweep, Z0 = " + schObj.Z0 + " ohms",
+                 "# the sweep keeps gamma to four decimal places, so the columns " +
+                 "derived from it are good to about that",
+                 [xName, "gamma_mag", "gamma_deg", "vswr", "return_loss_dB",
+                  "Zin_real", "Zin_imag"].join(",")];
+
+    rows.forEach(function (r) {
+        lines.push(r.map(function (v) {
+            return isFinite(v) ? Number(v).toFixed(6) : "";
+        }).join(","));
+    });
+
+    saveAs(new Blob([lines.join("\n") + "\n"], { type: "text/csv;charset=utf-8" }),
+           "QuickSmith.csv");
 }
 
 // export the last sweep data as a gam file 
@@ -1108,7 +1308,7 @@ function export_click() {
     // var points = Math.abs((stop-start)/step)+1; // eg: start=1, stop=100, step=1; number of points = 99+1=100 0-99 values from 1, 2, 3, .. 100
     // for ( i=0; i < points; i++) {
     //     thisStep = step*i;
-    //     gamObj.gamData.dataX=Number(math.add(start,thisStep)).toFixed(4); 
+    //     gamObj.gamData.dataX=Number(start + thisStep).toFixed(4); 
     // } 
     gamObj.gamData.dataM = smithObj.sweepDatasets[0].dataM;
     gamObj.gamData.dataQ = smithObj.sweepDatasets[0].dataQ;
@@ -1118,7 +1318,7 @@ function export_click() {
     console.log(" Number of Points= "+points);
     for ( i=0; i < points; i++) {
         thisStep = step*i;
-        gamObj.gamData.dataX[i]=Number(math.add(start,thisStep)).toFixed(4); 
+        gamObj.gamData.dataX[i]=Number(start + thisStep).toFixed(4); 
     } 
     // for Safari compatibility
     saveJSONtoFile(gamObj, "out.gam");
@@ -1159,7 +1359,7 @@ function handleFileImport(e) {
                      if(points > 0){
                      schObj.SS =  parseFloat(gamObj.gamData.dataX[0]);
                      schObj.ST =  parseFloat(gamObj.gamData.dataX[points-1]);
-                     schObj.SST = Number(Math.abs(math.subtract(schObj.ST,schObj.SS))/(points-1)).toFixed(3);
+                     schObj.SST = Number(Math.abs(schObj.ST - schObj.SS)/(points-1)).toFixed(3);
                      smithObj.plotDatasets[0].dataM = gamObj.gamData.dataM ;
                      smithObj.plotDatasets[0].dataQ = gamObj.gamData.dataQ ;
                      updateUI(); // update the ui elements
@@ -1171,7 +1371,7 @@ function handleFileImport(e) {
                 
             }
         reader.readAsText(file); 
-        $("#file-input1").val(null); // this clears the file read 
+        document.getElementById("file-input1").value = ""; // this clears the file read 
    }
    else
    {
@@ -1235,7 +1435,7 @@ function handleFileOpen(e) {
                 
             }
         reader.readAsText(file); 
-        $('input[type="file"]').val(null); // this clears the file read 
+        Array.prototype.forEach.call(document.querySelectorAll('input[type="file"]'), function (f) { f.value = ""; }); // this clears the file read 
    }
    else
    {
@@ -1258,7 +1458,6 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         var sign = getSign(resultsObj.OUTPUT[0].ZIout)
         var zi =  Number(Math.abs(resultsObj.OUTPUT[0].ZIout)).toFixed(3);
 
-        document.getElementById("ZO").value = zr+sign+zi+"i";
        // document.getElementById("ZIO").value = Number(resultsObj.OUTPUT[0].ZIout).toFixed(4);
         resultsObj.OUTPUT[1].calculate(); // calculate Ycal
         resultsObj.OUTPUT[2].calculate(); // calculate GAMCal
@@ -1270,7 +1469,6 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         resultsObj.OUTPUT[8].calculate(); // calculate TLCal
         resultsObj.OUTPUT[9].calculate(); // calculate MaxSWRCal
         resultsObj.OUTPUT[10].calculate(); // calculate MinSWRCal
-        document.getElementById("IL").value =  Number(resultsObj.OUTPUT[5].InsertionLoss).toFixed(3);; // update IL
         // incase of multiple terminations update the spinnertext of E1/E1a ( real/Imag M/Ang)
        // if(schObj.termination == 'Multiple') {
         document.getElementById("E1").value= Number(schObj.ELEMENT[1].value1).toFixed(2);
@@ -1286,20 +1484,313 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         smithObj.dataM = resultsObj.OUTPUT[2].GAMMag ; 
         smithObj.dataQ = resultsObj.OUTPUT[2].GAMAng ;
         smithObj.drawSmith();
+        updateReadout();
+        runResponse();
+        recordHistory();
     }
+
+/* ========================================================= undo and redo
+ *
+ * Every edit in the program ends at Zcalsweep(), so that is the only place
+ * history has to be told anything. It takes a snapshot of schObj and keeps
+ * it if it differs from the one already on top; an edit that changes nothing
+ * costs nothing.
+ *
+ * Undo re-applies an old schObj through copy_schObj(), the same door a file
+ * or a share link comes in by, and the redraw that follows records the state
+ * it just restored - which is a no-op, because it is already on top.
+ */
+var designHistory = QSHistory.create();
+
+/*
+ * The design as a string, in a fixed shape. Stringifying schObj straight off
+ * would work most of the time but not always: a .sch file, a share link and a
+ * guided example each leave a slightly different set of keys behind, and the
+ * load carries no q until something writes one. Two states describing the same
+ * circuit have to compare equal, or every undo would leave a stray entry.
+ */
+function designState() {
+    var out = { Z0: schObj.Z0, VF: schObj.VF, TDF: schObj.TDF, LU: schObj.LU,
+                SS: schObj.SS, ST: schObj.ST, SST: schObj.SST, SE: schObj.SE,
+                termination: schObj.termination, ELEMENT: [] };
+    for (var i = 0; i <= 12; i++) {
+        var e = schObj.ELEMENT[i];
+        out.ELEMENT.push({ index: i, type: e.type,
+                           value1: Number(e.value1), value2: Number(e.value2),
+                           q: Number(e.q) || 1000000, tune: 1 });
+    }
+    // a measured load is part of the design; nothing else in gamData is
+    if (schObj.termination === "Multiple") out.gamData = schObj.gamData;
+    return JSON.stringify(out);
+}
+
+function recordHistory() {
+    designHistory.record(designState());
+    syncHistoryControls();
+}
+
+function applyHistory(state) {
+    if (!state) return;
+    copy_schObj(JSON.parse(state));
+    updateUI();
+    syncHistoryControls();
+}
+
+/* Undoing while a tour is up closes it first: the narration describes the
+ * ladder, and once you start undoing it no longer does. */
+function undo_click() { if (tour) endTour(); applyHistory(designHistory.undo()); }
+function redo_click() { if (tour) endTour(); applyHistory(designHistory.redo()); }
+
+function syncHistoryControls() {
+    var undoItem = document.getElementById("undoItem");
+    if (!undoItem) return;              // the amplifier page shares some of this
+    undoItem.classList.toggle("disabled", !designHistory.canUndo());
+    document.getElementById("redoItem").classList.toggle("disabled", !designHistory.canRedo());
+}
+
+/*
+ * Ctrl/Cmd+Z is taken for the design even when a value box has focus. The
+ * boxes hold single numbers, so the browser's own undo inside one is worth
+ * very little, and after typing a value the box keeps focus - which would
+ * otherwise be exactly the moment the shortcut stopped working. A dialog on
+ * screen is left alone.
+ */
+document.addEventListener("keydown", function (e) {
+    if (!(e.metaKey || e.ctrlKey) || e.altKey) return;
+    var key = String(e.key).toLowerCase();
+    if (key !== "z" && key !== "y") return;
+    if (document.querySelector("dialog[open]")) return;
+    e.preventDefault();
+    if (key === "y" || e.shiftKey) redo_click(); else undo_click();
+});
+
+/* ==================================================== guided examples
+ *
+ * A tour rebuilds one of the worked examples an element at a time, saying
+ * what each one does. The data is in tours.js; this drives the schematic
+ * from it, which means a tour goes through exactly the same path as any
+ * other edit and nothing needs to know a tour is running.
+ */
+var tour = null, tourAt = 0;
+
+function chooseTour() {
+    var list = document.createElement("div");
+    QSTours.all.forEach(function (t) {
+        var row = document.createElement("button");
+        row.type = "button";
+        row.className = "btn qs-wide qs-tour-pick";
+        row.innerHTML = "<strong>" + t.title + "</strong><br><span>" +
+            t.source + " \u00b7 " + t.steps.length + " steps</span>";
+        row.addEventListener("click", function () { QSUI.close(dlg); startTour(t.id); });
+        list.appendChild(row);
+    });
+    var dlg = QSUI.open({ title: "Guided examples", body: list, small: true });
+}
+
+function startTour(id) {
+    tour = QSTours.byId(id);
+    if (!tour) return;
+    schObj.Z0 = smithObj.Z0 = tour.Z0;
+    schObj.LU = tour.LU;
+    schObj.termination = "Single";
+    tourAt = 0;
+    showTourStep();
+}
+
+function tourStep(by) {
+    if (!tour) return;
+    tourAt = Math.max(0, Math.min(tour.steps.length, tourAt + by));
+    showTourStep();
+}
+
+function showTourStep() {
+    if (!tour) return;
+    var els = QSTours.elementsAt(tour, tourAt);
+    for (var i = 0; i <= 12; i++) copyElement(schObj.ELEMENT[i], els[i]);
+    // Back and Next are the tour's own history. Undo should take you back to
+    // your design, not walk you through somebody else's, so the steps are held
+    // out of the stack and the whole tour lands as one entry when it closes.
+    designHistory.hold();
+    updateUI();
+    designHistory.release();
+
+    var panel = document.getElementById("tourPanel");
+    panel.hidden = false;
+    document.getElementById("tourTitle").textContent = tour.title;
+    document.getElementById("tourStep").textContent = tourAt === 0
+        ? tour.source
+        : "step " + tourAt + " of " + tour.steps.length;
+    document.getElementById("tourSay").textContent = tourAt === 0
+        ? tour.opening
+        : (tourAt === tour.steps.length
+            ? tour.steps[tourAt - 1].say + "  " + tour.closing
+            : tour.steps[tourAt - 1].say);
+    document.getElementById("tourBack").disabled = tourAt === 0;
+    document.getElementById("tourNext").disabled = tourAt === tour.steps.length;
+}
+
+function copyElement(target, from) {
+    target.type = from.type;
+    target.value1 = from.value1;
+    target.value2 = from.value2;
+    target.q = from.q;
+    target.tune = from.tune;
+}
+
+function endTour() {
+    tour = null;
+    document.getElementById("tourPanel").hidden = true;
+    recordHistory();        // the circuit the tour built, as one undoable step
+}
+
+/*
+ * Dragging a node on the chart. The engine works out which value puts that
+ * node where the pointer is; from there it is the same path as typing the
+ * value in, so the ladder, the readout and the response plot all follow.
+ * A part that cannot be solved for - a line, a stub, a two-value pair -
+ * has no handle to grab in the first place.
+ */
+smithObj.onTune = function (slotIndex, gamma) {
+    var next = QSEngine.tuneTo(currentNetwork(), slotIndex, gamma);
+    if (!next) return;
+
+    var part = schObj.ELEMENT[slotIndex];
+    part.value1 = next.value1;
+    if (next.value2 !== undefined) part.value2 = next.value2;
+    showSlotValue(slotIndex);
+    // a drag solves on every pointer move; hold history until it is over so
+    // the whole gesture is one undo and not a hundred
+    designHistory.hold();
+    Zcalsweep();
+};
+
+smithObj.onTuneEnd = function () {
+    designHistory.release();
+    recordHistory();
+};
+
+/* Put a slot's own numbers back in its boxes, the way updateUI would, but
+   without the full rebuild: this runs on every step of a drag. */
+function showSlotValue(i) {
+    var box = document.getElementById("E" + i);
+    if (box) box.value = Number(schObj.ELEMENT[i].value1).toFixed(2);
+    var second = document.getElementById("E" + i + "a");
+    if (second) second.value = Number(schObj.ELEMENT[i].value2).toFixed(2);
+}
+
+/*
+ * The readout panel. Everything here used to sit behind Show > Equivalents,
+ * which meant the two numbers a match is judged by, VSWR and loaded Q, were
+ * two clicks away from the tuning you were doing.
+ */
+function updateReadout() {
+    var r = resultsObj.solution;
+    if (!r) return;
+    var O = resultsObj.OUTPUT;
+
+    text("ROzin", cplx(r.Zin.re, r.Zin.im));
+    text("ROzinPort", cplx(r.Zin.re, r.Zin.im));   // the card at the terminal
+    text("ROyin", cplx(r.Yin.re, r.Yin.im));
+    text("ROvswr", Number(r.vswr).toFixed(4));
+    text("ROrl", formatdB(O[4].ReturnLoss) + " dB");
+    text("ROil", formatdB(O[5].InsertionLoss) + " dB");
+    text("ROq", Number(r.loadedQ).toFixed(2));
+
+    // Bandwidth is only a meaningful number while the network is inside the
+    // limit; outside it there is no band to measure.
+    var limit = Number(smithObj.vswrCircle) > 1 ? Number(smithObj.vswrCircle) : 2;
+    document.getElementById("RObwLabel").innerHTML =
+        "BW (VSWR &lt; " + (Math.round(limit * 100) / 100) + ")";
+    var bw = QSEngine.bandwidth(currentNetwork(), limit);
+    text("RObw", bw ? (Number(bw.span).toFixed(2) + " MHz") : "\u2014");
+}
+
+/* The panel edits the schematic's own sweep settings, so the Settings dialog
+   and the chart's sweep locus see the same numbers. */
+function sweepSettingsChanged() {
+    var start = document.getElementById("RSstart").value;
+    var stop = document.getElementById("RSstop").value;
+    var step = document.getElementById("RSstep").value;
+    if (isNumeric(start)) schObj.SS = start;
+    if (isNumeric(stop)) schObj.ST = stop;
+    if (isNumeric(step) && step > 0) schObj.SST = step;
+    schObj.SE = document.getElementById("RSvar").value;
+    syncSweepControls();
+    runResponse();
+}
+
+function syncSweepControls() {
+    document.getElementById("RSstart").value = schObj.SS;
+    document.getElementById("RSstop").value = schObj.ST;
+    document.getElementById("RSstep").value = schObj.SST;
+    document.getElementById("RSvar").value = schObj.SE || "Frequency";
+}
+
+function text(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = value;
+}
+
+function cplx(re, im) {
+    return Number(re).toFixed(3) + " " + getSign(im) + " j" + Math.abs(im).toFixed(3);
+}
+
+/*
+ * The response plot, which used to be a second window (InsertionLoss.html) and
+ * a copy of the schematic in local storage. It sweeps one variable, reads S21
+ * and S11 at each point, and puts the schematic back the way it found it.
+ */
+function runResponse() {
+    var host = document.getElementById("respPlot");
+    if (!host || typeof QSPlot === "undefined") return;
+
+    var which = schObj.SE || "Frequency";
+    var start = Number(schObj.SS);
+    var stop = Number(schObj.ST);
+    var step = Number(schObj.SST);
+    if (!isFinite(start) || !isFinite(stop) || !(step > 0) || stop <= start) {
+        QSPlot.render(host, {});
+        return;
+    }
+
+    var slot = (which === "Frequency") ? 0 : parseInt(which.split(" ")[1], 10);
+    var tuned = schObj.ELEMENT[slot].tune == 1 ? "value1" : "value2";
+    var was = schObj.ELEMENT[slot][tuned];
+
+    var points = Math.min(Math.floor((stop - start) / step) + 1, 1000);
+    var xs = [], s21 = [], s11 = [];
+    for (var i = 0; i < points; i++) {
+        var v = start + step * i;
+        schObj.ELEMENT[slot][tuned] = (slot === 0 && v <= 0) ? 1e-9 : v;
+        var r = Zcalsweep1();
+        xs.push(Math.round(v * 1e6) / 1e6);
+        s21.push(r.s21.db);
+        s11.push(20 * Math.log(Math.max(r.gamma.mag, 1e-12)) / Math.LN10);
+    }
+    schObj.ELEMENT[slot][tuned] = was;
+    Zcalsweep1();                       // leave the solver on the working point
+
+    QSPlot.render(host, {
+        x: xs,
+        xLabel: (which === "Frequency") ? "MHz" : which,
+        at: (which === "Frequency") ? Number(schObj.ELEMENT[0].value1) : undefined,
+        series: [
+            { label: "S21", data: s21, color: "var(--qs-a1)" },
+            { label: "S11", data: s11, color: "var(--qs-a2)" }
+        ]
+    });
+}
 
 // here target id is the id of the component
 var start = function (e) {
-          e.dataTransfer.effectAllowed = 'copy';
-        e.dataTransfer.setData('iconId', e.target.id);
-        var dropElementType = e.target.id;
-        console.log(" SETTING TARGET" + dropElementType);
-        document.getElementById(e.target.id).style.border="3px solid red";
-        var w = $("#"+dropElementType).width();
-        var h = $("#"+dropElementType).height();
-
-        e.dataTransfer.setDragImage(e.target, w/2, h/2);
-        console.log("start");
+        // the icons are inline SVG now, so the event can land on the <use>
+        // inside one; the element that carries the id is the one listening
+        var icon = e.currentTarget || e.target;
+        e.dataTransfer.effectAllowed = 'copy';
+        e.dataTransfer.setData('iconId', icon.id);
+        icon.classList.add("dragging");
+        var box = icon.getBoundingClientRect();
+        e.dataTransfer.setDragImage(icon, box.width / 2, box.height / 2);
         disableScroll();
         return true;
    }
@@ -1324,11 +1815,14 @@ var over = function (e) {
 
 var drop = function (e) {   
        if (e.stopPropagation){ e.stopPropagation(); } // stops the browser from redirecting...why???
-       console.log(e.target.className);
        if (e.preventDefault) e.preventDefault(); // allows us to drop
-         // silly if could drop on the div above the image we don't want to let that go.
-        if (e.target.className == "dropzoneh" || e.target.className == "dropzonev" || e.target.className == "dropzonehimg" || e.target.className == "dropzonevimg") {
-            var targetId = e.target.id;
+        // The drop can land on the slot, on the symbol inside it, or on a
+        // shape inside that. An SVG element's className is not a string, so
+        // ask for the nearest slot instead of comparing class names.
+        var zone = e.target.closest && e.target.closest(
+            ".dropzoneh, .dropzonev, .dropzonehimg, .dropzonevimg");
+        if (zone) {
+            var targetId = zone.id;
             targetId = "D" + targetId.slice(1); //replace H with D if it is the parent div element, again for the above reason
             console.log("Its dropping over " + targetId)
             var targetElement = document.getElementById(targetId);
@@ -1346,17 +1840,9 @@ var drop = function (e) {
                 || (dropElementType == "t" && isEven(targetIdNum)) || (drpEleOS == 1 && targetIdNum > 1 && !isEven(targetIdNum))
                 || (dropElementType == "rx" && targetIdNum == 1)) {
                 var mySrcElement = document.getElementById(dropElementType);
-                var myCpyElement = document.createElement('img');
-                myCpyElement.src = mySrcElement.src;
-                var imgSrc;
-                imgSrc = isEven(targetIdNum) ? mySrcElement.getAttribute('data-img') : mySrcElement.getAttribute('data-imgv'); // add vertical image if the targetId(slot) is odd
-                console.log("Dropping From " + dropElementType + " To " + targetIdNum) ;
-                console.log(targetElement.src);
-                var ret = showComponentdialog(dropElementType, imgSrc, mySrcElement, targetIdNum,"new");
-                if (ret == true) {
-                    targetElement.src = imgSrc;
-                   // e.target.appendChild(myCpyElement); // no need to append child we are only coping the image
-                }
+                var shunt = !isEven(targetIdNum);
+                var ret = showComponentdialog(dropElementType, shunt, mySrcElement, targetIdNum, "new");
+                if (ret == true) QSSym.set(targetElement, dropElementType, shunt);
             }
             else { playSound(); }
             //var IDD = document.getElementById('R');
@@ -1370,18 +1856,15 @@ var drop = function (e) {
     }
 
 var end = function(e) {
-	   console.log("end");
-       document.getElementById(e.target.id).style.border="0px solid white";
-       console.log("end done" + e.target.id);
+       (e.currentTarget || e.target).classList.remove("dragging");
        enableScroll();
        e.dataTransfer.clearData('iconId'); // this line does not work in Firefox - next line does not reach
        return true;
 	}
 
 
-    function showComponentdialog(dropElementType, img, mySrcElement, targetIdNum, context) {
-        var imgElement = document.getElementById("IMG");
-        imgElement.src = img;
+    function showComponentdialog(dropElementType, shunt, mySrcElement, targetIdNum, context) {
+        QSSym.set(document.getElementById("IMG"), dropElementType, shunt);
         document.getElementById("cmodalEnum").textContent = targetIdNum;
         document.getElementById("cmodalType").textContent = dropElementType;
         document.getElementById("imgLabel").textContent = dropElementType + " [" + getUnits(dropElementType) + "]:";
@@ -1389,26 +1872,26 @@ var end = function(e) {
         var drpEleTOS = 0; if (dropElementType == "t" || dropElementType == "o" || dropElementType == "s") drpEleTOS = 1;
         var drpEleRXG = 0; if (dropElementType == "r" || dropElementType == "x" || dropElementType == "g" || dropElementType == "rx") drpEleRXG = 1; // for hiding Q label
         if( context == "new") {
-            $(".modal-body #V1").val(mySrcElement.getAttribute('data-value1')); // value 1 place holder assign
+            document.querySelector(".modal-body #V1").value = mySrcElement.getAttribute('data-value1'); // value 1 place holder assign
             document.getElementById("V1Label").textContent = mySrcElement.getAttribute('data-unit1');  // value 1 units display
             var val2 = mySrcElement.getAttribute('data-value2');
-            if (val2 == null) { $(".modal-body #V2").hide(); $(".modal-body #V2Label").hide(); }
+            if (val2 == null) { document.querySelector(".modal-body #V2").style.display = "none"; document.querySelector(".modal-body #V2Label").style.display = "none"; }
             else {
-                $(".modal-body #V2").show(); $(".modal-body #V2Label").show();    // value 2 show
-                $(".modal-body #V2").val(mySrcElement.getAttribute('data-value2'));   // value 2 place holder assign
+                document.querySelector(".modal-body #V2").style.display = ""; document.querySelector(".modal-body #V2Label").style.display = "";    // value 2 show
+                document.querySelector(".modal-body #V2").value = mySrcElement.getAttribute('data-value2');   // value 2 place holder assign
                 if (drpEleTOS == 0) document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2'); // value 1 units label
                 else document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2') + schObj.LU + "]:"; // value 2 units display
             }
         }
         else 
          {
-            $(".modal-body #V1").val(schObj.ELEMENT[targetIdNum].value1); // value 1 place holder assign
+            document.querySelector(".modal-body #V1").value = schObj.ELEMENT[targetIdNum].value1; // value 1 place holder assign
             document.getElementById("V1Label").textContent = mySrcElement.getAttribute('data-unit1');  // value 1 units display
             var val2 = mySrcElement.getAttribute('data-value2');
-            if (val2 == null) { $(".modal-body #V2").hide(); $(".modal-body #V2Label").hide(); }
+            if (val2 == null) { document.querySelector(".modal-body #V2").style.display = "none"; document.querySelector(".modal-body #V2Label").style.display = "none"; }
             else {
-                $(".modal-body #V2").show(); $(".modal-body #V2Label").show();    // value 2 show
-                $(".modal-body #V2").val(schObj.ELEMENT[targetIdNum].value2);   // value 2 place holder assign
+                document.querySelector(".modal-body #V2").style.display = ""; document.querySelector(".modal-body #V2Label").style.display = "";    // value 2 show
+                document.querySelector(".modal-body #V2").value = schObj.ELEMENT[targetIdNum].value2;   // value 2 place holder assign
                 if (drpEleTOS == 0) document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2'); // value 1 units label
                 else document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2') + schObj.LU + "]:"; // value 2 units display
             }
@@ -1416,23 +1899,23 @@ var end = function(e) {
 
 
         if (drpEleRXG == 1) {
-            $(".modal-body #Q").hide(); $(".modal-body #QLabel").hide();    // Q label and Q value hide for R and X
+            document.querySelector(".modal-body #Q").style.display = "none"; document.querySelector(".modal-body #QLabel").style.display = "none";    // Q label and Q value hide for R and X
         }
         else {
-            $(".modal-body #Q").show(); $(".modal-body #QLabel").show();    // Q label and Q value show for others
-            if( context == "new") $(".modal-body #Q").val(mySrcElement.getAttribute('data-q')); // Q value place holder assign for new element
-            else $(".modal-body #Q").val((schObj.ELEMENT[targetIdNum].q));  //Q value if the element is already loaded and being updated 
+            document.querySelector(".modal-body #Q").style.display = ""; document.querySelector(".modal-body #QLabel").style.display = "";    // Q label and Q value show for others
+            if( context == "new") document.querySelector(".modal-body #Q").value = mySrcElement.getAttribute('data-q'); // Q value place holder assign for new element
+            else document.querySelector(".modal-body #Q").value = (schObj.ELEMENT[targetIdNum].q);  //Q value if the element is already loaded and being updated 
         }
 
-        $(".modal-body #STEP").val(mySrcElement.getAttribute('data-step')); // step value place holder assign - hidden for now
+        document.querySelector(".modal-body #STEP").value = mySrcElement.getAttribute('data-step'); // step value place holder assign - hidden for now
 
         if (dropElementType == "w")  // in case of wire do not show the dialog, just reset values.
         {
-            $(".modal-body #V1").val(mySrcElement.getAttribute('data-value1'));
-            $(".modal-body #Q").val(mySrcElement.getAttribute('data-q'));
+            document.querySelector(".modal-body #V1").value = mySrcElement.getAttribute('data-value1');
+            document.querySelector(".modal-body #Q").value = mySrcElement.getAttribute('data-q');
             componentValidate();
         }
-        else $("#componentsModal").modal(); // show dialog                       // note that two parameter components can have two step values
+        else document.getElementById("componentsModal").showModal();                       // note that two parameter components can have two step values
         return true;
     }
 
@@ -1450,37 +1933,39 @@ var end = function(e) {
         var spin_element_a = document.getElementById(id_a);
         if(is1Component(eleType) == true) {
             // if($("#"+id_a+"t").hasClass('hidden')== false)   $("#"+id_a+"t").addClass('hidden'); // adding t because we are hidding the row; hiding touchspin does not work ?
-            if ($("#"+id_a+"t").css('visibility') !== 'hidden')  $("#"+id_a+"t").css({'visibility': 'hidden'});
+            if (document.querySelector("#"+id_a+"t").style.visibility !== 'hidden')  document.querySelector("#"+id_a+"t").style.visibility = "hidden";
             console.log("One element component =" + id);
         }
         else  // 2 element component
         {
-            if ($("#"+id_a+"t").css('visibility') == 'hidden')  $("#"+id_a+"t").css({'visibility': 'visible'});
+            if (document.querySelector("#"+id_a+"t").style.visibility == 'hidden')  document.querySelector("#"+id_a+"t").style.visibility = "visible";
             console.log("two element component =" + id_a);
         }
-        var val1 = $(".modal-body #V1").val();
+        var val1 = document.querySelector(".modal-body #V1").value;
         if (isNumeric(val1)) { 
             schObj.ELEMENT[eleNum].value1 = val1; spin_element.value = Number(val1).toFixed(2);
-            if(val1 < 0) $(spin_element).css('color','red');else $(spin_element).css('color','black'); // change color to red if negative
+            if(val1 < 0) spin_element.style.color = 'var(--qs-r)';else spin_element.style.color = ''; // change color to red if negative
          }
-        var val2 = $(".modal-body #V2").val();
+        var val2 = document.querySelector(".modal-body #V2").value;
         console.log("val1 =" + val1 + " val2 =" + val2);
         if (val2 == "") { schObj.ELEMENT[eleNum].value2 = 0; spin_element_a.value = 0.00;}  // value2
         else if (isNumeric(val2)) {
             schObj.ELEMENT[eleNum].value2 = val2;
             spin_element_a.value = Number(val2).toFixed(2);
-            if(schObj.ELEMENT[eleNum].value2 < 0) $(spin_element_a).css('color','red');else $(spin_element_a).css('color','black'); // change color to red if negative
+            if(schObj.ELEMENT[eleNum].value2 < 0) spin_element_a.style.color = 'var(--qs-r)';else spin_element_a.style.color = ''; // change color to red if negative
         }
         var drpEleRXG = 0; if (eleType == "r" || eleType == "x" || eleType == "g" || eleType == "rx") drpEleRXG = 1;
         if (drpEleRXG == 0) { // no Q for R,X,RX and G
-            var val3 = $(".modal-body #Q").val();
+            var val3 = document.querySelector(".modal-body #Q").value;
             if (isNumeric(val3)) schObj.ELEMENT[eleNum].q = val3;
         }
-        $("#" + "H" + eleNum).text( eleType.toUpperCase() + eleNum); // update the component reference number on the schematic pane
+        document.querySelector("#H" + eleNum).textContent =  eleType.toUpperCase() + eleNum; // update the component reference number on the schematic pane
         //schObj.ELEMENT[eleNum].tune = 1;  // default the tune element to the first variable
         //console.log(JSON.stringify(schObj));
+        collapseEmptyValueRows();   // this may be the first two-value part in its row
         Zcalsweep();
         updateToolTip() ;
+        drawLadderWiring();         // which moves the rails
     }
 
     function reply_click(clicked_id, value) {
@@ -1494,27 +1979,19 @@ var end = function(e) {
     function step_change(id1) {
         if( isMobile ) return;
         var element = document.getElementById(id1);
-        var current_value = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
+        var current_value = QSUI.getStep(element);
         updateStepSize_prompt(current_value,element);
     }
     
-    function step_change1(id1) {
-        var element = document.getElementById(id1);
-        var current_value = $(element).triggerHandler("touchspin.getstep", { dummy: 1 });
-        updateStepSize_prompt(current_value,element);
-    }
 
 // touch
 //   $('input[name="spin2"]').taphold(function (e) {
 //                step_change($(e.target).attr("id"))  },
 //                1000);
-  $('input[name="spin1"]').taphold(function (e) {
-               step_change1($(e.target).attr("id"))  },
-               1000);
+  onTapHold('input[name="spin1"]', 1000, function (box) { step_change1(box.id); });
 
-$('input[name="spin2"]').on("keypress", function (e) {
-    // use e.which
-    var id1 = event.target.id;
+onKeyPress('input[name="spin2"]', function (e) {
+    var id1 = e.target.id;
     var spin_element = document.getElementById(id1);
     var second_element = false; var id; var idNum;
     if(id1.substr(-1)=='a')   { 
@@ -1528,7 +2005,7 @@ $('input[name="spin2"]').on("keypress", function (e) {
         //if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
         //else spin_element.value=schObj.ELEMENT[idNum].value1;
        // step_change(id1);
-       var current_value = $(spin_element).triggerHandler("touchspin.getstep", { dummy: 1 });
+       var current_value = QSUI.getStep(spin_element);
        spin_element.blur();
     //   var val = prompt("Enter Step Size", current_value);
     //   if (isNumeric(val) == true) {
@@ -1548,89 +2025,96 @@ $('input[name="spin2"]').on("keypress", function (e) {
 
 });
 
-$('input[name="spin2"]').TouchSpin({
-        min: -100000000,
-        max: 1000000000,
-        step: 0.01,
-        decimals: 2,
-        boostat: 5,
-        maxboostedstep: 10,
-        verticalbuttons: false
-});
+QSUI.attachAll('input[name="spin2"]', { min: -1e8, max: 1e9, step: 0.01, decimals: 2 });
 
 
-$('input[name="spin2"]').qtip({ 
-        content: {text: ""},
-        position:{ my: 'bottom left', at: 'top right',adjust: {x:-15, y:8}},
-        show: {delay: 500, effect: function() {$(this).slideDown();}},   // slideDown
-        hide: { inactive: 3000, event: 'click mouseleave', delay: 0 , effect: function() {$(this).slideUp();}},
-        style: {classes: 'qtip-rounded qtip-shadow'}
-    });
+/*
+ * Unit hints on the value boxes, from the schematic's own state. These were
+ * qTip2 tooltips; the browser draws a perfectly good one from a title
+ * attribute, which also reaches screen readers and needs no library.
+ */
+var UNIT_HINTS = {
+    t: ["Z0 [ohms]", "length"],
+    o: ["Z0 [ohms]", "length"],
+    s: ["Z0 [ohms]", "length"],
+    r: ["R [ohms]", null],
+    x: ["X [ohms]", null],
+    l: ["L [nH]", null],
+    c: ["C [pF]", null],
+    rx: ["R [ohms]", "X [ohms]"],
+    g: ["magnitude", "degrees"],
+    plc: ["L [nH]", "C [pF]"],
+    slc: ["L [nH]", "C [pF]"],
+    prc: ["R [ohms]", "C [pF]"],
+    src: ["R [ohms]", "C [pF]"]
+};
 
-// uses the schObj object to update the ToolTip content
+/*
+ * The same units, short enough to sit next to the value. A slot holding two
+ * parts shows two numbers with nothing to say which is which - 16.8 and 38.12
+ * could be either way round until you know that an slc is L then C.
+ */
+var UNIT_LABELS = {
+    t:   ["\u03a9", "length"],
+    o:   ["\u03a9", "length"],
+    s:   ["\u03a9", "length"],
+    r:   ["\u03a9", null],
+    x:   ["\u03a9", null],
+    l:   ["nH", null],
+    c:   ["pF", null],
+    rx:  ["\u03a9", "\u03a9"],
+    g:   ["mag", "\u00b0"],
+    plc: ["nH", "pF"],
+    slc: ["nH", "pF"],
+    prc: ["\u03a9", "pF"],
+    src: ["\u03a9", "pF"]
+};
+
+/* A line's length is in whatever the settings say, so it is not fixed. */
+var LENGTH_LABELS = {
+    "Inches": "in", "MilliMeters": "mm", "Meters": "m",
+    "Degrees": "\u00b0", "Wave Lengths": "\u03bb"
+};
+
 function updateToolTip() {
-     //   $('#E5').qtip('option', 'content.text', "test");
-     if(isMobile) return; 
-     var id, id_a;
-    $('#E0').qtip('disable');
+    var lengthUnit = schObj.LU.toLowerCase();
+    var lengthLabel = LENGTH_LABELS[schObj.LU] || "";
     for (var i = 1; i < 13; i++) {
-        id= 'E' + i ;
-        id_a= 'E' + i +'a';
-        $('#'+id).qtip('enable');
-        $('#'+id_a).qtip('enable');
-    }
-    for (var i = 1; i < 13; i++) {
-    id= 'E' + i ;
-    id_a= 'E' + i +'a';
-    switch (schObj.ELEMENT[i].type) {
-        case 'w':
-            $('#'+id).qtip('disable');
-            $('#'+id_a).qtip('disable');
-            break;
-        case 't':
-        case 'o':
-        case 's':
-            $('#'+id).qtip('option', 'content.text', "Z0 [ohms]");
-            $('#'+id_a).qtip('option', 'content.text', "Length [" +schObj.LU.toLowerCase()+"]");
-            break;
-        case 'r':
-        case 'x':
-            $('#'+id).qtip('option', 'content.text', "R [ohms]");
-            $('#'+id_a).qtip('disable');
-            break;
-        case 'l':
-            $('#'+id).qtip('option', 'content.text', "L [nH]");
-            $('#'+id_a).qtip('disable');
-            break;
-        case 'c':
-            $('#'+id).qtip('option', 'content.text', "C [pF]");
-            $('#'+id_a).qtip('disable');
-            break;
-        case 'rx':
-            $('#'+id).qtip('option', 'content.text', " R [ohms]");
-            $('#'+id_a).qtip('option', 'content.text', "X [ohms]");
-            break;
-        case 'g':
-            $('#'+id).qtip('option', 'content.text', "Magnitude");
-            $('#'+id_a).qtip('option', 'content.text', "degrees");
-            break;
-        case 'plc':
-        case 'slc':
-            $('#'+id).qtip('option', 'content.text', "L [nH]");
-            $('#'+id_a).qtip('option', 'content.text', "C [pF]");
-            break;
-        case 'prc':
-        case 'src':
-            $('#'+id).qtip('option', 'content.text', "R [ohms]");
-            $('#'+id_a).qtip('option', 'content.text', "C [pF]");
-            break;
-        default:
-             $('#'+id).qtip('disable');
-             $('#'+id_a).qtip('disable');
-        }
+        var type = schObj.ELEMENT[i].type;
+        var hint = UNIT_HINTS[type] || [null, null];
+        setHint("E" + i, hint[0]);
+        setHint("E" + i + "a", hint[1] === "length" ? "length [" + lengthUnit + "]" : hint[1]);
 
+        var unit = UNIT_LABELS[type] || [null, null];
+        setUnit("E" + i, unit[0]);
+        setUnit("E" + i + "a", unit[1] === "length" ? lengthLabel : unit[1]);
     }
+}
 
+/*
+ * The unit rides inside the stepper, between the value and the + button, so it
+ * stays with its own box when a slot has two of them.
+ */
+function setUnit(id, text) {
+    var input = document.getElementById(id);
+    if (!input || !input.parentNode) return;
+    var spin = input.parentNode;
+    if (!spin.classList || !spin.classList.contains("qs-spin")) return;
+
+    var tag = spin.querySelector(".qs-unit-tag");
+    if (!text) { if (tag) spin.removeChild(tag); return; }
+    if (!tag) {
+        tag = document.createElement("span");
+        tag.className = "qs-unit-tag";
+        spin.insertBefore(tag, input.nextSibling);
+    }
+    tag.textContent = text;
+}
+
+function setHint(id, text) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (text) el.title = text; else el.removeAttribute("title");
 }
 
 
@@ -1658,7 +2142,7 @@ function updateToolTip() {
             if (second_element == true)schObj.ELEMENT[idNum].value2 = spin_element.value; 
             else { if("E"+idNum == "E1" &&  spin_element.value < 0.00)spin_element.value=schObj.ELEMENT[idNum].value1 = "0.00"  ;
             else schObj.ELEMENT[idNum].value1 = spin_element.value;  }
-           if(spin_element.value < 0) $(spin_element).css('color','red');else $(spin_element).css('color','black')
+           if(spin_element.value < 0) spin_element.style.color = 'var(--qs-r)';else spin_element.style.color = ''
 
         }
         Zcalsweep();
@@ -1671,28 +2155,27 @@ function updateToolTip() {
     /***************OPTIONS MODAL****************************/
 
     function options_click() {
-        $(".modal-body #VF").val(schObj.VF);
-        $(".modal-body #Z0").val(schObj.Z0);
-        //  $(".modal-body #FREQ").val(schObj.FREQ);
-        $(".modal-body #FREQ").val(schObj.ELEMENT[0].value1);
-        $(".modal-body #TDF").val(schObj.TDF);
-        $(".modal-body #ST").val(schObj.ST);
-        $(".modal-body #SS").val(schObj.SS);
-        $(".modal-body #SST").val(schObj.SST);
+        document.querySelector(".modal-body #VF").value = schObj.VF;
+        document.querySelector(".modal-body #Z0").value = schObj.Z0;
+        //  document.querySelector(".modal-body #FREQ").value = schObj.FREQ;
+        document.querySelector(".modal-body #FREQ").value = schObj.ELEMENT[0].value1;
+        document.querySelector(".modal-body #TDF").value = schObj.TDF;
+        document.querySelector(".modal-body #ST").value = schObj.ST;
+        document.querySelector(".modal-body #SS").value = schObj.SS;
+        document.querySelector(".modal-body #SST").value = schObj.SST;
         // $("input[name='LOAD']").val(schObj.ELEMENT[1].type);
         // var radioValue = $("input[name='optradio']:checked").val();
         //  if (radioValue) {
         //   alert("Your are a - " + radioValue);
         //  }
         
-        $("#sweepColor").val(smithObj.sweepDatasets[0].color);
-        $("#dataColor").val(smithObj.sweepDatasets[1].color);
-       
-        $("#SE").val(schObj.SE);
+        document.getElementById("sweepColor").value = smithObj.sweepDatasets[0].color;
+
+        document.getElementById("SE").value = schObj.SE;
  
-        // var conceptName = $('#aioConceptName').find(":selected").text();
-        $("#LU").val(schObj.LU);
-        $("#TER").val(schObj.termination);
+        // var conceptName = (function(sel){return sel.options[sel.selectedIndex].text;})(document.getElementById('aioConceptName'));
+        document.getElementById("LU").value = schObj.LU;
+        document.getElementById("TER").value = schObj.termination;
         if (schObj.termination == "Multiple")  document.getElementById('TER_FILE').style.display = 'block';
         else document.getElementById('TER_FILE').style.display = 'none';       
     }
@@ -1700,54 +2183,54 @@ function updateToolTip() {
    function OnOptionSweepElemet_click()  // depending upon the tune element detemine where it needs a tune option or not ( incase of a two element)
    {
      // extract id
-     var sweep_element = $('#SE').find(":selected").text();
-     var index=   $("#SE").prop('selectedIndex');
-     console.log (" Current Sweep Element:" +  $('#SE').find(":selected").text() + " Index: "+ index );
+     var sweep_element = (function(sel){return sel.options[sel.selectedIndex].text;})(document.getElementById('SE'));
+     var index=   document.getElementById("SE").selectedIndex;
+     console.log (" Current Sweep Element:" +  (function(sel){return sel.options[sel.selectedIndex].text;})(document.getElementById('SE')) + " Index: "+ index );
      var eleType = schObj.ELEMENT[index].type;
      if( index > 0 && is2Component(eleType))
      {
        //show tune option  with the current tune value selected
-        $("#SE_TUNE").removeClass('hidden');
+        document.getElementById("SE_TUNE").classList.remove("hidden");
         switch (eleType) {
             case "rx":
-                $('#TUNE1a').text('Sweep R');
-                $('#TUNE2a').text('Sweep X');
+                document.getElementById('TUNE1a').textContent = 'Sweep R';
+                document.getElementById('TUNE2a').textContent = 'Sweep X';
                 break;
             case "g":
-                $('#TUNE1a').text('Sweep M');
-                $('#TUNE2a').text('Sweep A');
+                document.getElementById('TUNE1a').textContent = 'Sweep M';
+                document.getElementById('TUNE2a').textContent = 'Sweep A';
                 break;
             case "t":
             case "o":
             case "s":
-                $('#TUNE1a').text('Sweep Z0');
-                $('#TUNE2a').text('Sweep L');
+                document.getElementById('TUNE1a').textContent = 'Sweep Z0';
+                document.getElementById('TUNE2a').textContent = 'Sweep L';
                 break;
             case "src":
             case "prc":
-                $('#TUNE1a').text('Sweep R');
-                $('#TUNE2a').text('Sweep C');
+                document.getElementById('TUNE1a').textContent = 'Sweep R';
+                document.getElementById('TUNE2a').textContent = 'Sweep C';
                 break;
             case "slc":
             case "plc":
-                $('#TUNE1a').text('Sweep L');
-                $('#TUNE2a').text('Sweep C');
+                document.getElementById('TUNE1a').textContent = 'Sweep L';
+                document.getElementById('TUNE2a').textContent = 'Sweep C';
                 break;
             default:
-                $('#TUNE1a').text('Sweep 1');
-                $('#TUNE2a').text('Sweep 2');
+                document.getElementById('TUNE1a').textContent = 'Sweep 1';
+                document.getElementById('TUNE2a').textContent = 'Sweep 2';
         }
 
        if(schObj.ELEMENT[index].tune == 1) document.getElementById('TUNE1').checked = true;
        else document.getElementById('TUNE2').checked = true;     
      }    
-     else { $("#SE_TUNE").addClass('hidden'); schObj.ELEMENT[index].tune =1; }
+     else { document.getElementById("SE_TUNE").classList.add("hidden"); schObj.ELEMENT[index].tune =1; }
 
    }
 
     // this function shows hides the file dialog depending on Multi/Single termination
     function yesnoFileDialog() {
-        if ($(".modal-body #TER").val() == "Multiple")  document.getElementById('TER_FILE').style.display = 'block';
+        if (document.querySelector(".modal-body #TER").value == "Multiple")  document.getElementById('TER_FILE').style.display = 'block';
         else 
         {  
       
@@ -1768,23 +2251,23 @@ function updateToolTip() {
     }
 
     function optionValidate() {
-        var val = $(".modal-body #VF").val();
+        var val = document.querySelector(".modal-body #VF").value;
         if (isNumeric(val) && val > 0 && val <= 1) schObj.VF = val;
-        val = $(".modal-body #Z0").val();
+        val = document.querySelector(".modal-body #Z0").value;
         if (isNumeric(val) && val > 0)  schObj.Z0 = smithObj.Z0 = parseFloat(val) 
-        val = $(".modal-body #FREQ").val();
+        val = document.querySelector(".modal-body #FREQ").value;
         if (isNumeric(val) && val > 0) { schObj.ELEMENT[0].value1 = val; document.getElementById("E0").value = Number(val).toFixed(2); }
-        val = $(".modal-body #TDF").val();
+        val = document.querySelector(".modal-body #TDF").value;
         if (isNumeric(val) && val > 0) schObj.TDF = val;
-        val = $(".modal-body #ST").val();
+        val = document.querySelector(".modal-body #ST").value;
         if (isNumeric(val) && val > 0) schObj.ST = val;
-        val = $(".modal-body #SS").val();
+        val = document.querySelector(".modal-body #SS").value;
         if (isNumeric(val) && val > 0) schObj.SS = val;
-        val = $(".modal-body #SST").val();
+        val = document.querySelector(".modal-body #SST").value;
         if (isNumeric(val) && val > 0) schObj.SST = val;
         // schObj.ELEMENT[1].type=$("input[name='LOAD']:checked").val();
-        schObj.SE = $('#SE').find(":selected").text(); // Sweep element
-        var index=   $("#SE").prop('selectedIndex');
+        schObj.SE = (function(sel){return sel.options[sel.selectedIndex].text;})(document.getElementById('SE')); // Sweep element
+        var index=   document.getElementById("SE").selectedIndex;
         var eleType = schObj.ELEMENT[index].type;
        if( index > 0 && is2Component(eleType))
        {
@@ -1793,9 +2276,9 @@ function updateToolTip() {
        }    
 
 
-        schObj.LU = $('#LU').find(":selected").text(); // Length Units
+        schObj.LU = (function(sel){return sel.options[sel.selectedIndex].text;})(document.getElementById('LU')); // Length Units
         //console.log (schObj.LU );
-        if ($(".modal-body #TER").val() == "Multiple") {
+        if (document.querySelector(".modal-body #TER").value == "Multiple") {
             var selectedFile = document.getElementById('TER_FILE').files[0];
             console.log(selectedFile);
             // if (!selectedFile) {
@@ -1819,7 +2302,7 @@ function updateToolTip() {
                             if(points > 0){
                                 schObj.SS =  parseFloat(gamObj.gamData.dataX[0]);
                                 schObj.ST =  parseFloat(gamObj.gamData.dataX[points-1]);
-                                //schObj.SST = Number(Math.abs(math.subtract(schObj.ST,schObj.SS))/(points-1)).toFixed(3);
+                                //schObj.SST = Number(Math.abs(schObj.ST - schObj.SS)/(points-1)).toFixed(3);
                                 smithObj.Z0= schObj.Z0=gamObj.Z0;
                                 schObj.gamData.label = gamObj.gamData.label;
                                 schObj.gamData.color = gamObj.gamData.color;
@@ -1828,26 +2311,26 @@ function updateToolTip() {
                                 schObj.gamData.dataQ = phase_unwrap(gamObj.gamData.dataQ); // phase unwrap before entering - helps with interpolation
                                 if(schObj.gamData.dataX.length > 1){   // check if the data is more than 1 before setting to interpolation mode
                                     schObj.termination = "Multiple";      // we can check again before calculation
-                                    document.getElementById('V1').style.borderColor='red';
+                                    document.getElementById('S1').style.borderColor='red';
                                 }
                                 else 
                                 {
                                     schObj.termination = "Single";
-                                    document.getElementById('V1').style.borderColor= '#808080';   
+                                    document.getElementById('S1').style.borderColor= '';   
                                 }
                             }
 
                         }
                         else {
                             schObj.termination = "Single";
-                            document.getElementById('V1').style.borderColor= '#808080';
+                            document.getElementById('S1').style.borderColor= '';
                             ShowMessage_sm("QuickSmith","Failed to verify file");
                         }
                         Zcalsweep(); 
                     }
                     
                 reader.readAsText(selectedFile); 
-                $("#file-input1").val(null); // this clears the file read 
+                document.getElementById("file-input1").value = ""; // this clears the file read 
             }
         }
         else {
@@ -1858,66 +2341,47 @@ function updateToolTip() {
             schObj.gamData.dataM = [];
             schObj.gamData.dataQ = [];
             // ShowMessage_sm("QuickSmith"," Termination Single");
-            document.getElementById('V1').style.borderColor= '#808080';
+            document.getElementById('S1').style.borderColor= '';
             Zcalsweep();
         }
        
         console.log(JSON.stringify(schObj));
         console.log(JSON.stringify(resultsObj));
-        console.log(JSON.stringify(smithObj));
-        //alert("Validate " + $(".modal-body #VF").val());
+        console.log(JSON.stringify(smithObj, chartStateOnly));
+        //alert("Validate " + document.querySelector(".modal-body #VF").value);
+        syncSweepControls();   // the dialog edits the same sweep the panel shows
+        syncOverlayControls();
+        runResponse();
         updateToolTip();//update tooltip as the length unit may have changed.
     }
 
 
-   // var tuneSelector1 = "Radio1"; var tuneSelector2 = "Radio2";
-   // var selected_value1 = true; var selected_value2 = false;
-  //  var radio1_visible = false; var radio2_visible = false; 
-    var updateValue_disable = false;
-    $(function () {  // right click menu only availale on desktops, should open the element value entry box as after 
-        $.contextMenu({
-            selector: "input[name='spin2'],.dropzonevimg,.dropzonehimg",
-            build: function ($trigger, e) {
-                // e.preventDefault(); try this to stop the mobile default menu
-                // this callback is executed every time the menu is to be shown
-                // its results are destroyed every time the menu is hidden
-                //console.log($trigger.attr("id") );
-                var id1 = $trigger.attr("id") ;
-                if(id1.substring(0,1)=='D') id1 = id1.replaceAt(0, "E");
-                console.log("id1 =" + id1 );
-                var second_element = false; var id; var idNum;
-                if(id1.substr(-1)=='a')   { 
-                        second_element = true; 
-                        id = id1.substring(0, id1.length - 1); // remove 'a'
-                        idNum = Number(id.substr(1)); // remove 'E'
-                    } // here you have identified that this is the 2nd element not get rid of the "a" postfix
-                else idNum = Number(id1.substr(1)); // remove 'E' from incoming ID if not a second element
-               // if (schObj.ELEMENT[idNum].type == "w") return;
-                var spin_element = document.getElementById(id1);
-                //  console.log("spin_change " + id1.substr(1));
-                //   console.log("idNum " + idNum);
-                // var idNum = Number($trigger.attr("id").substr(1));
-                console.log("before showing context menu " + idNum);
-                var elType = schObj.ELEMENT[idNum].type;
-                console.log("elType " + elType);
-                if( elType == 'w')updateValue_disable = true; else updateValue_disable = false;
-                var mySrcElement = document.getElementById(elType);  // to display defaults
-                var imgSrc = isEven(idNum) ? mySrcElement.getAttribute('data-img') : mySrcElement.getAttribute('data-imgv');
-                return {
-                    callback: function (key, options) {
-                       if (key == "item1") { showComponentdialog(elType, imgSrc, mySrcElement, idNum,"update")}
-                    },
-                    items: {
-                        item1: {
-                            name: "Update Value",
-                            disabled: updateValue_disable
-                        }
-                    }
-                };
-            }
-        });
+/*
+ * Right-clicking a value box or a slot image opens that component's value
+ * dialog. jquery.contextMenu drew an 88 KB menu for this one item.
+ */
+document.addEventListener("contextmenu", function (e) {
+    var target = e.target.closest(
+        "input[name='spin2'], .dropzonevimg, .dropzoneh img, .dropzonev img");
+    if (!target) return;
 
-    });
+    var id = target.id;
+    if (!id) return;
+    if (id.charAt(0) === "D") id = "E" + id.slice(1);          // slot image -> its value box
+    var slot = Number(id.replace(/^E/, "").replace(/a$/, ""));
+    if (!(slot >= 1 && slot <= 12)) return;
+
+    e.preventDefault();
+    var type = schObj.ELEMENT[slot].type;
+    if (type === "w") return;                                  // nothing to edit on a wire
+
+    var source = document.getElementById(type);
+    var shunt = !isEven(slot);
+    QSUI.menu(e.clientX, e.clientY, [{
+        label: "Update value",
+        action: function () { showComponentdialog(type, shunt, source, slot, "update"); }
+    }]);
+});
 
 
     // function spinValUpdatePrompt(id1) {
@@ -1988,66 +2452,71 @@ function updateToolTip() {
     var msg1 =  "YIN(mS) : " +  Number(resultsObj.OUTPUT[1].YRout).toFixed(3) + getSign(resultsObj.OUTPUT[1].YIout) +  Number(Math.abs(resultsObj.OUTPUT[1].YIout)).toFixed(3) + "i" + "   P: " +  Number(resultsObj.OUTPUT[1].YMag).toFixed(3) + " < " +  Number(resultsObj.OUTPUT[1].YAng).toFixed(3) +"&#176"+ "\n" ;
     var msg2 =  "GAM : " +  Number(resultsObj.OUTPUT[2].GAMRout).toFixed(3) + getSign(resultsObj.OUTPUT[2].GAMIout) +  Number(Math.abs(resultsObj.OUTPUT[2].GAMIout)).toFixed(3) + "i" + "  P: " +  Number(resultsObj.OUTPUT[2].GAMMag).toFixed(3) + " < " +  Number(resultsObj.OUTPUT[2].GAMAng).toFixed(3) +"&#176"+ "\n" ; 
     var msg3 = "VSWR : " +  Number(resultsObj.OUTPUT[3].VSWR).toFixed(3) + "\n" ;
-    var msg4 = "Return Loss : " +  Number(resultsObj.OUTPUT[4].ReturnLoss).toFixed(3) + " dB" + "\n" ;
-    var msg5 =  "Insertion Loss : " +  Number(resultsObj.OUTPUT[5].InsertionLoss).toFixed(3) + " dB" + " S21 : " +  Number(resultsObj.OUTPUT[5].S21Mag).toFixed(3) + " dB" + " < " +  Number(resultsObj.OUTPUT[5].S21Ang).toFixed(3) +"&#176"+"\n"; 
+    var msg4 = "Return Loss : " +  formatdB(resultsObj.OUTPUT[4].ReturnLoss) + " dB" + "\n" ;
+    var msg5 =  "Insertion Loss : " +  formatdB(resultsObj.OUTPUT[5].InsertionLoss) + " dB" + " S21 : " +  formatdB(resultsObj.OUTPUT[5].S21Mag) + " dB" + " < " +  Number(resultsObj.OUTPUT[5].S21Ang).toFixed(3) +"&#176"+"\n"; 
     var msg6 = "Reflection Loss : " +  Number(resultsObj.OUTPUT[6].ReflectionLoss).toFixed(3) + " dB" + "\n" ; 
     var msg7 = "Power Reflection Coefficient : " +  Number(resultsObj.OUTPUT[7].PowerReflectionCoeff).toFixed(3) + "\n" ;
     var msg8 =  "Transmission Loss Coefficient : " +   Number(resultsObj.OUTPUT[8].TransmissionLossCoeff).toFixed(3) + "\n" ;
     var msg9 =  "Maximum Standing Wave: " +  Number(resultsObj.OUTPUT[9].MaximumSWR).toFixed(3) + "\n" ; 
     var msg10 = "Minimum Standing Wave: " +  Number(resultsObj.OUTPUT[10].MinimumSWR).toFixed(3) + "\n" ;
      //msg2$ = " Note: S21 vaild only if Z0 = Load "
-    BootstrapDialog.show({
-            //size: BootstrapDialog.SIZE_SMALL,
-            title: 'Tr. Line Equivalents',
-            message: msg0+msg1+msg2+msg3+msg4+msg5+msg6+msg7+msg8+msg9+msg10+seriesEquiv()+ "\n"+ parallelEquiv(),
-            buttons: [{
-   		        label: 'Close',
-                action: function(dialog) {            
-                dialog.close();               
-        }
-    }]
-        });
+    QSUI.open({
+        title: "Tr. Line Equivalents",
+        body: msg0+msg1+msg2+msg3+msg4+msg5+msg6+msg7+msg8+msg9+msg10+seriesEquiv()+ "\n"+ parallelEquiv()
+    });
+    }
+
+    /* One coloured arc per ladder component, so the path from the load to Zin
+       is attributable element by element. */
+    function toggleElementPaths() {
+        smithObj.showElementArcs = !smithObj.showElementArcs;
+        smithObj.drawSmith();
+    }
+
+    function toggleNextMove() {
+        smithObj.showNextMove = !smithObj.showNextMove;
+        smithObj.drawSmith();
     }
 
     function showMarkerDialog() {
-        var markerM = smithObj.markerM;
-        var markerQ = smithObj.markerQ;
-        var $content = $('<div><label for="MM">Marker Magnitude: <input type="text" id="MM" value='+markerM+'  style="width:100px" />\
-            </label><br /><label for="MA">Marker Angle: <input type="text" id="MA" value='+markerQ+' style="width:100px" /></label><br /></div>');
-            BootstrapDialog.show({
-            size: BootstrapDialog.SIZE_SMALL,
-            title: 'Marker',
-            message: $content,
-            buttons: [{
-                label: 'Set',
-                cssClass: 'btn-success',
-                action: function(dialogRef){
-                    //dialogRef.setClosable(false);
-                    var val = dialogRef.getModalBody().find('#MM').val();
-                    var val1 = dialogRef.getModalBody().find('#MA').val();
-                    if (isNumeric(val) && val >= 0 && val <= 1 && isNumeric(val1) && val1 > 0 && val1 <= 360) 
-                        {
-                            smithObj.markerM = val;
-                            smithObj.markerQ = val1;
-                            smithObj.showMarker=true;
-                            smithObj.redrawSmith();
-                            //dialogRef.setClosable(true);
-                            dialogRef.close();
-                        }
-                        else {
-                            //alert(val);
-                           // dialogRef.setClosable(false);
-                        }
+        var form = document.createElement("div");
+        form.innerHTML =
+            '<label>Marker magnitude (0 to 1)<br><input type="text" id="MM"></label>' +
+            '<label>Marker angle (degrees)<br><input type="text" id="MA"></label>';
+        form.querySelector("#MM").value = smithObj.markerM;
+        form.querySelector("#MA").value = smithObj.markerQ;
+
+        QSUI.open({
+            title: "Marker",
+            body: form,
+            small: true,
+            buttons: [
+                {
+                    label: "Reset",
+                    action: function () {
+                        smithObj.showMarker = false;
+                        smithObj.redrawSmith();
+                        syncOverlayControls();
                     }
-            }, {
-                label: 'Reset',
-                cssClass: 'btn-success',
-                action: function(dialogRef){
-                    smithObj.showMarker=false;
-                    smithObj.redrawSmith();
-                    dialogRef.close();
+                },
+                {
+                    label: "Set",
+                    primary: true,
+                    action: function () {
+                        var m = form.querySelector("#MM").value;
+                        var a = form.querySelector("#MA").value;
+                        if (!(isNumeric(m) && m >= 0 && m <= 1 &&
+                              isNumeric(a) && a > 0 && a <= 360)) {
+                            return false;   // out of range, leave the dialog open
+                        }
+                        smithObj.markerM = m;
+                        smithObj.markerQ = a;
+                        smithObj.showMarker = true;
+                        smithObj.redrawSmith();
+                        syncOverlayControls();
+                    }
                 }
-            }]
+            ]
         });
     }
 
@@ -2072,8 +2541,8 @@ function generateSweep() {
     //console.log( " SweepElement = " +sweepElement + " points =  " +points + " oldValue =  " +oldValue + " elNum =  " +elNum + " start =  " +start);
     for ( i=0; i < points; i++) {
         thisStep = step*i;
-        if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=math.add(start,thisStep) ; 
-        else schObj.ELEMENT[elNum].value2=math.add(start,thisStep);
+        if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=start + thisStep ; 
+        else schObj.ELEMENT[elNum].value2=start + thisStep;
         //console.log( " schObj.ELEMENT[elNum].value1 = " +schObj.ELEMENT[elNum].value1 + " thisStep =  " +thisStep)
         Zcalsweep1(); // assign and calculate network impedances
         resultsObj.OUTPUT[2].calculate(); // calculate gamma Number(ZR).toFixed(2)
@@ -2094,27 +2563,554 @@ function clearSweep() {
     smithObj.redrawSmith();
 }
 
-function IL_open_click()
-{
- localStorage.setItem('schDataIL', JSON.stringify(schObj));
- //window.open("InsertionLoss.html","_top");
- //window.open('InsertionLoss.html','window name','width=250,height=600,screenX=25,screenY=25,resizable=yes,scrollbars=yes ',false); return false
- //function openInNewTab(url) {
-  //event.preventDefault();
-  var win = window.open("InsertionLoss.html");
-  return false;
-  //ShowPopup('InsertionLoss.html');
-  //win.focus();
+/* =======================================================================
+ * Share links, Touchstone import, and the automatic matcher.
+ * ===================================================================== */
+
+/*
+ * The whole design as a URL. A decoded link is a schObj, so it restores
+ * through exactly the path that opens a .sch file.
+ */
+function shareLink_click() {
+    var url;
+    try {
+        url = location.origin + location.pathname + "#" + QSLink.encode(schObj, smithObj);
+    } catch (e) {
+        ShowMessage_sm("QuickSmith", "Could not build a link: " + e.message);
+        return;
+    }
+
+    var wrap = document.createElement("div");
+    var note = document.createElement("p");
+    note.style.margin = "0 0 10px";
+    note.textContent = "This link carries the whole design: frequency, load, every component, " +
+                       "and the chart overlays.";
+    var field = document.createElement("input");
+    field.type = "text";
+    field.readOnly = true;
+    field.value = url;
+    field.style.width = "100%";
+    field.style.fontSize = "12px";
+    wrap.appendChild(note);
+    wrap.appendChild(field);
+
+    QSUI.open({
+        title: "Share Link",
+        body: wrap,
+        onShown: function () { field.focus(); field.setSelectionRange(0, field.value.length); },
+        buttons: [
+            { label: "Close" },
+            {
+                label: "Copy",
+                primary: true,
+                action: function () {
+                    field.focus();
+                    field.setSelectionRange(0, field.value.length);
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(field.value);
+                    } else {
+                        try { document.execCommand("copy"); } catch (e) { /* copy by hand */ }
+                    }
+                }
+            }
+        ]
+    });
 }
 
+/*
+ * Pasting a share link into an already-open tab only changes the fragment, and
+ * browsers do not reload for that, so pick the new design up here as well.
+ */
+window.addEventListener("hashchange", function () {
+    if (loadFromHash()) updateUI();
+});
 
+/*
+ * The menu items are <a href="#">, and following one replaces the fragment,
+ * which wipes a shared design out of the address bar. Their onclick handlers
+ * do all the work, so there is nothing to follow.
+ */
+document.addEventListener("click", function (e) {
+    var link = e.target.closest(".navbar a[href='#']");
+    if (link) e.preventDefault();
+});
 
-function AMP_open_click(){
- localStorage.setItem('transferFlag', 'false');
- //window.open("AmplifierDesign.html","_self");
- //event.preventDefault();
- var win = window.open("AmplifierDesign.html");
- return false;
+/* Restore a design from the address bar. Returns true if there was one. */
+function loadFromHash() {
+    var hash = location.hash || "";
+    if (hash.length < 2) return false;
+    try {
+        var decoded = QSLink.decode(hash);
+        copy_schObj(decoded.sch);
+        if (schObj.termination === "Multiple") {
+            schObj.gamData.dataQ = phase_unwrap(schObj.gamData.dataQ);
+        }
+        if (decoded.chart) copy_smithObj(decoded.chart);
+        return true;
+    } catch (e) {
+        ShowMessage_sm("QuickSmith", "That link could not be read: " + e.message);
+        return false;
+    }
+}
+
+/* ============================================ microstrip and coax
+ *
+ * A line in the ladder is an impedance and a length. On the bench it is a
+ * track of some width on a board of some thickness, and those are the numbers
+ * you need to actually build it. Give this the substrate and it reads the
+ * whole design back in millimetres.
+ *
+ * Electrical length is what carries across. A stored length in inches only
+ * means something alongside the velocity factor it was entered with, so every
+ * line is converted to degrees first and re-derived on the new substrate.
+ *
+ * The maths is in line.js and has no idea any of this exists.
+ */
+var board = {
+    medium: "microstrip",
+    // each medium keeps its own numbers: FR-4 and polyethylene are both
+    // ordinary answers, and neither is an ordinary answer for the other
+    microstrip: { er: 4.4, h: 1.6 },
+    coax: { er: 2.25, bore: 4.95 }
+};
+
+function substrate() { return board[board.medium]; }
+
+function lineSlots() {
+    var out = [];
+    for (var i = 2; i <= 12; i++) {
+        var type = schObj.ELEMENT[i].type;
+        if (type === "t" || type === "o" || type === "s") out.push(i);
+    }
+    return out;
+}
+
+/* One line's electrical length, in degrees, by the solver's own rule. */
+function lineDegrees(index) {
+    var ctx = { w: 2 * Math.PI * Number(schObj.ELEMENT[0].value1) * 1e6,
+                VF: Number(schObj.VF), LU: schObj.LU, TDF: Number(schObj.TDF) };
+    var radians = QSEngine.electricalLength({ v2: Number(schObj.ELEMENT[index].value2) }, ctx);
+    return radians * 180 / Math.PI;
+}
+
+/*
+ * What one line comes to on this substrate: the conductor size, how much the
+ * substrate slows the wave, and the length that follows from both.
+ *   microstrip - size is the track width
+ *   coax       - size is the inner conductor diameter inside the given bore
+ */
+function lineOnBoard(index) {
+    var Z0 = Math.abs(Number(schObj.ELEMENT[index].value1)) || 1;
+    var freq = Number(schObj.ELEMENT[0].value1);
+    var size, eeff;
+
+    var sub = substrate();
+    if (board.medium === "coax") {
+        var coax = QSLine.coax.ratio(Z0, sub.er);
+        size = sub.bore / coax.ratio;
+        eeff = coax.eeff;
+    } else {
+        var strip = QSLine.microstrip.width(Z0, sub.er);
+        size = strip.wOverH * sub.h;
+        eeff = strip.eeff;
+    }
+
+    return { slot: index, Z0: Z0, eeff: eeff, size: size,
+             degrees: lineDegrees(index),
+             mm: QSLine.length(lineDegrees(index), freq, eeff) * 1000 };
+}
+
+function lineDimensions_click() {
+    var wrap = document.createElement("div");
+    wrap.className = "qs-board";
+    var dlg = null;
+
+    var form = document.createElement("div");
+    form.className = "qs-board-form";
+    wrap.appendChild(form);
+
+    var results = document.createElement("div");
+    wrap.appendChild(results);
+
+    function field(label, key, suffix) {
+        var lab = document.createElement("label");
+        lab.textContent = label;
+        var box = document.createElement("input");
+        box.type = "text";
+        box.value = substrate()[key];
+        box.addEventListener("input", function () {
+            var v = parseFloat(box.value);
+            // only the results are redrawn: rebuilding the form under a
+            // keystroke would take the focus out of the box being typed in
+            if (isFinite(v) && v > 0) { substrate()[key] = v; drawResults(); }
+        });
+        lab.appendChild(box);
+        if (suffix) {
+            var unit = document.createElement("span");
+            unit.textContent = suffix;
+            lab.appendChild(unit);
+        }
+        form.appendChild(lab);
+    }
+
+    function drawForm() {
+        form.innerHTML = "";
+
+        var pick = document.createElement("label");
+        pick.textContent = "Medium";
+        var select = document.createElement("select");
+        [["microstrip", "Microstrip"], ["coax", "Coax"]].forEach(function (o) {
+            var opt = document.createElement("option");
+            opt.value = o[0];
+            opt.textContent = o[1];
+            if (board.medium === o[0]) opt.selected = true;
+            select.appendChild(opt);
+        });
+        select.addEventListener("change", function () {
+            board.medium = select.value;
+            drawForm();
+            drawResults();
+        });
+        pick.appendChild(select);
+        form.appendChild(pick);
+
+        field("Dielectric εr", "er", "");
+        if (board.medium === "coax") field("Bore diameter", "bore", "mm");
+        else field("Substrate height", "h", "mm");
+    }
+
+    function drawResults() {
+        results.innerHTML = "";
+        var slots = lineSlots();
+        var rows = slots.map(lineOnBoard);
+        var what = board.medium === "coax" ? "Inner ø" : "Width";
+
+        // a 50 ohm line is the number anybody asks for first, lines or not
+        var sub = substrate();
+        var ref = (board.medium === "coax")
+            ? sub.bore / QSLine.coax.ratio(50, sub.er).ratio
+            : QSLine.microstrip.width(50, sub.er).wOverH * sub.h;
+        var refE = (board.medium === "coax") ? sub.er
+            : QSLine.microstrip.width(50, sub.er).eeff;
+
+        var summary = document.createElement("p");
+        summary.className = "qs-board-note";
+        summary.textContent = (board.medium === "coax"
+            ? "A 50 Ω line in a " + sub.bore + " mm bore needs a " +
+              ref.toFixed(3) + " mm inner conductor."
+            : "A 50 Ω track on this board is " + ref.toFixed(3) + " mm wide.") +
+            " εeff " + refE.toFixed(3) + ", velocity factor " +
+            QSLine.velocityFactor(refE).toFixed(4) + ".";
+        results.appendChild(summary);
+
+        if (!rows.length) {
+            var none = document.createElement("p");
+            none.className = "qs-board-note";
+            none.textContent = "There are no transmission lines in the ladder. " +
+                "Drop a T, O or S on a slot and each one will be listed here.";
+            results.appendChild(none);
+            return;
+        }
+
+        var table = document.createElement("table");
+        table.className = "qs-board-table";
+        var head = document.createElement("tr");
+        ["", "Impedance", "Electrical", what, "Length"].forEach(function (t) {
+            var th = document.createElement("th");
+            th.textContent = t;
+            head.appendChild(th);
+        });
+        table.appendChild(head);
+
+        rows.forEach(function (r) {
+            var tr = document.createElement("tr");
+            [schObj.ELEMENT[r.slot].type.toUpperCase() + r.slot,
+             r.Z0.toFixed(2) + " Ω",
+             r.degrees.toFixed(2) + "°",
+             r.size.toFixed(3) + " mm",
+             r.mm.toFixed(3) + " mm"].forEach(function (t) {
+                var td = document.createElement("td");
+                td.textContent = t;
+                tr.appendChild(td);
+            });
+            table.appendChild(tr);
+        });
+        results.appendChild(table);
+
+        /*
+         * Applying rewrites the ladder in millimetres. That needs one velocity
+         * factor to cover every line, which a microstrip board only gives you
+         * if the lines are all the same width - a narrow track keeps more of
+         * its field in the air and travels faster than a wide one. Coax is
+         * filled, so its lines always agree.
+         */
+        var spread = Math.max.apply(null, rows.map(function (r) { return r.eeff; })) -
+                     Math.min.apply(null, rows.map(function (r) { return r.eeff; }));
+        var note = document.createElement("p");
+        note.className = "qs-board-note";
+
+        if (spread > 1e-9) {
+            note.textContent = "These lines are different widths, so they do not travel at " +
+                "the same speed, and QuickSmith carries one velocity factor for the whole " +
+                "ladder. Read the lengths off here and leave the design in degrees.";
+            results.appendChild(note);
+            return;
+        }
+
+        note.textContent = "Applying sets the velocity factor to " +
+            QSLine.velocityFactor(rows[0].eeff).toFixed(4) +
+            " and rewrites every line length in millimetres. The circuit does not change.";
+        results.appendChild(note);
+
+        var apply = document.createElement("button");
+        apply.type = "button";
+        apply.className = "qs-btn qs-primary";
+        apply.textContent = "Apply to the design";
+        apply.addEventListener("click", function () {
+            schObj.VF = QSLine.velocityFactor(rows[0].eeff);
+            schObj.LU = "MilliMeters";
+            rows.forEach(function (r) { schObj.ELEMENT[r.slot].value2 = Number(r.mm.toFixed(4)); });
+            updateUI();
+            QSUI.close(dlg);
+        });
+        results.appendChild(apply);
+    }
+
+    drawForm();
+    drawResults();
+    dlg = QSUI.open({ title: "Microstrip and coax", body: wrap });
+}
+
+/* ------------------------------------------------------------- Touchstone */
+
+/*
+ * The last sweep as a .s1p, so a QuickSmith result can feed whatever tool the
+ * user works in next. The sweep must be a frequency sweep for the file to mean
+ * anything - a component sweep has no frequency axis.
+ */
+function exportTouchstone_click() {
+    // A file of the network, not of whatever happens to be on the chart: if
+    // no sweep has been run, run one over the response range and export that.
+    if (!smithObj.sweepDatasets[0].dataM.length && schObj.SE === "Frequency") generateSweep();
+
+    var dataM = smithObj.sweepDatasets[0].dataM;
+    var dataQ = smithObj.sweepDatasets[0].dataQ;
+    if (!dataM.length) {
+        ShowMessage_sm("QuickSmith", "Run Sweep \u2192 Generate first; there is no data to export.");
+        return;
+    }
+    if (schObj.SE !== "Frequency") {
+        ShowMessage_sm("QuickSmith",
+            "Touchstone files are indexed by frequency, but the last sweep varied " +
+            schObj.SE + ".\n\nSet the sweep variable back to Frequency and generate again.");
+        return;
+    }
+
+    var start = parseFloat(schObj.SS), step = parseFloat(schObj.SST);
+    var points = [];
+    for (var i = 0; i < dataM.length; i++) {
+        points.push({ f: start + step * i, mag: Number(dataM[i]), angle: Number(dataQ[i]) });
+    }
+    var text = QSTouchstone.formatS1P(points, {
+        R: parseFloat(schObj.Z0),
+        title: "Zin sweep, " + points[0].f + " to " + points[points.length - 1].f + " MHz"
+    });
+    saveAs(new Blob([text], { type: "text/plain;charset=utf-8" }), "QuickSmith.s1p");
+}
+
+function importTouchstone_click() {
+    document.getElementById("file-input2").click();
+}
+
+/*
+ * A .s1p or .s2p becomes the frequency-dependent load: S11 is exactly the
+ * reflection coefficient QuickSmith interpolates between. If the file was
+ * measured against a different reference impedance it is renormalised first.
+ */
+function handleTouchstoneImport(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+        try {
+            var parsed = QSTouchstone.parse(reader.result,
+                                            QSTouchstone.portsFromFilename(file.name));
+            var gam = QSTouchstone.toGamData(parsed, parseFloat(schObj.Z0));
+            if (gam.dataX.length < 2) {
+                ShowMessage_sm("QuickSmith",
+                    "That file has only one frequency, so there is nothing to interpolate.");
+                return;
+            }
+
+            schObj.gamData = {
+                label: file.name, color: "#000000",
+                dataX: gam.dataX, dataM: gam.dataM, dataQ: phase_unwrap(gam.dataQ)
+            };
+            schObj.termination = "Multiple";
+            schObj.SS = gam.dataX[0];
+            schObj.ST = gam.dataX[gam.dataX.length - 1];
+            schObj.SST = Number(Math.abs(schObj.ST - schObj.SS) / (gam.dataX.length - 1)).toFixed(4);
+            schObj.ELEMENT[0].value1 = gam.dataX[0];
+            document.getElementById("S1").style.borderColor = "red";
+
+            updateUI();
+            ShowMessage_sm("QuickSmith",
+                file.name + "\n\n" + gam.dataX.length + " points, " +
+                gam.dataX[0].toFixed(3) + " to " + gam.dataX[gam.dataX.length - 1].toFixed(3) +
+                " MHz\nreferenced to " + parsed.R + " Ω" +
+                (parsed.ports > 1 ? "\n\nUsing S11; the other parameters were ignored." : "") +
+                "\n\nThe load now follows the measurement. Sweep to see the whole band.");
+        } catch (err) {
+            ShowMessage_sm("QuickSmith", "Could not read " + file.name + ":\n\n" + err.message);
+        }
+    };
+    reader.readAsText(file);
+    document.getElementById("file-input2").value = "";
+}
+document.getElementById("file-input2").addEventListener("change", handleTouchstoneImport, false);
+
+/* ---------------------------------------------------------- auto matching */
+
+/*
+ * Offers every two-element network that takes the present load to Z0, lowest
+ * loaded Q first. Nothing is applied until the user picks one - the point of a
+ * Smith chart is to see the transformation, not to have it done invisibly.
+ */
+/* The Q last asked for, so reopening the dialog remembers it. */
+var matchQ = "";
+
+function autoMatch_click() {
+    var solution = resultsObj.solution;
+    if (!solution) { Zcalsweep(); solution = resultsObj.solution; }
+
+    var ZL = solution.load;
+    var Z0 = parseFloat(schObj.Z0);
+    var freq = parseFloat(schObj.ELEMENT[0].value1);
+    var wanted = parseFloat(matchQ);
+    var options = QSEngine.matchToZ0(ZL, Z0, freq, wanted);
+
+    var header = "Load " + ZL.re.toFixed(3) + (ZL.im >= 0 ? " + j" : " - j") +
+                 Math.abs(ZL.im).toFixed(3) + " Ω to " + Z0 + " Ω at " +
+                 freq + " MHz";
+
+    if (!options.length) {
+        ShowMessage_sm("QuickSmith", header + "\n\nNo two-element match is possible here. \
+If the load is already at " + Z0 + " Ω there is nothing to do; otherwise try a \
+transmission line or a three-element network.");
+        return;
+    }
+
+    var wrap = document.createElement("div");
+    var head = document.createElement("p");
+    head.style.margin = "0 0 10px";
+    head.textContent = header;
+    wrap.appendChild(head);
+
+    /*
+     * An L-network's Q is whatever the transformation makes it. Ask for one
+     * and you get Pi and T networks too, which have the third element needed
+     * to hit it. Below the L-network's own Q there is nothing to offer.
+     */
+    var ask = document.createElement("div");
+    ask.style.cssText = "display:flex;align-items:center;gap:8px;padding:8px 0;" +
+                        "border-top:1px solid var(--qs-rim,#e5e8ee)";
+    var askLabel = document.createElement("label");
+    askLabel.setAttribute("for", "matchQ");
+    askLabel.style.cssText = "flex:1;font-size:13px;color:var(--qs-text,#7b8496)";
+    askLabel.textContent = "Loaded Q for a Pi or T (blank for L only)";
+    var askInput = document.createElement("input");
+    askInput.type = "text";
+    askInput.id = "matchQ";
+    askInput.value = matchQ;
+    askInput.style.width = "70px";
+    askInput.addEventListener("change", function () {
+        matchQ = askInput.value;
+        QSUI.close(dlg);
+        autoMatch_click();
+    });
+    ask.appendChild(askLabel);
+    ask.appendChild(askInput);
+    wrap.appendChild(ask);
+
+    var dlg = null;
+    options.forEach(function (option) {
+        var parts = option.elements.filter(function (el) { return el.type !== "w"; })
+            .map(function (el) {
+                return el.type.toUpperCase() + el.slot + " = " +
+                       Number(el.value1).toFixed(3) + (el.type === "l" ? " nH" : " pF");
+            }).join("   \u00b7   ");
+
+        var row = document.createElement("div");
+        row.style.cssText = "padding:10px 0;border-top:1px solid var(--qs-rim,#e5e8ee)";
+
+        var values = document.createElement("div");
+        values.style.cssText = "font-family:ui-monospace,Menlo,monospace;font-size:13px";
+        values.textContent = parts;
+
+        var meta = document.createElement("div");
+        meta.style.cssText = "color:var(--qs-text,#7b8496);font-size:12px;margin-top:3px";
+        var shape = option.topology === "series-shunt" ? "series then shunt"
+                  : option.topology === "shunt-series" ? "shunt then series"
+                  : option.topology;
+        meta.textContent = shape + "   \u00b7   loaded Q " + option.q.toFixed(2);
+
+        var apply = document.createElement("button");
+        apply.type = "button";
+        apply.className = "qs-btn qs-primary";
+        apply.style.marginTop = "8px";
+        apply.textContent = "Apply";
+        apply.addEventListener("click", function () {
+            applyMatch(option);
+            QSUI.close(dlg);
+        });
+
+        row.appendChild(values);
+        row.appendChild(meta);
+        row.appendChild(apply);
+        wrap.appendChild(row);
+    });
+
+    var foot = document.createElement("p");
+    foot.style.cssText = "color:var(--qs-text,#7b8496);font-size:12px;margin:14px 0 0";
+    foot.textContent = "Applying clears the rest of the ladder, because the match is " +
+                       "calculated from the load outwards. Lower Q means wider bandwidth." +
+                       (isFinite(wanted) && wanted > 0 && !options.some(function (o) {
+                            return /^(Pi|T)/.test(o.topology); })
+                        ? " A Q of " + wanted + " is below what this transformation can do, " +
+                          "so no Pi or T is possible."
+                        : "");
+    wrap.appendChild(foot);
+
+    dlg = QSUI.open({ title: "Match to " + Z0 + " \u03a9", body: wrap });
+}
+
+function applyMatch(option) {
+    for (var i = 2; i <= 12; i++) {
+        schObj.ELEMENT[i].type = "w";
+        schObj.ELEMENT[i].value1 = 0;
+        schObj.ELEMENT[i].value2 = 0;
+        schObj.ELEMENT[i].q = 1000000;
+    }
+    option.elements.forEach(function (el) {
+        if (el.type === "w") return;          // the loop above already cleared it
+        schObj.ELEMENT[el.slot].type = el.type;
+        schObj.ELEMENT[el.slot].value1 = Number(el.value1).toFixed(4);
+        schObj.ELEMENT[el.slot].value2 = 0;
+    });
+    updateUI();
+}
+
+/*
+ * Amplifier design is its own page, and it now opens in the same tab. It used
+ * to open a second window and hunt for its opener on the way back, which is
+ * the Firefox bug in todo.txt. The session is saved first, so the ladder is
+ * still there when you come back.
+ */
+function AMP_open_click() {
+    localStorage.setItem("transferFlag", "false");
+    set_click();
+    window.location.href = "AmplifierDesign.html";
+    return false;
 }
 
 

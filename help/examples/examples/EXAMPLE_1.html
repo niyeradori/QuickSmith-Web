@@ -1,27 +1,58 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Example: Resistance and Reactance</title>
-<meta name="MS-HKWD" content="Resistance" />
-<meta name="MS-HKWD" content="Reactance" />
-<meta name="generator" content="Adobe RoboHelp 2017" />
- <link href="../../../css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
- <script src="../../../js/jquery-3.2.1.min.js"></script>
-  <script src="../../../js/bootstrap3.min.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resistance and reactance on a Smith chart | QuickSmith</title>
+<meta name="description" content="What a series resistor, a series reactance and a shunt reactance each do to the input impedance, traced on the chart: the real axis, a constant resistance circle and a constant conductance circle.">
+<link rel="canonical" href="https://quicksmith.online/help/examples/examples/EXAMPLE_1.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/help/examples/examples/EXAMPLE_1.html">
+<meta property="og:title" content="Resistance and reactance on a Smith chart | QuickSmith">
+<meta property="og:description" content="What a series resistor, a series reactance and a shunt reactance each do to the input impedance, traced on the chart: the real axis, a constant resistance circle and a constant conductance circle.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../../img/smith.ico">
+<link href="../../../app.css" rel="stylesheet">
+<link href="../../../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../../../smith.js"></script>
 </head>
-<body style="font-family:'Helv'; font-size:10pt; background-color:white;" bgcolor="white">
-<h1 style="font-size:12pt;margin-top:0.00pt;margin-bottom:12.00pt;"><img src="../image/QSmith.gif" border="0" height="82" width="82" alt="image\QSmith.gif" /> <b><font face="MS Sans Serif" style="font-family:'MS Sans Serif'; font-weight:bold;">Example: Resistance and Reactance</font></b></h1>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">These exercises uses basic resistance and reactance to illustrate their mapping on the chart.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">a) From the Schematic window assign 0 Ohm resistor to a series slot by dragging the resistor icon from the bottom of the screen and droping it on the slot. Switch to the smith chart window and using the tool box change the resistance from 0 to 50, you wil</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">l see that Z-in moves along the line at the center from left towards right which is shown as trace-a in the</font> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">figure. You may vary the step size by double-clicking on the value box.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">b) Assign a 50 Ohm reactance to the next series slot and vary its value from -50 to 50 ohm, Z-in moves along the circle of constant resistance as shown by trace-b.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">c) Assign the above reactance in parallel and again vary its value from -50 to 50, Z-in moves along the circle of constant conductance as shown below by trace-c.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<h1 style="font-size:12pt;margin-left:216.00pt;margin-top:0.00pt;margin-bottom:12.00pt;"><img src="../image/ebd_1.gif" border="0" height="282" width="270" alt="image\ebd_1.gif" /></h1>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../../index.html">
+        <img src="../../../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../../../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="EXAMPLES.html">All examples</a></li>
+      <li><a href="../../../blog/">Articles</a></li>
+      <li><a href="../../../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+<p class="doc-kicker">Example 1</p>
+<h1>Resistance and reactance on a Smith chart</h1>
+<p>These exercises uses basic resistance and reactance to illustrate their mapping on the chart.</p>
+<p>a) From the Schematic window assign 0 Ohm resistor to a series slot by dragging the resistor icon from the bottom of the screen and droping it on the slot. Switch to the smith chart window and using the tool box change the resistance from 0 to 50, you will see that Z-in moves along the line at the center from left towards right which is shown as trace-a in the figure. You may vary the step size by double-clicking on the value box.</p>
+<p>b) Assign a 50 Ohm reactance to the next series slot and vary its value from -50 to 50 ohm, Z-in moves along the circle of constant resistance as shown by trace-b.</p>
+<p>c) Assign the above reactance in parallel and again vary its value from -50 to 50, Z-in moves along the circle of constant conductance as shown below by trace-c.</p>
+<figure class="doc-figure">
+  <img src="../image/ebd_1.gif" width="270" height="282" alt="Smith chart for resistance and reactance on a smith chart">
+</figure>
+<nav class="doc-nav"><span><a href="EXAMPLES.html">&#9664; All examples</a></span><span><a href="EXAMPLE_2.html">Designing an L-network: 500 ohms to 50 ohms &#9654;</a></span></nav>
+</main>
+</div>
 </body>
 </html>

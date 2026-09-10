@@ -1,36 +1,70 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Example: Small signal Amplifier Design Using S-parameters</title>
-<meta name="MS-HKWD" content="Transistors" />
-<meta name="MS-HKWD" content="S-parameters" />
-<meta name="MS-HKWD" content="small-signa" />
-<meta name="MS-HKWD" content="Amplifier" />
-<meta name="generator" content="Adobe RoboHelp 2017" />
- <link href="../../../css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
- <script src="../../../js/jquery-3.2.1.min.js"></script>
-  <script src="../../../js/bootstrap3.min.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Small signal amplifier design: stability, gain and noise circles | QuickSmith</title>
+<meta name="description" content="Designing a 6 GHz microwave amplifier for the lowest noise figure at 10.55 dB available gain. Rollett stability factor, available gain circles and noise circles on the source and load planes.">
+<link rel="canonical" href="https://quicksmith.online/help/examples/examples/EXAMPLE_7.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/help/examples/examples/EXAMPLE_7.html">
+<meta property="og:title" content="Small signal amplifier design: stability, gain and noise circles | QuickSmith">
+<meta property="og:description" content="Designing a 6 GHz microwave amplifier for the lowest noise figure at 10.55 dB available gain. Rollett stability factor, available gain circles and noise circles on the source and load planes.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../../img/smith.ico">
+<link href="../../../app.css" rel="stylesheet">
+<link href="../../../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../../../smith.js"></script>
 </head>
-<body style="font-family:'Helv'; font-size:10pt; background-color:white;" bgcolor="white">
-<h1 style="font-size:12pt;margin-top:0.00pt;margin-bottom:12.00pt;"><img src="../image/QSmith.gif" border="0" height="82" width="82" alt="image\QSmith.gif" /> <b><font face="MS Sans Serif" style="font-family:'MS Sans Serif'; font-weight:bold;">Example: Small Signal Amplifier Design Using S-Parameters</font></b></h1>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">This example analyses small signal amplifier design in terms of its stability, noise and gain properties. This design example is based on Hewlett-Packard Application Note 970, February 1978, as presented by G. Gonzalez in Micro</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">wave Transistor Amplifiers, Prentice-Hall, 1984 and Dale D. Henkes in RF Design, December 1993 issue.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Problem:</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Design a microwave amplifier with lowest noise figure for available power gain of 10.55 dB at an operating frequency of 6 GHz. The device parameters are :</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">S11 = 0.641/-171.3 (magnitude./angle)</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">S12 = 0.057/16.3 (magnitude./angle)</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">S21 = 2.058/28.5 (magnitude./angle)</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">S22 = 0.572/-95.7 (magnitude./angle)</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">F</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">min</font> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">= 2.9 dB</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Gamma</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">o</font> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">= 0.542/141 (magnitude./angle)</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">R</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">n</font> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">= 9.42 Ohms</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Solution:</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">From</font> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">the Amplifier Design/Analysis window menu select "S-Parameters" to enter the data, select "Stability" to verify that the device is unconditionally stable ( K= 1.504 &lt; 1 and Delta = 0.301 &lt; 1). then choose "OK" to close the window. Similarly enter noise</font> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">parameters, enter 3.12 dB for Fi and Select "OK". From the "Circles" menu choose "Available Gain Circles" for 10.55 dB and "Noise Circles" .for Noise figure of 4.12 dB. Decrement the Noise figure until it intersects the 10.55 dB gain circle and .click "Re</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">dr</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">aw" to clean-up the chart. In the bottom of the window change GammaS such that it moves to the intersection of the two circles. We now have the required source and load impedance. They are : ZS = 13.98 + j7.57 and ZL = 17.92 + j 35.64. The next step is to</font> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">transfer these values to the schematic and design a suitable matching network. The following figure shows the display window.</font></p>
-<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><img src="../image/ebd_8.gif" border="0" height="316" width="316" alt="image\ebd_8.gif" /></p>
-<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><a href="IMPEDANCE_MATCH.html"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Impedance match</font></a></p>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../../index.html">
+        <img src="../../../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../../../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="EXAMPLES.html">All examples</a></li>
+      <li><a href="../../../blog/">Articles</a></li>
+      <li><a href="../../../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+<p class="doc-kicker">Example 7</p>
+<h1>Small signal amplifier design with S-parameters</h1>
+<p>This example analyses small signal amplifier design in terms of its stability, noise and gain properties. This design example is based on Hewlett-Packard Application Note 970, February 1978, as presented by G. Gonzalez in Microwave Transistor Amplifiers, Prentice-Hall, 1984 and Dale D. Henkes in RF Design, December 1993 issue.</p>
+<p><strong>Problem:</strong> Design a microwave amplifier with lowest noise figure for available power gain of 10.55 dB at an operating frequency of 6 GHz. The device parameters are :</p>
+<aside class="doc-result">
+  <h2>Given</h2>
+  <ul>
+    <li>S11 = 0.641/-171.3 (magnitude./angle)</li>
+    <li>S12 = 0.057/16.3 (magnitude./angle)</li>
+    <li>S21 = 2.058/28.5 (magnitude./angle)</li>
+    <li>S22 = 0.572/-95.7 (magnitude./angle)</li>
+    <li>Fmin = 2.9 dB</li>
+    <li>Gammao = 0.542/141 (magnitude./angle)</li>
+    <li>Rn = 9.42 Ohms</li>
+  </ul>
+</aside>
+<p><strong>Solution:</strong> From the Amplifier Design/Analysis window menu select "S-Parameters" to enter the data, select "Stability" to verify that the device is unconditionally stable ( K = 1.504 &gt; 1 and Delta = 0.301 &lt; 1). then choose "OK" to close the window. Similarly enter noise parameters, enter 3.12 dB for Fi and Select "OK". From the "Circles" menu choose "Available Gain Circles" for 10.55 dB and "Noise Circles" for Noise figure of 4.12 dB. Decrement the Noise figure until it intersects the 10.55 dB gain circle and click "Redraw" to clean-up the chart. In the bottom of the window change GammaS such that it moves to the intersection of the two circles. We now have the required source and load impedance. They are : ZS = 13.98 + j7.57 and ZL = 17.92 + j 35.64. The next step is to transfer these values to the schematic and design a suitable matching network. The following figure shows the display window.</p>
+<figure class="doc-figure">
+  <img src="../image/ebd_8.gif" width="316" height="316" alt="Smith chart for small signal amplifier design with s-parameters">
+</figure>
+<p><a href="IMPEDANCE_MATCH.html">Impedance match</a></p>
+<nav class="doc-nav"><span><a href="OUTPUT_MATCH.html">&#9664; Large signal amplifier design: the AN721 output match</a></span><span><a href="IMPEDANCE_MATCH.html">Matching the source and load impedances you chose &#9654;</a></span></nav>
+</main>
+</div>
 </body>
 </html>

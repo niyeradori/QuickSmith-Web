@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loaded Q, Q circles and matching network bandwidth | QuickSmith</title>
+<meta name="description" content="Loaded Q is |X|/R along the path, and the highest point your path reaches sets the bandwidth. What the Q circle overlay shows, why bandwidth is not exactly f0 over Q, and how to design to a bandwidth instead of discovering one.">
+<link rel="canonical" href="https://quicksmith.online/blog/q-circles-and-bandwidth.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/blog/q-circles-and-bandwidth.html">
+<meta property="og:title" content="Loaded Q, Q circles and matching network bandwidth | QuickSmith">
+<meta property="og:description" content="The highest Q your element path reaches is what sets the bandwidth.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/smith.ico">
+<link href="../app.css" rel="stylesheet">
+<link href="../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../smith.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Q circles: why your match works at one frequency and nowhere else",
+  "description": "Loaded Q is |X|/R along the path, and the highest point your path reaches sets the bandwidth. What the Q circle overlay shows, why bandwidth is not exactly f0 over Q, and how to design to a bandwidth instead of discovering one.",
+  "image": "https://quicksmith.online/img/og-card.png",
+  "author": {
+    "@type": "Person",
+    "name": "Nathan Iyer"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "QuickSmith"
+  },
+  "datePublished": "2026-09-10",
+  "mainEntityOfPage": "https://quicksmith.online/blog/q-circles-and-bandwidth.html"
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">
+        <img src="../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="index.html">Articles</a></li>
+      <li><a href="../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">Article</p>
+<h1>Q circles: why your match works at one frequency and nowhere else</h1>
+
+<p class="doc-lede">
+  Your match reads VSWR 1.0000. Move 5 MHz and it reads 2:1. Nothing is broken.
+  You built a high Q network, and the Q circle overlay would have told you
+  before you soldered anything.
+</p>
+
+<h2>What a Q circle is</h2>
+
+<p>
+  Loaded Q, for a node on the chart, is just <code>|X| / R</code>: how much
+  reactance there is compared with resistance. Every point with the same ratio
+  forms a curve, and that curve is the Q circle. Points near the real axis have
+  low Q. Points out near the rim have high Q.
+</p>
+
+<p>
+  Set <strong>Q circle</strong> in the Overlays panel and QuickSmith draws it.
+  The useful thing is not the circle by itself, it is the circle next to your
+  element path: <strong>the highest Q your path reaches is the Q of the
+  network</strong>, and that is what sets the bandwidth.
+</p>
+
+<h2>Watch it happen</h2>
+
+<p>
+  Same job in all three cases, 5 ohms to 50 ohms at 100 MHz. The only
+  difference is how far out the path goes before it comes back to the centre.
+</p>
+
+<aside class="doc-result">
+  <h2>5 ohms to 50 ohms at 100 MHz</h2>
+  <ul>
+    <li>L-network,  Q  3   BW 25.0 MHz   ( 86.7 to 111.7)</li>
+    <li>T-network,  Q  5   BW 12.8 MHz   ( 93.1 to 105.9)</li>
+    <li>T-network,  Q  8   BW  7.2 MHz   ( 96.2 to 103.4)</li>
+    <li>T-network,  Q 12   BW  4.6 MHz   ( 97.6 to 102.2)</li>
+  </ul>
+</aside>
+
+<p>
+  Four times the Q, roughly a fifth of the bandwidth. Draw the Q circle for the
+  number you asked for and the element path will just touch it at its furthest
+  excursion, which is a satisfying thing to see and a quick way to check you got
+  what you thought you asked for.
+</p>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxMDAsImUiOltbMSwicngiLDUsMF0sWzIsImwiLDIzLjg3LDBdLFszLCJjIiw5NS40OSwwXV0sImMiOnsicyI6MiwicSI6M319">Open the low Q version</a>
+
+<h2>The load has a Q too</h2>
+
+<p>
+  This trips people up. Loaded Q is measured along the whole path, and that
+  path starts at the load. If the load itself is reactive, its Q is a floor you
+  cannot get below.
+</p>
+
+<p>
+  A whip reading 25 - j40 has a Q of 40/25 = 1.6 before you have added
+  anything. So every match of that antenna has a loaded Q of at least 1.6, no
+  matter how clever the network is. If you need wider, the answer is not a
+  better network, it is a less reactive antenna.
+</p>
+
+<h2>Why the bandwidth is not just f0 over Q</h2>
+
+<p>
+  The textbook relation is <code>BW = f0 / Q</code>, and the numbers above do
+  not obey it exactly: at Q of 3 it would predict 33 MHz and the real answer is
+  25 MHz.
+</p>
+
+<p>
+  Two reasons. The textbook relation is the 3 dB bandwidth of a single
+  resonator, and a 2:1 VSWR limit is a different question. And a matching
+  network is not a single resonator, it is a ladder whose parts each have their
+  own frequency behaviour. QuickSmith does not use the formula. It walks
+  outwards from the design frequency and bisects to find where VSWR actually
+  crosses the limit, which is why the numbers above are not tidy multiples of
+  anything.
+</p>
+
+<p>
+  Use the formula for a feel and the sweep for an answer.
+</p>
+
+<h2>Reading it off in the program</h2>
+
+<p>
+  Three places tell you the same story at increasing resolution.
+</p>
+
+<ul>
+  <li>
+    <strong>Loaded Q</strong> in the readout is the number, computed from the
+    path you have, not from the topology you think you have.
+  </li>
+  <li>
+    <strong>BW (VSWR &lt; 2)</strong> below it is the bandwidth that follows,
+    found by sweeping rather than by formula. Change the VSWR circle overlay
+    and the limit follows it.
+  </li>
+  <li>
+    The <strong>Response</strong> plot is the shape. Two networks with the same
+    bandwidth number can have quite different skirts, and if the network is
+    also doing duty as a filter, the skirts are what you care about.
+  </li>
+</ul>
+
+<h2>Designing to a bandwidth</h2>
+
+<p>
+  Work backwards. Decide the bandwidth you need, turn it into a Q, and ask for
+  that Q in the Auto-match dialog.
+</p>
+
+<p>
+  If the Q you want is <em>lower</em> than the L-network already gives, there
+  is nothing on offer, and that is real rather than a limitation of the
+  program: a Pi or a T can only ever narrow. Going wider means either reducing
+  the impedance ratio, which usually means fixing the load, or a multi-section
+  network built by hand through a virtual resistance that sits between the two
+  ends rather than outside them.
+</p>
+
+<p>
+  And if the Q you want is high, remember it is not free. A high Q network
+  circulates more current for the same delivered power, so the same imperfect
+  inductor costs you several times more loss in a Q of 8 network than in a Q of
+  3 one.
+</p>
+
+<nav class="doc-nav">
+  <span><a href="index.html">&#9664; All articles</a></span>
+  <span><a href="l-pi-or-t-matching-network.html">L, Pi or T, and what it costs in bandwidth &#9654;</a></span>
+</nav>
+
+</main>
+</div>
+</body>
+</html>

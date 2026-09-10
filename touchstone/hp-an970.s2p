@@ -1,0 +1,6 @@
+! Microwave transistor at 6 GHz - HP Application Note 970,
+! as used in Gonzalez, Microwave Transistor Amplifiers. Example 7.
+! Fmin = 2.9 dB, Gamma_opt = 0.542 /_ 141 deg, Rn = 9.42 ohms
+!  f(GHz)   S11           S21           S12           S22
+# GHZ S MA R 50
+  6.000   0.641 -171.3   2.058   28.5   0.057   16.3   0.572  -95.7

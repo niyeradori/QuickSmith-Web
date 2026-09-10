@@ -1,175 +1,449 @@
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-<title>FAQ</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
- <link href="css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
- <script src="js/jquery-3.2.1.min.js"></script>
-  <script src="js/bootstrap3.min.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuickSmith FAQ: how to use the Smith chart tool</title>
+<meta name="description" content="How to build a ladder network, match to 50 ohms, tune by dragging on the chart, read VSWR and loaded Q, get a microstrip track width, and import Touchstone files from a network analyser.">
+<link rel="canonical" href="https://quicksmith.online/qsmithfaq.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/qsmithfaq.html">
+<meta property="og:title" content="QuickSmith FAQ: how to use the Smith chart tool">
+<meta property="og:description" content="How to match to 50 ohms, tune by dragging, read VSWR and loaded Q, and get a track width out of a matching network.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/smith.ico">
+<link href="app.css" rel="stylesheet">
+<link href="docs.css" rel="stylesheet">
+<!--
+  smith.js is here for its palette. app.css draws everything from the custom
+  properties that file declares, so loading it dresses this page in whatever
+  theme the chart is set to, and the FAQ can never drift from the program.
+  symbols.js draws the component icons, which used to be .bmp files.
+-->
+<script src="smith.js"></script>
+<script src="symbols.js"></script>
 </head>
-<body text="#000000" bgcolor="#ffffff" link="#274d99" vlink="#5a83d7" alink="#5a83d7">
-<basefont size=2>
-<table width="100%" border="0" cellpadding="5" cellspacing="0">
-   <tr>
-   <td   align=center bgcolor="#264b99"><font face="verdana,arial" size=6 color="#FFFFFF"><b>QuickSmith Web Version 1.0.0</b></font> <br>
-    <button style="float: left; "   class="btn btn-info btn-lg" onclick="window.location.href='index.html'">Home</button>
-    <font 
-       face="verdana,arial" size=4 color="#FFFFFF"><b>Frequently Asked Questions</b><br>
-    </font>
-  </td>
-  </tr>
-</table>
-<font face="verdana,arial" size=5>
-<!-- <p><i>Last Updated: 6-14-2014</i> -->
-<p>Following are answers to some of the top questions I receive regarding QuickSmith.
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="index.html">
+        <img src="img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="index.html">&#9664; Back to the chart</a></li>
+      <li><a href="help/examples/examples/EXAMPLES.html">Examples</a></li>
+      <li><a href="blog/">Articles</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap">
+
+<details class="doc-toc" id="toc">
+  <summary>Contents</summary>
+  <h2>Getting started</h2>
+  <ol>
+    <li><a href="#what">What QuickSmith is</a></li>
+    <li><a href="#start">Your first circuit</a></li>
+    <li><a href="#load">What the load represents</a></li>
+    <li><a href="#units">Default units</a></li>
+    <li><a href="#loadvalue">Setting the load</a></li>
+    <li><a href="#step">Changing the step size</a></li>
+  </ol>
+
+  <h2>Matching</h2>
+  <ol>
+    <li><a href="#match">Matching to 50 ohms</a></li>
+    <li><a href="#automatch">Letting QuickSmith do it</a></li>
+    <li><a href="#drag">Tuning by dragging</a></li>
+    <li><a href="#other">Matching to something else</a></li>
+    <li><a href="#readout">VSWR, return loss and Q</a></li>
+    <li><a href="#tours">Guided examples</a></li>
+  </ol>
+
+  <h2>Working</h2>
+  <ol>
+    <li><a href="#undo">Undo and redo</a></li>
+    <li><a href="#sweep">Sweeping</a></li>
+    <li><a href="#response">The response graph</a></li>
+    <li><a href="#session">Not losing your work</a></li>
+    <li><a href="#board">Track widths and coax</a></li>
+    <li><a href="#amplifier">Amplifier design</a></li>
+  </ol>
+
+  <h2>In and out</h2>
+  <ol>
+    <li><a href="#touchstone">Touchstone files</a></li>
+    <li><a href="#sharelink">Share links</a></li>
+    <li><a href="#export">Pictures and spreadsheets</a></li>
+    <li><a href="#gam">Gamma files</a></li>
+  </ol>
+
+  <h2>Other</h2>
+  <ol>
+    <li><a href="#mobile">On a phone or tablet</a></li>
+    <li><a href="#version">Latest version</a></li>
+    <li><a href="#references">References</a></li>
+  </ol>
+</details>
+
+<main class="doc-body">
+
+<h1>Frequently Asked Questions</h1>
+<p class="doc-lede">Answers to the questions I get asked most often about QuickSmith.</p>
+
+<h2>Getting started</h2>
+
+<h3 id="what">What is QuickSmith?</h3>
+<p>
+  A Smith chart based linear circuit simulator. You build a ladder network out of
+  components, and it shows you where the impedance goes as each one is added.
+</p>
 <ul>
-<li><a href="#lang">What is QuickSmith ?</a>
-<li><a href="#mbcs">How do I get started ?</a>
-<li><a href="#setupicon">How to change step size ?</a>
-<li><a href="#silent">What does the Load in the schematic represent ? </a>
-<li><a href="#units">What are the default units ? </a>
-<li><a href="#components">How can I change load resistance and reactance ?</a>
-<li><a href="#match">How do I match my circuit to 50 (or Char. impedance) ohms ?</a>
-<li><a href="#match1">How do I match to impedance other that 50 ohms ?</a>
-<li><a href="#amplifier">What is the Amplifier Design window all about ?</a>
-<li><a href="#s21">What does Insertion Loss window do?</a>
-<li><a href="#sweep">How to Sweep Frequency or Component values?</a>
-<li><a href="#back">How do I get to the main window from Insertion Loss or Amplifier Design window?</a>
-<li><a href="#vswr">How do I get VSWR/Return Loss at any point on the Smith chart?</a>
-<li><a href="#missingfeatures">I don't see some features on my phone.</a>
-<li><a href="#session">How can I avoid losing my work if the page reloads ?</a>
-<li><a href="#import">How can I import external data on the Smith Chart ?</a>
-<li><a href="#latestversion">Where can I get the latest version from ?</a>
-<li><a href="#examples">Where can I find tutorials or examples ?</a>
-<li><a href="#references"> Where can I read more about the formulas and calculations this program is based on ?</a>
+  <li>Ladder network, built by dragging components onto slots</li>
+  <li>Open and save schematic files</li>
+  <li>Impedance matching, by hand or automatically</li>
+  <li>Frequency and component sweeps</li>
+  <li>Interpolated loads for frequency-dependent devices</li>
+  <li>Q factors taken into account for every component</li>
+  <li>Amplifier design and analysis with gain and noise circles</li>
+  <li>Insertion loss and S21 graphs</li>
+  <li>Transmission line calculations, including microstrip and coax dimensions</li>
+  <li>Constant conductance, VSWR and Q circles</li>
+  <li>Import and export of measurement files</li>
+  <li>Worked examples, both as documents and as guided tours</li>
 </ul>
 
-</BR>
-<h3><a name="lang">About QuickSmith </a></h3>
-<blockquote>
-QuickSmith is a Smith Chart based linear circuit simulation program.<BR>
-Some of the features offered by this program are listed below:<BR>
-  - Ladder network, elements are loaded using drag drop method.<BR>
-  - Open and Save functions for schematic files<BR>
-  - Impedance matching<BR>
-  - Frequency/component sweep<BR>
-  - Load impedance interpolation/extrapolation for frequency dependent loads<BR>
-  - Q factors taken into account for network components<BR>
-  - Amplifier design/analysis using gain/noise circles<BR>
-  - Insertion loss and S21 graphs<BR>
-  - Transmission line parameter calculations<BR>
-  - Constant Conductance, VSWR and Q circles<BR>
-  - Import and Export of data files<BR>
-  - Help files with solved examples of network matching and amplifier design<BR>
-</blockquote>
-<h3><a name="mbcs">Getting started</a></h3>
-<blockquote>
-First you will notice there are two windows one on the left is the <B>Smithchart</B> window another and on the right is <B>Schematic</B><BR>
-In the Schematic window, click on the resistor <IMG SRC="img/r.bmp" WIDTH=61 HEIGHT=20 BORDER=0> icon and drag and drop it in the white slot in the ladder above, a Message box will pop up and enter a number and hit return<BR>
-Notice that the blue dot on the Smith chart moves to an appropriate location. Now you can you use spin(up/down) button to navigate on the Smith chart<BR>
-</blockquote>
-<h3><a name="setupicon">Step Size</a></h3>
-<blockquote>
-To change the step size double click on the <B>component value</B> in the schematic window. Mobile users may tap on the component value, and enter <B>s or S </B> to change the setp size.
-</blockquote>
-<h3><a name="silent">Load in the schematic</a></h3>
-<blockquote>
-The <B>load (L)</B> on the left side of the Schematic window is the device you are looking into. It is very similar to a Network analyser with the Port 1 cable connected to a device.
-The display end of the network analyzer is the right side <B>(Zin)</B>
-</blockquote>
-<h3><a name="units">Default Units</a></h3>
-<blockquote>
-Frequency <B>MHz</B>, Resistor <B>Ohms</B>, Inductor <B>nH</B>, Capacitor <B>pF</B>.
-</blockquote>
-<h3><a name="components">Load Resistance/Reactance</a></h3>
-<blockquote>
-To change the load resistance or reactance drag the RX icon<IMG SRC="img/rx.bmp" WIDTH=20 HEIGHT=70 BORDER=0 align="middle" style="margin-left:4px"> or the GAMMA icon <IMG SRC="img/g.bmp" WIDTH=20 HEIGHT=70 BORDER=0 align="middle" style="margin-left:4px"> icon on load (L) slot and enter the value in the message box .
-</blockquote>
-<!-- 
-<h3><a name="conditional">Menus</a></h3>
-<blockquote>
-In the interest of giving user many options there are two menus one when the Smithchart window in focus another when the Schematic window is in focus.
-To change menus click on the appropriate window or on the icon in the top left side of the window.
-</blockquote> -->
-<h3><a name="match">To Match to 50 Ohms (or Char. impedance)</a></h3>
-<blockquote>
-In the Schematic window enter the Load resistance and reactance. Next enter the operating frequency[Mhz] in the freqency input box. Depending upon your Load location use the Matching aid shown below
-to determine the network to get to 50 Ohms, alternatively web users can make use of the new "Matching Tip" feature that will appear in the schematic section when the mouse pointer is hovered on the blue dot.  The goal is to navigate the blue dot on the Smith chart to the circle going through the  center
-and then use the last component to bring to the 50 Ohm point. See the <a  href="help/examples/examples/EXAMPLE_6.html">Large Signal Amplifier Design Example</a> in the help section.
-<br> <br><br> <br>
-<center><IMG SRC="img/match.jpg" WIDTH=700 HEIGHT=694 BORDER=1></center>
-<br> <br> <br> <br>
-</blockquote>
-<h3><a name="match1">To Match to other impedance</a></h3>
-<blockquote>
-Use the Marker in the SmithChart window display menu to set a target marker.
-</blockquote>
-<h3><a name="amplifier">Amplifier Design and Analysis</a></h3>
-<blockquote>
- To get to the Amplifier design window click on the Amplifier design menu or the "Chart icon".
- You will see two Smith charts. One for the source plane and another for the load plane.
- You can use this to optimize Gain and noise trade offs. See the <a href="help/examples/examples/EXAMPLE_7.html">"Small Signal Amplifier Design"</a> Example in the Help section.
-</blockquote>
-<h3><a name="s21">Insertion Loss Window</a></h3>
-<blockquote>
-Insertion Loss window gives you the insertion loss of the network. It assume load and source impedance is 50 (characteristic) Ohms.
-To set frequency sweep parameters, use "Options" menu in the navaigation bar.
-</blockquote>
-<h3><a name="sweep">Sweep Frequency or component</a></h3>
-<blockquote>
-First set frequency/component sweep parameters, use "Options" menu in  navaigation bar. Click on "ShowSweep" menu "Generate" item to sweep.
-</blockquote>
-<h3><a name="back">Return from Insertion Loss or Amplifier Design window </a></h3>
-<blockquote>
-On the menu of Insertion Loss or Amplifier Design window click on <B>Back</B>, on small screen devices like a phone or tablet, you will see <B>BackM</B>, this will open a new window instead of going back to the parent window. This is due to security limitation on the phone.
-</blockquote>
-<h3><a name="vswr">VSWR /Return Loss etc.</a></h3>
- <blockquote>
-Move you mouse pointer to the Smith chart and double click your right mouse button.
-</blockquote> 
-<h3><a name="missingfeatures">Phone or Tablet mode.</a></h3>
- <blockquote>
- Due the limited screen width and other limitations of mobile devices, we have restricted some features in that mode as listed below:<BR>
- 1) No file access<BR>
- 2) Q circles and Insertion loss features are not available<BR>
- 3) Only half of the element slots(6) are available<BR>
- 4) Element designators are omitted<BR>
- 4) To avoid interference with the drag operations, we have limited touch interactions to bare minimum<BR>
- 5) "Matching Tip" and "ToolTip" featurea are not available in Mobile mode.
+<h3 id="start">How do I get started?</h3>
+<p>
+  The chart is on the left, the schematic on the right. In the parts bin in the
+  middle of the schematic, pick up the resistor
+  <svg class="doc-sym" data-sym="r"></svg>
+  and drag it onto one of the empty slots in the ladder above or below. A box
+  asks for its value. Type one and press Enter.
+</p>
+<p>
+  The dot on the chart moves to where that component puts you, and a coloured arc
+  shows the path it took. From there the spin buttons beside the value walk it up
+  and down, and you can watch the dot travel. Drag the wire
+  <svg class="doc-sym" data-sym="w"></svg>
+  onto a slot to clear it again.
+</p>
 
-</blockquote> 
- <h3><a name="session">Save/Recall session</a></h3>
- <blockquote>
- To avoid losing data in between refresh, use "Save Session" in the File menu. This saves the data to the local memory, a new refresh will check if there is anything saved and load it if so. <BR>
- "New Session" removes any saved session and "Restore Session" recalls the last saved session.
-</blockquote> 
- <h3><a name="import">Export/Import feature</a></h3>
- <blockquote>
- External data can be imported by using the Import feature under Data menu in the Navbar. The data is stored in JSON format. Example files can be found in the gam folder. To create "gam" files "Generate" a Sweep and export the data using the "Export Command".
-</blockquote>
+<h3 id="load">What does the load represent?</h3>
+<p>
+  The load on the far left of the ladder is the device you are looking into. Think
+  of a network analyser with a cable on port 1 and something connected to the end
+  of it. The right-hand end of the ladder, <strong>Zin</strong>, is what the
+  analyser displays.
+</p>
 
-<blockquote>
-<!-- Link to latest code base  -->
-</blockquote>
-<h3><a  name="latestversion" href="https://github.com/niyeradori/QuickSmith-Web">Latest version on Github</a></h3>
-<blockquote>
-<!-- Link to more examples -->
-</blockquote>
-<h3><a  name="examples" href="help/examples/examples/EXAMPLES.html">More Examples</a></h3>
-<blockquote>
+<h3 id="units">What are the default units?</h3>
+<p>
+  Frequency in <strong>MHz</strong>, resistance and reactance in <strong>ohms</strong>,
+  inductance in <strong>nH</strong>, capacitance in <strong>pF</strong>. Line lengths
+  are in inches unless you change Length Unit in Settings, which also offers
+  millimetres, metres, degrees and wavelengths. The units are shown beside each
+  value in the ladder, so you never have to remember which slot is which.
+</p>
 
-</blockquote>
-<h3><a  name="references">References</a></h3>
-<blockquote>
-i) <a href="https://www.amazon.com/Electronic-Applications-Smith-Chart-Electromagnetics/dp/1884932398"> Electronic Applications of the Smith Chart</a>, Phillip H. Smith, Robert E. Krieger Company, Malabar, Florida  <BR>
-ii) Hewlett-Packard Application Note 970, February 1978<BR>
-iii) <a href="https://www.amazon.com/Microwave-Transistor-Amplifiers-Analysis-Design/dp/0132543354">Microwave Transistor Amplifiers</a>, Guillermo Gonzalez, Prentice-Hall, 1984.<BR>
-iv) QEX July/August and Sep/Oct. 2010, Using QuickSmith: Part 1 and Part2, By Harold Kinley, WA4GIB.<BR>
+<h3 id="loadvalue">How do I change the load resistance and reactance?</h3>
+<p>
+  At the right-hand end of the parts bin are two lettered chips. Drag
+  <strong>RX</strong> onto the load slot to enter the load as R + jX, or
+  <strong>MA</strong> to enter it as a reflection coefficient in magnitude and
+  angle. You can also type straight into the two value boxes under the load once
+  it is placed.
+</p>
 
+<h3 id="step">How do I change the step size?</h3>
+<p>
+  Double-click a value box, or click into it and press <kbd>s</kbd>. Either way you
+  are asked for a new step, and the spin buttons beside that box then move by it.
+  Set a coarse step to get near, then a fine one to settle.
+</p>
 
+<h2>Matching</h2>
 
-</blockquote>
+<h3 id="match">How do I match to 50 ohms?</h3>
+<p>
+  Enter the load and the operating frequency, then add components until the dot
+  lands in the middle of the chart. The trick is always the same: get onto the
+  circle that passes through the centre, then use the last component to slide
+  along it to the middle.
+</p>
+<p>
+  You do not have to work out which component that is. Under the chart, QuickSmith
+  keeps a line reading something like
+  <code>next: series L 122.1 nH, then shunt C 109.7 pF</code>. That is the shortest
+  way from where you are now to the centre, and it updates as you edit. Turn it off
+  with <strong>Next move</strong> in the Overlays panel if you would rather work it
+  out yourself.
+</p>
+<p>
+  The map below is the classic version of the same idea, and it is worth knowing
+  even though the program now does it for you. Each circle shows where a load has
+  to sit for that particular two-element network to be able to reach 50 ohms.
+</p>
+<figure class="doc-figure">
+  <img src="img/match.jpg" alt="Six Smith charts, each shading the region a load cannot be matched from with one particular two-element network">
+  <figcaption>
+    Hatched regions cannot be reached with that network. Reproduced from the
+    reference material below.
+  </figcaption>
+</figure>
+
+<h3 id="automatch">Can QuickSmith design the matching network for me?</h3>
+<p>
+  Press <strong>Auto-match to 50 &#8486;</strong> in the middle of the menu bar. It
+  works out every two-element network that takes the present load to the
+  characteristic impedance at the current frequency and lists them with their
+  component values and loaded Q, lowest Q first. Lower Q means wider bandwidth.
+  Nothing changes until you press <strong>Apply</strong> on the one you want.
+</p>
+<p>
+  There are at most four: a series element next to the load followed by a shunt
+  one, or the other way round, each with two solutions. Applying clears the rest of
+  the ladder, because the match is worked out from the load outwards.
+</p>
+<p>
+  Type a number into <strong>Loaded Q</strong> in that dialog and you get Pi and T
+  networks as well. Those have a third component, which is what lets you choose the
+  Q rather than accept whatever the transformation happens to give. Ask for a Q
+  below what an L-network already achieves and there is nothing to offer, and it
+  will say so.
+</p>
+<p>
+  If the list is empty, either the load is already matched or two elements cannot
+  reach it. Try a transmission line, or add a third component by hand.
+</p>
+
+<h3 id="drag">Can I tune by dragging on the chart?</h3>
+<p>
+  Yes. Every component puts a small grab handle on its node. Take hold of one and
+  pull, and QuickSmith solves backwards for the value that puts the node under your
+  pointer, then rebuilds everything from it.
+</p>
+<p>
+  A component can only move its own node along its own locus, so a series part
+  slides round a constant resistance circle and a shunt part round a constant
+  conductance circle. That constraint is the physics, not a limitation of the
+  program, and watching it is a quick way to build the intuition. Parts with no
+  single value to solve for, such as a transmission line, have no handle.
+</p>
+
+<h3 id="other">How do I match to an impedance other than 50 ohms?</h3>
+<p>
+  Two ways. Change <strong>Ch. Impedance</strong> in Settings and the whole chart is
+  normalised to the new value. Or leave it alone and set a target marker instead:
+  <strong>Marker &rarr; Set...</strong> in the Overlays panel puts a cross wherever
+  you like, and you match to that.
+</p>
+
+<h3 id="readout">Where do I read VSWR and return loss?</h3>
+<p>
+  They are always on screen, in the readout column between the chart and the
+  schematic: Zin, Yin, VSWR, return loss, insertion loss, loaded Q, and the
+  bandwidth over which VSWR stays under 2. <strong>All values and equivalents</strong>
+  under them opens the full set, including the series and parallel equivalents of
+  the input impedance.
+</p>
+<p>
+  For any other point, move the pointer over the chart. The box under it follows
+  you and reads out the impedance you are hovering over.
+</p>
+
+<h3 id="tours">Where can I find tutorials or examples?</h3>
+<p>
+  <strong>Help &rarr; Guided examples</strong> picks one of the worked designs and
+  rebuilds it a component at a time, saying what each one does and why it goes
+  where it does. Step back and forth with Back and Next. Nothing special happens
+  while a tour runs, so you can stop at any step and carry on editing by hand.
+</p>
+<p>
+  <strong>Help &rarr; Examples in full</strong> is the written version: the same
+  designs worked through in detail, including the two amplifier examples.
+</p>
+
+<h2>Working</h2>
+
+<h3 id="undo">How do I undo something?</h3>
+<p>
+  <kbd>Ctrl</kbd>+<kbd>Z</kbd>, or <kbd>&#8984;</kbd><kbd>Z</kbd> on a Mac, steps
+  back through the design. Add <kbd>Shift</kbd> to go forward again. Both are in the
+  File menu too.
+</p>
+<p>
+  A whole drag on the chart counts as one undo rather than one per pixel, and a
+  guided example counts as one for the entire tour, so undo takes you back to your
+  own design rather than walking you backwards through somebody else's.
+</p>
+
+<h3 id="sweep">How do I sweep frequency or a component?</h3>
+<p>
+  Set the range in the Response panel under the chart: choose what to sweep, then
+  Start, Stop and Step. <strong>Sweep &rarr; Generate</strong> then draws the swept
+  locus on the chart, and <strong>Sweep &rarr; Clear</strong> removes it. The same
+  settings, plus the trace colour, are in Settings if you prefer them there.
+</p>
+
+<h3 id="response">What does the response graph show?</h3>
+<p>
+  Insertion loss and S21 across the sweep range. The source is the characteristic
+  impedance, 50 ohms by default, and the network is terminated by whatever load you
+  have set, so this is a transducer loss: it counts mismatch as well as
+  dissipation. A lossless network that matches its load reads 0 dB.
+</p>
+<p>
+  This used to be a separate window. It is now a panel on the main page that
+  redraws as you edit, so you can watch the passband move while you turn a value.
+</p>
+
+<h3 id="session">How do I avoid losing my work if the page reloads?</h3>
+<p>
+  <strong>File &rarr; Save Session</strong> stores the design in this browser, and a
+  reload picks it up again. <strong>Restore Session</strong> recalls the last one you
+  saved, and <strong>New Session</strong> throws it away and starts clean.
+</p>
+<p>
+  For anything you want to keep properly, use <strong>Save File</strong> to write a
+  <code>.sch</code>, or <strong>Copy Share Link</strong> to put the whole design in a
+  web address.
+</p>
+
+<h3 id="board">How do I get a track width instead of an impedance?</h3>
+<p>
+  <strong>Data &rarr; Microstrip and coax</strong>. Give it the substrate, its
+  dielectric constant and its thickness, and every transmission line in your ladder
+  is listed with the track width and the physical length that would build it. For
+  coax, give it the bore and it returns the inner conductor diameter instead.
+</p>
+<p>
+  <strong>Apply to the design</strong> rewrites the ladder in millimetres and sets
+  the velocity factor to match, so the circuit behaves exactly as it did but is now
+  expressed in numbers you can hand to a layout tool. That needs one velocity factor
+  to cover every line, which a microstrip board only gives you when the lines are
+  all the same width: a narrow track keeps more of its field in the air and travels
+  faster than a wide one. When they differ, the button is withheld and the dialog
+  says why. Read the lengths off it and leave the design in degrees.
+</p>
+
+<h3 id="amplifier">What is the Amplifier Design window for?</h3>
+<p>
+  <strong>Amp. Design</strong> in the menu bar opens it. There are two Smith charts,
+  one for the source plane and one for the load plane, and you use them to trade
+  gain against noise figure. Stability circles, gain circles and noise circles are
+  all drawn for you. See the small signal amplifier example in
+  <strong>Help &rarr; Examples in full</strong>. <strong>Back</strong> in its menu
+  returns you to the chart.
+</p>
+
+<h2>Getting data in and out</h2>
+
+<h3 id="touchstone">How do I load a measurement from my network analyser?</h3>
+<p>
+  <strong>Data &rarr; Import Touchstone</strong> reads a <code>.s1p</code> or
+  <code>.s2p</code>, the format every VNA exports, and makes it the load. S11 becomes
+  a frequency-dependent termination, interpolated between the measured points, so
+  you can match a real antenna instead of a typed-in impedance. The sweep range is
+  set to the range of the file, and if the file was measured against a different
+  reference impedance it is renormalised to yours.
+</p>
+<p>
+  <strong>Data &rarr; Export Touchstone</strong> writes the network back out as a
+  <code>.s1p</code>. If you have not run a sweep it runs one first, so the file is
+  always a description of the circuit rather than of whatever happened to be on the
+  chart. There are sample files in the <code>touchstone</code> folder.
+</p>
+
+<h3 id="sharelink">How do I share a design with someone else?</h3>
+<p>
+  <strong>File &rarr; Copy Share Link</strong> puts the whole thing in a web address:
+  frequency, load, every component and the chart overlays. Opening that address
+  rebuilds the design exactly, so an answer on a forum can be a link to the working
+  circuit instead of a screenshot and a list of values. A four-component match comes
+  to about 120 characters. A link carrying measured load data is longer.
+</p>
+
+<h3 id="export">Can I get a picture of the chart, or the numbers?</h3>
+<p>
+  All in the menus.
+</p>
+<ul>
+  <li><strong>File &rarr; Capture Chart (PNG)</strong> for an image.</li>
+  <li><strong>File &rarr; Chart as SVG</strong> for vector art that stays sharp at
+      any size and opens in Illustrator, Inkscape or a word processor.</li>
+  <li><strong>File &rarr; Print Chart</strong> prints just the chart, in the light
+      palette whatever the screen is set to.</li>
+  <li><strong>Data &rarr; Export Sweep (CSV)</strong> for a spreadsheet, one row per
+      point, with impedance, VSWR and return loss worked out for you.</li>
+</ul>
+
+<h3 id="gam">How do I import external data onto the chart?</h3>
+<p>
+  <strong>Data &rarr; Import Gamma</strong> reads QuickSmith's own JSON format, and
+  <strong>Export Gamma</strong> writes it. Sample files are in the <code>gam</code>
+  folder. To make one, generate a sweep and then export it. Touchstone is the better
+  choice for anything coming from an instrument.
+</p>
+
+<h2>Other questions</h2>
+
+<h3 id="mobile">Does it work on a phone or tablet?</h3>
+<p>
+  Yes. The layout reflows to the screen, all twelve slots are there, and dragging
+  components works with a finger. Two things need a mouse and are simply absent on a
+  touch screen: the readout that follows the pointer around the chart, and
+  double-clicking a value to change its step size. For the step size, tap into the
+  value box and press <kbd>s</kbd> instead.
+</p>
+
+<h3 id="version">Where do I get the latest version?</h3>
+<p>
+  From <a href="https://github.com/niyeradori/QuickSmith-Web">GitHub</a>. It is a set
+  of static files with no build step, so you can also just download it and open
+  <code>index.html</code>.
+</p>
+
+<h3 id="references">Where can I read more about the formulas behind this?</h3>
+<ul>
+  <li><a href="https://www.amazon.com/Electronic-Applications-Smith-Chart-Electromagnetics/dp/1884932398">Electronic Applications of the Smith Chart</a>,
+      Phillip H. Smith, Robert E. Krieger Company, Malabar, Florida.</li>
+  <li>Hewlett-Packard Application Note 970, February 1978.</li>
+  <li><a href="https://www.amazon.com/Microwave-Transistor-Amplifiers-Analysis-Design/dp/0132543354">Microwave Transistor Amplifiers</a>,
+      Guillermo Gonzalez, Prentice-Hall, 1984.</li>
+  <li>QEX, July/August and September/October 2010. Using QuickSmith, Parts 1 and 2,
+      by Harold Kinley, WA4GIB.</li>
+</ul>
+
+</main>
+</div>
+
 <script>
+/*
+ * Twenty-five links are a useful sidebar on a wide screen and a wall to scroll
+ * past on a phone, so the contents is a disclosure that starts open only when
+ * there is a column to put it in.
+ */
+document.getElementById("toc").open = window.matchMedia("(min-width: 861px)").matches;
 
+/*
+ * The component icons in the text are the same artwork the program draws in the
+ * parts bin, taken straight from symbols.js. They used to be 1-bit bitmaps.
+ */
+QSSym.mount();
+Array.prototype.forEach.call(document.querySelectorAll("[data-sym]"), function (el) {
+    var type = el.getAttribute("data-sym");
+    QSSym.set(el, type, false);      // series orientation, which reads left to right
+});
 </script>
 </body>
 </html>

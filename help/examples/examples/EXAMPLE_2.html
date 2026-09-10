@@ -1,33 +1,68 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Example: Inductance and Capacitance</title>
-<meta name="MS-HKWD" content="Inductance" />
-<meta name="MS-HKWD" content="Capacitance" />
-<meta name="generator" content="Adobe RoboHelp 2017" />
- <link href="../../../css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
- <script src="../../../js/jquery-3.2.1.min.js"></script>
-  <script src="../../../js/bootstrap3.min.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L-network matching example: 500 to 50 ohms at 100 MHz | QuickSmith</title>
+<meta name="description" content="A worked L-network impedance match on the Smith chart. A shunt capacitor to reach the 50 ohm constant resistance circle, then a series inductor to tune out the reactance. Shunt C 9.5 pF, series L 240 nH.">
+<link rel="canonical" href="https://quicksmith.online/help/examples/examples/EXAMPLE_2.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/help/examples/examples/EXAMPLE_2.html">
+<meta property="og:title" content="L-network matching example: 500 to 50 ohms at 100 MHz | QuickSmith">
+<meta property="og:description" content="A worked L-network impedance match on the Smith chart. A shunt capacitor to reach the 50 ohm constant resistance circle, then a series inductor to tune out the reactance. Shunt C 9.5 pF, series L 240 nH.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../../img/smith.ico">
+<link href="../../../app.css" rel="stylesheet">
+<link href="../../../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../../../smith.js"></script>
 </head>
-<body style="font-family:'Helv'; font-size:10pt; background-color:white;" bgcolor="white">
-<h1 style="font-size:12pt;margin-top:0.00pt;margin-bottom:12.00pt;"><img src="../image/QSmith.gif" border="0" height="82" width="82" alt="image\QSmith.gif" /> <b><font face="MS Sans Serif" style="font-family:'MS Sans Serif'; font-weight:bold;">Example: Inductance and Capacitance</font></b></h1>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">Perhaps the most common impedance matching network used is the L- network. It consists of two elements connected in series and shunt. Invariably a capacitor and an inductor is used in R.F. designs.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Problem:</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Design an L network to match a pure resistance of 500 ohms to 50 ohms at operating frequency of 100 MHz.</font></p>
-<p style="margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Solution:</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Since our goal is to match a 500 ohms termination to 50 ohms. We start with assigning the load resistan</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">ce to 500 ohms. Next a shunt capacitance of 0 pf is placed across the termination. The capacitance is increased until the real part of Z-in is 50 ohms this happens when the 50 ohms constant R-circle is reached. The next task is to cancel or "tune out" the</font> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">reactive part, which is done by adding a series inductor and increasing its value until the center of the chart is reached. The same is illustrated in the figure below with a blue trace.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">If the designer chooses to, the above match could also be done wit</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">h shunt L and series C which will also decouple the DC.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">Note: The step size can be changed by double clicking on the corresponding number.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><img src="../image/ebd_2.gif" border="0" height="282" width="270" alt="image\ebd_2.gif" /></p>
-<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">Load = 500 ohms</font></p>
-<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">Shunt C3 = 9.5 pf</font></p>
-<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">Series L4 = 240 nh</font></p>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../../index.html">
+        <img src="../../../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../../../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="EXAMPLES.html">All examples</a></li>
+      <li><a href="../../../blog/">Articles</a></li>
+      <li><a href="../../../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+<p class="doc-kicker">Example 2</p>
+<h1>Designing an L-network: 500 ohms to 50 ohms</h1>
+<p>Perhaps the most common impedance matching network used is the L- network. It consists of two elements connected in series and shunt. Invariably a capacitor and an inductor is used in R.F. designs.</p>
+<p><strong>Problem:</strong> Design an L network to match a pure resistance of 500 ohms to 50 ohms at operating frequency of 100 MHz.</p>
+<p><strong>Solution:</strong> Since our goal is to match a 500 ohms termination to 50 ohms. We start with assigning the load resistance to 500 ohms. Next a shunt capacitance of 0 pf is placed across the termination. The capacitance is increased until the real part of Z-in is 50 ohms this happens when the 50 ohms constant R-circle is reached. The next task is to cancel or "tune out" the reactive part, which is done by adding a series inductor and increasing its value until the center of the chart is reached. The same is illustrated in the figure below with a blue trace.</p>
+<p>If the designer chooses to, the above match could also be done with shunt L and series C which will also decouple the DC.</p>
+<p>Note: The step size can be changed by double clicking on the corresponding number.</p>
+<figure class="doc-figure">
+  <img src="../image/ebd_2.gif" width="270" height="282" alt="Smith chart for designing an l-network: 500 ohms to 50 ohms">
+</figure>
+<aside class="doc-result">
+  <h2>Result</h2>
+  <ul>
+    <li>Load = 500 ohms</li>
+    <li>Shunt C3 = 9.5 pf</li>
+    <li>Series L4 = 240 nh</li>
+  </ul>
+</aside>
+<a class="doc-open" href="../../../index.html#eyJ2IjoxLCJmIjoxMDAsImUiOltbMSwicngiLDUwMCwwXSxbMywiYyIsOS41LDBdLFs0LCJsIiwyNDAsMF1dLCJjIjp7InMiOjJ9fQ">Open this circuit in QuickSmith</a>
+<nav class="doc-nav"><span><a href="EXAMPLE_1.html">&#9664; Resistance and reactance on a Smith chart</a></span><span><a href="EXAMPLE_3.html">Matching with a transmission line and an open stub &#9654;</a></span></nav>
+</main>
+</div>
 </body>
 </html>

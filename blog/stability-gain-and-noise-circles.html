@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rollett stability factor, gain circles and noise circles | QuickSmith</title>
+<meta name="description" content="Three questions in order: will it oscillate, how much gain can I have, how quiet can it be. Rollett&#x27;s K and |Delta| worked from real S-parameters, and why the gain and noise optima are never the same impedance.">
+<link rel="canonical" href="https://quicksmith.online/blog/stability-gain-and-noise-circles.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/blog/stability-gain-and-noise-circles.html">
+<meta property="og:title" content="Rollett stability factor, gain circles and noise circles | QuickSmith">
+<meta property="og:description" content="Will it oscillate, how much gain, how quiet. Three questions as overlapping circles.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/smith.ico">
+<link href="../app.css" rel="stylesheet">
+<link href="../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../smith.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Stability circles and the gain versus noise trade-off",
+  "description": "Three questions in order: will it oscillate, how much gain can I have, how quiet can it be. Rollett's K and |Delta| worked from real S-parameters, and why the gain and noise optima are never the same impedance.",
+  "image": "https://quicksmith.online/img/og-card.png",
+  "author": {
+    "@type": "Person",
+    "name": "Nathan Iyer"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "QuickSmith"
+  },
+  "datePublished": "2026-09-10",
+  "mainEntityOfPage": "https://quicksmith.online/blog/stability-gain-and-noise-circles.html"
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">
+        <img src="../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="index.html">Articles</a></li>
+      <li><a href="../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">Article</p>
+<h1>Stability circles and the gain versus noise trade-off</h1>
+
+<p class="doc-lede">
+  A small signal amplifier design is three questions asked in order. Will it
+  oscillate? How much gain can I have? How quiet can it be at that gain? The
+  Smith chart answers all three as overlapping circles.
+</p>
+
+<h2>Question one: will it oscillate</h2>
+
+<p>
+  An amplifier oscillates when it can present a negative resistance to
+  something, which happens when the source or load impedance falls in the wrong
+  region. Rollett's criterion tells you whether such a region exists at all.
+</p>
+
+<p>
+  Take the device from Hewlett-Packard Application Note 970 at 6 GHz, as
+  Gonzalez presents it:
+</p>
+
+<aside class="doc-result">
+  <h2>The device, at 6 GHz</h2>
+  <ul>
+    <li>S11  0.641 at -171.3 deg</li>
+    <li>S12  0.057 at   16.3 deg</li>
+    <li>S21  2.058 at   28.5 deg</li>
+    <li>S22  0.572 at  -95.7 deg</li>
+  </ul>
+</aside>
+
+<p>
+  From those four numbers:
+</p>
+
+<aside class="doc-result">
+  <h2>Rollett</h2>
+  <ul>
+    <li>|Delta| = |S11 S22 - S12 S21|  =  0.3014</li>
+    <li>K = (1 - |S11|^2 - |S22|^2 + |Delta|^2) / (2 |S12| |S21|)  =  1.5037</li>
+    <li></li>
+    <li>unconditionally stable  requires  K &gt; 1  and  |Delta| &lt; 1</li>
+  </ul>
+</aside>
+
+<p>
+  K is 1.5 and |Delta| is 0.3, so this device is <strong>unconditionally
+  stable</strong> at 6 GHz: there is no passive source or load impedance
+  anywhere that can make it oscillate. That is a comfortable place to start and
+  it is not the usual case.
+</p>
+
+<p>
+  When K is below 1 the device is only conditionally stable, and the stability
+  circles matter. QuickSmith draws them on both planes: the circle divides the
+  chart into a region where the device is stable and a region where it is not,
+  and you have to keep your source and load impedances out of the bad region.
+  The catch is that which side is which depends on |S11| and |S22|, so read the
+  labels rather than assuming the inside is bad.
+</p>
+
+<p>
+  <strong>Enter Parameters &rarr; S-Parameters</strong> takes the four values,
+  and the stability figures appear with them. If you have an
+  <code>.s2p</code> file from a network analyser you can import that instead
+  and skip the typing.
+</p>
+
+<h2>Question two: how much gain</h2>
+
+<p>
+  For an unconditionally stable device the ceiling is the maximum available
+  gain:
+</p>
+
+<aside class="doc-result">
+  <h2>Gain ceilings for this device</h2>
+  <ul>
+    <li>GMSG = |S21/S12|                         = 15.576 dB</li>
+    <li>GMAX = |S21/S12| (K - sqrt(K^2 - 1))     = 11.381 dB</li>
+  </ul>
+</aside>
+
+<p>
+  GMSG is the maximum stable gain, the figure you would get if you could
+  neutralise the feedback entirely. GMAX is what you can actually have with a
+  simultaneous conjugate match at both ports, and it is about 4 dB lower
+  because S12 is not zero. Real devices leak backwards.
+</p>
+
+<p>
+  Below the ceiling, every gain figure is a <strong>circle</strong> on the
+  source plane rather than a point. Ask for 10.55 dB and you get a locus of
+  source reflection coefficients that all give you 10.55 dB. That degree of
+  freedom is what makes the next question answerable.
+</p>
+
+<h2>Question three: how quiet</h2>
+
+<p>
+  Noise figure is also a family of circles on the source plane, centred on the
+  optimum source reflection coefficient from the data sheet. The minimum noise
+  figure sits at a point, and every value above it is a circle around it.
+</p>
+
+<p>
+  Here is the design tension in one sentence: <strong>the source impedance for
+  maximum gain and the source impedance for minimum noise are not the same
+  impedance</strong>, and they are usually not close.
+</p>
+
+<p>
+  So you do not pick a point, you pick an intersection. Draw the 10.55 dB gain
+  circle. Draw a noise circle. Shrink the noise figure until the two circles
+  just touch. Where they touch is the source reflection coefficient that gives
+  you exactly the gain you asked for at the lowest noise figure that gain
+  allows.
+</p>
+
+<p>
+  In QuickSmith: <strong>Circles &rarr; Available Gain Circles</strong> for
+  10.55 dB, then <strong>Noise Circles</strong>, and decrement the noise figure
+  until the circles intersect. Then drag GammaS to the intersection and read
+  off the source impedance, with the corresponding load impedance appearing on
+  the other plane.
+</p>
+
+<p>
+  For this device that lands at <strong>ZS = 13.98 + j7.57</strong> and
+  <strong>ZL = 17.92 + j35.64</strong>.
+</p>
+
+<h2>Then it is an ordinary matching problem, twice</h2>
+
+<p>
+  You now have two impedances and a chart, which is the rest of this site.
+  <strong>Transfer &rarr; Source Impedance</strong> sends ZS across to the
+  schematic so you can design a network for it, and
+  <strong>Transfer &rarr; Load Impedance</strong> does the same for ZL.
+</p>
+
+<p>
+  One thing to be careful about: for maximum power transfer the network has to
+  present the <strong>conjugate</strong> of what you worked out. It is an easy
+  sign to lose.
+</p>
+
+<h2>Where this comes from</h2>
+
+<p>
+  The worked version is
+  <a href="../help/examples/examples/EXAMPLE_7.html">Example 7</a>, following
+  HP Application Note 970 (February 1978) as presented by Gonzalez in
+  <em>Microwave Transistor Amplifiers</em> (Prentice-Hall, 1984) and by Dale
+  Henkes in <em>RF Design</em>, December 1993.
+</p>
+
+<p>
+  K = 1.504 and |Delta| = 0.301 are stated in the note, and the regression
+  suite asserts them rather than pinning whatever the program happens to
+  produce. If the stability maths ever drifts, the tests fail.
+</p>
+
+<nav class="doc-nav">
+  <span><a href="index.html">&#9664; All articles</a></span>
+  <span><a href="an721-transistor-matching.html">Matching a 2N5642: the AN721 networks &#9654;</a></span>
+</nav>
+
+</main>
+</div>
+</body>
+</html>

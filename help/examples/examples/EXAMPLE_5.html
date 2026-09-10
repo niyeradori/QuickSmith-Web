@@ -1,27 +1,60 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Example: Insertion Loss</title>
-<meta name="MS-HKWD" content="Insertion loss" />
-<meta name="MS-HKWD" content="S21:Q" />
-<meta name="generator" content="Adobe RoboHelp 2017" />
- <link href="../../../css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
- <script src="../../../js/jquery-3.2.1.min.js"></script>
-  <script src="../../../js/bootstrap3.min.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insertion loss example: a 28 MHz Chebyshev low-pass filter | QuickSmith</title>
+<meta name="description" content="A five pole low-pass filter analysed with real component Q values, showing passband loss and stopband attenuation. What finite Q costs you, and why the shipped design gives 53 dB rather than 60 dB at 100 MHz.">
+<link rel="canonical" href="https://quicksmith.online/help/examples/examples/EXAMPLE_5.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/help/examples/examples/EXAMPLE_5.html">
+<meta property="og:title" content="Insertion loss example: a 28 MHz Chebyshev low-pass filter | QuickSmith">
+<meta property="og:description" content="A five pole low-pass filter analysed with real component Q values, showing passband loss and stopband attenuation. What finite Q costs you, and why the shipped design gives 53 dB rather than 60 dB at 100 MHz.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../../img/smith.ico">
+<link href="../../../app.css" rel="stylesheet">
+<link href="../../../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../../../smith.js"></script>
 </head>
-<body style="font-family:'Helv'; font-size:10pt; background-color:white;" bgcolor="white">
-<h1 style="font-size:12pt;margin-top:0.00pt;margin-bottom:12.00pt;"><img src="../image/QSmith.gif" border="0" height="82" width="82" alt="image\QSmith.gif" /> <b><font face="MS Sans Serif" style="font-family:'MS Sans Serif'; font-weight:bold;">Example: Insertion Loss</font></b></h1>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="3" style="font-family:'Helv'; font-size:10pt;">This example analyzes a five pole Chebyshew filter. This filter was designed using QuickSmith and is currently being used in a commercial product. This program demonstrates the use of Q values for capacitor and inductors.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="3" style="font-family:'Helv'; font-size:10pt; font-weight:bold;">Problem:</font></b> <font size="3" style="font-family:'Helv'; font-size:10pt;">Design a low pass filter with a 28 MHz cut off frequency and atleast 60 dB attenuation at 100 MHz to be used in the output of a 50 ohms system.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="3" style="font-family:'Helv'; font-size:10pt; font-weight:bold;">Solution:</font></b> <font size="3" style="font-family:'Helv'; font-size:10pt;">The circuit for this problem is saved in the disk as "example5.sch", it consists of the value of the each network element and its Q. Since the goal of this problem was to determine dissipative characteristics of the network, Q values have to be taken into account to get realistic results. Alternately the user may chose to enter/edit the Q values from the "Assign Values" menu.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="3" style="font-family:'Helv'; font-size:10pt;">We start by opening "example5.sch" from the file menu in the schematic window. The insertion loss in dB can be determined by choosing "Begin Sweep" command from the "Insertion loss" menu. The result of this command is shown in the figure below. Further 50 Ohms match is verified by viewing the schematic menu.</font></p>
-</br>
-<p style="margin-left:252.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">Insertion Loss in dB</font></p>
-<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><img src="../image/ebd_5.gif" border="0" height="270" width="282" alt="image\ebd_5.gif" /></p>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../../index.html">
+        <img src="../../../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../../../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="EXAMPLES.html">All examples</a></li>
+      <li><a href="../../../blog/">Articles</a></li>
+      <li><a href="../../../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+<p class="doc-kicker">Example 5</p>
+<h1>Insertion loss of a five pole Chebyshev filter</h1>
+<p>This example analyzes a five pole Chebyshew filter. This filter was designed using QuickSmith and is currently being used in a commercial product. This program demonstrates the use of Q values for capacitor and inductors.</p>
+<p><strong>Problem:</strong> Design a low pass filter with a 28 MHz cut off frequency and atleast 60 dB attenuation at 100 MHz to be used in the output of a 50 ohms system.</p>
+<p><strong>Solution:</strong> The circuit for this problem is saved in the disk as "example5.sch", it consists of the value of the each network element and its Q. Since the goal of this problem was to determine dissipative characteristics of the network, Q values have to be taken into account to get realistic results. Alternately the user may chose to enter/edit the Q values from the "Assign Values" menu.</p>
+<p>We start by opening "example5.sch" from the file menu in the schematic window. The insertion loss in dB can be determined by choosing "Begin Sweep" command from the "Insertion loss" menu. The result of this command is shown in the figure below. Further 50 Ohms match is verified by viewing the schematic menu.</p>
+<figure class="doc-figure">
+  <img src="../image/ebd_5.gif" width="282" height="270" alt="Insertion Loss in dB">
+  <figcaption>Insertion Loss in dB</figcaption>
+</figure>
+<a class="doc-open" href="../../../index.html#eyJ2IjoxLCJmIjoyNywiZSI6W1sxLCJyeCIsNTAsMF0sWzMsImMiLDIyMCwwLDgwMF0sWzQsImwiLDM2MCwwLDEwMF0sWzUsImMiLDIyMCwwLDgwMF0sWzYsImwiLDM2MCwwLDIwMF1dLCJjIjp7InMiOjJ9fQ">Open this circuit in QuickSmith</a>
+<nav class="doc-nav"><span><a href="EXAMPLE_4.html">&#9664; A wideband match for a dipole antenna</a></span><span><a href="EXAMPLE_6.html">Large signal amplifier design: the AN721 input match &#9654;</a></span></nav>
+</main>
+</div>
 </body>
 </html>

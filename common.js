@@ -42,9 +42,11 @@ function copy_smithObj(smithObj1) {
         {
             //if(key !== "sweepDatasets" || key !== "plotDatasets") 
             {
-                if(key !== "ctx") {
+                // "view" is the live QSChart mount: DOM, not data. Never copy
+                // or restore it. ("ctx" is the name it had before Phase 3, and
+                // may still be present in an old saved session.)
+                if(key !== "ctx" && key !== "view") {
                 smithObj[key] = smithObj1[key];
-                //console.log(key + " -> " + smithObj[key]);
                 }
             }
         //     else if (key == "sweepDatasets")
@@ -89,12 +91,12 @@ function copy_smithObj(smithObj1) {
 
 
 function AddIm(a, B, C, D) {
-    var ret = math.add(B,D);
+    var ret = Number(B) + Number(D);
     return ret;
     }
 
 function AddRe(a, B, C, D) {
-    var ret = math.add(a,C);
+    var ret = Number(a) + Number(C);
     return ret;
     }
 
@@ -114,25 +116,25 @@ function AddRe(a, B, C, D) {
 
 function GToZI(R, Q ){
     var Z0 = schObj.Z0;
-    var Z1i = (2 * R * math.sin(Math.PI * Q / 180)) / (1 + (R * R) - 2 * R * math.cos(Math.PI * Q / 180));
+    var Z1i = (2 * R * Math.sin(Math.PI * Q / 180)) / (1 + (R * R) - 2 * R * Math.cos(Math.PI * Q / 180));
     return( Z1i * Z0);
 }
 
 function GToZR(R , Q ){
     var Z0 = schObj.Z0;
-    var Z1r = (1 - (R * R)) / (1 + (R * R) - (2 * R * math.cos(Q * Math.PI / 180)));
+    var Z1r = (1 - (R * R)) / (1 + (R * R) - (2 * R * Math.cos(Q * Math.PI / 180)));
     return( Z1r * Z0);
 }
 
 function GToZIZ(R, Q, Z0 ){
    // var Z0 = schObj.Z0;
-    var Z1i = (2 * R * math.sin(Math.PI * Q / 180)) / (1 + (R * R) - 2 * R * math.cos(Math.PI * Q / 180));
+    var Z1i = (2 * R * Math.sin(Math.PI * Q / 180)) / (1 + (R * R) - 2 * R * Math.cos(Math.PI * Q / 180));
     return( Z1i * Z0);
 }
 
 function GToZRZ(R , Q, Z0 ){
     //var Z0 = schObj.Z0;
-    var Z1r = (1 - (R * R)) / (1 + (R * R) - (2 * R * math.cos(Q * Math.PI / 180)));
+    var Z1r = (1 - (R * R)) / (1 + (R * R) - (2 * R * Math.cos(Q * Math.PI / 180)));
     return( Z1r * Z0);
 }
 
@@ -172,15 +174,6 @@ String.prototype.replaceAt = function (index, replacement) {
     return this.substr(0, index) + replacement + this.substr(index + replacement.length);
 };
 
-/**
- * Helper function to output a value in the console. Value will be formatted.
- * @param {*} value
- */
-function print(value) {
-    var precision = 16;
-    console.log(math.format(value, precision));
-}
-
 function getUnits(elementType) {
     var units = "None";
     switch (elementType) {
@@ -219,6 +212,18 @@ function getUnits(elementType) {
 
     return units;
 
+}
+
+// Formats a dB figure for display. A perfect match has infinite return loss and
+// a short-circuit load has infinite insertion loss, so both are real answers
+// rather than errors - toFixed() would print "Infinity".
+function formatdB(n, decimals){
+    var v = Number(n);
+    if (decimals === undefined) decimals = 3;
+    if (v === Infinity) return "∞";
+    if (v === -Infinity) return "-∞";
+    if (isNaN(v)) return "--";
+    return v.toFixed(decimals);
 }
 
 function getSign(n){
@@ -264,170 +269,52 @@ function ZtoGammaM(ZXR, ZXI) {
 }
 
 
-//Below is a simple jQuery plugin to catch a long click or long press:
-(function ($) {
-  $.fn.longClick = function (callback, timeout) {
-   // bind to element's mousedown event to track the longclick's beginning
-   $(this).mousedown(function (event) {
-    // save the initial event object
-    var initialEvent = event;
-    // set the delay after which the callback will be called
-    var timer = window.setTimeout(function () { callback(initialEvent); }, timeout);
-    // bind to global mouseup event for clearance
-    $(document).mouseup(function () {
-      // clear timer
-      window.clearTimeout(timer);
-      // unbind from global mouseup event
-      $(document).unbind("mouseup");
-      return true;
-      // use 'return false;' if you need to prevent default handler and
-      // stop event bubbling
+/* Builds a detached element from an HTML string, for dialog bodies. */
+function fragment(html) {
+    var host = document.createElement("div");
+    host.innerHTML = html;
+    return host.firstElementChild || host;
+}
+
+/* Delegated keypress for a set of inputs. */
+function onKeyPress(selector, handler) {
+    document.addEventListener("keypress", function (e) {
+        if (e.target && e.target.closest && e.target.closest(selector)) handler(e);
     });
-     return true;
-     // use 'return false;' if you need to prevent default handler and
-     // stop event bubbling
-   });
-  };
-})(jQuery);
-// usage
-// (function ($) {
-//   $("#someDiv").longClick(function (e) {
-//               alert($(e.target).attr("id") + " was clicked"); },
-//               1500);
-// })(jQuery);
+}
 
-//jQuery plugin to catch a taphold event
-(function ($) {
-  $.fn.taphold = function (callback, timeout) {
-   // bind to element's touchstart event to track the taphold's beginning
-   $(this).bind("touchstart", function (event) {
-    // save the initial event object
-    var initialEvent = event;
-    // set the delay after which the callback will be called
-    var timer = window.setTimeout(function () { callback(initialEvent); }, timeout);
-    // bind to global touchend and touchcancel events for clearance
-    $(document).bind("touchend touchcancel", function () {
-      // clear timer
-      window.clearTimeout(timer);
-      // unbind from touchend and touchcancel events
-      $(document).unbind("touchend touchcancel");
-      return true;
-      // use 'return false;' if you need to prevent default handler and
-      // stop event bubbling
+/*
+ * Press and hold, for opening the step-size dialog on a touch screen.
+ *
+ * This replaces a set of jQuery plugins that came with the original: longClick,
+ * taphold, longclick, isNullOrEmpty, isIPad, isIPhone and isAppleMobile. Only
+ * taphold was ever called, and pointer events cover mouse, touch and stylus in
+ * one path, so the device sniffing the others existed for is not needed.
+ *
+ * Delegated from the document, so it covers value boxes that do not exist yet.
+ */
+function onTapHold(selector, holdMs, callback) {
+    document.addEventListener("pointerdown", function (e) {
+        if (e.pointerType === "mouse") return;      // the mouse has double-click
+        var target = e.target.closest(selector);
+        if (!target) return;
+
+        var timer = setTimeout(function () {
+            cancel();
+            callback(target);
+        }, holdMs);
+
+        function cancel() {
+            clearTimeout(timer);
+            target.removeEventListener("pointerup", cancel);
+            target.removeEventListener("pointercancel", cancel);
+            target.removeEventListener("pointermove", cancel);
+        }
+        target.addEventListener("pointerup", cancel);
+        target.addEventListener("pointercancel", cancel);
+        target.addEventListener("pointermove", cancel);
     });
-    return true;
-    // use 'return false;' if you need to prevent default handler and
-    // stop event bubbling
-   });
-  };
-})(jQuery);
-//usage
-// (function ($) {
-//   $("#someDiv").taphold(function () {
-//                alert($(e.target).attr("id") + " was tapholded"); },
-//                1500);
-// })(jQuery);
-
-//Combined jQuery plugin to catch both long click and taphold events
-(function ($) {
- $.fn.longclick = function (callback, timeout) {
-   var isIPad = $.isIPad();
- 
-   var startEvents = isIPad ? "touchstart" :           "mousedown";
-   var endEvents   = isIPad ? "touchend touchcancel" : "mouseup";
- 
-   $(this).bind(startEvents, function (event) {
-    // save the initial event object
-    var initialEvent = event;
-    // set delay after which the callback will be called
-    var timer = window.setTimeout(function () { callback(initialEvent); }, timeout);
-    // bind to global event(s) for clearance
-    $(document).bind(endEvents, function () {
-        // clear timer
-        window.clearTimeout(timer);
-        // reset global event handlers
-        $(document).unbind(endEvents);
-        return true;
-        // use 'return false;' if you need to prevent default handler and
-        // stop event bubbling
-    });
-    return true;
-    // use 'return false;' if you need to prevent default handler and
-    // stop event bubbling
-   });
- };
-})(jQuery);
- 
-
-
-
-// usage
-// (function ($) {
-//     $("#someDiv").longclick(function () {
-//              alert($(e.target).attr("id") + " was clicked"); },
-//              1500);
-// })(jQuery);
-
-// similar to String.IsNullOrEmpty
-(function ($) {
-    $.isNullOrEmpty = function (str) {
-        return !str || $.trim(str) === ""; // the trim method is provided by jQuery
-    };
-})(jQuery);
-
-//usage
-// var res = $.isNullOrEmpty(''); // true
-// res = $.isNullOrEmpty("bla-bla-bla"); // false
-// res = $.isNullOrEmpty(null); // true
-// res = $.isNullOrEmpty(); // true
-//Below is a simple jQuery plugin to detect whether a page is opened in an iPad:
-(function ($) {
-    $.isIPad = function () {
-        return (typeof navigator != "undefined" &&
-               navigator && navigator.userAgent &&
-               navigator.userAgent.match(/iPad/i) != null);
-    };
-})(jQuery);
- 
-
-// usage
-// $(function(){
-//     if($.isIPad())
-//         alert('Hello, iPad');
-// });
-
-//The next plugin allows to detect an iPhone:
-(function ($) {
-    $.isIPhone = function () {
-        if(!$.isIPad())
-            return (typeof navigator != "undefined" &&
-               navigator && navigator.userAgent &&
-               (navigator.userAgent.match(/iPhone/i) != null ||
-                navigator.userAgent.match(/iPod/i) != null));
-        return false;
-    };
-})(jQuery);
- 
-//usage
-// $(function(){
-//     if($.isIPhone())
-//         alert('Hello, iPhone');
-// });
-//To detect any Apple mobile devices (iPad, iPhone or iPod) you can use the following jQuery plugin:
-(function ($) {
-    $.isAppleMobile = function () {
-        return (typeof navigator != "undefined" &&
-               navigator && navigator.userAgent &&
-               navigator.userAgent.match(/(iPad|iPhone|iPod)/i) != null);
-    };
-})(jQuery);
- 
-
-// usage
-// $(function(){
-//     if($.isAppleMobile())
-//         alert('Hello, Apple device');
-// });
+}
 
 // left: 37, up: 38, right: 39, down: 40,
 // spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
@@ -465,168 +352,34 @@ function enableScroll() {
   //  document.onkeydown = null;  
 }
 
-function ShowMessage(title,msg) {
-    // var msg0 = " ZIN : " +   Number(resultsObj.OUTPUT[0].ZRout).toFixed(3) + " + " +  Number(resultsObj.OUTPUT[0].ZIout).toFixed(3) + "j" + "   " +  Number(resultsObj.OUTPUT[0].MAGout).toFixed(3) + " < " +  Number(resultsObj.OUTPUT[0].ANGout).toFixed(3) + "\n" ;
-    BootstrapDialog.show({
-            //size: BootstrapDialog.SIZE_SMALL,
-            title: title,
-            message: msg,
-            buttons: [{
-   		        label: 'Close',
-                action: function(dialog) {            
-                dialog.close();               
-                }
-            }]
-    });
+/*
+ * Message boxes and the step-size prompt. These names are called from all
+ * three pages; QSUI in ui.js does the work now that bootstrap-dialog and
+ * bootbox are gone.
+ */
+function ShowMessage(title, msg) {
+    QSUI.open({ title: title, body: msg });
 }
 
-function ShowMessage_sm(title,msg) {
-    // var msg0 = " ZIN : " +   Number(resultsObj.OUTPUT[0].ZRout).toFixed(3) + " + " +  Number(resultsObj.OUTPUT[0].ZIout).toFixed(3) + "j" + "   " +  Number(resultsObj.OUTPUT[0].MAGout).toFixed(3) + " < " +  Number(resultsObj.OUTPUT[0].ANGout).toFixed(3) + "\n" ;
-    BootstrapDialog.show({
-            size: BootstrapDialog.SIZE_SMALL,
-            title: title,
-            message: msg,
-            buttons: [{
-   		        label: 'Close',
-                action: function(dialog) {            
-                dialog.close();               
-                }
-            }]
-    });
+function ShowMessage_sm(title, msg) {
+    QSUI.open({ title: title, body: msg, small: true });
 }
 
-function updateStepSize_prompt(current_val,element)
-{
-    bootbox.prompt({
-    size: "small",
-    title: "Enter Step Size", 
-    inputType: "text",
-    value: current_val,
-    callback: function(result) {
-        if (typeof result !== "undefined" && result !== null && isNumeric(result)) {
-            $(element).trigger("touchspin.updatesettings", { step: result });
+function updateStepSize_prompt(current_val, element) {
+    QSUI.promptValue({
+        title: "Step Size",
+        label: "How much each press of the arrows changes the value:",
+        value: current_val,
+        onOK: function (result) {
+            if (isNumeric(result)) QSUI.setStep(element, result);
         }
-    }
     });
 }
 
-/* Monotone cubic spline interpolation
-   Usage example:
-	var f = createInterpolant([0, 1, 2, 3, 4], [0, 1, 4, 9, 16]);
-	var message = '';
-	for (var x = 0; x <= 4; x += 0.5) {
-		var xSquared = f(x);
-		message += x + ' squared is about ' + xSquared + '\n';
-	}
-	alert(message);
-*/
-var createInterpolant = function(xs, ys) {
-	var i, length = xs.length;
-	
-	// Deal with length issues
-	if (length != ys.length) { throw 'Need an equal count of xs and ys.'; }
-	if (length === 0) { return function(x) { return 0; }; }
-	if (length === 1) {
-		// Impl: Precomputing the result prevents problems if ys is mutated later and allows garbage collection of ys
-		// Impl: Unary plus properly converts values to numbers
-		var result = +ys[0];
-		return function(x) { return result; };
-	}
-	
-	// Rearrange xs and ys so that xs is sorted
-	var indexes = [];
-	for (i = 0; i < length; i++) { indexes.push(i); }
-	indexes.sort(function(a, b) { return xs[a] < xs[b] ? -1 : 1; });
-	var oldXs = xs, oldYs = ys;
-	// Impl: Creating new arrays also prevents problems if the input arrays are mutated later
-	xs = []; ys = [];
-	// Impl: Unary plus properly converts values to numbers
-	for (i = 0; i < length; i++) { xs.push(+oldXs[indexes[i]]); ys.push(+oldYs[indexes[i]]); }
-	
-	// Get consecutive differences and slopes
-	var dys = [], dxs = [], ms = [];
-	for (i = 0; i < length - 1; i++) {
-		var dx = xs[i + 1] - xs[i], dy = ys[i + 1] - ys[i];
-		dxs.push(dx); dys.push(dy); ms.push(dy/dx);
-	}
-	
-	// Get degree-1 coefficients
-	var c1s = [ms[0]];
-	for (i = 0; i < dxs.length - 1; i++) {
-		var m = ms[i], mNext = ms[i + 1];
-		if (m*mNext <= 0) {
-			c1s.push(0);
-		} else {
-			var dx_ = dxs[i], dxNext = dxs[i + 1], common = dx_ + dxNext;
-			c1s.push(3*common/((common + dxNext)/m + (common + dx_)/mNext));
-		}
-	}
-	c1s.push(ms[ms.length - 1]);
-	
-	// Get degree-2 and degree-3 coefficients
-	var c2s = [], c3s = [];
-	for (i = 0; i < c1s.length - 1; i++) {
-		var c1 = c1s[i], m_ = ms[i], invDx = 1/dxs[i], common_ = c1 + c1s[i + 1] - m_ - m_;
-		c2s.push((m_ - c1 - common_)*invDx); c3s.push(common_*invDx*invDx);
-	}
-	
-	// Return interpolant function
-	return function(x) {
-		// The rightmost point in the dataset should give an exact result
-		var i = xs.length - 1;
-		if (x == xs[i]) { return ys[i]; }
-		
-		// Search for the interval x is in, returning the corresponding y if x is one of the original xs
-		var low = 0, mid, high = c3s.length - 1;
-		while (low <= high) {
-			mid = Math.floor(0.5*(low + high));
-			var xHere = xs[mid];
-			if (xHere < x) { low = mid + 1; }
-			else if (xHere > x) { high = mid - 1; }
-			else { return ys[mid]; }
-		}
-		i = Math.max(0, high);
-		
-		// Interpolate
-		var diff = x - xs[i], diffSq = diff*diff;
-		return ys[i] + c1s[i]*diff + c2s[i]*diffSq + c3s[i]*diff*diffSq;
-	};
-};
-
-function phase_unwrap(ys)
-{
-  var length = ys.length; var i;
-  var xs = [];
-  if (length === 0) { return ys; }
-  var prevphase = 0; 
-  var phase;
-  var offset = 0;
-  for (i = 0; i < length; i++)
-    {
-        phase = ys[i];
-        if (Math.abs(phase - prevphase) > 180)  offset = offset - 360 * Math.sign(phase - prevphase);
-        prevphase = phase;
-        xs[i] = phase + offset;
-    }
-    // Do While Not EOF(1)
-         
-    //      Input #1, Filedata0, Filedata1, Filedata2
-    //         If (Filedata0 <> 0) Then
-    //             n = n + 1
-    //             If gmah = 1 Then Filedata0 = Filedata0 / 1000000#
-    //             xatemp(n) = Filedata0   'freq
-    //             y1atemp(n) = Filedata1 ' mag
-    //             'y2atemp(n) = filedata2 ' phase
-            
-    //             ' code written to unwrap phase
-    //             phase = Filedata2
-    //             If (Abs(phase - prevphase) > 180) Then offset = offset - 360 * Sgn(phase - prevphase)
-    //             prevphase = phase
-    //             y2atemp(n) = phase + offset
-    //         End If
-    //         If (n > 1000) Then Exit Do
-    // Loop
-   return xs;
+/* Interpolation and phase unwrapping now live in engine.js, so that the solver
+   has no dependency on this file. Kept here as a name index.html still calls. */
+function phase_unwrap(ys) {
+    return QSEngine.unwrapPhase(ys);
 }
 
 // var saveJSONtoFile = (function () {
