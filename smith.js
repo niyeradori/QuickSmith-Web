@@ -52,7 +52,7 @@ var QSChart = (function () {
         "--qs-a5:#b26a00;--qs-a6:#0f7f8f}",
 
         "@media (prefers-color-scheme:dark){:root:not([data-qs-theme=bench]){",
-        "color-scheme:dark;--qs-bg:#0e1219;--qs-face:#161b25;--qs-ink:#cdd5e1;--qs-rim:#2a3341;--qs-r:#ef8078;",
+        "color-scheme:dark;--qs-bg:#0e1219;--qs-face:#202a38;--qs-ink:#cdd5e1;--qs-rim:#2a3341;--qs-r:#ef8078;",
         "--qs-x:#52c793;--qs-adm:#7aa2c9;--qs-vswr:#6aa4f5;--qs-q:#cd88d8;",
         "--qs-marker:#cdd5e1;--qs-dot:#6aa4f5;--qs-trace:#6aa4f5;--qs-plot:#cdd5e1;",
         "--qs-text:#8b95a7;--qs-ui:#8b95a7;",
@@ -60,7 +60,7 @@ var QSChart = (function () {
         "--qs-a5:#e0a04a;--qs-a6:#4fc4d6}}",
 
         ":root[data-qs-theme=analyzer]{",
-        "color-scheme:dark;--qs-bg:#0e1219;--qs-face:#161b25;--qs-ink:#cdd5e1;--qs-rim:#2a3341;--qs-r:#ef8078;",
+        "color-scheme:dark;--qs-bg:#0e1219;--qs-face:#202a38;--qs-ink:#cdd5e1;--qs-rim:#2a3341;--qs-r:#ef8078;",
         "--qs-x:#52c793;--qs-adm:#7aa2c9;--qs-vswr:#6aa4f5;--qs-q:#cd88d8;",
         "--qs-marker:#cdd5e1;--qs-dot:#6aa4f5;--qs-trace:#6aa4f5;--qs-plot:#cdd5e1;",
         "--qs-text:#8b95a7;--qs-ui:#8b95a7;",
