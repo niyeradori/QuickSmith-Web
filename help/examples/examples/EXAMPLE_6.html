@@ -1,35 +1,69 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Example: Large-Signal Amplifier Design</title>
-<meta name="MS-HKWD" content="Amplifier" />
-<meta name="MS-HKWD" content="Transistors" />
-<meta name="MS-HKWD" content="Large-Signa" />
-<meta name="MS-HKWD" content="Input matchl" />
-<meta name="generator" content="Adobe RoboHelp 2017" />
- <link href="../../../css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
- <script src="../../../js/jquery-3.2.1.min.js"></script>
-  <script src="../../../js/bootstrap3.min.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Large signal amplifier matching: AN721 2N5642 input | QuickSmith</title>
+<meta name="description" content="Matching the 1.94 + j1.1 ohm input of a 2N5642 RF power transistor to 50 ohms at 175 MHz, to a maximum loaded Q of 10. From Motorola application note AN721, worked on the Smith chart.">
+<link rel="canonical" href="https://quicksmith.online/help/examples/examples/EXAMPLE_6.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/help/examples/examples/EXAMPLE_6.html">
+<meta property="og:title" content="Large signal amplifier matching: AN721 2N5642 input | QuickSmith">
+<meta property="og:description" content="Matching the 1.94 + j1.1 ohm input of a 2N5642 RF power transistor to 50 ohms at 175 MHz, to a maximum loaded Q of 10. From Motorola application note AN721, worked on the Smith chart.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../../img/smith.ico">
+<link href="../../../app.css" rel="stylesheet">
+<link href="../../../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../../../smith.js"></script>
 </head>
-<body style="font-family:'Helv'; font-size:10pt; background-color:white;" bgcolor="white">
-<h1 style="font-size:12pt;margin-top:0.00pt;margin-bottom:12.00pt;"><img src="../image/QSmith.gif" border="0" height="82" width="82" alt="image\QSmith.gif" /> <b><font face="MS Sans Serif" style="font-family:'MS Sans Serif'; font-weight:bold;">Example: Large Signal Amplifier Design</font></b></h1>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">This example refers to section 4.2 in Motorola's application note AN721. Here Sm</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">ith chart is used to design an input/output matching network for a RF power transistor.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Problem:</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Design a network to match 2N5642 to deliver 20W between 50 ohms source and load at 175 MHz. Available supply voltage is 28 Volts. Design for a maximum input Q of 10.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Solution:</font></b></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">i) Input Match:</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">The data sheets for the 2N5642 transistor provide input impedance information. The series input impedance for the required operating conditions is 1.94 ohm in series with a reactance of 1.1 ohm. This value is assigne</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">d as the load so that it becomes our starting point. The frequency is set to 175 MHz. Draw a Q circle of 10 from the chart window. In the schematic window we start with a series inductor to the load.</font> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Since the input Q is specified at 10 we increase the inductance until the Q value of 10 is reached, the next step is to add parallel capacitor and determine its value so that it meets the 50 ohms constant resistance circle. Finally we cancel out the remai</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">ni</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">ng inductance by adding a series capacitor to get to the center of the chart. The figure below illustrated the transformations.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><img src="../image/ebd_6.gif" border="0" height="273" width="258" alt="image\ebd_6.gif" /></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Frequency = 175 MHz</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Load = 1.94 + j 1.1 ohms</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">L2 = 16.8 nh</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">C3 = 38.12 pf</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">C4 = 10</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">.52 pf</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><a href="OUTPUT_MATCH.html"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Output match</font></a></p>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../../index.html">
+        <img src="../../../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../../../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="EXAMPLES.html">All examples</a></li>
+      <li><a href="../../../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+<p class="doc-kicker">Example 6</p>
+<h1>Large signal amplifier design: the AN721 input match</h1>
+<p>This example refers to section 4.2 in Motorola's application note AN721. Here Smith chart is used to design an input/output matching network for a RF power transistor.</p>
+<p><strong>Problem:</strong> Design a network to match 2N5642 to deliver 20W between 50 ohms source and load at 175 MHz. Available supply voltage is 28 Volts. Design for a maximum input Q of 10.</p>
+<p><strong>Solution:</strong></p>
+<p><strong>i) Input Match:</strong> The data sheets for the 2N5642 transistor provide input impedance information. The series input impedance for the required operating conditions is 1.94 ohm in series with a reactance of 1.1 ohm. This value is assigned as the load so that it becomes our starting point. The frequency is set to 175 MHz. Draw a Q circle of 10 from the chart window. In the schematic window we start with a series inductor to the load. Since the input Q is specified at 10 we increase the inductance until the Q value of 10 is reached, the next step is to add parallel capacitor and determine its value so that it meets the 50 ohms constant resistance circle. Finally we cancel out the remaining inductance by adding a series capacitor to get to the center of the chart. The figure below illustrated the transformations.</p>
+<figure class="doc-figure">
+  <img src="../image/ebd_6.gif" width="258" height="273" alt="Smith chart for large signal amplifier design: the an721 input match">
+</figure>
+<aside class="doc-result">
+  <h2>Result</h2>
+  <ul>
+    <li>Frequency = 175 MHz</li>
+    <li>Load = 1.94 + j 1.1 ohms</li>
+    <li>L2 = 16.8 nh</li>
+    <li>C3 = 38.12 pf</li>
+    <li>C4 = 10.52 pf</li>
+  </ul>
+</aside>
+<p><a href="OUTPUT_MATCH.html">Output match</a></p>
+<a class="doc-open" href="../../../index.html#eyJ2IjoxLCJmIjoxNzUsImUiOltbMSwicngiLDEuOTQsMS4xXSxbMiwibCIsMTYuOCwwXSxbMywiYyIsMzguMTIsMF0sWzQsImMiLDEwLjUyLDBdXSwiYyI6eyJzIjoyLCJxIjoxMH19">Open this circuit in QuickSmith</a>
+<nav class="doc-nav"><span><a href="EXAMPLE_5.html">&#9664; Insertion loss of a five pole Chebyshev filter</a></span><span><a href="OUTPUT_MATCH.html">Large signal amplifier design: the AN721 output match &#9654;</a></span></nav>
+</main>
+</div>
 </body>
 </html>

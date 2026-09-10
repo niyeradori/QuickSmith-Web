@@ -1,33 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Example: Wide Band Matching Network</title>
-<meta name="MS-HKWD" content="Wide Band" />
-<meta name="MS-HKWD" content="Sweep" />
-<meta name="MS-HKWD" content="VSWR" />
-<meta name="generator" content="Adobe RoboHelp 2017" />
- <link href="../../../css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
- <script src="../../../js/jquery-3.2.1.min.js"></script>
-  <script src="../../../js/bootstrap3.min.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wideband matching example: a dipole over 100 to 200 MHz | QuickSmith</title>
+<meta name="description" content="Matching a frequency-dependent load across a band rather than at one frequency. A measured dipole from 100 to 200 MHz, brought inside a 2:1 VSWR circle with a series inductor and a shorted stub.">
+<link rel="canonical" href="https://quicksmith.online/help/examples/examples/EXAMPLE_4.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/help/examples/examples/EXAMPLE_4.html">
+<meta property="og:title" content="Wideband matching example: a dipole over 100 to 200 MHz | QuickSmith">
+<meta property="og:description" content="Matching a frequency-dependent load across a band rather than at one frequency. A measured dipole from 100 to 200 MHz, brought inside a 2:1 VSWR circle with a series inductor and a shorted stub.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../../img/smith.ico">
+<link href="../../../app.css" rel="stylesheet">
+<link href="../../../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../../../smith.js"></script>
 </head>
-<body style="font-family:'Helv'; font-size:10pt; background-color:white;" bgcolor="white">
-<h1 style="font-size:12pt;margin-top:0.00pt;margin-bottom:12.00pt;"><img src="../image/QSmith.gif" border="0" height="82" width="82" alt="image\QSmith.gif" /> <b><font face="MS Sans Serif" style="font-family:'MS Sans Serif'; font-weight:bold;">Example: Wide Band Matching Network</font></b></h1>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">The examples considered so far have been examined at single frequency. We will now consider impedance matching network for a range of frequencies. One of the interesting aspects of wide band networks is the introduction of a new variable which is the term</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">ination itself. In many practical situations the wide band "load" is a frequency dependent antenna. QuickSmith takes this into account by allowing the user to link the frequency-dependent termination to the program. The impedances corresponding to the int</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">er</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">mediate frequencies are computed using interpolation algorithms. Since it is not possible to match a band of frequencies to an VSWR of 1:1, we try to design a network such that our bandwidth of interest falls within a specified VSWR circle. Wide band netw</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">orks are usually realized after numerous experiments with mutipole networks. The user is urged to explore different wide band topologies.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Problem :</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">The reflection coefficients of a dipole antenna operating between 100 to 200 MHz has been saved in file ca</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">lled "Dipole.Gam". Design a matching network such that VSWR is 2.0 to 1 or better.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><b><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt; font-weight:bold;">Solution:</font></b> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">From the Options dialog, choose Multiple terminations, open a new file and link "Dipole.Gam". Draw a 2:1 VSWR circle and perform a frequency sweep as shown in trace-a.</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">From the Schematic menu add 32 nH inductor in series to the load to move the impedance curve more towards the center. The curve is then folded with a 95 degree, 25 ohm short-circuited stub line r</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">eferenced at 150 MHz. The final result is shown in trace-b</font></p>
-</br>
-<p style="margin-left:216.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><img src="../image/ebd_4.gif" border="0" height="258" width="258" alt="image\ebd_4.gif" /></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Start Freq. = 100 MHz</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Stop Freq. = 200 MHz</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">Load = Multiple termination with 12 data points</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">L2 = 32 nH</font></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">S3 = 25 Ohms, 95 degrees</font></p>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../../index.html">
+        <img src="../../../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../../../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="EXAMPLES.html">All examples</a></li>
+      <li><a href="../../../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+<p class="doc-kicker">Example 4</p>
+<h1>A wideband match for a dipole antenna</h1>
+<p>The examples considered so far have been examined at single frequency. We will now consider impedance matching network for a range of frequencies. One of the interesting aspects of wide band networks is the introduction of a new variable which is the termination itself. In many practical situations the wide band "load" is a frequency dependent antenna. QuickSmith takes this into account by allowing the user to link the frequency-dependent termination to the program. The impedances corresponding to the intermediate frequencies are computed using interpolation algorithms. Since it is not possible to match a band of frequencies to an VSWR of 1:1, we try to design a network such that our bandwidth of interest falls within a specified VSWR circle. Wide band networks are usually realized after numerous experiments with mutipole networks. The user is urged to explore different wide band topologies.</p>
+<p><strong>Problem :</strong> The reflection coefficients of a dipole antenna operating between 100 to 200 MHz has been saved in file called "Dipole.Gam". Design a matching network such that VSWR is 2.0 to 1 or better.</p>
+<p><strong>Solution:</strong> From the Options dialog, choose Multiple terminations, open a new file and link "Dipole.Gam". Draw a 2:1 VSWR circle and perform a frequency sweep as shown in trace-a.</p>
+<p>From the Schematic menu add 32 nH inductor in series to the load to move the impedance curve more towards the center. The curve is then folded with a 95 degree, 25 ohm short-circuited stub line referenced at 150 MHz. The final result is shown in trace-b</p>
+<figure class="doc-figure">
+  <img src="../image/ebd_4.gif" width="258" height="258" alt="Smith chart for a wideband match for a dipole antenna">
+</figure>
+<aside class="doc-result">
+  <h2>Result</h2>
+  <ul>
+    <li>Start Freq. = 100 MHz</li>
+    <li>Stop Freq. = 200 MHz</li>
+    <li>Load = Multiple termination with 12 data points</li>
+    <li>L2 = 32 nH</li>
+    <li>S3 = 25 Ohms, 95 degrees</li>
+  </ul>
+</aside>
+<nav class="doc-nav"><span><a href="EXAMPLE_3.html">&#9664; Matching with a transmission line and an open stub</a></span><span><a href="EXAMPLE_5.html">Insertion loss of a five pole Chebyshev filter &#9654;</a></span></nav>
+</main>
+</div>
 </body>
 </html>

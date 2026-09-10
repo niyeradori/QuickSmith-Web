@@ -1,27 +1,124 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
- <link href="../../../css/bootstrap3.min.css" rel="stylesheet" type="text/css" media="all"/>
- <script src="../../../js/jquery-3.2.1.min.js"></script>
-  <script src="../../../js/bootstrap3.min.js"></script>
+<!doctype html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>OuickSmith: Tutorial Contents : Examples</title>
-<meta name="generator" content="Adobe RoboHelp 2017" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Worked Smith chart examples: matching, filters and amplifiers | QuickSmith</title>
+<meta name="description" content="Seven worked impedance matching examples on the Smith chart, from a two element L-network to stub matching, a wideband dipole, filter insertion loss and RF amplifier design. Each one opens as a live circuit.">
+<link rel="canonical" href="https://quicksmith.online/help/examples/examples/EXAMPLES.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/help/examples/examples/EXAMPLES.html">
+<meta property="og:title" content="Worked Smith chart examples: matching, filters and amplifiers">
+<meta property="og:description" content="Seven worked impedance matching examples on the Smith chart. Each one opens as a live circuit you can edit.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../../img/smith.ico">
+<link href="../../../app.css" rel="stylesheet">
+<link href="../../../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../../../smith.js"></script>
 </head>
-<body style="font-family:'Helv'; font-size:10pt; background-color:white;" bgcolor="white">
-<h1 style="font-size:12pt;margin-top:0.00pt;margin-bottom:12.00pt;"><img src="../image/QSmith.gif" border="0" height="82" width="82" alt="image\QSmith.gif" /> <b><font face="MS Sans Serif" style="font-family:'MS Sans Serif'; font-weight:bold;">QuickSmith</font></b> <b><font face="MS Sans Serif" style="font-family:'MS Sans Serif'; font-weight:bold;">Example Contents</font></b></h1>
-<p style="margin-top:0.00pt;margin-bottom:0.00pt;"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">To learn how to use Help, press F1 or choose using Help from the Help menu</font></p>
-<p style="margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-top:0.00pt;margin-bottom:0.00pt;"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">A few solved examples from various text books are listed below. These examples are intended to give the user an introduction to use this tool for circuit analysis and design. The examples here mostly application oriented and does not get into theoretical</font> <font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">d</font><font size="2" style="font-family:'MS Sans Serif'; font-size:10pt;">etails, it is however urged that the user should refer to standard text books for basic concepts on transmission lines and Smith Chart.</font></p>
-<p style="margin-top:0.00pt;margin-bottom:0.00pt;">&#160;</p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><a href="EXAMPLE_1.html"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">Resistance and Reactance Example</font></a></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><a href="EXAMPLE_2.html"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">Inductance and Capacitance Example</font></a></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><a href="EXAMPLE_3.html"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">Transmission line Example</font></a></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><a href="EXAMPLE_4.html"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">Wide Band Matching Example</font></a></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><a href="EXAMPLE_5.html"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">Insertion Loss Example</font></a></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><a href="EXAMPLE_6.html"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">Large Signal Amplifier Design</font></a></p>
-<p style="margin-left:18.00pt;margin-top:0.00pt;margin-bottom:0.00pt;"><a href="EXAMPLE_7.html"><font size="3" style="font-family:'MS Sans Serif'; font-size:10pt;">Small Signal Amplifier design using S-Parameters</font></a></p>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../../index.html">
+        <img src="../../../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../../../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="../../../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">QuickSmith</p>
+<h1>Worked examples</h1>
+<p class="doc-lede">
+  Solved examples from various text books, meant to introduce the tool rather
+  than to teach the theory. They stay close to the application and do not go
+  far into the mathematics, so keep a standard text on transmission lines and
+  the Smith chart beside you for the basics.
+</p>
+
+<h2>Start here</h2>
+
+<h3><a href="EXAMPLE_1.html">Resistance and reactance on a Smith chart</a></h3>
+<p>
+  What a series resistor, a series reactance and a shunt reactance each do to
+  the input impedance. Three traces: along the real axis, round a constant
+  resistance circle, and round a constant conductance circle.
+</p>
+
+<h3><a href="EXAMPLE_2.html">Designing an L-network: 500 ohms to 50 ohms</a></h3>
+<p>
+  The most common matching network there is, worked through at 100 MHz. A
+  shunt capacitor to reach the 50 ohm circle, then a series inductor to tune
+  out what is left.
+</p>
+
+<h3><a href="EXAMPLE_3.html">Matching with a transmission line and an open stub</a></h3>
+<p>
+  The same idea with distributed parts instead of lumped ones. A 30 ohm series
+  line and a 30 ohm open stub take 10 - j15 ohms to 50 ohms at 1 GHz.
+</p>
+
+<h2>Going further</h2>
+
+<h3><a href="EXAMPLE_4.html">A wideband match for a dipole antenna</a></h3>
+<p>
+  Matching across a band rather than at one frequency, with a load whose
+  impedance changes as you sweep. Measured dipole data from 100 to 200 MHz,
+  brought inside a 2:1 VSWR circle.
+</p>
+
+<h3><a href="EXAMPLE_5.html">Insertion loss of a five pole Chebyshev filter</a></h3>
+<p>
+  A filter rather than a match, and the example where component Q starts to
+  matter. Real Q values on every part, and what they cost in the passband.
+</p>
+
+<h2>Amplifiers</h2>
+
+<h3><a href="EXAMPLE_6.html">Large signal amplifier design: the AN721 input match</a></h3>
+<p>
+  From Motorola application note AN721. Matching the 1.94 + j1.1 ohm input of
+  a 2N5642 power transistor to 50 ohms at 175 MHz, to a maximum loaded Q of
+  10. The <a href="OUTPUT_MATCH.html">output match</a> follows.
+</p>
+
+<h3><a href="EXAMPLE_7.html">Small signal amplifier design with S-parameters</a></h3>
+<p>
+  Stability, gain and noise on two Smith charts at once. A 6 GHz amplifier for
+  the lowest noise figure at 10.55 dB available gain, then
+  <a href="IMPEDANCE_MATCH.html">the networks</a> that get you there.
+</p>
+
+<h2>A note on the numbers</h2>
+<p>
+  Every figure quoted in these examples is checked against the solver on each
+  test run, so the prose here and what the program computes cannot drift
+  apart. Where they already disagreed, the test suite pins what QuickSmith
+  actually calculates and says so: Example 5 asks for 60 dB at 100 MHz and the
+  filter as published gives 53.25 dB.
+</p>
+<p>
+  Several of these open as a live circuit. Look for
+  <strong>Open this circuit in QuickSmith</strong> at the foot of the page, or
+  try <strong>Help &rarr; Guided examples</strong> in the program, which
+  rebuilds them a component at a time and says what each one does.
+</p>
+
+</main>
+</div>
 </body>
 </html>

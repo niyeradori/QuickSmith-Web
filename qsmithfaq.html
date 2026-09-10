@@ -3,9 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QuickSmith &middot; Frequently Asked Questions</title>
+<title>QuickSmith FAQ: how to use the Smith chart tool</title>
+<meta name="description" content="How to build a ladder network, match to 50 ohms, tune by dragging on the chart, read VSWR and loaded Q, get a microstrip track width, and import Touchstone files from a network analyser.">
+<link rel="canonical" href="https://quicksmith.online/qsmithfaq.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/qsmithfaq.html">
+<meta property="og:title" content="QuickSmith FAQ: how to use the Smith chart tool">
+<meta property="og:description" content="How to match to 50 ohms, tune by dragging, read VSWR and loaded Q, and get a track width out of a matching network.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="img/smith.ico">
 <link href="app.css" rel="stylesheet">
+<link href="docs.css" rel="stylesheet">
 <!--
   smith.js is here for its palette. app.css draws everything from the custom
   properties that file declares, so loading it dresses this page in whatever
@@ -14,111 +26,6 @@
 -->
 <script src="smith.js"></script>
 <script src="symbols.js"></script>
-<style>
-    .faq-wrap {
-        display: grid;
-        grid-template-columns: 232px minmax(0, 1fr);
-        gap: 40px;
-        max-width: 1120px;
-        margin: 0 auto;
-        padding: 8px 20px 80px;
-    }
-    /* the contents follows you down the page, which is the whole point of
-       having one in front of two dozen questions */
-    .faq-toc {
-        position: sticky;
-        top: 16px;
-        align-self: start;
-        max-height: calc(100vh - 40px);
-        overflow-y: auto;
-        font-size: 13px;
-    }
-    .faq-toc h2 {
-        margin: 0 0 10px;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: .07em;
-        text-transform: uppercase;
-        color: var(--qs-text, #7b8496);
-    }
-    .faq-toc ol { margin: 0 0 18px; padding: 0; list-style: none; }
-    .faq-toc li { margin: 0 0 6px; }
-    .faq-toc a { color: var(--qs-ink, #14181f); }
-    .faq-toc a:hover { color: var(--qs-vswr, #1f5fbf); }
-    /* On a wide screen the contents is simply there, so the disclosure it is
-       built from has nothing to disclose and its marker is in the way. */
-    .faq-toc > summary { display: none; }
-
-    .faq-body { max-width: 68ch; font-size: 14.5px; line-height: 1.7; }
-    .faq-body h1 { margin: 4px 0 6px; font-size: 26px; letter-spacing: -.01em; }
-    .faq-body > p.faq-lede { margin: 0 0 34px; color: var(--qs-text, #7b8496); }
-    .faq-body h2 {
-        margin: 42px 0 14px;
-        padding-top: 18px;
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: .07em;
-        text-transform: uppercase;
-        color: var(--qs-text, #7b8496);
-        border-top: 1px solid var(--qs-rim, #e5e8ee);
-    }
-    .faq-body h3 { margin: 26px 0 8px; font-size: 16px; font-weight: 600; }
-    .faq-body p { margin: 0 0 12px; }
-    .faq-body ul { margin: 0 0 12px; padding-left: 20px; }
-    .faq-body li { margin-bottom: 5px; }
-    .faq-body code, .faq-body kbd {
-        font: 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-        padding: 2px 5px;
-        border-radius: 4px;
-        background: var(--qs-face, #eef2f9);
-        border: 1px solid var(--qs-rim, #e5e8ee);
-    }
-    .faq-body strong { font-weight: 600; }
-
-    /* a component icon sitting in a line of prose */
-    .faq-sym {
-        display: inline-block;
-        vertical-align: middle;
-        height: 22px;
-        width: auto;
-        margin: 0 2px;
-        color: var(--qs-ink, #14181f);
-    }
-
-    /* The matching map is a scan on white. It gets its own plate so it stays
-       readable when the rest of the page is dark. */
-    .faq-figure {
-        margin: 18px 0 22px;
-        padding: 14px;
-        background: #fff;
-        border: 1px solid var(--qs-rim, #e5e8ee);
-        border-radius: 10px;
-    }
-    .faq-figure img { display: block; width: 100%; height: auto; }
-    .faq-figure figcaption {
-        margin-top: 10px;
-        font-size: 12.5px;
-        line-height: 1.6;
-        color: #5a6272;
-    }
-
-    @media (max-width: 860px) {
-        .faq-wrap { grid-template-columns: 1fr; gap: 10px; padding: 4px 16px 60px; }
-        .faq-toc { position: static; max-height: none; padding: 10px 0 4px; }
-        .faq-toc > summary {
-            display: list-item;
-            cursor: pointer;
-            padding: 8px 0;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: .07em;
-            text-transform: uppercase;
-            color: var(--qs-text, #7b8496);
-        }
-        .faq-toc[open] > summary { margin-bottom: 8px; }
-        .faq-body { font-size: 15px; }
-    }
-</style>
 </head>
 <body>
 
@@ -137,9 +44,9 @@
   </div>
 </nav>
 
-<div class="faq-wrap">
+<div class="doc-wrap">
 
-<details class="faq-toc" id="toc">
+<details class="doc-toc" id="toc">
   <summary>Contents</summary>
   <h2>Getting started</h2>
   <ol>
@@ -187,10 +94,10 @@
   </ol>
 </details>
 
-<main class="faq-body">
+<main class="doc-body">
 
 <h1>Frequently Asked Questions</h1>
-<p class="faq-lede">Answers to the questions I get asked most often about QuickSmith.</p>
+<p class="doc-lede">Answers to the questions I get asked most often about QuickSmith.</p>
 
 <h2>Getting started</h2>
 
@@ -218,7 +125,7 @@
 <p>
   The chart is on the left, the schematic on the right. In the parts bin in the
   middle of the schematic, pick up the resistor
-  <svg class="faq-sym" data-sym="r"></svg>
+  <svg class="doc-sym" data-sym="r"></svg>
   and drag it onto one of the empty slots in the ladder above or below. A box
   asks for its value. Type one and press Enter.
 </p>
@@ -226,7 +133,7 @@
   The dot on the chart moves to where that component puts you, and a coloured arc
   shows the path it took. From there the spin buttons beside the value walk it up
   and down, and you can watch the dot travel. Drag the wire
-  <svg class="faq-sym" data-sym="w"></svg>
+  <svg class="doc-sym" data-sym="w"></svg>
   onto a slot to clear it again.
 </p>
 
@@ -285,7 +192,7 @@
   even though the program now does it for you. Each circle shows where a load has
   to sit for that particular two-element network to be able to reach 50 ohms.
 </p>
-<figure class="faq-figure">
+<figure class="doc-figure">
   <img src="img/match.jpg" alt="Six Smith charts, each shading the region a load cannot be matched from with one particular two-element network">
   <figcaption>
     Hatched regions cannot be reached with that network. Reproduced from the
