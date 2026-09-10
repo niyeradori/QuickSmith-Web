@@ -566,12 +566,6 @@ th {
 /* the menu bar's two groups share one row until the layout collapses */
 .navbar-collapse { display: flex; align-items: center; gap: 8px; flex: 1; }
 
-/* qsmithfaq.html is still 1990s markup, with <basefont> and a <font size=5>
-   wrapped around the whole document. Normalise the body copy and give it a
-   readable measure; the banner keeps its own sizing. */
-body > font { font-size: 15px; }
-body > font blockquote { max-width: 70ch; }
-
 /* ========================================================== three columns
  *
  * Chart, readout, workbench. The chart wants the most room, the readout is a
