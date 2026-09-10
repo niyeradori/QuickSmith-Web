@@ -311,10 +311,16 @@ input[type="color"] { width: 46px; height: 28px; padding: 2px; border: 1px solid
 /* ============================================================== schematic */
 
 
+/*
+ * Reference designators, L2 and C3 and the rest. They name a part rather than
+ * telling you anything about it, so they sit in the palette's soft blue: quiet
+ * next to the values, and no longer competing with the red the chart uses for
+ * constant resistance.
+ */
 th {
     font: 500 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
     letter-spacing: .04em;
-    color: var(--qs-r, #b5342b);
+    color: var(--qs-adm, #4a6fa5);
     text-align: center;
     padding: 2px 0;
 }

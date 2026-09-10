@@ -70,13 +70,7 @@
         }  */
 
   
-      th {
-          text-align: center;
-          font-weight: normal;
-          /* font-family: Arial; */
-          font-size: 12px;
-          color: brown;
-      }
+      /* designators are styled in app.css, with the rest of the ladder */
         /* the issue with max-height is that the image is no longer in the center */
         .dropzoneh {
           width: 25%;  /* 81px;  */
@@ -1087,7 +1081,7 @@ function updateUI() {
         var spin_element;
         spin_element =  document.getElementById(id);
         spin_element.value= schObj.ELEMENT[i].value1;
-        if(schObj.ELEMENT[i].value1 < 0) spin_element.style.color = 'red';else spin_element.style.color = 'black';
+        if(schObj.ELEMENT[i].value1 < 0) spin_element.style.color = 'var(--qs-r)';else spin_element.style.color = '';
         // Slot 0 is the frequency and has no second value, so no E0a cell exists.
         // jQuery quietly did nothing when a selector matched nothing; plain DOM
         // needs to be asked.
@@ -1100,7 +1094,7 @@ function updateUI() {
         else if (secondBox)
         {   secondBox.value = schObj.ELEMENT[i].value2;
             if (secondCell) secondCell.style.visibility = "visible";
-            if(schObj.ELEMENT[i].value2 < 0) secondBox.style.color = 'red';else secondBox.style.color = 'black';
+            if(schObj.ELEMENT[i].value2 < 0) secondBox.style.color = 'var(--qs-r)';else secondBox.style.color = '';
         }
     }
     collapseEmptyValueRows();
@@ -1638,7 +1632,7 @@ var end = function(e) {
         var val1 = document.querySelector(".modal-body #V1").value;
         if (isNumeric(val1)) { 
             schObj.ELEMENT[eleNum].value1 = val1; spin_element.value = Number(val1).toFixed(2);
-            if(val1 < 0) spin_element.style.color = 'red';else spin_element.style.color = 'black'; // change color to red if negative
+            if(val1 < 0) spin_element.style.color = 'var(--qs-r)';else spin_element.style.color = ''; // change color to red if negative
          }
         var val2 = document.querySelector(".modal-body #V2").value;
         console.log("val1 =" + val1 + " val2 =" + val2);
@@ -1646,7 +1640,7 @@ var end = function(e) {
         else if (isNumeric(val2)) {
             schObj.ELEMENT[eleNum].value2 = val2;
             spin_element_a.value = Number(val2).toFixed(2);
-            if(schObj.ELEMENT[eleNum].value2 < 0) spin_element_a.style.color = 'red';else spin_element_a.style.color = 'black'; // change color to red if negative
+            if(schObj.ELEMENT[eleNum].value2 < 0) spin_element_a.style.color = 'var(--qs-r)';else spin_element_a.style.color = ''; // change color to red if negative
         }
         var drpEleRXG = 0; if (eleType == "r" || eleType == "x" || eleType == "g" || eleType == "rx") drpEleRXG = 1;
         if (drpEleRXG == 0) { // no Q for R,X,RX and G
@@ -1836,7 +1830,7 @@ function setHint(id, text) {
             if (second_element == true)schObj.ELEMENT[idNum].value2 = spin_element.value; 
             else { if("E"+idNum == "E1" &&  spin_element.value < 0.00)spin_element.value=schObj.ELEMENT[idNum].value1 = "0.00"  ;
             else schObj.ELEMENT[idNum].value1 = spin_element.value;  }
-           if(spin_element.value < 0) spin_element.style.color = 'red';else spin_element.style.color = 'black'
+           if(spin_element.value < 0) spin_element.style.color = 'var(--qs-r)';else spin_element.style.color = ''
 
         }
         Zcalsweep();
