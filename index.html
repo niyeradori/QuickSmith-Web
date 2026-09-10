@@ -710,6 +710,10 @@ var smithObj = {
               "showAdmittace": false,  // DrawAdmittance
                drawAdmitanceCircles: function() { drawAdmitanceCircles(this);},
               //drawAdmitanceCircles: drawAdmitanceCircles,
+              // Bumped whenever a chart default changes. A saved session written
+              // under an older number does not get to restore the settings that
+              // changed, so the new default wins. See get().
+              "chartVer": 2,
               "vswrCircle": 1.0, // draw VSWR circle - 1 is a clean chart, nothing drawn
               drawVSWRCircles:  function() { drawVSWRCircles(this);},
               "qCircle": 0.0, // draw Q circle - 0 is a clean chart, nothing drawn
@@ -1170,6 +1174,19 @@ function get() {
     if( item !== null)
     {
         var smithObj1 =JSON.parse(item);
+        /*
+         * A session saved before the overlay defaults changed carries the old
+         * VSWR 2 and Q 1, and restoring those would put two circles back on a
+         * chart that is meant to open clean. Anyone who has ever opened the
+         * amplifier page has such a session, because that saves on the way out.
+         * Old sessions have no chartVer, so their overlay values are dropped
+         * and the current defaults stand. Everything else restores as before,
+         * and a session saved from now on keeps whatever circles you chose.
+         */
+        if (smithObj1.chartVer !== smithObj.chartVer) {
+            delete smithObj1.vswrCircle;
+            delete smithObj1.qCircle;
+        }
         copy_smithObj(smithObj1);
     }
     else { console.log(" smithData local storage not set");  }; 
