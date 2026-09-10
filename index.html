@@ -35,6 +35,7 @@
   <script src="symbols.js"></script>
   <script src="tours.js"></script>
   <script src="history.js"></script>
+  <script src="line.js"></script>
   <script src="sch.js"></script>
   <script src="js/DragDropTouch.js"></script>    
    <!-- ios-drag-drop.js does not trigger end ? -->
@@ -207,6 +208,8 @@
              <li><a href="#"  onclick=import_click()>Import Gamma</a></li>
              <li><a href="#"  onclick=importTouchstone_click()>Import Touchstone</a></li>
              <li><a href="#"  onclick=clear_import_click()>Clear</a></li>
+             <li role="separator" class="divider"></li>
+             <li><a href="#"  onclick=lineDimensions_click()>Microstrip and coax…</a></li>
             <!-- <li><a><input type="checkbox" name="checkbox1" style="float: right;">Show Sweep</a></li> -->
           </ul>
         </li> 
@@ -2519,6 +2522,234 @@ function loadFromHash() {
         ShowMessage_sm("QuickSmith", "That link could not be read: " + e.message);
         return false;
     }
+}
+
+/* ============================================ microstrip and coax
+ *
+ * A line in the ladder is an impedance and a length. On the bench it is a
+ * track of some width on a board of some thickness, and those are the numbers
+ * you need to actually build it. Give this the substrate and it reads the
+ * whole design back in millimetres.
+ *
+ * Electrical length is what carries across. A stored length in inches only
+ * means something alongside the velocity factor it was entered with, so every
+ * line is converted to degrees first and re-derived on the new substrate.
+ *
+ * The maths is in line.js and has no idea any of this exists.
+ */
+var board = {
+    medium: "microstrip",
+    // each medium keeps its own numbers: FR-4 and polyethylene are both
+    // ordinary answers, and neither is an ordinary answer for the other
+    microstrip: { er: 4.4, h: 1.6 },
+    coax: { er: 2.25, bore: 4.95 }
+};
+
+function substrate() { return board[board.medium]; }
+
+function lineSlots() {
+    var out = [];
+    for (var i = 2; i <= 12; i++) {
+        var type = schObj.ELEMENT[i].type;
+        if (type === "t" || type === "o" || type === "s") out.push(i);
+    }
+    return out;
+}
+
+/* One line's electrical length, in degrees, by the solver's own rule. */
+function lineDegrees(index) {
+    var ctx = { w: 2 * Math.PI * Number(schObj.ELEMENT[0].value1) * 1e6,
+                VF: Number(schObj.VF), LU: schObj.LU, TDF: Number(schObj.TDF) };
+    var radians = QSEngine.electricalLength({ v2: Number(schObj.ELEMENT[index].value2) }, ctx);
+    return radians * 180 / Math.PI;
+}
+
+/*
+ * What one line comes to on this substrate: the conductor size, how much the
+ * substrate slows the wave, and the length that follows from both.
+ *   microstrip - size is the track width
+ *   coax       - size is the inner conductor diameter inside the given bore
+ */
+function lineOnBoard(index) {
+    var Z0 = Math.abs(Number(schObj.ELEMENT[index].value1)) || 1;
+    var freq = Number(schObj.ELEMENT[0].value1);
+    var size, eeff;
+
+    var sub = substrate();
+    if (board.medium === "coax") {
+        var coax = QSLine.coax.ratio(Z0, sub.er);
+        size = sub.bore / coax.ratio;
+        eeff = coax.eeff;
+    } else {
+        var strip = QSLine.microstrip.width(Z0, sub.er);
+        size = strip.wOverH * sub.h;
+        eeff = strip.eeff;
+    }
+
+    return { slot: index, Z0: Z0, eeff: eeff, size: size,
+             degrees: lineDegrees(index),
+             mm: QSLine.length(lineDegrees(index), freq, eeff) * 1000 };
+}
+
+function lineDimensions_click() {
+    var wrap = document.createElement("div");
+    wrap.className = "qs-board";
+    var dlg = null;
+
+    var form = document.createElement("div");
+    form.className = "qs-board-form";
+    wrap.appendChild(form);
+
+    var results = document.createElement("div");
+    wrap.appendChild(results);
+
+    function field(label, key, suffix) {
+        var lab = document.createElement("label");
+        lab.textContent = label;
+        var box = document.createElement("input");
+        box.type = "text";
+        box.value = substrate()[key];
+        box.addEventListener("input", function () {
+            var v = parseFloat(box.value);
+            // only the results are redrawn: rebuilding the form under a
+            // keystroke would take the focus out of the box being typed in
+            if (isFinite(v) && v > 0) { substrate()[key] = v; drawResults(); }
+        });
+        lab.appendChild(box);
+        if (suffix) {
+            var unit = document.createElement("span");
+            unit.textContent = suffix;
+            lab.appendChild(unit);
+        }
+        form.appendChild(lab);
+    }
+
+    function drawForm() {
+        form.innerHTML = "";
+
+        var pick = document.createElement("label");
+        pick.textContent = "Medium";
+        var select = document.createElement("select");
+        [["microstrip", "Microstrip"], ["coax", "Coax"]].forEach(function (o) {
+            var opt = document.createElement("option");
+            opt.value = o[0];
+            opt.textContent = o[1];
+            if (board.medium === o[0]) opt.selected = true;
+            select.appendChild(opt);
+        });
+        select.addEventListener("change", function () {
+            board.medium = select.value;
+            drawForm();
+            drawResults();
+        });
+        pick.appendChild(select);
+        form.appendChild(pick);
+
+        field("Dielectric εr", "er", "");
+        if (board.medium === "coax") field("Bore diameter", "bore", "mm");
+        else field("Substrate height", "h", "mm");
+    }
+
+    function drawResults() {
+        results.innerHTML = "";
+        var slots = lineSlots();
+        var rows = slots.map(lineOnBoard);
+        var what = board.medium === "coax" ? "Inner ø" : "Width";
+
+        // a 50 ohm line is the number anybody asks for first, lines or not
+        var sub = substrate();
+        var ref = (board.medium === "coax")
+            ? sub.bore / QSLine.coax.ratio(50, sub.er).ratio
+            : QSLine.microstrip.width(50, sub.er).wOverH * sub.h;
+        var refE = (board.medium === "coax") ? sub.er
+            : QSLine.microstrip.width(50, sub.er).eeff;
+
+        var summary = document.createElement("p");
+        summary.className = "qs-board-note";
+        summary.textContent = (board.medium === "coax"
+            ? "A 50 Ω line in a " + sub.bore + " mm bore needs a " +
+              ref.toFixed(3) + " mm inner conductor."
+            : "A 50 Ω track on this board is " + ref.toFixed(3) + " mm wide.") +
+            " εeff " + refE.toFixed(3) + ", velocity factor " +
+            QSLine.velocityFactor(refE).toFixed(4) + ".";
+        results.appendChild(summary);
+
+        if (!rows.length) {
+            var none = document.createElement("p");
+            none.className = "qs-board-note";
+            none.textContent = "There are no transmission lines in the ladder. " +
+                "Drop a T, O or S on a slot and each one will be listed here.";
+            results.appendChild(none);
+            return;
+        }
+
+        var table = document.createElement("table");
+        table.className = "qs-board-table";
+        var head = document.createElement("tr");
+        ["", "Impedance", "Electrical", what, "Length"].forEach(function (t) {
+            var th = document.createElement("th");
+            th.textContent = t;
+            head.appendChild(th);
+        });
+        table.appendChild(head);
+
+        rows.forEach(function (r) {
+            var tr = document.createElement("tr");
+            [schObj.ELEMENT[r.slot].type.toUpperCase() + r.slot,
+             r.Z0.toFixed(2) + " Ω",
+             r.degrees.toFixed(2) + "°",
+             r.size.toFixed(3) + " mm",
+             r.mm.toFixed(3) + " mm"].forEach(function (t) {
+                var td = document.createElement("td");
+                td.textContent = t;
+                tr.appendChild(td);
+            });
+            table.appendChild(tr);
+        });
+        results.appendChild(table);
+
+        /*
+         * Applying rewrites the ladder in millimetres. That needs one velocity
+         * factor to cover every line, which a microstrip board only gives you
+         * if the lines are all the same width - a narrow track keeps more of
+         * its field in the air and travels faster than a wide one. Coax is
+         * filled, so its lines always agree.
+         */
+        var spread = Math.max.apply(null, rows.map(function (r) { return r.eeff; })) -
+                     Math.min.apply(null, rows.map(function (r) { return r.eeff; }));
+        var note = document.createElement("p");
+        note.className = "qs-board-note";
+
+        if (spread > 1e-9) {
+            note.textContent = "These lines are different widths, so they do not travel at " +
+                "the same speed, and QuickSmith carries one velocity factor for the whole " +
+                "ladder. Read the lengths off here and leave the design in degrees.";
+            results.appendChild(note);
+            return;
+        }
+
+        note.textContent = "Applying sets the velocity factor to " +
+            QSLine.velocityFactor(rows[0].eeff).toFixed(4) +
+            " and rewrites every line length in millimetres. The circuit does not change.";
+        results.appendChild(note);
+
+        var apply = document.createElement("button");
+        apply.type = "button";
+        apply.className = "qs-btn qs-primary";
+        apply.textContent = "Apply to the design";
+        apply.addEventListener("click", function () {
+            schObj.VF = QSLine.velocityFactor(rows[0].eeff);
+            schObj.LU = "MilliMeters";
+            rows.forEach(function (r) { schObj.ELEMENT[r.slot].value2 = Number(r.mm.toFixed(4)); });
+            updateUI();
+            QSUI.close(dlg);
+        });
+        results.appendChild(apply);
+    }
+
+    drawForm();
+    drawResults();
+    dlg = QSUI.open({ title: "Microstrip and coax", body: wrap });
 }
 
 /* ------------------------------------------------------------- Touchstone */
