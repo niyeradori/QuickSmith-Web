@@ -3005,14 +3005,14 @@ transmission line or a three-element network.");
             }).join("   \u00b7   ");
 
         var row = document.createElement("div");
-        row.style.cssText = "padding:10px 0;border-top:1px solid #e5e8ee";
+        row.style.cssText = "padding:10px 0;border-top:1px solid var(--qs-rim,#e5e8ee)";
 
         var values = document.createElement("div");
         values.style.cssText = "font-family:ui-monospace,Menlo,monospace;font-size:13px";
         values.textContent = parts;
 
         var meta = document.createElement("div");
-        meta.style.cssText = "color:#7b8496;font-size:12px;margin-top:3px";
+        meta.style.cssText = "color:var(--qs-text,#7b8496);font-size:12px;margin-top:3px";
         var shape = option.topology === "series-shunt" ? "series then shunt"
                   : option.topology === "shunt-series" ? "shunt then series"
                   : option.topology;
@@ -3035,7 +3035,7 @@ transmission line or a three-element network.");
     });
 
     var foot = document.createElement("p");
-    foot.style.cssText = "color:#7b8496;font-size:12px;margin:14px 0 0";
+    foot.style.cssText = "color:var(--qs-text,#7b8496);font-size:12px;margin:14px 0 0";
     foot.textContent = "Applying clears the rest of the ladder, because the match is " +
                        "calculated from the load outwards. Lower Q means wider bandwidth." +
                        (isFinite(wanted) && wanted > 0 && !options.some(function (o) {
