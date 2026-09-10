@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>50 ohm trace width on FR-4, and where that number comes from</title>
+<meta name="description" content="A 50 ohm microstrip on 1.6 mm FR-4 is about 3.08 mm wide. Why it is that number, why the third decimal place is not real, what it becomes on other substrates, and how to turn a matching network into a track width and a length.">
+<link rel="canonical" href="https://quicksmith.online/blog/50-ohm-trace-width-fr4.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="QuickSmith">
+<meta property="og:url" content="https://quicksmith.online/blog/50-ohm-trace-width-fr4.html">
+<meta property="og:title" content="50 ohm trace width on FR-4, and where that number comes from">
+<meta property="og:description" content="A 50 ohm microstrip on 1.6 mm FR-4 is about 3.08 mm wide. Why it is that number, and why the third decimal place is not real.">
+<meta property="og:image" content="https://quicksmith.online/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/smith.ico">
+<link href="../app.css" rel="stylesheet">
+<link href="../docs.css" rel="stylesheet">
+<!-- for the palette, which app.css and docs.css both draw from -->
+<script src="../smith.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "50 ohm trace width on FR-4, and where that number comes from",
+  "description": "A 50 ohm microstrip on 1.6 mm FR-4 is about 3.08 mm wide. Why it is that number, why the third decimal place is not real, and how to turn a matching network into a track width and a length.",
+  "image": "https://quicksmith.online/img/og-card.png",
+  "author": { "@type": "Person", "name": "Nathan Iyer" },
+  "publisher": { "@type": "Organization", "name": "QuickSmith" },
+  "datePublished": "2026-09-10",
+  "mainEntityOfPage": "https://quicksmith.online/blog/50-ohm-trace-width-fr4.html"
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">
+        <img src="../img/smith.ico" alt="" style="display:inline-block;margin-top:-7px;width:32px;height:32px">
+        <span style="display:inline-block">QuickSmith</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="../index.html">&#9664; Back to the chart</a></li>
+      <li><a href="index.html">Articles</a></li>
+      <li><a href="../qsmithfaq.html">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="doc-wrap doc-solo">
+<main class="doc-body">
+
+<p class="doc-kicker">Article</p>
+<h1>50 ohm trace width on FR-4, and where that number comes from</h1>
+<p class="doc-lede">
+  If you came here for the number: on 1.6 mm FR-4, a 50 ohm microstrip is
+  about <strong>3.08 mm</strong> wide. That is 121 mil, if you work in those.
+  The rest of this is why it is that number, why the third decimal place is not
+  real, and what to do with it.
+</p>
+
+<aside class="doc-result">
+  <h2>Result</h2>
+  <ul>
+    <li>Substrate        FR-4, er 4.4, h 1.6 mm</li>
+    <li>Track width      3.079 mm   (W/h 1.925)</li>
+    <li>Effective er     3.332</li>
+    <li>Velocity factor  0.548</li>
+  </ul>
+</aside>
+
+<h2>Why it is not one number</h2>
+
+<p>
+  Two things set a microstrip's impedance: how wide the track is compared with
+  how far it sits above the ground plane, and what the board is made of. Only
+  the ratio matters, not the absolute size, which is why the same
+  <strong>W/h of 1.925</strong> gives you 50 ohms on any thickness of FR-4:
+</p>
+
+<aside class="doc-result">
+  <h2>50 ohms on FR-4, by board thickness</h2>
+  <ul>
+    <li>0.4 mm board   ->  0.770 mm wide</li>
+    <li>0.8 mm board   ->  1.540 mm wide</li>
+    <li>1.0 mm board   ->  1.925 mm wide</li>
+    <li>1.6 mm board   ->  3.079 mm wide</li>
+  </ul>
+</aside>
+
+<p>
+  The material is the awkward half. FR-4 is not a specification, it is a
+  flammability rating, and the dielectric constant of what your fabricator
+  actually sends you lands somewhere around 4.2 to 4.6 depending on the glass
+  weave, the resin content and the frequency you are asking about. That spread
+  moves the answer:
+</p>
+
+<aside class="doc-result">
+  <h2>50 ohms on 1.6 mm FR-4, by dielectric constant</h2>
+  <ul>
+    <li>er 4.2  ->  3.189 mm</li>
+    <li>er 4.3  ->  3.133 mm</li>
+    <li>er 4.4  ->  3.079 mm</li>
+    <li>er 4.5  ->  3.027 mm</li>
+    <li>er 4.6  ->  2.977 mm</li>
+  </ul>
+</aside>
+
+<p>
+  About 0.2 mm from end to end. So when a calculator hands you 3.079 mm, the
+  useful part of that is "a bit over three millimetres". Anyone quoting you
+  four significant figures for an FR-4 track is quoting the arithmetic, not the
+  board.
+</p>
+
+<h2>How much does being wrong cost you?</h2>
+
+<p>
+  Less than people fear, which is the reassuring part. Etch a 3.08 mm track
+  0.1 mm too narrow and you get 50.99 ohms. Run it on a board that turned out
+  to be er 4.6 rather than 4.4 and you get 49.00 ohms.
+</p>
+
+<aside class="doc-result">
+  <h2>Sensitivity around 3.079 mm on 1.6 mm FR-4</h2>
+  <ul>
+    <li>W - 0.10 mm    ->  50.99 ohm</li>
+    <li>W - 0.05 mm    ->  50.49 ohm</li>
+    <li>W  (3.079 mm)  ->  50.00 ohm</li>
+    <li>W + 0.05 mm    ->  49.52 ohm</li>
+    <li>W + 0.10 mm    ->  49.05 ohm</li>
+    <li>er 4.2, same W ->  51.06 ohm</li>
+    <li>er 4.6, same W ->  49.00 ohm</li>
+  </ul>
+</aside>
+
+<p>
+  A 1 ohm error on a 50 ohm line is a reflection coefficient of about 0.01, or
+  a VSWR of 1.02, which is 40 dB of return loss. Nothing on a short
+  interconnect will notice. It starts to matter when the line is doing real
+  work, such as a quarter wave transformer, where the impedance is the whole
+  point rather than incidental.
+</p>
+
+<h2>The other substrates, for comparison</h2>
+
+<aside class="doc-result">
+  <h2>50 ohm microstrip</h2>
+  <ul>
+    <li>FR-4            er 4.4   1.600 mm  ->  3.079 mm   eeff 3.332</li>
+    <li>RO4350B         er 3.48  0.762 mm  ->  1.741 mm   eeff 2.736</li>
+    <li>RT/duroid 5880  er 2.2   0.787 mm  ->  2.443 mm   eeff 1.872</li>
+    <li>Alumina         er 9.8   0.635 mm  ->  0.614 mm   eeff 6.601</li>
+  </ul>
+</aside>
+
+<p>
+  Notice the alumina line: 0.614 mm on a 0.635 mm substrate, a W/h just under
+  1. High permittivity buys you small circuits, which is exactly why microwave
+  hybrids were built on ceramic.
+</p>
+
+<h2>Width is only half the job</h2>
+
+<p>
+  A track width gives you the impedance. It does not give you the length, and
+  for anything that is a transmission line rather than a wire, the length is
+  the design.
+</p>
+
+<p>
+  A microstrip's field is partly in the substrate and partly in the air above
+  it, so the wave sees something in between: the <strong>effective</strong>
+  dielectric constant. On 1.6 mm FR-4 a 50 ohm line has an effective er of
+  3.332, so the wave travels at 0.548 c and a wavelength is that much shorter
+  than in free space.
+</p>
+
+<aside class="doc-result">
+  <h2>Quarter wave, 50 ohm line on 1.6 mm FR-4</h2>
+  <ul>
+    <li> 434 MHz  ->  94.61 mm</li>
+    <li> 915 MHz  ->  44.87 mm</li>
+    <li>1575 MHz  ->  26.07 mm</li>
+    <li>2450 MHz  ->  16.76 mm</li>
+  </ul>
+</aside>
+
+<p>
+  This is also why a narrow track is slightly faster than a wide one. Narrow
+  keeps more of the field in the air, so its effective er is lower. It is a
+  small effect, and it is the reason QuickSmith will not rewrite a design in
+  millimetres unless all its lines are the same width: there is one velocity
+  factor for the whole ladder, and lines of different widths do not share one.
+</p>
+
+<h2>Turning a match into a board</h2>
+
+<p>
+  Here is the part a width calculator on its own cannot do. Take
+  <a href="../help/examples/examples/EXAMPLE_3.html">Example 3</a>, which
+  matches 10 - j15 ohms to 50 ohms at 1 GHz with a 30 ohm series line and a
+  30 ohm open stub. As published, the lengths are 56.4 mm and 38.5 mm, but
+  those assume a velocity factor of 1, which is to say air. On a board they
+  are wrong.
+</p>
+
+<p>
+  What carries across is the electrical length. Those two lines are 67.73 and
+  46.23 degrees at 1 GHz, and degrees are what the circuit actually cares
+  about. Put them on 1.6 mm FR-4 and the same design comes out as:
+</p>
+
+<aside class="doc-result">
+  <h2>Example 3 on 1.6 mm FR-4</h2>
+  <ul>
+    <li>30 ohm line      ->  6.590 mm wide, eeff 3.559, VF 0.530</li>
+    <li>Series line T2      67.73 deg  ->  29.895 mm long</li>
+    <li>Open stub   O3      46.23 deg  ->  20.407 mm long</li>
+    <li></li>
+    <li>Zin 50.169 - j0.226 ohm, VSWR 1.0057</li>
+  </ul>
+</aside>
+
+<a class="doc-open" href="../index.html#eyJ2IjoxLCJmIjoxMDAwLCJWRiI6MC41MzAwNDksIkxVIjoiTWlsbGlNZXRlcnMiLCJlIjpbWzEsInJ4IiwxMCwtMTVdLFsyLCJ0IiwzMCwyOS44OTQ4XSxbMywibyIsMzAsMjAuNDA2OV1dLCJjIjp7InMiOjJ9fQ">Open this circuit in QuickSmith</a>
+
+<p>
+  Two things are worth noticing there. The lengths halved, near enough, because
+  the board slows the wave down. And a 30 ohm line on 1.6 mm FR-4 is 6.59 mm
+  wide, which is a quarter of the length of the stub it is feeding. At those
+  proportions it is stretching the point to call it a line at all, and on a
+  real board you would either go to a thinner substrate or pick a different
+  topology. The tool will happily give you the number. Deciding whether it is
+  a sensible number is still your job.
+</p>
+
+<h2>Doing it yourself</h2>
+
+<p>
+  In QuickSmith, <strong>Data &rarr; Microstrip and coax</strong>. Enter the
+  dielectric constant and the substrate thickness, and every transmission line
+  in your ladder is listed with the track width and the physical length that
+  would build it. There is a line at the top giving the 50 ohm width for that
+  substrate whether you have any lines in the design or not, because that is
+  the number people want first.
+</p>
+
+<p>
+  <strong>Apply to the design</strong> rewrites the ladder in millimetres and
+  sets the velocity factor to match, so the circuit behaves exactly as it did
+  but is now expressed in numbers you can hand to a layout tool. Switch the
+  medium to <strong>Coax</strong> and it does the same job with the bore
+  diameter and the inner conductor instead.
+</p>
+
+<h2>What this model does not do</h2>
+
+<p>
+  The formulas here are Hammerstad's quasi-static approximation, good to about
+  1% across the range of W/h anyone builds in. They assume zero copper
+  thickness and no dispersion, which means two things.
+</p>
+
+<ul>
+  <li>
+    Copper thickness makes a real track slightly wider than the model thinks,
+    so a 1 oz finish will read a fraction of an ohm low. On FR-4 that
+    disappears into the er spread.
+  </li>
+  <li>
+    Dispersion means er falls with frequency, so above a few GHz the effective
+    er drifts and the model drifts with it. FR-4 is a poor material up there
+    anyway, and if you are working where dispersion matters you want a field
+    solver, not a Smith chart.
+  </li>
+</ul>
+
+<p>
+  For laying out a matching network on a board, in the frequency range where
+  FR-4 is a reasonable thing to be using, it is well inside the tolerance of
+  the material.
+</p>
+
+<p>
+  Every number on this page came out of the same code the program runs, and
+  the substrate figures are pinned in the regression suite against the
+  published 50 ohm widths for FR-4, RO4350B, RT/duroid 5880 and alumina. If
+  the model ever drifts, the tests fail before the article does.
+</p>
+
+<nav class="doc-nav">
+  <span><a href="index.html">&#9664; All articles</a></span>
+  <span><a href="../help/examples/examples/EXAMPLES.html">Worked examples &#9654;</a></span>
+</nav>
+
+</main>
+</div>
+</body>
+</html>

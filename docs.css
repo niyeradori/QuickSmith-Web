@@ -138,6 +138,9 @@
     margin: 0 0 3px;
     font: 13.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     color: var(--qs-ink, #14181f);
+    /* these lists are small tables of numbers, so runs of spaces are how the
+       columns line up; pre-wrap keeps them and still wraps on a narrow screen */
+    white-space: pre-wrap;
 }
 
 /* The whole point of a worked example on the web rather than in a PDF. */
