@@ -394,6 +394,7 @@ th {
     .ladder-half .qs-unit-tag { padding: 0 2px; font-size: 9px; }
 }
 
+
 /* the unit beside a slot's value, inside the stepper next to the + button */
 .qs-unit-tag {
     display: flex;
@@ -518,6 +519,74 @@ th {
 }
 
 /*
+ * A half is its own container.
+ *
+ * The schematic panel's width says nothing about how much room a value box
+ * has, because above 620px the two halves sit side by side and each one gets
+ * half of it. So the panel could be a comfortable 833px while each half was
+ * 396px and "71.35" was rendering as "71.3", and at 700px the box was down to
+ * fourteen pixels. Asking the half how wide it is covers both arrangements
+ * with one rule.
+ *
+ * Below about 410px of half, the alignment goes. A series box is normally
+ * three quarters of its cell so it sits over the series slot instead of
+ * overhanging the shunt slot beside it; here it takes the whole cell, because
+ * a value you can read slightly out of line beats a tidy column of clipped
+ * digits.
+ *
+ * Placed after the 75% rule on purpose. A @container block carries no extra
+ * weight, so declared before it, it would lose.
+ */
+.ladder-half { container: qs-half / inline-size; }
+
+@container qs-half (max-width: 410px) {
+    .ladder-half table:first-of-type .qs-spin { width: 100%; }
+    /*
+     * The series rules above are written as table:first-of-type so they can
+     * give a narrow series box its own treatment, which makes them heavier
+     * than a plain .ladder-half selector. Matched here rather than fought,
+     * or the padding below silently loses and the box keeps 4px a side.
+     */
+    .ladder-half .qs-spin > button,
+    .ladder-half table:first-of-type .qs-spin > button { width: 20px; }
+    .ladder-half .qs-spin > input,
+    .ladder-half table:first-of-type .qs-spin > input { padding-left: 2px; padding-right: 2px; }
+    .ladder-half .qs-unit-tag { padding: 0 2px; font-size: 9px; }
+}
+
+/*
+ * A 360px phone leaves each half about 250px, which is a third of that per
+ * slot: two keys, a unit and five digits in 77 pixels. The digits get smaller
+ * before they get truncated, because the number is the thing you came to read.
+ */
+@container qs-half (max-width: 300px) {
+    .ladder-half .qs-spin > input,
+    .ladder-half table:first-of-type .qs-spin > input { font-size: 11px; }
+}
+
+/*
+ * Narrower still and the unit has to go, and the keys shrink with it. The unit
+ * is the least of the three: the designator above the box already says L or C,
+ * and the defaults are nH and pF. A clipped value is worse than an implied
+ * unit.
+ */
+@container qs-half (max-width: 270px) {
+    .ladder-half .qs-unit-tag { display: none; }
+    .ladder-half .qs-spin > button,
+    .ladder-half table:first-of-type .qs-spin > button { width: 16px; }
+    .ladder-half .qs-spin > input,
+    .ladder-half table:first-of-type .qs-spin > input { font-size: 10px; }
+}
+
+/* The last stop, for a 320px phone. The widest thing on the ladder is a
+   negative reactance like "-40.00", six characters in a box a shade over
+   twenty pixels wide, and this is what makes it fit. */
+@container qs-half (max-width: 220px) {
+    .ladder-half .qs-spin > input,
+    .ladder-half table:first-of-type .qs-spin > input { font-size: 9px; }
+}
+
+/*
  * A row of slots. Flex rather than floats, because the second row is read
  * backwards when the halves are stacked.
  */
@@ -611,6 +680,14 @@ th {
     }
 }
 
+.qs-chart-col { grid-area: chart; }
+/* a flex column so the input panel's offset is not swallowed by the margin
+   above it: adjacent margins collapse in normal flow, flex items' do not */
+.qs-side      { grid-area: side; display: flex; flex-direction: column; }
+.qs-work      { grid-area: work; }
+
+.qs-chart-col, .qs-side, .qs-work { min-width: 0; }
+
 /*
  * One column, and the ladder comes second.
  *
@@ -624,6 +701,13 @@ th {
  * ladder. Dissolving the chart column into the grid puts its children on the
  * same footing as the other two, and then the whole lot can be ordered
  * together. Desktop is untouched: this only applies once there is one column.
+ *
+ * This block has to sit after the grid-area declarations above it. Those are
+ * plain class selectors of the same weight, so being inside a media query wins
+ * nothing; put this first and .qs-side keeps grid-area: side, gets placed into
+ * an area that no longer exists, and the browser invents implicit columns to
+ * hold it. That is what a 390px viewport was doing: three columns of 2px,
+ * 104px and 219px, with the panels landing on top of each other.
  */
 @media (max-width: 900px) {
     .qs-main {
@@ -641,14 +725,6 @@ th {
     .qs-side     { order: 5; }   /* readout, overlays, input */
     .qs-response { order: 6; }   /* the sweep, which is the tallest of them */
 }
-
-.qs-chart-col { grid-area: chart; }
-/* a flex column so the input panel's offset is not swallowed by the margin
-   above it: adjacent margins collapse in normal flow, flex items' do not */
-.qs-side      { grid-area: side; display: flex; flex-direction: column; }
-.qs-work      { grid-area: work; }
-
-.qs-chart-col, .qs-side, .qs-work { min-width: 0; }
 
 /*
  * The workbench is a panel like everything else. Inside it the surfaces

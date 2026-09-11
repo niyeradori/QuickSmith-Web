@@ -174,8 +174,11 @@
   font-family: Tahoma, "Trebuchet MS", sans-serif;
   /* color: blue !important; */
   /* font-size: max(0.9vw, 11px) !important; */
-  /* clamp(min, val, max) */
-  font-size: clamp(11px, 0.9vw, 18px) !important;
+  /* clamp(min, val, max)
+     No !important. It was unfightable, so nothing in app.css could shrink a
+     value box on a narrow screen, and the digits were truncated instead. The
+     clamp still wins on specificity where nothing else asks. */
+  font-size: clamp(11px, 0.9vw, 18px);
 }
 /* @media only screen and (max-width: 850px) {
 
