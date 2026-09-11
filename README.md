@@ -50,8 +50,9 @@ files, served as-is. No jQuery, no math.js, no Chart.js, no bundler. Open
   its node along its own locus, so a series element slides round its constant
   resistance circle and a shunt element round its constant conductance circle.
   The engine solves for the value that puts the node under your finger.
-- **The next move**: a live hint under the chart naming the one or two parts
-  that would take the current Zin to Z0, updated as you edit.
+- **The next move**: an optional hint under the chart naming the one or two
+  parts that would take the current Zin to Z0, updated as you edit. Off by
+  default, under Next move in the Overlays panel.
 - **Automatic matching**: the `Auto-match to 50 Ω` button lists every
   two-element network that takes the load to Z0, with its loaded Q, and applies
   the one you choose. Ask for a particular Q and you get Pi and T networks too,

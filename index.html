@@ -709,14 +709,14 @@ var smithObj = {
               "view" : null,   // the QSChart mount, set once the DOM is ready
               "title": '',
               "showElementArcs": true,  // one coloured arc per component, load to Zin
-              "showNextMove": true,     // the move that would finish the match
+              "showNextMove": false,    // the move that would finish the match
               "showAdmittace": false,  // DrawAdmittance
                drawAdmitanceCircles: function() { drawAdmitanceCircles(this);},
               //drawAdmitanceCircles: drawAdmitanceCircles,
               // Bumped whenever a chart default changes. A saved session written
               // under an older number does not get to restore the settings that
               // changed, so the new default wins. See get().
-              "chartVer": 2,
+              "chartVer": 3,
               "vswrCircle": 1.0, // draw VSWR circle - 1 is a clean chart, nothing drawn
               drawVSWRCircles:  function() { drawVSWRCircles(this);},
               "qCircle": 0.0, // draw Q circle - 0 is a clean chart, nothing drawn
@@ -1178,18 +1178,29 @@ function get() {
     {
         var smithObj1 =JSON.parse(item);
         /*
-         * A session saved before the overlay defaults changed carries the old
-         * VSWR 2 and Q 1, and restoring those would put two circles back on a
-         * chart that is meant to open clean. Anyone who has ever opened the
-         * amplifier page has such a session, because that saves on the way out.
-         * Old sessions have no chartVer, so their overlay values are dropped
-         * and the current defaults stand. Everything else restores as before,
-         * and a session saved from now on keeps whatever circles you chose.
+         * A saved session restores every key it holds, so changing a chart
+         * default is not enough on its own: the old value comes straight back
+         * over the top of it. Anyone who has ever opened the amplifier page
+         * has a session, because that saves on the way out.
+         *
+         * So each entry below records which settings changed default in which
+         * version of chartVer, and a session only loses the ones that changed
+         * after it was written. A session saved under 2 keeps the VSWR and Q
+         * circles it chose and loses only the next-move hint. Everything not
+         * listed restores as it always did.
+         *
+         * Add a line here whenever a chart default moves, and bump chartVer.
          */
-        if (smithObj1.chartVer !== smithObj.chartVer) {
-            delete smithObj1.vswrCircle;
-            delete smithObj1.qCircle;
-        }
+        var RETIRED = {
+            2: ["vswrCircle", "qCircle"],   // were 2 and 1, now a clean chart
+            3: ["showNextMove"]             // was on, now off by default
+        };
+        var savedVer = Number(smithObj1.chartVer) || 1;
+        Object.keys(RETIRED).forEach(function (v) {
+            if (Number(v) > savedVer) {
+                RETIRED[v].forEach(function (key) { delete smithObj1[key]; });
+            }
+        });
         copy_smithObj(smithObj1);
     }
     else { console.log(" smithData local storage not set");  }; 
