@@ -611,12 +611,35 @@ th {
     }
 }
 
+/*
+ * One column, and the ladder comes second.
+ *
+ * On a phone the loop is: drag a part onto a slot, watch the dot move. Those
+ * two want to be next to each other, and they were not: the readout, the
+ * overlays and the response plot all sat between them, so every edit meant
+ * scrolling past three panels to see what it did.
+ *
+ * The response plot is a child of the chart column rather than a column of its
+ * own, so reordering the three areas alone would still leave it above the
+ * ladder. Dissolving the chart column into the grid puts its children on the
+ * same footing as the other two, and then the whole lot can be ordered
+ * together. Desktop is untouched: this only applies once there is one column.
+ */
 @media (max-width: 900px) {
     .qs-main {
         grid-template-columns: 1fr;
-        grid-template-areas: "chart" "side" "work";
+        grid-template-areas: none;
         gap: 16px;
     }
+    .qs-chart-col { display: contents; }
+    .qs-side, .qs-work, .qs-chart-col > * { grid-area: auto; }
+
+    .qs-wrap     { order: 1; }   /* the chart */
+    .qs-cursor   { order: 2; }   /* what the pointer is over */
+    .qs-tour     { order: 3; }   /* a guided example, when one is running */
+    .qs-work     { order: 4; }   /* the ladder, right under the chart */
+    .qs-side     { order: 5; }   /* readout, overlays, input */
+    .qs-response { order: 6; }   /* the sweep, which is the tallest of them */
 }
 
 .qs-chart-col { grid-area: chart; }
