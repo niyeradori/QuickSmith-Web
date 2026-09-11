@@ -1996,11 +1996,20 @@ var end = function(e) {
         }
     }
 
+    /* Ask for a new step size for one value box. Reached three ways: a
+     * double-click, a long press, or pressing s while the box has focus. */
+    function openStepSize(id1) {
+        var element = document.getElementById(id1);
+        updateStepSize_prompt(QSUI.getStep(element), element);
+    }
+
+    /*
+     * The double-click route. A double tap on a touch screen is zoom, so this
+     * stays off there and touch uses the long press wired below instead.
+     */
     function step_change(id1) {
         if( isMobile ) return;
-        var element = document.getElementById(id1);
-        var current_value = QSUI.getStep(element);
-        updateStepSize_prompt(current_value,element);
+        openStepSize(id1);
     }
     
 
@@ -2009,6 +2018,15 @@ var end = function(e) {
 //                step_change($(e.target).attr("id"))  },
 //                1000);
   onTapHold('input[name="spin1"]', 1000, function (box) { step_change1(box.id); });
+/*
+ * The same for the ladder's value boxes, which never got it. The overlay boxes
+ * above have had a long press since the touch handlers were rewritten, but the
+ * jQuery taphold for these was left commented out and never ported, so on a
+ * phone there was no way at all to change a step size: the double-click is off
+ * there by design, and the documented fallback of typing "s" in the box needs
+ * a keypress event that Android's soft keyboard does not reliably send.
+ */
+  onTapHold('input[name="spin2"]', 1000, function (box) { openStepSize(box.id); });
 
 onKeyPress('input[name="spin2"]', function (e) {
     var id1 = e.target.id;
@@ -2025,15 +2043,8 @@ onKeyPress('input[name="spin2"]', function (e) {
         //if (schObj.ELEMENT[idNum].tune == 2)spin_element.value=schObj.ELEMENT[idNum].value2; // take care of the tune element for two element components
         //else spin_element.value=schObj.ELEMENT[idNum].value1;
        // step_change(id1);
-       var current_value = QSUI.getStep(spin_element);
        spin_element.blur();
-    //   var val = prompt("Enter Step Size", current_value);
-    //   if (isNumeric(val) == true) {
-    //     $(spin_element).trigger("touchspin.updatesettings", { step: val })
-    //   }
-     
-     updateStepSize_prompt(current_value,spin_element);
-
+       openStepSize(id1);
         return;
     }
     // if( (e.which =='84' || e.which =='116')  && is1Component(schObj.ELEMENT[idNum].type)== false)  { // t or T
