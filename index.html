@@ -1087,16 +1087,50 @@ function set_click() {
  * itself is worth reclaiming: three of the four are empty in most designs,
  * which is over a hundred pixels of the schematic's height.
  */
+/*
+ * A row of second-value boxes only matters for parts that have two values, so
+ * it is hidden when nothing in it is in use.
+ *
+ * Side by side the two halves have to agree about that. Collapsed
+ * independently, a two-value part in one half made it a row taller than the
+ * other, and the two ladders sat at different heights with the rail stepping
+ * across the join. So when the halves are in one row, a row is shown if
+ * either half needs it, and the other half carries a blank one to match.
+ * Stacked, they are free to collapse separately: nothing lines up across them.
+ */
 function collapseEmptyValueRows() {
-    var rows = document.querySelectorAll(".ladder-half tr");
-    for (var i = 0; i < rows.length; i++) {
-        var cells = rows[i].querySelectorAll('td[id$="at"]');
-        if (!cells.length) continue;                  // not a second-value row
-        var anyShowing = false;
-        for (var j = 0; j < cells.length; j++) {
-            if (cells[j].style.visibility !== "hidden") anyShowing = true;
+    var ladder = document.querySelector(".ladder-row");
+    var sideBySide = ladder &&
+        getComputedStyle(ladder).gridTemplateAreas.indexOf("half-a half-b") >= 0;
+
+    // the second-value rows of each half, in the same order in both
+    var perHalf = [];
+    var halves = document.querySelectorAll(".ladder-half");
+    for (var h = 0; h < halves.length; h++) {
+        var rows = halves[h].querySelectorAll("tr");
+        var list = [];
+        for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].querySelectorAll('td[id$="at"]');
+            if (!cells.length) continue;              // not a second-value row
+            var anyShowing = false;
+            for (var j = 0; j < cells.length; j++) {
+                if (cells[j].style.visibility !== "hidden") anyShowing = true;
+            }
+            list.push({ row: rows[i], showing: anyShowing });
         }
-        rows[i].hidden = !anyShowing;
+        perHalf.push(list);
+    }
+
+    for (var k = 0; k < perHalf.length; k++) {
+        for (var n = 0; n < perHalf[k].length; n++) {
+            var show = perHalf[k][n].showing;
+            if (sideBySide) {
+                for (var m = 0; m < perHalf.length; m++) {
+                    if (perHalf[m][n] && perHalf[m][n].showing) show = true;
+                }
+            }
+            perHalf[k][n].row.hidden = !show;
+        }
     }
 }
 

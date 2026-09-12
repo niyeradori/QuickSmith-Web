@@ -388,7 +388,7 @@ th {
  * some back: smaller buttons, tighter padding. Without this "38.12 pF" in a
  * 124px cell clips the number, which is worse than having no unit at all.
  */
-@container (max-width: 470px) {
+@container qs-schematic (max-width: 470px) {
     .ladder-half .qs-spin > button { width: 20px; }
     .ladder-half .qs-spin > input { padding-left: 3px; padding-right: 3px; }
     .ladder-half .qs-unit-tag { padding: 0 2px; font-size: 9px; }
@@ -420,7 +420,11 @@ th {
  * and on a narrow desktop column alike, and all twelve slots stay reachable
  * either way. Bootstrap's answer was to hide the second half below 768px.
  */
-.schematic { container-type: inline-size; }
+/* Named, because .ladder-half inside it is a container too. An unnamed
+   @container query binds to the nearest container ancestor, so once the half
+   became one, every unnamed query written for the panel silently started
+   asking the half instead. Naming both makes each query say what it means. */
+.schematic { container: qs-schematic / inline-size; }
 
 /*
  * Stacked, the parts bin goes between the two halves: the drag you make most
@@ -448,12 +452,17 @@ th {
 .qs-fold { fill: none; stroke: var(--qs-ink, #14181f); stroke-width: 1.4;
            stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 .qs-port { fill: var(--qs-ink, #14181f); stroke: none; }
-@container (min-width: 620px) {
+@container qs-schematic (min-width: 620px) {
     .ladder-row {
         grid-template-columns: 1fr 1fr;
         grid-template-areas: "half-a half-b" "tray tray";
+        /* One continuous ladder across the two columns: slot 6 runs straight
+           into slot 7, so nothing may sit between them. The row keeps its gap
+           above the tray, and the breathing room that the 92% width gave moves
+           out here so the outer ends still clear the panel edge. */
+        column-gap: 0;
+        padding: 0 12px;
     }
-    .ladder-row { padding: 0; }
 }
 .half-a { grid-area: half-a; }
 .half-b { grid-area: half-b; }
@@ -514,7 +523,13 @@ th {
 /* On a narrow panel every pixel goes to the controls instead: the value boxes
    are down to about fifty pixels there, which is as small as they can be and
    still hold "38.12". The compaction is a wide-screen luxury. */
-@container (max-width: 470px) {
+@container qs-schematic (max-width: 470px) {
+    .ladder-half { --qs-ladder: 100%; }
+}
+
+/* and the same full width side by side, so the two ladders meet at the column
+   boundary. After the 92% rule above, or it loses on source order. */
+@container qs-schematic (min-width: 620px) {
     .ladder-half { --qs-ladder: 100%; }
 }
 
@@ -609,7 +624,7 @@ th {
 .half-b table { direction: rtl; }
 .half-b table td, .half-b table th { direction: ltr; }
 
-@container (min-width: 620px) {
+@container qs-schematic (min-width: 620px) {
     .half-b .dropzone { flex-direction: row; }
     .half-b table { direction: ltr; }
 }
@@ -977,7 +992,7 @@ th {
 .qp-legend i { display: inline-block; width: 12px; height: 3px; margin-right: 5px; vertical-align: middle; border-radius: 2px; }
 
 /* side by side there are no lanes, so the bin has nothing to reclaim */
-@container (min-width: 620px) {
+@container qs-schematic (min-width: 620px) {
     .qs-tray { margin-left: 0; }
 }
 
