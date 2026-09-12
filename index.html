@@ -76,6 +76,7 @@
   <script src="tours.js"></script>
   <script src="history.js"></script>
   <script src="line.js"></script>
+  <script src="designs.js"></script>
   <script src="sch.js"></script>
   <script src="js/DragDropTouch.js"></script>    
    <!-- ios-drag-drop.js does not trigger end ? -->
@@ -220,6 +221,7 @@
             <li><a href="#" onclick ="new_click()">New Session</a></li>
             <li><a href="#" onclick ="set_click()" >Save Session</a></li>
             <li><a href="#" onclick ="get_click()" >Restore Session</a></li>   
+            <li><a href="#" onclick ="designs_click()" >Saved Designs…</a></li>
             <!-- <div class=""> -->
                 <li class=""><a href="#" onclick ="load_click()" >Load File</a></li> 
                 <li class="" ><a href="#" onclick ="save_click()" >Save File</a></li>
@@ -1264,6 +1266,119 @@ function new_click() {
 
 function save_click() {
     saveJSONtoFile(schObj, "out.sch");
+}
+
+/* ================================================== designs kept in the browser
+ *
+ * Save File is for work you want to keep; this is for work you want to come
+ * back to. Designs go under names you choose into this browser's storage, so
+ * the ones you are actually using are a click away instead of somewhere in a
+ * Downloads folder. The store is in designs.js; this is the panel over it.
+ *
+ * What is saved is schObj, the same object a .sch file holds, so a design
+ * saved here opens as a file and a file saves here.
+ */
+var designName = "";            // what the name box offers next time
+
+function designs_click() {
+    var body = document.createElement("div");
+
+    var row = document.createElement("div");
+    row.className = "qs-save-row";
+    var name = document.createElement("input");
+    name.type = "text";
+    name.className = "qs-design-name";
+    name.placeholder = "Name this design";
+    name.value = designName;
+    var saveBtn = document.createElement("button");
+    saveBtn.type = "button";
+    saveBtn.className = "qs-btn qs-primary";
+    saveBtn.textContent = "Save";
+    row.appendChild(name);
+    row.appendChild(saveBtn);
+    body.appendChild(row);
+
+    var list = document.createElement("div");
+    body.appendChild(list);
+
+    function draw() {
+        var all = QSDesigns.list();
+        list.innerHTML = "";
+        if (!all.length) {
+            var empty = document.createElement("p");
+            empty.className = "qs-design-empty";
+            empty.textContent = "Nothing saved yet. Name this design and press " +
+                "Save to keep it in this browser.";
+            list.appendChild(empty);
+            return;
+        }
+        all.forEach(function (d) {
+            var line = document.createElement("div");
+            line.className = "qs-design-row";
+
+            var open = document.createElement("button");
+            open.type = "button";
+            open.className = "qs-btn qs-design-open";
+            open.innerHTML = "<strong></strong><span></span>";
+            open.querySelector("strong").textContent = d.name;
+            open.querySelector("span").textContent = shortDate(d.saved);
+            open.addEventListener("click", function () {
+                designName = d.name;
+                QSUI.close(dlg);
+                loadDesign(d.sch);
+            });
+
+            var kill = document.createElement("button");
+            kill.type = "button";
+            kill.className = "qs-btn qs-design-x";
+            kill.innerHTML = "&times;";
+            kill.title = "Delete " + d.name;
+            kill.setAttribute("aria-label", "Delete " + d.name);
+            kill.addEventListener("click", function () {
+                QSDesigns.remove(d.name);
+                draw();
+            });
+
+            line.appendChild(open);
+            line.appendChild(kill);
+            list.appendChild(line);
+        });
+    }
+
+    saveBtn.addEventListener("click", function () {
+        var typed = name.value.trim();
+        if (!typed) { name.focus(); return; }
+        // JSON.parse of a stringify, so the slot holds a copy and goes on
+        // holding what you saved however much you tune afterwards.
+        if (QSDesigns.save(typed, JSON.parse(JSON.stringify(schObj)))) {
+            designName = typed;
+            draw();
+        } else {
+            ShowMessage_sm("QuickSmith",
+                "This browser would not store the design. Its storage may be " +
+                "full or switched off - Save File still works.");
+        }
+    });
+    name.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); saveBtn.click(); }
+    });
+
+    draw();
+    var dlg = QSUI.open({ title: "Saved designs", body: body });
+}
+
+/* The same door a .sch file comes in by, steps and all. */
+function loadDesign(sch) {
+    resetSteps();
+    copy_schObj(sch);
+    updateUI();
+}
+
+function shortDate(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return "";
+    return d.toLocaleDateString(undefined,
+        { year: "numeric", month: "short", day: "numeric" });
 }
 
 function saveCanvas_click(){

@@ -947,6 +947,27 @@ th {
 .qs-tour-pick { text-align: left; margin-bottom: 8px; }
 .qs-tour-pick span { font-size: 12px; color: var(--qs-text); }
 
+/* ------------------------------------------------------- saved designs
+ *
+ * The name box has to beat ui.js's fixed 140px, and ui.js injects its
+ * stylesheet after this file, so the rule has to win on specificity.
+ */
+.qs-save-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.qs-dialog input[type="text"].qs-design-name { flex: 1 1 260px; width: auto; }
+.qs-design-row { display: flex; gap: 6px; margin-bottom: 6px; }
+.qs-dialog button.qs-design-open { flex: 1 1 auto; text-align: left; }
+.qs-design-open strong { font-weight: 600; }
+.qs-design-open span { font-size: 12px; color: var(--qs-text); margin-left: 8px; }
+.qs-dialog button.qs-design-x {
+    flex: 0 0 auto;
+    padding: 7px 12px;
+    font-size: 17px;
+    line-height: 1;
+    color: var(--qs-text, #8b93a3);
+}
+.qs-dialog button.qs-design-x:hover { color: var(--qs-r, #c0392b); }
+.qs-design-empty { color: var(--qs-text); margin: 0; }
+
 /* ------------------------------------------------------------- response */
 
 .qs-sweep-row {
