@@ -269,6 +269,8 @@
                 <li><a href="qsmithfaq.html" target="_blank" >FAQ</a></li>
                 <li><a href="#" onclick="chooseTour()">Guided examples</a></li>
                 <li><a href="/help/examples/examples/EXAMPLES.html" target="_blank" >Examples in full</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#" onclick="feedback_click()">Send feedback…</a></li>
              </ul>
         </li>
         <li><a href="#" onclick="options_click(); document.getElementById('optionsModal').showModal()">Settings</a></li>
@@ -2958,6 +2960,108 @@ function lineDimensions_click() {
     drawForm();
     drawResults();
     dlg = QSUI.open({ title: "Microstrip and coax", body: wrap });
+}
+
+/* ================================================== send feedback
+ *
+ * The useful thing here is not the form, it is the circuit. A share link
+ * carries the whole design, so a report arrives with the exact ladder that
+ * caused it rather than a description of it. The browser and window size come
+ * along too, because most of what gets reported turns out to be one or the
+ * other.
+ *
+ * There is no server to post to and no third-party form: the report leaves by
+ * the user's own mail client, or they copy it and paste it wherever they like.
+ */
+var FEEDBACK_TO = "feedback@quicksmith.online";
+
+function feedbackContext() {
+    var link;
+    try {
+        link = location.origin + location.pathname + "#" + QSLink.encode(schObj, smithObj);
+    } catch (e) {
+        link = location.href;      // a design too odd to encode is still worth reporting
+    }
+    var theme = document.documentElement.getAttribute("data-qs-theme") || "default";
+    return ["Circuit:  " + link,
+            "Browser:  " + navigator.userAgent,
+            "Window:   " + window.innerWidth + " x " + window.innerHeight +
+                ", theme " + theme].join("\n");
+}
+
+function feedback_click() {
+    var wrap = document.createElement("div");
+
+    var intro = document.createElement("p");
+    intro.style.cssText = "margin:0 0 10px;font-size:13px;line-height:1.6";
+    intro.innerHTML = "Found a bug, or something that could work better? This goes to " +
+        "<strong>" + FEEDBACK_TO + "</strong>.";
+    wrap.appendChild(intro);
+
+    var note = document.createElement("textarea");
+    note.rows = 5;
+    note.placeholder = "What happened, and what you expected instead";
+    note.style.cssText = "width:100%;font:inherit;padding:7px 9px;border-radius:6px;" +
+        "border:1px solid var(--qs-edge,#ccd2dc);background:var(--qs-face,#fff);" +
+        "color:var(--qs-ink,#14181f);resize:vertical";
+    wrap.appendChild(note);
+
+    var ctx = document.createElement("p");
+    ctx.style.cssText = "margin:10px 0 0;font-size:12px;line-height:1.6;color:var(--qs-text,#7b8496)";
+    ctx.textContent = "Your circuit, browser and window size are attached automatically, " +
+        "so there is no need to describe the design. Nothing else is sent.";
+    wrap.appendChild(ctx);
+
+    var extra = document.createElement("p");
+    extra.style.cssText = "margin:12px 0 0;font-size:12px;color:var(--qs-text,#7b8496)";
+    extra.innerHTML = 'Prefer GitHub? <a href="https://github.com/niyeradori/QuickSmith-Web/issues" ' +
+        'target="_blank" rel="noopener">Open an issue</a> instead.';
+    wrap.appendChild(extra);
+
+    function report() {
+        return (note.value.trim() || "(no description given)") +
+               "\n\n---\n" + feedbackContext() + "\n";
+    }
+
+    QSUI.open({
+        title: "Send feedback",
+        body: wrap,
+        onShown: function () { note.focus(); },
+        buttons: [
+            { label: "Close" },
+            { label: "Copy it instead", action: function () {
+                var text = "To: " + FEEDBACK_TO + "\n\n" + report();
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(function () {
+                        ShowMessage_sm("Copied", "Paste it into an email to " + FEEDBACK_TO + ".");
+                    }, function () { showFeedbackText(text); });
+                } else {
+                    showFeedbackText(text);
+                }
+                // no "return false": let this dialog close, so the
+                // confirmation is not stacked on top of it
+            } },
+            { label: "Open in email", primary: true, action: function () {
+                window.location.href = "mailto:" + FEEDBACK_TO +
+                    "?subject=" + encodeURIComponent("QuickSmith feedback") +
+                    "&body=" + encodeURIComponent(report());
+            } }
+        ]
+    });
+}
+
+/* Clipboard access can be refused, and on a page served over plain http it is
+ * not there at all. Show the text so it can still be selected by hand. */
+function showFeedbackText(text) {
+    var box = document.createElement("textarea");
+    box.rows = 10;
+    box.readOnly = true;
+    box.value = text;
+    box.style.cssText = "width:100%;font:12px ui-monospace,Menlo,monospace;padding:7px;" +
+        "border:1px solid var(--qs-edge,#ccd2dc);border-radius:6px;" +
+        "background:var(--qs-bg,#f6f7f9);color:var(--qs-ink,#14181f)";
+    QSUI.open({ title: "Copy this and email it", body: box,
+                onShown: function () { box.focus(); box.select(); } });
 }
 
 /* ------------------------------------------------------------- Touchstone */
