@@ -539,6 +539,11 @@ th {
  */
 .ladder-half { container: qs-half / inline-size; }
 
+/* One size, refined below by how wide the half actually is. Nothing here keys
+   off the viewport: the ladder's width does not track it once the grid caps
+   the panel, and the two move in opposite directions past about 1800px. */
+.ladder-half .qs-spin > input { font-size: 13px; }
+
 @container qs-half (max-width: 410px) {
     .ladder-half table:first-of-type .qs-spin { width: 100%; }
     /*
