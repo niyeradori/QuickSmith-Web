@@ -365,13 +365,17 @@ function ShowMessage_sm(title, msg) {
     QSUI.open({ title: title, body: msg, small: true });
 }
 
-function updateStepSize_prompt(current_val, element) {
+/* `after` lets the caller record the new step somewhere it will be saved. The
+   overlay boxes above the chart do not pass one; the ladder's do. */
+function updateStepSize_prompt(current_val, element, after) {
     QSUI.promptValue({
         title: "Step Size",
         label: "How much each press of the arrows changes the value:",
         value: current_val,
         onOK: function (result) {
-            if (isNumeric(result)) QSUI.setStep(element, result);
+            if (!isNumeric(result)) return;
+            QSUI.setStep(element, result);
+            if (after) after(element);
         }
     });
 }

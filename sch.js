@@ -36,19 +36,23 @@ var schObj = {
                           },
 
                 "ELEMENT": [     // type W,G,RX,R,X,C,L,T,O,S,SLC,PLC,SRC,PRC
-                    { "index": 0, "type": "f", "value1": 100.00,"value2": 0,"tune": 1 }, // uses item 0 for frequency
-                    { "index": 1, "type": "rx", "value1": 50, "value2": 0,"tune": 1 },  // the load
-                    { "index": 2, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1 },
-                    { "index": 3, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1 },
-                    { "index": 4, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1 },
-                    { "index": 5, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1 },
-                    { "index": 6, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1 },
-                    { "index": 7, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1 },
-                    { "index": 8, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1 },
-                    { "index": 9, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1 },
-                    { "index": 10, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1 },
-                    { "index": 11, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1 },
-                    { "index": 12, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1 }
+                    // step / step2 are the spin button increments for the two value
+                    // boxes. They live here so that saving a session or a .sch file
+                    // carries them, which it never used to: they were only ever on
+                    // the DOM input and were lost on every load.
+                    { "index": 0, "type": "f", "value1": 100.00,"value2": 0,"tune": 1, "step": 0.01, "step2": 0.01 }, // uses item 0 for frequency
+                    { "index": 1, "type": "rx", "value1": 50, "value2": 0,"tune": 1, "step": 0.1, "step2": 0.01 },  // the load
+                    { "index": 2, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, "step": 0.01, "step2": 0.01 },
+                    { "index": 3, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, "step": 0.01, "step2": 0.01 },
+                    { "index": 4, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, "step": 0.01, "step2": 0.01 },
+                    { "index": 5, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, "step": 0.01, "step2": 0.01 },
+                    { "index": 6, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, "step": 0.01, "step2": 0.01 },
+                    { "index": 7, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, "step": 0.01, "step2": 0.01 },
+                    { "index": 8, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, "step": 0.01, "step2": 0.01 },
+                    { "index": 9, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, "step": 0.01, "step2": 0.01 },
+                    { "index": 10, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, "step": 0.01, "step2": 0.01 },
+                    { "index": 11, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, "step": 0.01, "step2": 0.01 },
+                    { "index": 12, "type": "w", "value1": 0, "value2": 0, "q": 1000000, "tune": 1, "step": 0.01, "step2": 0.01 }
                 ]
             };
 

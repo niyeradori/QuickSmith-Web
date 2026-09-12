@@ -325,9 +325,30 @@ var QSUI = (function () {
         return input && input.qsSpin ? input.qsSpin.step : 1;
     }
 
+    /*
+     * How many decimals a box needs to show what its step changes. A step of
+     * 0.001 against two decimals moved the value by nothing visible: the
+     * arrows appeared dead while the step was faithfully applied and then
+     * rounded away. Never fewer than two, so coarse steps still read as
+     * "11.00" the way they always have.
+     */
+    function decimalsFor(step) {
+        var text = String(step);
+        var exp = text.indexOf("e-");
+        var places;
+        if (exp > 0) {
+            places = Number(text.slice(exp + 2));
+        } else {
+            var dot = text.indexOf(".");
+            places = (dot < 0) ? 0 : text.length - dot - 1;
+        }
+        return Math.min(6, Math.max(2, places));
+    }
+
     function setStep(input, step) {
         if (input && input.qsSpin && isFinite(Number(step))) {
             input.qsSpin.step = Number(step);
+            input.qsSpin.decimals = decimalsFor(step);
         }
     }
 

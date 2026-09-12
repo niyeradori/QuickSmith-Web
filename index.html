@@ -801,11 +801,10 @@ smithObj.view = QSChart.mount("smithMain");
     });
     QSSym.mount();
     resizeSchematic();
-    // Set the load's step size before anything is restored. TouchSpin rounds
-    // the field's current value to the new step, so doing this afterwards
-    // snapped a restored 1.94 ohm load down to 1.90 and quietly changed the
-    // answer.
-    QSUI.setStep(document.getElementById("E1"), 0.1); // the load steps by 0.1
+    // The load's 0.1 step is a default in schObj now, applied by updateUI along
+    // with every other slot's, so it no longer has to be set here before the
+    // restore. QSUI.setStep does not round the field, which is what made the
+    // ordering matter back when this was TouchSpin.
 
     // the menu hints say what this keyboard actually uses
     if (!/Mac|iPhone|iPad/.test(navigator.platform)) {
@@ -1164,6 +1163,7 @@ function updateUI() {
         var spin_element;
         spin_element =  document.getElementById(id);
         spin_element.value= schObj.ELEMENT[i].value1;
+        QSUI.setStep(spin_element, stepFor(i, false));
         if(schObj.ELEMENT[i].value1 < 0) spin_element.style.color = 'var(--qs-r)';else spin_element.style.color = '';
         // Slot 0 is the frequency and has no second value, so no E0a cell exists.
         // jQuery quietly did nothing when a selector matched nothing; plain DOM
@@ -1176,6 +1176,7 @@ function updateUI() {
         }
         else if (secondBox)
         {   secondBox.value = schObj.ELEMENT[i].value2;
+            QSUI.setStep(secondBox, stepFor(i, true));
             if (secondCell) secondCell.style.visibility = "visible";
             if(schObj.ELEMENT[i].value2 < 0) secondBox.style.color = 'var(--qs-r)';else secondBox.style.color = '';
         }
@@ -1206,6 +1207,7 @@ function get() {
     {
         var schObj1 =JSON.parse(item);
         //console.log(schObj);
+        resetSteps();
         copy_schObj(schObj1);
         //console.log("After copying");
         //console.log(schObj);
@@ -1497,6 +1499,7 @@ function handleFileOpen(e) {
                    {
                      //alert (" Verified");
                      //var schObj1 =JSON.parse(contents);
+                     resetSteps();
                      copy_schObj(schObj1);
                      console.log(JSON.stringify(schObj));
                      updateUI(); // update the ui elements
@@ -2050,7 +2053,45 @@ var end = function(e) {
      * double-click, a long press, or pressing s while the box has focus. */
     function openStepSize(id1) {
         var element = document.getElementById(id1);
-        updateStepSize_prompt(QSUI.getStep(element), element);
+        updateStepSize_prompt(QSUI.getStep(element), element, rememberStep);
+    }
+
+    /*
+     * Put a changed step back into schObj, which is what Save Session and a
+     * .sch file are written from. "E2" is slot 2's first value, "E2a" its
+     * second.
+     */
+    function rememberStep(element) {
+        var id = String(element.id);
+        var second = id.slice(-1) === "a";
+        var slot = Number(second ? id.slice(1, -1) : id.slice(1));
+        if (!isFinite(slot) || !schObj.ELEMENT[slot]) return;
+        schObj.ELEMENT[slot][second ? "step2" : "step"] = QSUI.getStep(element);
+    }
+
+    /*
+     * Put every step back to its default. copy_schObj only copies the keys its
+     * source actually has, so opening a design saved before steps were carried
+     * in them would otherwise leave whatever the last design used. A file that
+     * says nothing about steps should get the defaults, not inherit yours.
+     * Called before loading a file, a session or a share link, and deliberately
+     * not before an undo, where the steps are not part of what changed.
+     */
+    function resetSteps() {
+        for (var i = 0; i <= 12; i++) {
+            if (!schObj.ELEMENT[i]) continue;
+            delete schObj.ELEMENT[i].step;
+            delete schObj.ELEMENT[i].step2;
+        }
+    }
+
+    /* The step a slot should use, falling back for files saved before steps
+       were carried in them. */
+    function stepFor(i, second) {
+        var el = schObj.ELEMENT[i];
+        var stored = el && el[second ? "step2" : "step"];
+        if (isFinite(Number(stored)) && Number(stored) > 0) return Number(stored);
+        return (i === 1 && !second) ? 0.1 : 0.01;
     }
 
     /*
@@ -2722,6 +2763,7 @@ function loadFromHash() {
     if (hash.length < 2) return false;
     try {
         var decoded = QSLink.decode(hash);
+        resetSteps();
         copy_schObj(decoded.sch);
         if (schObj.termination === "Multiple") {
             schObj.gamData.dataQ = phase_unwrap(schObj.gamData.dataQ);
