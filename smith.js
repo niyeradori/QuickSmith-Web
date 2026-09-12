@@ -112,7 +112,10 @@ var QSChart = (function () {
         "opacity:.9;vector-effect:non-scaling-stroke}",
         ".qs-node{stroke:var(--qs-face);stroke-width:3}",
         ".qs-dot{fill:var(--qs-dot);stroke:var(--qs-face);stroke-width:5}",
-        ".qs-grab{fill:transparent;cursor:grab}",
+        // touch-action:none or the chart's pan-y hands any gesture with a
+        // vertical component to the page scroller, which cancels the drag
+        // before it starts. A finger could only ever tune sideways.
+        ".qs-grab{fill:transparent;cursor:grab;touch-action:none}",
         ".qs-grab:active{cursor:grabbing}",
         ".qs-hover{fill:none;stroke:var(--qs-ui);stroke-width:1.4;opacity:.7}",
         ".qs-hover-text{fill:var(--qs-text);font:500 30px ui-monospace,SFMono-Regular,Menlo,monospace}",
@@ -350,6 +353,22 @@ var QSChart = (function () {
     }
 
     /* How many CSS pixels one chart unit currently occupies. */
+    /*
+     * The drag handle's radius, in chart units, from a target size in screen
+     * pixels. Whether you can hit it is a question about the pointer and the
+     * zoom, not about the chart's coordinate system: at 46 units it came out
+     * 14px across on a phone, against the 44px a fingertip wants. A mouse is
+     * happy with half that, and a smaller handle keeps neighbouring nodes
+     * distinct.
+     */
+    function grabRadius(view) {
+        var coarse = window.matchMedia &&
+            window.matchMedia("(pointer: coarse)").matches;
+        var wanted = coarse ? 22 : 11;
+        var scale = view ? svgScale(view) : 0;
+        return scale > 0 ? wanted / scale : 46;
+    }
+
     function svgScale(view) {
         var box = view.el.getBoundingClientRect();
         return (box.width / (2 * VIEW)) * view.zoom;
@@ -658,7 +677,7 @@ var QSChart = (function () {
             if (QSEngine.canTune(nodes[k].type, nodes[k].slot)) {
                 var grab = el("circle", {
                     "class": "qs-grab", "data-slot": nodes[k].slot,
-                    cx: c.re * R, cy: -c.im * R, r: 46
+                    cx: c.re * R, cy: -c.im * R, r: grabRadius(me.view)
                 }, g);
                 el("title", {}, grab).textContent = "Drag to tune " + name;
             }
