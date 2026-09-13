@@ -3164,7 +3164,7 @@ function feedback_click() {
     note.rows = 5;
     note.placeholder = "What happened, and what you expected instead";
     note.style.cssText = "width:100%;font:inherit;padding:7px 9px;border-radius:6px;" +
-        "border:1px solid var(--qs-edge,#ccd2dc);background:var(--qs-face,#fff);" +
+        "border:1px solid var(--qs-edge,#ccd2dc);background:var(--qs-card,#fff);" +
         "color:var(--qs-ink,#14181f);resize:vertical";
     wrap.appendChild(note);
 
@@ -3221,7 +3221,7 @@ function showFeedbackText(text) {
     box.value = text;
     box.style.cssText = "width:100%;font:12px ui-monospace,Menlo,monospace;padding:7px;" +
         "border:1px solid var(--qs-edge,#ccd2dc);border-radius:6px;" +
-        "background:var(--qs-bg,#f6f7f9);color:var(--qs-ink,#14181f)";
+        "background:var(--qs-sunk,#f6f7f9);color:var(--qs-ink,#14181f)";
     QSUI.open({ title: "Copy this and email it", body: box,
                 onShown: function () { box.focus(); box.select(); } });
 }

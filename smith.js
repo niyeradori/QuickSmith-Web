@@ -51,15 +51,24 @@ var QSChart = (function () {
      * the machine opening it happened to prefer.
      */
     var PALETTE = [
-        ":root{--qs-bg:#dce3ed;--qs-face:#f6f8fc;--qs-ink:#2b3547;",
-        "--qs-rim:#d3dae6;--qs-edge:#bdc7d8;--qs-r:#b5342b;--qs-x:#1f7a52;--qs-adm:#4a6fa5;",
-        "--qs-vswr:#1f5fbf;--qs-accent:#1f5fbf;--qs-q:#8d3a9b;--qs-marker:#14181f;--qs-dot:#1f5fbf;",
-        "--qs-trace:#1f5fbf;--qs-plot:#2b3547;--qs-text:#6b7688;--qs-ui:#6b7688;",
-        "--qs-a1:#1f5fbf;--qs-a2:#b5342b;--qs-a3:#1f7a52;--qs-a4:#8d3a9b;",
+        /*
+         * Four surfaces, darkest at the back: the page, the panels that sit
+         * on it, the recessed things you reach into (the parts bin, a unit
+         * tag, a hover), and the near-white cards that carry data - the chart
+         * face, the response plot and the value boxes. Light used to be two
+         * surfaces, which left the panels the brightest thing on screen and
+         * the chart itself grey; this puts the brightness where the work is.
+         */
+        ":root{--qs-bg:#e9eef3;--qs-face:#f2f5f8;--qs-card:#fcfcfd;--qs-sunk:#dfe6ee;",
+        "--qs-ink:#1f2937;--qs-rim:#c8d1dd;--qs-edge:#c8d1dd;",
+        "--qs-r:#b5342b;--qs-x:#1f7a52;--qs-adm:#4a6fa5;",
+        "--qs-vswr:#3b6ea8;--qs-accent:#3b6ea8;--qs-q:#8d3a9b;--qs-marker:#1f2937;--qs-dot:#3b6ea8;",
+        "--qs-trace:#3b6ea8;--qs-plot:#1f2937;--qs-text:#5f6b7a;--qs-ui:#8a94a3;",
+        "--qs-a1:#3b6ea8;--qs-a2:#b5342b;--qs-a3:#1f7a52;--qs-a4:#8d3a9b;",
         "--qs-a5:#b26a00;--qs-a6:#0f7f8f}",
 
         "@media (prefers-color-scheme:dark){:root:not([data-qs-theme=bench]){",
-        "color-scheme:dark;--qs-bg:#0e1219;--qs-face:#202a38;--qs-ink:#cdd5e1;--qs-rim:#2a3341;--qs-edge:#4a5c76;--qs-r:#ef8078;",
+        "color-scheme:dark;--qs-bg:#0e1219;--qs-face:#202a38;--qs-card:#0e1219;--qs-sunk:#0e1219;--qs-ink:#cdd5e1;--qs-rim:#2a3341;--qs-edge:#4a5c76;--qs-r:#ef8078;",
         "--qs-x:#52c793;--qs-adm:#7aa2c9;--qs-vswr:#6aa4f5;--qs-accent:#3a6ea8;--qs-q:#cd88d8;",
         "--qs-marker:#cdd5e1;--qs-dot:#6aa4f5;--qs-trace:#6aa4f5;--qs-plot:#cdd5e1;",
         "--qs-text:#8b95a7;--qs-ui:#8b95a7;",
@@ -67,7 +76,7 @@ var QSChart = (function () {
         "--qs-a5:#e0a04a;--qs-a6:#4fc4d6}}",
 
         ":root[data-qs-theme=analyzer]{",
-        "color-scheme:dark;--qs-bg:#0e1219;--qs-face:#202a38;--qs-ink:#cdd5e1;--qs-rim:#2a3341;--qs-edge:#4a5c76;--qs-r:#ef8078;",
+        "color-scheme:dark;--qs-bg:#0e1219;--qs-face:#202a38;--qs-card:#0e1219;--qs-sunk:#0e1219;--qs-ink:#cdd5e1;--qs-rim:#2a3341;--qs-edge:#4a5c76;--qs-r:#ef8078;",
         "--qs-x:#52c793;--qs-adm:#7aa2c9;--qs-vswr:#6aa4f5;--qs-accent:#3a6ea8;--qs-q:#cd88d8;",
         "--qs-marker:#cdd5e1;--qs-dot:#6aa4f5;--qs-trace:#6aa4f5;--qs-plot:#cdd5e1;",
         "--qs-text:#8b95a7;--qs-ui:#8b95a7;",
@@ -85,7 +94,7 @@ var QSChart = (function () {
         // zoomed it takes the gesture so the user can pan around inside it
         "touch-action:pan-y}",
         ".qs-svg[data-qs-zoomed]{touch-action:none}",
-        ".qs-face{fill:var(--qs-bg);stroke:var(--qs-rim);stroke-width:3}",
+        ".qs-face{fill:var(--qs-card,#fff);stroke:var(--qs-rim);stroke-width:3}",
         ".qs-grid path,.qs-grid circle{fill:none;vector-effect:non-scaling-stroke}",
         ".qs-r-major{stroke:var(--qs-r);stroke-width:1.6;opacity:.85}",
         ".qs-x-major{stroke:var(--qs-x);stroke-width:1.6;opacity:.85}",

@@ -98,7 +98,7 @@ a:hover { text-decoration: underline; }
     color: var(--qs-ink, #14181f);
     white-space: nowrap;
 }
-.nav > li > a:hover { background: var(--qs-bg, #f0f2f5); text-decoration: none; }
+.nav > li > a:hover { background: var(--qs-sunk, #f0f2f5); text-decoration: none; }
 .nav > li.disabled > a { color: var(--qs-text, #9aa1ad); pointer-events: none; }
 .nav > li.active > a { color: var(--qs-vswr, #1f5fbf); font-weight: 600; }
 
@@ -138,7 +138,7 @@ a:hover { text-decoration: underline; }
     color: var(--qs-ink, #14181f);
     white-space: nowrap;
 }
-.dropdown-menu > li > a:hover { background: var(--qs-bg, #eef2f9); text-decoration: none; }
+.dropdown-menu > li > a:hover { background: var(--qs-sunk, #eef2f9); text-decoration: none; }
 .dropdown-menu .divider {
     height: 1px;
     margin: 5px 3px;
@@ -233,7 +233,7 @@ a:hover { text-decoration: underline; }
     border-radius: 5px;
 }
 .form-control:focus { border-color: var(--qs-vswr, #1f5fbf); outline: none; }
-.form-control[readonly] { background: var(--qs-bg, #f6f7f9); }
+.form-control[readonly] { background: var(--qs-sunk, #f6f7f9); }
 .input-sm { padding: 4px 7px; font-size: 13px; }
 
 .form-group { margin-bottom: 12px; }
@@ -256,7 +256,7 @@ input[type="color"] { width: 46px; height: 28px; padding: 2px; border: 1px solid
     border-radius: var(--qs-radius);
     cursor: pointer;
 }
-.btn:hover { background: var(--qs-bg, #e9ecf1); text-decoration: none; }
+.btn:hover { background: var(--qs-sunk, #e9ecf1); text-decoration: none; }
 .btn-sm { padding: 4px 10px; font-size: 13px; }
 .btn-lg { padding: 9px 18px; font-size: 15px; }
 /* a filled button uses --qs-accent, which is the same blue in the light theme
@@ -640,7 +640,7 @@ th {
 .qs-tray {
     margin-left: -12px;
     padding: 10px 12px;
-    background: var(--qs-bg, #fff);
+    background: var(--qs-sunk, #fff);
     border: 1px solid var(--qs-rim, #d9dde5);
     border-radius: 10px;
 }
@@ -758,9 +758,9 @@ th {
     border: 1px solid var(--qs-rim, #d9dde5);
     border-radius: 10px;
 }
-.qs-work .form-control { background: var(--qs-bg, #f6f7f9); }
+.qs-work .form-control { background: var(--qs-card, #fff); }
 .qs-work .qs-spin > button { background: var(--qs-face, #f5f5f5); }
-.qs-work .qs-unit-tag { background: var(--qs-bg, #fff); }
+.qs-work .qs-unit-tag { background: var(--qs-sunk, #fff); }
 
 .qs-cursor {
     display: block;
@@ -998,10 +998,10 @@ th {
     width: 100%;
     height: auto;
     aspect-ratio: 560 / 270;
-    background: var(--qs-bg, #fbfbf9);
+    background: var(--qs-face, #fbfbf9);
     border-radius: 6px;
 }
-.qp-face { fill: var(--qs-face, #fff); stroke: var(--qs-rim, #d9dde5); stroke-width: 1; }
+.qp-face { fill: var(--qs-card, #fff); stroke: var(--qs-rim, #d9dde5); stroke-width: 1; }
 .qp-grid { stroke: var(--qs-rim, #d9dde5); stroke-width: 1; opacity: .55; }
 .qp-tick { fill: var(--qs-text, #6b7280); font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; }
 .qp-axis { fill: var(--qs-text, #6b7280); font: 13px system-ui, sans-serif; }
