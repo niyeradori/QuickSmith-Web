@@ -9,7 +9,6 @@ Disallow: /clean.html
 Disallow: /convert.html
 Disallow: /error.html
 Disallow: /index_template.html
-Disallow: /inputform.html
 Disallow: /treatment-counter.html
 Disallow: /Revallis_RF_Calculators.html
 Disallow: /Revallis%20RF%20Calculators_files/
