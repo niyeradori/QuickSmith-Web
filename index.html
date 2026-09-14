@@ -1172,6 +1172,7 @@ function updateUI() {
         spin_element.value= schObj.ELEMENT[i].value1;
         QSUI.setStep(spin_element, stepFor(i, false));
         if(schObj.ELEMENT[i].value1 < 0) spin_element.style.color = 'var(--qs-r)';else spin_element.style.color = '';
+        syncSlotEditable(i);
         // Slot 0 is the frequency and has no second value, so no E0a cell exists.
         // jQuery quietly did nothing when a selector matched nothing; plain DOM
         // needs to be asked.
@@ -1862,6 +1863,23 @@ smithObj.onTuneEnd = function () {
     recordHistory();
 };
 
+/*
+ * An empty slot in the ladder holds a wire, and a wire has no value. The box
+ * stayed live anyway: the arrows counted up and down, the number moved, and
+ * nothing happened on the chart, because the solver ignores a wire's value.
+ * Someone asked what the number meant for a wire, which is a fair question
+ * with no good answer. So an empty slot now shows an empty box that takes
+ * nothing, and fills in the moment a part lands in it.
+ */
+function syncSlotEditable(i) {
+    if (i < 2) return;                  // frequency and the load always take a value
+    var box = document.getElementById("E" + i);
+    if (!box) return;
+    var wire = schObj.ELEMENT[i].type === "w";
+    QSUI.setEnabled(box, !wire);
+    if (wire) box.value = "";
+}
+
 /* Put a slot's own numbers back in its boxes, the way updateUI would, but
    without the full rebuild: this runs on every step of a drag. */
 function showSlotValue(i) {
@@ -2155,6 +2173,7 @@ var end = function(e) {
         document.querySelector("#H" + eleNum).textContent =  eleType.toUpperCase() + eleNum; // update the component reference number on the schematic pane
         //schObj.ELEMENT[eleNum].tune = 1;  // default the tune element to the first variable
         //console.log(JSON.stringify(schObj));
+        syncSlotEditable(eleNum);   // a wire takes no value, a part does
         collapseEmptyValueRows();   // this may be the first two-value part in its row
         Zcalsweep();
         updateToolTip() ;

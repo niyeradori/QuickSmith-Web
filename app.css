@@ -762,6 +762,12 @@ th {
 .qs-work .qs-spin > button { background: var(--qs-face, #f5f5f5); }
 .qs-work .qs-unit-tag { background: var(--qs-sunk, #fff); }
 
+/* An empty slot holds a wire, which has no value to set. The box keeps its
+   place so the ladder keeps its shape, but it reads as empty rather than as a
+   number waiting to be typed over. */
+.qs-work .form-control:disabled { background: var(--qs-sunk, #eef1f6); cursor: default; }
+.qs-work .qs-spin > button:disabled { opacity: .4; cursor: default; }
+
 .qs-cursor {
     display: block;
     width: 100%;

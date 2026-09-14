@@ -309,6 +309,7 @@ var QSUI = (function () {
     }
 
     function nudge(state, dir, multiplier) {
+        if (state.input.disabled) return;       // a wire has nothing to step
         var current = parseFloat(state.input.value);
         if (!isFinite(current)) current = 0;
         var next = current + dir * state.step * multiplier;
@@ -343,6 +344,21 @@ var QSUI = (function () {
             places = (dot < 0) ? 0 : text.length - dot - 1;
         }
         return Math.min(6, Math.max(2, places));
+    }
+
+
+    /*
+     * Turn a box off, arrows and all. A slot holding a wire has no value to
+     * set, and a stepper that counts up and down against a number nothing
+     * reads is worse than no number at all.
+     */
+    function setEnabled(input, on) {
+        if (!input) return;
+        input.disabled = !on;
+        var wrap = input.parentNode;
+        if (!wrap || !wrap.className || wrap.className.indexOf("qs-spin") < 0) return;
+        var buttons = wrap.getElementsByTagName("button");
+        for (var i = 0; i < buttons.length; i++) buttons[i].disabled = !on;
     }
 
     function setStep(input, step) {
@@ -419,6 +435,7 @@ var QSUI = (function () {
         attachAll: attachAll,
         getStep: getStep,
         setStep: setStep,
+        setEnabled: setEnabled,
         wasUp: wasUp
     };
 })();
