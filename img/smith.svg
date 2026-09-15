@@ -4,15 +4,17 @@
     The mark is a Smith chart, and the geometry is real rather than drawn by
     eye: the chart is the unit circle at r = 28, the red circle is r = 1, the
     green arcs are x = +1 and x = -1, and the dot in the middle is the centre
-    of the chart, which is what every match is aiming at.
+    of the chart, which is what every match is aiming at. The colours are
+    brighter than the app's own palette on purpose: at 16 pixels in a browser
+    tab the strokes are a pixel wide, and anything subtler turns to mud.
   -->
   <circle cx="32" cy="32" r="32" fill="#101827"/>
   <g fill="none" stroke-linecap="round">
-    <circle cx="32" cy="32" r="28" stroke="#7d93b3" stroke-width="2.4"/>
-    <path d="M4,32 H60" stroke="#4aa87a" stroke-width="2.2"/>
-    <circle cx="46" cy="32" r="14" stroke="#d1645a" stroke-width="2.2"/>
-    <path d="M60,32 A28,28 0 0 1 32,4" stroke="#4aa87a" stroke-width="2.2"/>
-    <path d="M60,32 A28,28 0 0 0 32,60" stroke="#4aa87a" stroke-width="2.2"/>
+    <circle cx="32" cy="32" r="28" stroke="#a8bcd8" stroke-width="2.6"/>
+    <path d="M4,32 H60" stroke="#5ad19a" stroke-width="2.5"/>
+    <circle cx="46" cy="32" r="14" stroke="#ff8a7e" stroke-width="2.5"/>
+    <path d="M60,32 A28,28 0 0 1 32,4" stroke="#5ad19a" stroke-width="2.5"/>
+    <path d="M60,32 A28,28 0 0 0 32,60" stroke="#5ad19a" stroke-width="2.5"/>
   </g>
-  <circle cx="32" cy="32" r="2.6" fill="#f6f8fc"/>
+  <circle cx="32" cy="32" r="2.9" fill="#ffffff"/>
 </svg>

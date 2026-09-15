@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-labelledby="t">
+  <title id="t">Tools</title>
+  <!-- A calculator: a display with a number in it, and four keys. It has to
+       read at 16 pixels, so there are six shapes in it and no more. -->
+  <rect x="0" y="0" width="64" height="64" rx="13" fill="#101827"/>
+  <rect x="13" y="12" width="38" height="14" rx="3" fill="#f6f8fc"/>
+  <rect x="34" y="17" width="13" height="4" rx="2" fill="#3b6ea8"/>
+  <g fill="#7d93b3">
+    <rect x="13" y="33" width="15" height="8" rx="2.5"/>
+    <rect x="36" y="33" width="15" height="8" rx="2.5"/>
+    <rect x="13" y="45" width="15" height="8" rx="2.5"/>
+  </g>
+  <rect x="36" y="45" width="15" height="8" rx="2.5" fill="#3b6ea8"/>
+</svg>
