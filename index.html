@@ -228,8 +228,8 @@
             <li><a href="#" onclick ="get_click()" >Restore Session</a></li>   
             <li><a href="#" onclick ="designs_click()" >Saved Designs…</a></li>
             <!-- <div class=""> -->
-                <li class=""><a href="#" onclick ="load_click()" >Load File</a></li> 
-                <li class="" ><a href="#" onclick ="save_click()" >Save File</a></li>
+                <li class=""><a href="#" onclick ="load_click()" >Open Design…</a></li> 
+                <li class="" ><a href="#" onclick ="save_click()" >Save Design…</a></li>
                 <li class=""><a href="#" onclick ="saveCanvas_click()" >Capture Chart (PNG)</a></li>
                 <li class=""><a href="#" onclick ="saveSVG_click()" >Chart as SVG</a></li>
                 <li class=""><a href="#" onclick ="printChart_click()" >Print Chart</a></li>
@@ -256,9 +256,8 @@
              <li><a href="#"  onclick=export_click()>Export Gamma</a></li>
              <li><a href="#"  onclick=exportTouchstone_click()>Export Touchstone</a></li>
              <li><a href="#"  onclick=exportCSV_click()>Export Sweep (CSV)</a></li>
-             <li><a href="#"  onclick=import_click()>Import Gamma</a></li>
-             <li><a href="#"  onclick=importTouchstone_click()>Import Touchstone</a></li>
-             <li><a href="#"  onclick=clear_import_click()>Clear</a></li>
+             <li><a href="#"  onclick=openMeasurement_click()>Open Measurement…</a></li>
+             <li><a href="#"  onclick=clear_import_click()>Clear Trace</a></li>
              <li role="separator" class="divider"></li>
              <li><a href="#"  onclick=lineDimensions_click()>Microstrip and coax…</a></li>
             <!-- <li><a><input type="checkbox" name="checkbox1" style="float: right;">Show Sweep</a></li> -->
@@ -431,27 +430,27 @@
                     <!--<br />-->
                     <div class="dropzone"  style=" overflow: hidden; margin-top: 5px;">
                          
-                        <div id="S1" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)">
+                        <div id="S1" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragleave="return leave(event)" ondragover="return over(event)" ondrop="return drop(event)">
                             <!-- <svg style=" position: absolute; height:100%; width:100%;">
                                     <line id="line1" x1=50% y1=14% x2=100% y2=14% style="stroke:black;stroke-width:4px" />
                                     <line id="line1a" x1=50% y1=13% x2=50% y2=100% style="stroke:black;stroke-width:4px" />
                             </svg  >   -->
                             <svg id="D1" class="dropzonevimg" viewBox="0 0 20 70"><use href="#qs-sym-rx-v"/></svg>
                         </div>
-                        <div id="S2" class="dropzoneh"  draggable="false"   ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  > 
+                        <div id="S2" class="dropzoneh"  draggable="false"   ondragenter="return enter(event)" ondragleave="return leave(event)" ondragover="return over(event)" ondrop="return drop(event)"  > 
                             <svg id="D2" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
                                                           
-                        <div id="S3" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
+                        <div id="S3" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragleave="return leave(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
                             <svg id="D3" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="S4" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
+                        <div id="S4" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragleave="return leave(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
                             <svg id="D4" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
-                        <div id="S5" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" > 
+                        <div id="S5" class="dropzonev"  draggable="false" ondragenter="return enter(event)" ondragleave="return leave(event)" ondragover="return over(event)" ondrop="return drop(event)" > 
                             <svg id="D5" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="S6" class="dropzoneh"  draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
+                        <div id="S6" class="dropzoneh"  draggable="false" ondragenter="return enter(event)" ondragleave="return leave(event)" ondragover="return over(event)" ondrop="return drop(event)"> 
                             <svg id="D6" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
                            <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>    -->
@@ -552,22 +551,22 @@
                     <!--<br />-->
                     <div class="dropzone"  style= "overflow: hidden; margin-top: 5px; ">
                          <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   -->
-                        <div id="S7" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
+                        <div id="S7" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragleave="return leave(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
                             <svg id="D7" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="S8" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"  onDrop="return false"> 
+                        <div id="S8" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragleave="return leave(event)" ondragover="return over(event)" ondrop="return drop(event)"  onDrop="return false"> 
                             <svg id="D8" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
-                        <div id="S9" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
+                        <div id="S9" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragleave="return leave(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
                             <svg id="D9" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="S10" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
+                        <div id="S10" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragleave="return leave(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
                             <svg id="D10" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
-                        <div id="S11" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
+                        <div id="S11" class="dropzonev" draggable="false" ondragenter="return enter(event)" ondragleave="return leave(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false" > 
                             <svg id="D11" class="dropzonevimg" viewBox="0 0 20 70"></svg>
                         </div>
-                        <div id="S12" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
+                        <div id="S12" class="dropzoneh" draggable="false" ondragenter="return enter(event)" ondragleave="return leave(event)" ondragover="return over(event)" ondrop="return drop(event)" onDrop="return false"> 
                             <svg id="D12" class="dropzonehimg" viewBox="0 0 61 20"><use href="#qs-sym-w-h"/></svg>
                         </div>
                          <!-- <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   -->
@@ -708,7 +707,7 @@
     <!-- ************************MODAL COMPONENT DIALOG ENDS************************************************************************************** -->
   <input id="file-input" type="file" name="name" accept=".sch,.SCH" style="display: none;" />     <!-- this for helping with file load -->
   <input id="file-input1" type="file" name="name" style="display: none;" />     <!-- this for helping with gam export -->
-  <input id="file-input2" type="file" name="name" accept=".s1p,.s2p,.s3p,.s4p,.S1P,.S2P,.S3P,.S4P,.snp,.SNP,.ts,.txt" style="display: none;" />  <!-- Touchstone import -->
+  <input id="file-input2" type="file" name="name" accept=".s1p,.s2p,.s3p,.s4p,.S1P,.S2P,.S3P,.S4P,.snp,.SNP,.gam,.GAM,.ts,.txt" style="display: none;" />  <!-- Touchstone import -->
   <!-- <a href="https://www.w3schools.com">w3schools.com</a> -->
   <!-- <img src="img/qsmith.png">
   <div class="content">This is an awesome picture of qsmith</div> -->
@@ -1190,6 +1189,7 @@ function updateUI() {
         }
     }
     collapseEmptyValueRows();
+    markEmptyLadder();
     for (var i = 1; i < 13; i++) 
         { 
             QSSym.set(document.getElementById("D" + i), schObj.ELEMENT[i].type, !isEven(i));
@@ -1276,7 +1276,7 @@ function save_click() {
 
 /* ================================================== designs kept in the browser
  *
- * Save File is for work you want to keep; this is for work you want to come
+ * Save Design is for work you want to keep; this is for work you want to come
  * back to. Designs go under names you choose into this browser's storage, so
  * the ones you are actually using are a click away instead of somewhere in a
  * Downloads folder. The store is in designs.js; this is the panel over it.
@@ -1362,7 +1362,7 @@ function designs_click() {
         } else {
             ShowMessage_sm("QuickSmith",
                 "This browser would not store the design. Its storage may be " +
-                "full or switched off - Save File still works.");
+                "full or switched off - Save Design still works.");
         }
     });
     name.addEventListener("keydown", function (e) {
@@ -1652,9 +1652,9 @@ function handleFileOpen(e) {
                 else {
                     ShowMessage_sm("QuickSmith",
                         file.name + " is not a QuickSmith design file.\n\n" +
-                        "Open takes a .sch file, saved from File \u203a Save File. " +
-                        "For a measurement from an analyser, use Data \u203a Import " +
-                        "Touchstone, which reads .s1p, .s2p and larger.");
+                        "Open Design takes a .sch file, saved from File \u203a Save Design. " +
+                        "For a measurement from an analyser, use Data \u203a Open " +
+                        "Measurement, which reads .s1p, .s2p and larger.");
                 }
                 
             }
@@ -2023,6 +2023,49 @@ function runResponse() {
 }
 
 // here target id is the id of the component
+/*
+ * Where a part is allowed to go. drop() used to work this out inline, which
+ * meant the only way to discover it was to try: pick something up, drop it,
+ * hear the refusal noise. Now the same rule lights up every slot that will
+ * take what you are holding, the moment you pick it up.
+ */
+function canDrop(type, slot) {
+    if (!type || !(slot >= 1)) return false;
+    var twoTerminal = ["w", "l", "c", "plc", "slc", "prc", "src", "r", "x"];
+    if (type === "g" || type === "rx") return slot === 1;          // the load only
+    if (twoTerminal.indexOf(type) >= 0) return slot > 1;
+    if (type === "t") return isEven(slot);                          // series slots
+    if (type === "o" || type === "s") return slot > 1 && !isEven(slot);
+    return false;
+}
+
+/*
+ * On an untouched ladder every slot is a wire and nothing looks like a target,
+ * which is how people end up hunting for a tutorial. While it is empty the
+ * slots show a dashed outline. The first part you drop takes it away for good,
+ * so it is a hint for the first minute rather than decoration forever.
+ */
+function markEmptyLadder() {
+    var empty = true;
+    for (var i = 2; i <= 12; i++) {
+        if (schObj.ELEMENT[i] && schObj.ELEMENT[i].type !== "w") { empty = false; break; }
+    }
+    for (var j = 2; j <= 12; j++) {
+        var slot = document.getElementById("S" + j);
+        if (slot) slot.classList.toggle("qs-awaiting", empty);
+    }
+}
+
+/* Light up, or put out, every slot that would take this part. */
+function markDropTargets(type) {
+    for (var i = 1; i <= 12; i++) {
+        var slot = document.getElementById("S" + i);
+        if (!slot) continue;
+        slot.classList.toggle("qs-can-drop", !!type && canDrop(type, i));
+        if (!type) slot.classList.remove("qs-over");
+    }
+}
+
 var start = function (e) {
         // the icons are inline SVG now, so the event can land on the <use>
         // inside one; the element that carries the id is the one listening
@@ -2030,6 +2073,7 @@ var start = function (e) {
         e.dataTransfer.effectAllowed = 'copy';
         e.dataTransfer.setData('iconId', icon.id);
         icon.classList.add("dragging");
+        markDropTargets(icon.id);
         var box = icon.getBoundingClientRect();
         e.dataTransfer.setDragImage(icon, box.width / 2, box.height / 2);
         disableScroll();
@@ -2037,8 +2081,14 @@ var start = function (e) {
    }
 
 var enter = function (e) {
-        console.log("enter");
-        
+        var zone = e.target.closest && e.target.closest(".dropzoneh, .dropzonev");
+        if (zone && zone.classList.contains("qs-can-drop")) zone.classList.add("qs-over");
+        return true;
+    }
+
+var leave = function (e) {
+        var zone = e.target.closest && e.target.closest(".dropzoneh, .dropzonev");
+        if (zone) zone.classList.remove("qs-over");
         return true;
     }
 
@@ -2077,9 +2127,7 @@ var drop = function (e) {
             var drpEleOS = 0; if (dropElementType == "o" || dropElementType == "s") drpEleOS = 1;
             //var drpEleRX = 0; if (dropElementType == "R" || dropElementType == "X") drpEleRX = 1;
             // check for valide drop areas for g/rx can be only be dropped in slot 1 and t can be only dropped on even ( horizontal slots) o/s on vertical slots
-            if ((dropElementType == "g" && targetIdNum == 1) || (drpEleWLCRX == 1 && targetIdNum > 1)
-                || (dropElementType == "t" && isEven(targetIdNum)) || (drpEleOS == 1 && targetIdNum > 1 && !isEven(targetIdNum))
-                || (dropElementType == "rx" && targetIdNum == 1)) {
+            if (canDrop(dropElementType, targetIdNum)) {
                 var mySrcElement = document.getElementById(dropElementType);
                 var shunt = !isEven(targetIdNum);
                 var ret = showComponentdialog(dropElementType, shunt, mySrcElement, targetIdNum, "new");
@@ -2091,13 +2139,14 @@ var drop = function (e) {
             //console.log(value);
 
         }
+        markDropTargets(null);
         event.stopPropagation();
-        console.log("drop");
         return false;
     }
 
 var end = function(e) {
        (e.currentTarget || e.target).classList.remove("dragging");
+       markDropTargets(null);
        enableScroll();
        e.dataTransfer.clearData('iconId'); // this line does not work in Firefox - next line does not reach
        return true;
@@ -3322,48 +3371,123 @@ function importTouchstone_click() {
  * measured against a different reference impedance it is renormalised first.
  */
 function handleTouchstoneImport(e) {
-    importTouchstoneFile(e.target.files[0]);
+    importMeasurementFile(e.target.files[0]);
     document.getElementById("file-input2").value = "";
 }
 
-function importTouchstoneFile(file) {
+/* ===================================================== opening a measurement
+ *
+ * A sweep off an analyser can be two different things here, and the program
+ * used to decide for you by which menu item you found: Import Touchstone made
+ * it the load, Import Gamma drew it on the chart. Same data, two doors, and
+ * neither said so.
+ *
+ * Now there is one door and it asks. Either format can go either way.
+ */
+function openMeasurement_click() {
+    document.getElementById("file-input2").click();
+}
+
+/* Both formats reduced to the one shape the rest of this cares about:
+   frequencies in MHz, magnitude, and angle in degrees. */
+function readMeasurement(file, text) {
+    var asJson = tryParseJSON(text);
+    if (asJson && asJson.name === "QuickSmith GAM" && asJson.gamData) {
+        var g = asJson.gamData;
+        if (!g.dataX || g.dataX.length < 2) throw new Error("that file holds fewer than two frequencies");
+        return { label: file.name, R: Number(asJson.Z0) || 50, note: "",
+                 dataX: g.dataX.map(Number), dataM: g.dataM.map(Number), dataQ: g.dataQ.map(Number) };
+    }
+
+    var parsed = QSTouchstone.parse(text, QSTouchstone.portsFromFilename(file.name));
+    var gam = QSTouchstone.toGamData(parsed, parseFloat(schObj.Z0));
+    if (gam.dataX.length < 2) throw new Error("that file has only one frequency, so there is nothing to interpolate");
+    return { label: file.name, R: parsed.R,
+             note: parsed.ports > 1 ? "Using S11; the other parameters are ignored." : "",
+             dataX: gam.dataX, dataM: gam.dataM, dataQ: gam.dataQ };
+}
+
+/* The circuit sees this impedance at every frequency. */
+function useMeasurementAsLoad(m) {
+    schObj.gamData = { label: m.label, color: "#000000",
+                       dataX: m.dataX, dataM: m.dataM, dataQ: phase_unwrap(m.dataQ) };
+    schObj.termination = "Multiple";
+    schObj.SS = m.dataX[0];
+    schObj.ST = m.dataX[m.dataX.length - 1];
+    schObj.SST = Number(Math.abs(schObj.ST - schObj.SS) / (m.dataX.length - 1)).toFixed(4);
+    schObj.ELEMENT[0].value1 = m.dataX[0];
+    document.getElementById("S1").style.borderColor = "red";
+    updateUI();
+}
+
+/* Just drawn on the chart, so you can compare it against whatever you build. */
+function useMeasurementAsTrace(m) {
+    smithObj.plotDatasets[0].dataM = m.dataM;
+    smithObj.plotDatasets[0].dataQ = m.dataQ;
+    smithObj.data = true;
+    smithObj.redrawSmith();
+}
+
+function importMeasurementFile(file) {
     if (!file) return;
     var reader = new FileReader();
     reader.onload = function () {
-        try {
-            var parsed = QSTouchstone.parse(reader.result,
-                                            QSTouchstone.portsFromFilename(file.name));
-            var gam = QSTouchstone.toGamData(parsed, parseFloat(schObj.Z0));
-            if (gam.dataX.length < 2) {
-                ShowMessage_sm("QuickSmith",
-                    "That file has only one frequency, so there is nothing to interpolate.");
-                return;
-            }
-
-            schObj.gamData = {
-                label: file.name, color: "#000000",
-                dataX: gam.dataX, dataM: gam.dataM, dataQ: phase_unwrap(gam.dataQ)
-            };
-            schObj.termination = "Multiple";
-            schObj.SS = gam.dataX[0];
-            schObj.ST = gam.dataX[gam.dataX.length - 1];
-            schObj.SST = Number(Math.abs(schObj.ST - schObj.SS) / (gam.dataX.length - 1)).toFixed(4);
-            schObj.ELEMENT[0].value1 = gam.dataX[0];
-            document.getElementById("S1").style.borderColor = "red";
-
-            updateUI();
-            ShowMessage_sm("QuickSmith",
-                file.name + "\n\n" + gam.dataX.length + " points, " +
-                gam.dataX[0].toFixed(3) + " to " + gam.dataX[gam.dataX.length - 1].toFixed(3) +
-                " MHz\nreferenced to " + parsed.R + " Ω" +
-                (parsed.ports > 1 ? "\n\nUsing S11; the other parameters were ignored." : "") +
-                "\n\nThe load now follows the measurement. Sweep to see the whole band.");
-        } catch (err) {
+        var m;
+        try { m = readMeasurement(file, reader.result); }
+        catch (err) {
             ShowMessage_sm("QuickSmith", "Could not read " + file.name + ":\n\n" + err.message);
+            return;
+        }
+
+        var body = document.createElement("div");
+        var head = document.createElement("p");
+        head.innerHTML = "<strong>" + m.label + "</strong>";
+        var facts = document.createElement("p");
+        facts.className = "qs-meas-facts";
+        facts.textContent = m.dataX.length + " points, " + Number(m.dataX[0]).toFixed(3) +
+            " to " + Number(m.dataX[m.dataX.length - 1]).toFixed(3) + " MHz, referenced to " +
+            m.R + " \u2126" + (m.note ? ". " + m.note : "");
+        body.appendChild(head);
+        body.appendChild(facts);
+
+        var ask = document.createElement("p");
+        ask.textContent = "What should it be?";
+        body.appendChild(ask);
+
+        var dlg = QSUI.open({
+            title: "Open measurement",
+            body: body,
+            buttons: [
+                { label: "Cancel" },
+                { label: "A trace", action: function () {
+                    useMeasurementAsTrace(m);
+                } },
+                { label: "The load", primary: true, action: function () {
+                    useMeasurementAsLoad(m);
+                } }
+            ]
+        });
+
+        // a line under each button saying what it will do, since the labels
+        // alone are short enough to be guessed at wrongly
+        var foot = dlg.querySelector(".qs-dialog-foot");
+        if (foot) {
+            var why = document.createElement("p");
+            why.className = "qs-meas-why";
+            why.innerHTML = "<em>The load</em>: the circuit sees this impedance at every " +
+                "frequency, and sweeping follows the measurement.<br>" +
+                "<em>A trace</em>: drawn on the chart for reference, leaving your load alone.";
+            foot.parentNode.insertBefore(why, foot);
         }
     };
     reader.readAsText(file);
 }
+
+/* Kept because File \u203a Open hands Touchstone files here. */
+function importTouchstoneFile(file) {
+    importMeasurementFile(file);
+}
+
 document.getElementById("file-input2").addEventListener("change", handleTouchstoneImport, false);
 
 /* ---------------------------------------------------------- auto matching */

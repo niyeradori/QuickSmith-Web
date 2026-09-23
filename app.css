@@ -762,6 +762,40 @@ th {
 .qs-work .qs-spin > button { background: var(--qs-face, #f5f5f5); }
 .qs-work .qs-unit-tag { background: var(--qs-sunk, #fff); }
 
+/* the measurement dialog: what it found, and what each button will do */
+.qs-meas-facts { color: var(--qs-text); font-size: 13px; margin: 4px 0 18px; }
+.qs-meas-why {
+    margin: 0;
+    padding: 12px 18px 0;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--qs-text);
+}
+.qs-meas-why em { color: var(--qs-ink); font-style: normal; font-weight: 600; }
+
+/* ------------------------------------------------- where a part may go
+ *
+ * Two hints, both temporary. An untouched ladder outlines its slots, so a
+ * first-time user can see that something goes in them. And while a part is
+ * being dragged, every slot that would accept it lights up, so the rule about
+ * which parts go series and which go shunt is shown rather than explained.
+ */
+.dropzoneh.qs-awaiting,
+.dropzonev.qs-awaiting {
+    border-style: dashed;
+    border-color: var(--qs-edge, #bdc7d8);
+}
+.dropzoneh.qs-can-drop,
+.dropzonev.qs-can-drop {
+    border: 1px dashed var(--qs-accent, #3b6ea8);
+    background: color-mix(in srgb, var(--qs-accent, #3b6ea8) 10%, transparent);
+}
+.dropzoneh.qs-over,
+.dropzonev.qs-over {
+    border: 2px solid var(--qs-accent, #3b6ea8);
+    background: color-mix(in srgb, var(--qs-accent, #3b6ea8) 22%, transparent);
+}
+
 /* An empty slot holds a wire, which has no value to set. The box keeps its
    place so the ladder keeps its shape, but it reads as empty rather than as a
    number waiting to be typed over. */

@@ -330,7 +330,7 @@
   saved, and <strong>New Session</strong> throws it away and starts clean.
 </p>
 <p>
-  For anything you want to keep properly, use <strong>Save File</strong> to write a
+  For anything you want to keep properly, use <strong>Save Design</strong> to write a
   <code>.sch</code>, or <strong>Copy Share Link</strong> to put the whole design in a
   web address.
 </p>
@@ -366,7 +366,7 @@
 
 <h3 id="touchstone">How do I load a measurement from my network analyser?</h3>
 <p>
-  <strong>Data &rarr; Import Touchstone</strong> reads a <code>.s1p</code> or
+  <strong>Data &rarr; Open Measurement</strong> reads a <code>.s1p</code> or
   <code>.s2p</code>, the format every VNA exports, and makes it the load. S11 becomes
   a frequency-dependent termination, interpolated between the measured points, so
   you can match a real antenna instead of a typed-in impedance. The sweep range is
@@ -405,7 +405,7 @@
 
 <h3 id="gam">How do I import external data onto the chart?</h3>
 <p>
-  <strong>Data &rarr; Import Gamma</strong> reads QuickSmith's own JSON format, and
+  <strong>Data &rarr; Open Measurement</strong> also reads QuickSmith's own <code>.gam</code> JSON, and
   <strong>Export Gamma</strong> writes it. Sample files are in the <code>gam</code>
   folder. To make one, generate a sweep and then export it. Touchstone is the better
   choice for anything coming from an instrument.
