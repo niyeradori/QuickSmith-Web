@@ -1,5 +1,5 @@
 /*
- * Touchstone (.s1p / .s2p) reader and writer.
+ * Touchstone (.s1p, .s2p and beyond) reader and writer.
  * =============================================================================
  *
  * Touchstone is how every vector network analyser exports its measurements, so
@@ -108,20 +108,38 @@ var QSTouchstone = (function () {
         }
     }
 
-    /* One frequency plus 2*n^2 values per row: 3 numbers is 1 port, 9 is 2. */
+    /*
+     * How many ports, when the filename did not say.
+     *
+     * One frequency plus 2n^2 numbers per point: 3 numbers is a 1-port, 9 is a
+     * 2-port. The trap is that a 4-port's *first* line also holds 9 numbers,
+     * because anything above two ports is written as one line per row of the
+     * matrix. Reading such a file as a 2-port does not fail, it silently
+     * returns nonsense, which is worse. So when a row of 9 is followed by a row
+     * of 8, the 8 is a continuation and this is a 4-port.
+     */
     function inferPorts(numbers, lines) {
-        for (var i = 0; i < lines.length; i++) {
+        var counts = [];
+        for (var i = 0; i < lines.length && counts.length < 2; i++) {
             var line = lines[i];
             var bang = line.indexOf("!");
             if (bang >= 0) line = line.slice(0, bang);
             line = line.trim();
             if (!line || line.charAt(0) === "#" || line.charAt(0) === "[") continue;
-            var n = line.split(/[\s,]+/).length;
-            if (n === 3) return 1;
-            if (n === 9) return 2;
-            break;
+            counts.push(line.split(/[\s,]+/).length);
         }
-        return (numbers.length % 3 === 0) ? 1 : 2;
+
+        var first = counts[0], second = counts[1];
+        if (first === 3) return 1;
+        if (first === 9) return (second === 8) ? 4 : 2;
+        if (first === 7 && second === 6) return 3;      // 1 + 6, then 6, then 6
+
+        // Nothing recognisable in the shape of the rows, so fall back to the
+        // only port count the total divides by.
+        for (var p = 1; p <= 4; p++) {
+            if (numbers.length % (1 + 2 * p * p) === 0) return p;
+        }
+        return 2;
     }
 
     function toComplex(a, b, format) {

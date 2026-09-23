@@ -21,6 +21,9 @@ function near(label, got, want, tol) {
     ok(label, isFinite(got) && Math.abs(got - want) <= tol,
        "expected " + want + " +/- " + tol + ", got " + got);
 }
+function eq(label, got, want) {
+    ok(label, got === want, "expected " + want + ", got " + got);
+}
 function throws(label, fn) {
     try { fn(); failures++; out("  BAD  " + label + ": expected it to throw"); }
     catch (e) { /* as intended */ }
@@ -79,6 +82,29 @@ throws("junk is rejected", function () {
     QSTouchstone.parse("# MHZ S MA R 50\n100 bogus 3\n", 1);
 });
 throws("an empty file is rejected", function () { QSTouchstone.parse("", 1); });
+
+/* ------------------------------------------------- more than two ports
+ *
+ * Above two ports a file is written one line per row of the S matrix, so a
+ * 4-port's first line holds 9 numbers, exactly like a whole 2-port point.
+ * Read as a 2-port it does not fail, it quietly returns nonsense, which is
+ * the failure worth having a test for.
+ */
+var four = slurp("touchstone/4port-coupler.s4p");
+var withHint = QSTouchstone.parse(four, 4);
+eq("4-port with the extension to go on: ports", withHint.ports, 4);
+eq("and its frequencies", withHint.points.length, 3);
+
+var guessed = QSTouchstone.parse(four);
+eq("4-port inferred from the row shape", guessed.ports, 4);
+eq("same number of points either way", guessed.points.length, 3);
+near("S11 magnitude at 5 GHz", Math.hypot(guessed.points[0].s[0].re, guessed.points[0].s[0].im),
+     0.60262, 1e-5);
+near("first frequency in MHz", guessed.points[0].f, 5000, 1e-9);
+
+var fourLoad = QSTouchstone.toGamData(guessed, 50);
+eq("it still makes a load", fourLoad.dataX.length, 3);
+near("using S11 and nothing else", fourLoad.dataM[2], 0.50641, 1e-5);
 
 /* ------------------------------------------- dipole.s1p against dipole.gam */
 
