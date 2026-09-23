@@ -232,7 +232,6 @@
                 <li class="" ><a href="#" onclick ="save_click()" >Save Design…</a></li>
                 <li class=""><a href="#" onclick ="saveCanvas_click()" >Capture Chart (PNG)</a></li>
                 <li class=""><a href="#" onclick ="saveSVG_click()" >Chart as SVG</a></li>
-                <li class=""><a href="#" onclick ="printChart_click()" >Print Chart</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="#" onclick ="shareLink_click()" >Copy Share Link</a></li> 
                 <!-- <li class=""><a href="#">Import</a></li>
@@ -603,9 +602,6 @@
     </div>   <!--row end-->
 </div>   <!--container end--> 
 
-<!-- Print Chart drops a standalone copy of the chart in here; @media print
-     hides everything else on the page and shows this. -->
-<div id="printArea" aria-hidden="true"></div>
 
 
     <audio id="audio" src="img/button-3.wav" autostart="false"> </audio>
@@ -1402,23 +1398,6 @@ function saveCanvas_click(){
 function saveSVG_click(){
     var markup = QSChart.toSVG(smithObj.view, 900);
     saveAs(new Blob([markup], { type: "image/svg+xml;charset=utf-8" }), "QuickSmith.svg");
-}
-
-/*
- * Paper is white, so this prints light whatever the screen is set to - nobody
- * wants a black square out of a laser printer. The chart is copied into a div
- * that only the print stylesheet shows, which keeps the rule to one line and
- * independent of how the page is laid out.
- */
-function printChart_click(){
-    var root = document.documentElement;
-    var was = root.getAttribute("data-qs-theme");
-    root.setAttribute("data-qs-theme", "bench");      // bench is the light one
-    var markup = QSChart.toSVG(smithObj.view, 900);   // reads the live palette
-    if (was) root.setAttribute("data-qs-theme", was); else root.removeAttribute("data-qs-theme");
-
-    document.getElementById("printArea").innerHTML = markup;
-    window.print();
 }
 
 /*
