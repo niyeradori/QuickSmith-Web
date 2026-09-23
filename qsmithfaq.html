@@ -13,7 +13,7 @@
     gtag('config', 'G-SKK2H37KSN');
   </script>
 <title>QuickSmith FAQ: how to use the Smith chart tool</title>
-<meta name="description" content="How to build a ladder network, match to 50 ohms, tune by dragging on the chart, read VSWR and loaded Q, get a microstrip track width, and import Touchstone files from a network analyser.">
+<meta name="description" content="How to build a ladder network, match to 50 ohms, tune by dragging on the chart, read VSWR and loaded Q, get a microstrip track width, keep named designs, and open Touchstone measurements from a network analyser.">
 <link rel="canonical" href="https://quicksmith.online/qsmithfaq.html">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="QuickSmith">
@@ -84,7 +84,7 @@
     <li><a href="#undo">Undo and redo</a></li>
     <li><a href="#sweep">Sweeping</a></li>
     <li><a href="#response">The response graph</a></li>
-    <li><a href="#session">Not losing your work</a></li>
+    <li><a href="#session">Saving and not losing work</a></li>
     <li><a href="#board">Track widths and coax</a></li>
     <li><a href="#amplifier">Amplifier design</a></li>
   </ol>
@@ -94,7 +94,7 @@
     <li><a href="#touchstone">Touchstone files</a></li>
     <li><a href="#sharelink">Share links</a></li>
     <li><a href="#export">Pictures and spreadsheets</a></li>
-    <li><a href="#gam">Gamma files</a></li>
+    <li><a href="#gam">The .gam format</a></li>
   </ol>
 
   <h2>Other</h2>
@@ -141,6 +141,14 @@
   <svg class="doc-sym" data-sym="r"></svg>
   and drag it onto one of the empty slots in the ladder above or below. A box
   asks for its value. Type one and press Enter.
+</p>
+<p>
+  You do not have to work out where a part is allowed to go. Pick one up and every
+  slot that will take it outlines itself, and the one under the pointer fills in.
+  Parts that go in series light the horizontal slots, stubs light the vertical ones,
+  and the two load chips light only the load position at the far left. On an
+  untouched ladder the slots are outlined from the start, so there is somewhere
+  obvious to aim before you have picked anything up at all.
 </p>
 <p>
   The dot on the chart moves to where that component puts you, and a coloured arc
@@ -330,9 +338,18 @@
   saved, and <strong>New Session</strong> throws it away and starts clean.
 </p>
 <p>
+  <strong>File &rarr; Saved Designs</strong> is the one to know about. A session holds
+  exactly one design and the next save overwrites it; the shelf holds as many as you
+  like, under names you choose, in this browser. Name the design, press Save, and it
+  is a click away from then on. Saving again under the same name replaces it and moves
+  it to the top, so tuning and re-saving does not leave a trail of near-identical
+  copies. The &times; beside a name deletes it.
+</p>
+<p>
   For anything you want to keep properly, use <strong>Save Design</strong> to write a
-  <code>.sch</code>, or <strong>Copy Share Link</strong> to put the whole design in a
-  web address.
+  <code>.sch</code> file, or <strong>Copy Share Link</strong> to put the whole design
+  in a web address. A saved design carries its step sizes too, so a box you had set
+  to move in 0.001 steps still does when you come back to it.
 </p>
 
 <h3 id="board">How do I get a track width instead of an impedance?</h3>
@@ -366,12 +383,31 @@
 
 <h3 id="touchstone">How do I load a measurement from my network analyser?</h3>
 <p>
-  <strong>Data &rarr; Open Measurement</strong> reads a <code>.s1p</code> or
-  <code>.s2p</code>, the format every VNA exports, and makes it the load. S11 becomes
-  a frequency-dependent termination, interpolated between the measured points, so
-  you can match a real antenna instead of a typed-in impedance. The sweep range is
-  set to the range of the file, and if the file was measured against a different
-  reference impedance it is renormalised to yours.
+  <strong>Data &rarr; Open Measurement</strong> reads a Touchstone file, the format
+  every VNA exports. It takes <code>.s1p</code> and <code>.s2p</code>, and files with
+  more ports than that as well, reading S11 and ignoring the rest, which is all a
+  load needs. It also reads QuickSmith's own <code>.gam</code> files.
+</p>
+<p>
+  It then tells you what it found, points, frequency range and reference impedance,
+  and asks what the measurement should be:
+</p>
+<ul>
+  <li><strong>The load.</strong> The circuit sees this impedance at every frequency,
+      interpolated between the measured points, so you are matching a real antenna
+      instead of a typed-in impedance. The sweep range is set to the range of the
+      file, and a file measured against a different reference impedance is
+      renormalised to yours.</li>
+  <li><strong>A trace.</strong> Drawn on the chart and nothing more, leaving your
+      load alone. This is the one for comparing: put the measurement on the chart,
+      build a network against a different load, and see the two together.
+      <strong>Data &rarr; Clear Trace</strong> removes it.</li>
+</ul>
+<p>
+  If you reach for <strong>File &rarr; Open Design</strong> out of habit and hand it a
+  measurement, it imports it rather than complaining. Open Design is for
+  <code>.sch</code> design files, but nobody should have to know that to get their
+  file in.
 </p>
 <p>
   <strong>Data &rarr; Export Touchstone</strong> writes the network back out as a
@@ -403,12 +439,13 @@
       point, with impedance, VSWR and return loss worked out for you.</li>
 </ul>
 
-<h3 id="gam">How do I import external data onto the chart?</h3>
+<h3 id="gam">What is the .gam format for?</h3>
 <p>
-  <strong>Data &rarr; Open Measurement</strong> also reads QuickSmith's own <code>.gam</code> JSON, and
-  <strong>Export Gamma</strong> writes it. Sample files are in the <code>gam</code>
-  folder. To make one, generate a sweep and then export it. Touchstone is the better
-  choice for anything coming from an instrument.
+  It is QuickSmith's own JSON, written by <strong>Data &rarr; Export Gamma</strong> and
+  read by <strong>Open Measurement</strong> like any other measurement. Sample files
+  are in the <code>gam</code> folder. To make one, generate a sweep and export it.
+  For anything coming off an instrument, Touchstone is the better choice, since
+  everything else can read it too.
 </p>
 
 <h2>Other questions</h2>
