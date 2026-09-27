@@ -2920,8 +2920,9 @@ function generateSweep() {
  * came to ask why auto-matching a measured antenna appeared to move only one
  * frequency. It had moved the whole band; the band on screen was the old one.
  *
- * Any design with a sweep showing, not just a measured load: a stale curve is
- * wrong either way, and being wrong quietly is the worst way to be wrong.
+ * Any sweep that is showing, whatever it sweeps: a stale curve is wrong
+ * whether its x axis is frequency or a component value, and being wrong
+ * quietly is the worst way to be wrong.
  *
  * A refresh costs one solve per sweep point, so a drag holds it the way it
  * already holds undo history, and refreshes once when the pointer comes up.
@@ -2932,7 +2933,6 @@ var sweepRunning = false;      // generateSweep solves in a loop; never re-enter
 function refreshSweep() {
     if (sweepHeld || sweepRunning) return;
     if (!smithObj.sweep) return;            // no sweep on screen to refresh
-    if (schObj.SE !== "Frequency") return;  // an element sweep has its own x axis
     sweepRunning = true;
     try { generateSweep(); } finally { sweepRunning = false; }
 }
