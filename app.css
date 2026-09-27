@@ -762,6 +762,15 @@ th {
 .qs-work .qs-spin > button { background: var(--qs-face, #f5f5f5); }
 .qs-work .qs-unit-tag { background: var(--qs-sunk, #fff); }
 
+/* Settings reports which measurement the Multiple termination is following,
+   rather than offering a second way to load one. */
+.qs-ter-status {
+    margin-top: 6px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--qs-text);
+}
+
 /* the measurement dialog: what it found, and what each button will do */
 .qs-meas-facts { color: var(--qs-text); font-size: 13px; margin: 4px 0 18px; }
 .qs-meas-why {

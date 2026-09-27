@@ -663,8 +663,7 @@
                             <option>Single</option>
                             <option>Multiple</option>
                         </select>
-                        <br /> 
-                        <input type="file" id="TER_FILE" style="display:none">
+                        <div id="TER_STATUS" class="qs-ter-status"></div>
                     </div>
                     <br /> 
                 </div>
@@ -2492,9 +2491,35 @@ function setHint(id, text) {
         // var conceptName = (function(sel){return sel.options[sel.selectedIndex].text;})(document.getElementById('aioConceptName'));
         document.getElementById("LU").value = schObj.LU;
         document.getElementById("TER").value = schObj.termination;
-        if (schObj.termination == "Multiple")  document.getElementById('TER_FILE').style.display = 'block';
-        else document.getElementById('TER_FILE').style.display = 'none';       
+        showTerminationStatus();
     }
+
+/*
+ * What the Multiple termination is currently pointing at.
+ *
+ * Settings used to carry its own file picker here, which read .gam and nothing
+ * else, never set the sweep step, and never renormalised the reference
+ * impedance. It was a second, worse copy of what Data > Open Measurement does,
+ * and a second copy is how the two drift apart. So this reports rather than
+ * loads, and sends you to the one door that does the job properly.
+ */
+function showTerminationStatus() {
+    var box = document.getElementById("TER_STATUS");
+    if (!box) return;
+    var wanted = document.querySelector(".modal-body #TER").value;
+    if (wanted !== "Multiple") { box.textContent = ""; box.hidden = true; return; }
+
+    box.hidden = false;
+    var g = schObj.gamData;
+    if (g && g.dataX && g.dataX.length > 1) {
+        var first = Number(g.dataX[0]), last = Number(g.dataX[g.dataX.length - 1]);
+        box.textContent = (g.label || "a measurement") + ": " + g.dataX.length +
+            " points, " + first.toFixed(3) + " to " + last.toFixed(3) + " MHz.";
+    } else {
+        box.textContent = "No measurement loaded yet. " +
+            "Use Data \u203a Open Measurement, which reads .s1p, .s2p and .gam.";
+    }
+}
 
    function OnOptionSweepElemet_click()  // depending upon the tune element detemine where it needs a tune option or not ( incase of a two element)
    {
@@ -2546,11 +2571,9 @@ function setHint(id, text) {
 
     // this function shows hides the file dialog depending on Multi/Single termination
     function yesnoFileDialog() {
-        if (document.querySelector(".modal-body #TER").value == "Multiple")  document.getElementById('TER_FILE').style.display = 'block';
-        else 
-        {  
-      
-            document.getElementById('TER_FILE').style.display = 'none';
+        showTerminationStatus();
+        if (document.querySelector(".modal-body #TER").value != "Multiple")
+        {
             if(schObj.ELEMENT[1].type =="rx") {
             document.getElementById("E1").value=  50.00; // default values if you are going back to single.
             document.getElementById("E1a").value= 0.00;
@@ -2595,58 +2618,22 @@ function setHint(id, text) {
         schObj.LU = (function(sel){return sel.options[sel.selectedIndex].text;})(document.getElementById('LU')); // Length Units
         //console.log (schObj.LU );
         if (document.querySelector(".modal-body #TER").value == "Multiple") {
-            var selectedFile = document.getElementById('TER_FILE').files[0];
-            console.log(selectedFile);
-            // if (!selectedFile) {
-            //        // schObj.termination = "Multiple";
-            //     }
-            if(selectedFile) 
-            {
-                var reader = new FileReader();
-                
-                reader.onload = function(e)
-                    {
-                        var contents = reader.result;
-                         var gamObj = tryParseJSON (contents)
-                        if( gamObj && gamObj.name == "QuickSmith GAM")
-                        {
-                            //console.log (" Verified");
-                            //ShowMessage_sm("QuickSmith","File Verified");
-                            //var gamObj =JSON.parse(contents);
-                            //console.log(gamObj);
-                            var points = gamObj.gamData.dataX.length;
-                            if(points > 0){
-                                schObj.SS =  parseFloat(gamObj.gamData.dataX[0]);
-                                schObj.ST =  parseFloat(gamObj.gamData.dataX[points-1]);
-                                //schObj.SST = Number(Math.abs(schObj.ST - schObj.SS)/(points-1)).toFixed(3);
-                                smithObj.Z0= schObj.Z0=gamObj.Z0;
-                                schObj.gamData.label = gamObj.gamData.label;
-                                schObj.gamData.color = gamObj.gamData.color;
-                                schObj.gamData.dataX = gamObj.gamData.dataX; // X axis data, could be Frequency or swept element values
-                                schObj.gamData.dataM = gamObj.gamData.dataM;
-                                schObj.gamData.dataQ = phase_unwrap(gamObj.gamData.dataQ); // phase unwrap before entering - helps with interpolation
-                                if(schObj.gamData.dataX.length > 1){   // check if the data is more than 1 before setting to interpolation mode
-                                    schObj.termination = "Multiple";      // we can check again before calculation
-                                    document.getElementById('S1').style.borderColor='red';
-                                }
-                                else 
-                                {
-                                    schObj.termination = "Single";
-                                    document.getElementById('S1').style.borderColor= '';   
-                                }
-                            }
-
-                        }
-                        else {
-                            schObj.termination = "Single";
-                            document.getElementById('S1').style.borderColor= '';
-                            ShowMessage_sm("QuickSmith","Failed to verify file");
-                        }
-                        Zcalsweep(); 
-                    }
-                    
-                reader.readAsText(selectedFile); 
-                document.getElementById("file-input1").value = ""; // this clears the file read 
+            /*
+             * Multiple means the load follows a measurement, so it only means
+             * anything once one is loaded. Loading is Data > Open Measurement's
+             * job; choosing it here just turns it on for data already present.
+             */
+            var g = schObj.gamData;
+            if (g && g.dataX && g.dataX.length > 1) {
+                schObj.termination = "Multiple";
+                document.getElementById('S1').style.borderColor = 'red';
+            } else {
+                schObj.termination = "Single";
+                document.getElementById('S1').style.borderColor = '';
+                ShowMessage_sm("QuickSmith",
+                    "There is no measurement loaded, so the load has nothing to " +
+                    "follow.\n\nUse Data \u203a Open Measurement to read a .s1p, " +
+                    ".s2p or .gam file, and choose The load when it asks.");
             }
         }
         else {
