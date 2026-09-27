@@ -20,7 +20,16 @@ var schObj = {
                 "VF": 1,  // velocity factor
                 "Z0": 50.0, // characteristic impedance
                 "TDF": 100, // Transmission design frequency
-                "LU": "Inches",  // Inches, MilliMeters, Meters, Degrees, Wave Lengths
+                /*
+                 * Degrees, because that is the unit the chart is calibrated in:
+                 * a line rotates you around it, a quarter wave is 90, and the
+                 * rotation is the thing you are actually doing. A physical
+                 * length only means something once a velocity factor and a
+                 * frequency are also settled, and Data > Microstrip and coax is
+                 * where that belongs, since it accounts for the substrate.
+                 * It is also the one answer with no nationality.
+                 */
+                "LU": "Degrees",  // Inches, MilliMeters, Meters, Degrees, Wave Lengths
                 "SS": 1,   // Start Sweep
                 "ST": 100, // Stop Sweep
                 "SST": 1,  // Sweep Step

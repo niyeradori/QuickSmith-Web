@@ -170,9 +170,24 @@
 <p>
   Frequency in <strong>MHz</strong>, resistance and reactance in <strong>ohms</strong>,
   inductance in <strong>nH</strong>, capacitance in <strong>pF</strong>. Line lengths
-  are in inches unless you change Length Unit in Settings, which also offers
-  millimetres, metres, degrees and wavelengths. The units are shown beside each
-  value in the ladder, so you never have to remember which slot is which.
+  are in <strong>degrees</strong> of electrical length, so a quarter wave is 90.
+  Settings also offers inches, millimetres, metres and wavelengths. The units are
+  shown beside each value in the ladder, so you never have to remember which slot
+  is which.
+</p>
+
+<p>
+  Degrees is the default for line lengths because a length of line does one
+  thing on a Smith chart: it rotates you around the centre. Worth knowing that
+  the two angles are not the same one. A quarter wave is <strong>90 degrees of
+  electrical length</strong>, which you type in, and it carries you
+  <strong>half a turn</strong> around the chart, because the reflection
+  coefficient rotates at twice the rate. Degrees is also the only answer that
+  does not depend on the velocity factor and the frequency being settled
+  first. When you want a
+  physical dimension, <strong>Data &rarr; Microstrip and coax</strong> gives you
+  a track width and a length with the substrate taken into account, which is a
+  better answer than a bare measurement.
 </p>
 
 <h3 id="loadvalue">How do I change the load resistance and reactance?</h3>
