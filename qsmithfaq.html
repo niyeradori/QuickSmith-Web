@@ -83,6 +83,7 @@
   <ol>
     <li><a href="#undo">Undo and redo</a></li>
     <li><a href="#sweep">Sweeping</a></li>
+    <li><a href="#paths">The coloured arcs</a></li>
     <li><a href="#response">The response graph</a></li>
     <li><a href="#session">Saving and not losing work</a></li>
     <li><a href="#board">Track widths and coax</a></li>
@@ -333,6 +334,28 @@
   locus on the chart, and <strong>Sweep &rarr; Clear</strong> removes it. The same
   settings, plus the trace colour, are in Settings if you prefer them there.
 </p>
+<p>
+  Once a sweep is on the chart it keeps itself current: change a component, the
+  frequency or the load and the locus is redrawn for the circuit you have now,
+  so what you are looking at always describes what you have built. Opening a
+  measurement as the load sweeps its band straight away, since measuring a band
+  and then being shown one frequency is a poor trade.
+</p>
+
+<h3 id="paths">The coloured arcs are in my way</h3>
+<p>
+  Turn <strong>Element paths</strong> off in the Overlays panel. They are on by
+  default because they are the part that teaches: each arc shows where one
+  component took you and by which route, which is the whole argument for using a
+  Smith chart instead of a calculator.
+</p>
+<p>
+  They earn their place while you are building a network of two or three parts.
+  They stop earning it once there is a swept band on the chart as well, because
+  then you have a curve for the sweep and an arc for every component, and the
+  picture gets busy. That is the moment to turn them off. Turn them back on when
+  you want to see how a particular component is moving you.
+</p>
 
 <h3 id="response">What does the response graph show?</h3>
 <p>
@@ -498,12 +521,13 @@
 
 <h3 id="legacy">How long has QuickSmith been around?</h3>
 <p>
-  Since 1993. It started as a DOS program, became a Windows program, and stayed
-  one for about twenty years. People kept using it long after that, which is how
-  it ended up here: newer versions of Windows would not run it any more, and the
-  requests to fix that never stopped. This browser version is the answer to
-  them, rebuilt in 2026 so there is nothing left to install and nothing left to
-  go out of date.
+  Since 1993, when it was written for Windows 3.1. As far as I know it was the
+  first Smith chart program with a graphical interface on Windows, and it stayed
+  a Windows program for the next two decades. People kept using it long after
+  that, which is how it ended up here: newer versions of Windows would not run
+  it any more, and the requests to fix that never stopped. It was ported to the
+  web in 2017, and rebuilt in 2026 with a good deal added, so there is now
+  nothing to install and nothing to go out of date.
 </p>
 <p>
   Along the way other people taught with it, which is the part I am proudest of.

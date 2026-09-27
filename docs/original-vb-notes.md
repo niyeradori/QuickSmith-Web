@@ -1,7 +1,7 @@
 # Original QuickSmith (VB6) reference notes
 
 These are the commented-out Visual Basic fragments that travelled with `sch.js`
-from the 1993 MS-DOS/Windows QuickSmith through the 2011 web port. They are the
+from the 1993 Windows 3.1 QuickSmith through the 2017 web port. They are the
 authoritative record of how the original computed the ladder, the insertion
 loss and the displayed results, and they were kept in the source as a
 cross-check.
