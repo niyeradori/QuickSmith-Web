@@ -83,8 +83,48 @@ r = QSEngine.solve({
 });
 near("interpolated load VSWR", r.vswr, 1.295842, 1e-5);
 
+/* ------------------------------------------- a sweep stays inside its band
+ *
+ * Both halves of a bug an editor found. Importing dipole.s1p and exporting it
+ * again produced a thirteenth point at 209.09 MHz, past the 200 MHz stop
+ * frequency and past the end of the measurement. Two causes: the point count
+ * was a fencepost with the stored step's rounding inside it, and the
+ * interpolator ran its cubic on past the data rather than stopping.
+ */
+function eq(label, got, want) {
+    if (got !== want) {
+        failures++;
+        out("  BAD  " + label + ": expected " + want + ", got " + got);
+    }
+}
+
+var sw = QSEngine.sweepValues(100, 200, 9.0909);     // 12 points, step stored to 4 dp
+eq("a 100 MHz span in 12 points stays 12 points", sw.length, 12);
+eq("and ends on the stop frequency exactly", sw[sw.length - 1], 200);
+
+sw = QSEngine.sweepValues(100, 200, 7);              // does not divide the span
+eq("a step that does not divide gives 15 points", sw.length, 15);
+eq("and stops short rather than overshooting", sw[sw.length - 1], 198);
+
+eq("an ordinary sweep is unchanged", QSEngine.sweepValues(1, 100, 1).length, 100);
+eq("a fractional step is unchanged", QSEngine.sweepValues(0, 10, 0.5).length, 21);
+eq("a zero step yields nothing rather than hanging", QSEngine.sweepValues(0, 10, 0).length, 0);
+
+/* Outside the measured band, hold the end value. Extrapolating the spline
+   returned a negative |gamma| here, which is not a physical quantity. */
+var fx = [100, 150, 200], fy = [0.590, 0.236, 0.344];
+near("inside the band, interpolation is untouched",
+     QSEngine.interpolate(150, fx, fy), 0.236, 1e-12);
+near("at the top edge, the measured value", QSEngine.interpolate(200, fx, fy), 0.344, 1e-12);
+near("above the band, the top value is held", QSEngine.interpolate(260, fx, fy), 0.344, 1e-12);
+near("below the band, the bottom value is held", QSEngine.interpolate(50, fx, fy), 0.590, 1e-12);
+if (!(QSEngine.interpolate(400, fx, fy) >= 0)) {
+    failures++;
+    out("  BAD  a held magnitude is never negative");
+}
+
 if (failures === 0) {
-    out("engine.js stands alone: 9 checks OK (no jQuery, no math.js, no DOM)");
+    out("engine.js stands alone: 20 checks OK (no jQuery, no math.js, no DOM)");
 } else {
     out("engine.js standalone: " + failures + " FAILED");
     if (typeof process !== "undefined") process.exitCode = 1;

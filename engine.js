@@ -457,6 +457,49 @@ var QSEngine = (function () {
         return { R: R, X: X, type: type, value: value };
     }
 
+    /*
+     * The values a sweep visits: from start, stepping by step, never past stop.
+     *
+     * This used to be written inline in four places as
+     *
+     *     points = Math.abs((stop - start) / step) + 1
+     *
+     * which is a fencepost with a rounding error inside it. The step is stored to
+     * four decimals, so a 100 MHz span over twelve measured points stores 9.0909
+     * rather than 9.090909..., and (200 - 100) / 9.0909 comes to 11.000011. The
+     * loop condition i < points then let i reach 12 and produced a thirteenth
+     * point at 209.09 MHz: past the stop frequency the user asked for, and past
+     * the end of the measurement it came from.
+     *
+     * The same list is used to run the sweep and to label the exports, so the
+     * numbers in a file cannot drift away from the numbers that produced them.
+     */
+    function sweepValues(start, stop, step) {
+        var out = [];
+        start = Number(start); stop = Number(stop); step = Math.abs(Number(step));
+        if (!isFinite(start) || !isFinite(stop) || !(step > 0)) return out;
+
+        var dir = (stop < start) ? -1 : 1;
+        // the epsilon absorbs the stored step's rounding, so a step that is meant
+        // to divide the span evenly does, instead of yielding one extra point
+        var n = Math.floor(Math.abs(stop - start) / step + 1e-9) + 1;
+        for (var i = 0; i < n; i++) {
+            var v = start + dir * step * i;
+            /*
+             * Land exactly on the stop value when the last step reaches it,
+             * rather than on a four-decimal approximation of it: a step of
+             * 9.0909 taken eleven times from 100 arrives at 199.9999, and a
+             * file that says 199.999900 where it means 200 invites the reader
+             * to wonder what else is approximate. The tolerance is a thousandth
+             * of a step, which absorbs the stored step's rounding without
+             * disturbing a sweep whose step genuinely does not divide the span.
+             */
+            if (Math.abs(v - stop) < step * 1e-3) v = stop;
+            out.push(v);
+        }
+        return out;
+    }
+
     /* ========================================================== interpolation
      * Monotone cubic (Fritsch-Carlson), used to read a measured, frequency
      * dependent load between its sample points without overshoot.
@@ -502,7 +545,18 @@ var QSEngine = (function () {
 
         return function (x) {
             var last = X.length - 1;
-            if (x === X[last]) return Y[last];
+
+            /*
+             * Outside the measured band there is no data, so hold the end
+             * value rather than run the cubic on past it. Extrapolating a
+             * spline is not conservative: three points beyond this dipole's
+             * 200 MHz it returns |gamma| of -0.38, and sixty past it -18.46.
+             * A reflection coefficient magnitude cannot be negative at all,
+             * let alone that. Better a flat line that is obviously the edge
+             * of the measurement than a curve that looks like data.
+             */
+            if (x <= X[0]) return Y[0];
+            if (x >= X[last]) return Y[last];
 
             var low = 0, high = c3.length - 1, mid;
             while (low <= high) {
@@ -879,6 +933,7 @@ var QSEngine = (function () {
         gammaToZ: gammaToZ,
         zToGamma: zToGamma,
         interpolate: interpolate,
+        sweepValues: sweepValues,
         buildInterpolant: buildInterpolant,
         unwrapPhase: unwrapPhase,
         electricalLength: electricalLength,

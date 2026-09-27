@@ -1410,7 +1410,7 @@ function sweepTable() {
     var dataM = smithObj.sweepDatasets[0].dataM;
     var dataQ = smithObj.sweepDatasets[0].dataQ;
     var Z0 = parseFloat(schObj.Z0);
-    var start = parseFloat(schObj.SS), step = parseFloat(schObj.SST);
+    var freqs = sweepFrequencies(schObj.SS, schObj.ST, schObj.SST);
     var rows = [];
 
     for (var i = 0; i < dataM.length; i++) {
@@ -1418,7 +1418,7 @@ function sweepTable() {
         var rad = ang * Math.PI / 180;
         var Z = QSEngine.gammaToZ({ re: mag * Math.cos(rad), im: mag * Math.sin(rad) }, Z0);
         rows.push([
-            start + step * i,
+            freqs[i],
             mag,
             ang,
             (mag >= 1) ? Infinity : (1 + mag) / (1 - mag),
@@ -1484,13 +1484,10 @@ function export_click() {
     // } 
     gamObj.gamData.dataM = smithObj.sweepDatasets[0].dataM;
     gamObj.gamData.dataQ = smithObj.sweepDatasets[0].dataQ;
-    var start = parseFloat(schObj.SS);
-    var step = parseFloat(schObj.SST);
+    var freqs = sweepFrequencies(schObj.SS, schObj.ST, schObj.SST);
     var points = smithObj.sweepDatasets[0].dataM.length; // if a sweep was performed then we use its length to store the length data, if not it is zero
-    console.log(" Number of Points= "+points);
     for ( i=0; i < points; i++) {
-        thisStep = step*i;
-        gamObj.gamData.dataX[i]=Number(start + thisStep).toFixed(4); 
+        gamObj.gamData.dataX[i]=Number(freqs[i]).toFixed(4);
     } 
     // for Safari compatibility
     saveJSONtoFile(gamObj, "out.gam");
@@ -1977,10 +1974,10 @@ function runResponse() {
     var tuned = schObj.ELEMENT[slot].tune == 1 ? "value1" : "value2";
     var was = schObj.ELEMENT[slot][tuned];
 
-    var points = Math.min(Math.floor((stop - start) / step) + 1, 1000);
+    var values = sweepFrequencies(start, stop, step).slice(0, 1000);
     var xs = [], s21 = [], s11 = [];
-    for (var i = 0; i < points; i++) {
-        var v = start + step * i;
+    for (var i = 0; i < values.length; i++) {
+        var v = values[i];
         schObj.ELEMENT[slot][tuned] = (slot === 0 && v <= 0) ? 1e-9 : v;
         var r = Zcalsweep1();
         xs.push(Math.round(v * 1e6) / 1e6);
@@ -2839,6 +2836,12 @@ document.addEventListener("contextmenu", function (e) {
         });
     }
 
+/* The values a sweep visits. The arithmetic lives in engine.js so that the
+   regression suite can hold it to account; this is just the short name. */
+function sweepFrequencies(start, stop, step) {
+    return QSEngine.sweepValues(start, stop, step);
+}
+
 function generateSweep() {
     // generate sweep data
      // sweepElement : [ Frequency, Element 2, Element 3, Element 4... Element 12]
@@ -2855,13 +2858,11 @@ function generateSweep() {
     if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1 = start; else schObj.ELEMENT[elNum].value2 = start ;  //  place the start value there
     smithObj.sweepDatasets[0].dataM.splice(0,smithObj.sweepDatasets[0].dataM.length); // clear data
     smithObj.sweepDatasets[0].dataQ.splice(0,smithObj.sweepDatasets[0].dataQ.length);
-    var i; var thisStep;
-    var points = Math.abs((stop-start)/step)+1; // eg: start=1, stop=100, step=1; number of points = 99+1=100 0-99 values from 1, 2, 3, .. 100
-    //console.log( " SweepElement = " +sweepElement + " points =  " +points + " oldValue =  " +oldValue + " elNum =  " +elNum + " start =  " +start);
-    for ( i=0; i < points; i++) {
-        thisStep = step*i;
-        if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=start + thisStep ; 
-        else schObj.ELEMENT[elNum].value2=start + thisStep;
+    var i;
+    var values = sweepFrequencies(start, stop, step);
+    for ( i=0; i < values.length; i++) {
+        if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=values[i] ;
+        else schObj.ELEMENT[elNum].value2=values[i];
         //console.log( " schObj.ELEMENT[elNum].value1 = " +schObj.ELEMENT[elNum].value1 + " thisStep =  " +thisStep)
         Zcalsweep1(); // assign and calculate network impedances
         resultsObj.OUTPUT[2].calculate(); // calculate gamma Number(ZR).toFixed(2)
@@ -3328,10 +3329,10 @@ function exportTouchstone_click() {
         return;
     }
 
-    var start = parseFloat(schObj.SS), step = parseFloat(schObj.SST);
+    var freqs = sweepFrequencies(schObj.SS, schObj.ST, schObj.SST);
     var points = [];
-    for (var i = 0; i < dataM.length; i++) {
-        points.push({ f: start + step * i, mag: Number(dataM[i]), angle: Number(dataQ[i]) });
+    for (var i = 0; i < dataM.length && i < freqs.length; i++) {
+        points.push({ f: freqs[i], mag: Number(dataM[i]), angle: Number(dataQ[i]) });
     }
     var text = QSTouchstone.formatS1P(points, {
         R: parseFloat(schObj.Z0),
