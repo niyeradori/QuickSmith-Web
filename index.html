@@ -2637,16 +2637,25 @@ function showTerminationStatus() {
             }
         }
         else {
+            /*
+             * Single stops following the measurement; it does not throw it
+             * away. Emptying gamData here made the switch one-way: going back
+             * to Multiple found nothing to follow and left the load sitting at
+             * 50 + j0, with no hint that a file had ever been read. The data
+             * costs nothing to keep and makes the setting reversible, which is
+             * what a setting should be.
+             */
             schObj.termination = "Single";
-            schObj.gamData.label = "";
-            schObj.gamData.color = "";
-            schObj.gamData.dataX = []; // X axis data, could be Frequency or swept element values
-            schObj.gamData.dataM = [];
-            schObj.gamData.dataQ = [];
-            // ShowMessage_sm("QuickSmith"," Termination Single");
             document.getElementById('S1').style.borderColor= '';
-            Zcalsweep();
         }
+
+        /*
+         * Re-solve whichever way the termination went. This used to sit inside
+         * the Single branch only, so switching back to Multiple set the flag
+         * but never ran the solver: publishLoad never fired, and the load boxes
+         * kept the 50 + j0 that the dropdown had put there on the way out.
+         */
+        Zcalsweep();
        
         console.log(JSON.stringify(schObj));
         console.log(JSON.stringify(resultsObj));
