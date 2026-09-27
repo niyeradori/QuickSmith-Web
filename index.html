@@ -1686,6 +1686,7 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         updateReadout();
         runResponse();
         recordHistory();
+        refreshSweep();     // the band on screen has to describe the circuit on screen
     }
 
 /* ========================================================= undo and redo
@@ -1858,14 +1859,18 @@ smithObj.onTune = function (slotIndex, gamma) {
     if (next.value2 !== undefined) part.value2 = next.value2;
     showSlotValue(slotIndex);
     // a drag solves on every pointer move; hold history until it is over so
-    // the whole gesture is one undo and not a hundred
+    // the whole gesture is one undo and not a hundred, and hold the sweep too,
+    // which would otherwise re-solve the whole band on every move
     designHistory.hold();
+    sweepHeld = true;
     Zcalsweep();
 };
 
 smithObj.onTuneEnd = function () {
     designHistory.release();
     recordHistory();
+    sweepHeld = false;
+    refreshSweep();
 };
 
 /*
@@ -2889,8 +2894,48 @@ function generateSweep() {
         //console.log( "next value =  " +schObj.ELEMENT[elNum].value1);
     }
     if(schObj.ELEMENT[elNum].tune == 1) schObj.ELEMENT[elNum].value1=oldValue; else schObj.ELEMENT[elNum].value2=oldValue;
+
+    /*
+     * Put the solver back on the operating point before leaving.
+     *
+     * With a measured load, publishLoad() writes the interpolated impedance
+     * into slot 1 on every iteration, and the loop above only ever restored
+     * the element it was sweeping. So a sweep left the load holding whatever
+     * it interpolated to at the *last* frequency in the band. The load box
+     * showed it, and worse, Auto-match read it: after sweeping 100 to 200 MHz
+     * you could ask for a match at 146 and be matched to the antenna's 200 MHz
+     * impedance instead. One more solve at the restored value fixes both.
+     */
+    Zcalsweep1();
+
     smithObj.sweep = true;
     smithObj.redrawSmith();
+}
+
+/* ========================================== keeping the swept band current
+ *
+ * A sweep is a picture of the circuit across a band, so the moment the circuit
+ * changes, what is on screen describes a circuit that no longer exists. It
+ * stayed there until you remembered Sweep > Generate, which is how an editor
+ * came to ask why auto-matching a measured antenna appeared to move only one
+ * frequency. It had moved the whole band; the band on screen was the old one.
+ *
+ * Scoped to a measured load, where the band is the entire point of having the
+ * data. Widening it to every design is one condition below.
+ *
+ * A refresh costs one solve per sweep point, so a drag holds it the way it
+ * already holds undo history, and refreshes once when the pointer comes up.
+ */
+var sweepHeld = false;
+var sweepRunning = false;      // generateSweep solves in a loop; never re-enter it
+
+function refreshSweep() {
+    if (sweepHeld || sweepRunning) return;
+    if (!smithObj.sweep) return;                     // no sweep on screen to refresh
+    if (schObj.SE !== "Frequency") return;           // sweeping an element is not a band
+    if (schObj.termination !== "Multiple") return;   // the scope
+    sweepRunning = true;
+    try { generateSweep(); } finally { sweepRunning = false; }
 }
 
 function clearSweep() {
@@ -3416,6 +3461,14 @@ function useMeasurementAsLoad(m) {
     schObj.ELEMENT[0].value1 = m.dataX[0];
     document.getElementById("S1").style.borderColor = "red";
     updateUI();
+
+    /*
+     * You measured a band, so show the band. Without this the load follows the
+     * measurement but the chart shows a single frequency, and the sweep has to
+     * be asked for by a menu item you have not met yet. It is also what gives
+     * refreshSweep something to keep current from then on.
+     */
+    if (schObj.SE === "Frequency") generateSweep();
 }
 
 /* Just drawn on the chart, so you can compare it against whatever you build. */
@@ -3472,8 +3525,9 @@ function importMeasurementFile(file) {
         if (foot) {
             var why = document.createElement("p");
             why.className = "qs-meas-why";
-            why.innerHTML = "<em>The load</em>: the circuit sees this impedance at every " +
-                "frequency, and sweeping follows the measurement.<br>" +
+            why.innerHTML = "<em>The load</em>: the circuit sees this impedance at " +
+                "every frequency. The band is swept and drawn straight away, and " +
+                "stays current as you build.<br>" +
                 "<em>A trace</em>: drawn on the chart for reference, leaving your load alone.";
             foot.parentNode.insertBefore(why, foot);
         }
