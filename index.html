@@ -2836,10 +2836,32 @@ document.addEventListener("contextmenu", function (e) {
         });
     }
 
-/* The values a sweep visits. The arithmetic lives in engine.js so that the
-   regression suite can hold it to account; this is just the short name. */
+/*
+ * The values a sweep visits. The arithmetic lives in engine.js so that the
+ * regression suite can hold it to account; this is just the short name.
+ *
+ * The fallback is not decoration. index.html and engine.js are cached
+ * separately, so for the few minutes after a deploy a browser can hold a new
+ * index.html against an engine.js it cached earlier, and calling a function
+ * that version does not export yet would break the sweep outright. This has
+ * happened. The inline copy keeps that browser working until its cache turns
+ * over; it is the same arithmetic, minus the commentary.
+ */
 function sweepFrequencies(start, stop, step) {
-    return QSEngine.sweepValues(start, stop, step);
+    if (QSEngine && typeof QSEngine.sweepValues === "function") {
+        return QSEngine.sweepValues(start, stop, step);
+    }
+    var out = [];
+    start = Number(start); stop = Number(stop); step = Math.abs(Number(step));
+    if (!isFinite(start) || !isFinite(stop) || !(step > 0)) return out;
+    var dir = (stop < start) ? -1 : 1;
+    var n = Math.floor(Math.abs(stop - start) / step + 1e-9) + 1;
+    for (var i = 0; i < n; i++) {
+        var v = start + dir * step * i;
+        if (Math.abs(v - stop) < step * 1e-3) v = stop;
+        out.push(v);
+    }
+    return out;
 }
 
 function generateSweep() {
