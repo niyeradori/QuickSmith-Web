@@ -83,10 +83,16 @@ a:hover { text-decoration: underline; }
     flex-wrap: wrap;
 }
 .navbar-right { margin-left: auto; }
-#matchBtn {
+/* The matching buttons sit centred in the bar as a pair. The centring lives
+   on the wrapper rather than on the button, because the Auto-match label
+   carries the reference impedance and so changes width, and a second button
+   appears beside it once a measurement is loaded. */
+#matchBtns {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    display: flex;
+    align-items: center;
     white-space: nowrap;
 }
 
@@ -178,8 +184,9 @@ a:hover { text-decoration: underline; }
     .navbar-collapse.collapse.in { display: block; }
     .navbar-collapse .nav { flex-direction: column; align-items: stretch; padding-bottom: 8px; }
     .navbar-right { margin-left: 0; }
-    /* stacked, it is just another item in the opened menu */
-    #matchBtn { position: static; transform: none; display: block; width: 100%; margin: 8px 0; }
+    /* stacked, they are just more items in the opened menu */
+    #matchBtns { position: static; transform: none; display: block; }
+    #matchBtns .btn { display: block; width: 100%; margin: 8px 0; }
     /* a dropdown in the stacked menu opens in flow rather than floating */
     .navbar-collapse .dropdown-menu { position: static; box-shadow: none; border: 0; padding-left: 14px; }
 }
@@ -200,6 +207,15 @@ a:hover { text-decoration: underline; }
    for both; below that they stack. */
 .col-xl-8 { flex: 1 1 460px; }
 .col-xl-4 { flex: 1 1 380px; }
+
+/* Centred absolutely, the pair can reach the right hand menus once the window
+   is narrow enough: two buttons are about 150px wider than the one that used
+   to sit here, and below roughly 1000px that runs into them. In this band the
+   pair sits in flow instead. Off centre beats overlapping. Scoped to has-bb,
+   so a session with no measurement keeps exactly the layout it always had. */
+@media (min-width: 821px) and (max-width: 1060px) {
+    #matchBtns.has-bb { position: static; transform: none; margin-left: 12px; }
+}
 
 @media (max-width: 900px) {
     .row { gap: 14px; }

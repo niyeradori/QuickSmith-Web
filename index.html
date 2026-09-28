@@ -246,8 +246,7 @@
           <ul class="dropdown-menu">
              <li><a href="#" onclick=generateSweep() >Generate</a></li>
             <li><a href="#"  onclick=clearSweep() >Clear</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#"  onclick=broadbandMatch_click() >Broadband match…</a></li>
+
             <!-- <li><a><input type="checkbox" name="checkbox1" style="float: right;">Show Sweep</a></li> -->
           </ul>
         </li> 
@@ -267,7 +266,10 @@
         </li> 
 
       </ul>
-      <button type="button" id="matchBtn" class="btn btn-primary navbar-btn" onclick="autoMatch_click()">Auto-match to 50 &#8486;</button>
+      <span id="matchBtns">
+        <button type="button" id="matchBtn" class="btn btn-primary navbar-btn" onclick="autoMatch_click()">Auto-match to 50 &#8486;</button>
+        <button type="button" id="bbMatchBtn" class="btn navbar-btn" onclick="broadbandMatch_click()" hidden>Broadband match</button>
+      </span>
 
       <ul class="nav navbar-nav navbar-right">
         <li  ><a href="#" onclick=AMP_open_click()>Amp. Design</a></li>
@@ -1152,7 +1154,26 @@ function syncOverlayControls() {
 }
 
 // udates all the input UI elements on the chart
+/*
+ * Broadband matching only means anything with a load that varies across
+ * frequency, so the button appears with the measurement and goes with it.
+ * That also makes importing a Touchstone file teach the feature: a button
+ * you have not seen before turns up next to Auto-match.
+ */
+function syncBroadbandButton() {
+    var btn = document.getElementById("bbMatchBtn");
+    if (!btn) return;
+    var g = schObj.gamData;
+    var show = schObj.termination === "Multiple" &&
+               g && g.dataX && g.dataX.length > 1;
+    btn.hidden = !show;
+    // the pair is too wide to sit centred on a narrow window; app.css needs
+    // to know whether there is a pair at all
+    btn.parentNode.classList.toggle("has-bb", !!show);
+}
+
 function updateUI() {
+    syncBroadbandButton();
     document.getElementById("SM0").value =  smithObj.vswrCircle;
     document.getElementById("SM1").value =  smithObj.qCircle;
     syncOverlayControls();
@@ -2671,6 +2692,7 @@ function showTerminationStatus() {
         //alert("Validate " + document.querySelector(".modal-body #VF").value);
         syncSweepControls();   // the dialog edits the same sweep the panel shows
         syncOverlayControls();
+        syncBroadbandButton();  // the termination may just have changed
         runResponse();
         updateToolTip();//update tooltip as the length unit may have changed.
     }
