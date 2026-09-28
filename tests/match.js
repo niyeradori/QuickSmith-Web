@@ -260,6 +260,52 @@ var denseRun = QSMatch.optimise({ network: denseNet, band: band, restarts: 20,
 near("a 401 point sweep of the same antenna gives the same answer",
      denseRun.results[0].worst, byId["l-stub"].worst, 2e-3);
 
+/* ============================ the design frequency must not change the answer
+ *
+ * A length in degrees is degrees at the line design frequency, which is a way
+ * of writing the number down rather than a design decision. It used to be able
+ * to change the answer: the bound of 10 to 170 degrees means "shorter than a
+ * half wave" when TDF sits at the band and "up to several wavelengths" when it
+ * sits well below, and the optimiser always took the longer lines. Lengths are
+ * searched in degrees at band centre now, so the same question gets the same
+ * network whatever TDF is set to, written down differently.
+ *
+ * The dipole above is the reason nothing else in this file moved: its band is
+ * 100 to 200 with TDF 150, so the factor is exactly 1.
+ */
+function atTDF(tdf) {
+    var n = { Z0: 50, VF: 0.66, TDF: tdf, LU: "Degrees", termination: "Multiple",
+              gamData: dipole.gamData, elements: dipole.elements.slice() };
+    return QSMatch.optimise({ network: n, band: band, restarts: 12,
+                              topologies: ["l-stub"] }).results[0];
+}
+var atBand = atTDF(150);                       // 150 is this band's centre
+var atLow  = atTDF(50);
+var atHigh = atTDF(450);
+near("a third of the design frequency gives the same match",
+     atLow.worst, atBand.worst, 1e-9);
+near("and three times it does too", atHigh.worst, atBand.worst, 1e-9);
+near("the stub is the same piece of line, written smaller",
+     atLow.elements[1].value2 * 3, atBand.elements[1].value2, 1e-6);
+near("and written larger",
+     atHigh.elements[1].value2 / 3, atBand.elements[1].value2, 1e-6);
+
+/* and the length actually stays inside a half wave at the band, which is the
+   whole point of tying the bound to the band rather than to TDF */
+ok("the answer is a buildable length at the band",
+   atLow.elements[1].value2 * (150 / 50) < 180,
+   "got " + (atLow.elements[1].value2 * 3) + " degrees at band centre");
+
+/* ---- and the promise still holds after the conversion ---- */
+var lowNet = { Z0: 50, VF: 0.66, TDF: 50, LU: "Degrees", termination: "Multiple",
+               gamData: dipole.gamData, elements: dipole.elements.slice() };
+near("what it scores is still what the solver reads back",
+     QSMatch.worstVSWR(lowNet,
+         QSMatch.elementsFor(topo, atLow.params, lowNet,
+                             Number(lowNet.TDF) / 150),
+         QSMatch.bandPoints(band)),
+     atLow.worst, 1e-9);
+
 out(failures
     ? "broadband matching: " + failures + " of " + checks + " checks FAILED"
     : "broadband matching: " + checks + " checks OK");

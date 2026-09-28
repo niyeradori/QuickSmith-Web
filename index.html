@@ -3930,18 +3930,20 @@ function showResults(out, status, run, band, closeDialog) {
         band.start + " to " + band.stop + " MHz, unmatched " + run.bare.toFixed(2) + ".";
 
     /*
-     * A stub length in degrees is degrees at the line design frequency, not at
-     * the band, and the two are often nowhere near each other: import a sweep
-     * and the design frequency is still whatever it was. Worth saying, because
-     * a length of 47 degrees means very different hardware at 100 MHz and at
-     * 900 MHz.
+     * A length in degrees is degrees at the line design frequency, and after an
+     * import that is still whatever it was, so the numbers can read oddly small
+     * or large. It no longer changes the network, only how it is written down,
+     * and saying so saves anyone wondering whether to go and tune it.
      */
     var hasLine = run.results.some(function (r) {
         return r.elements.some(function (e) { return e.type === "s" || e.type === "t"; });
     });
-    if (hasLine && schObj.LU === "Degrees") {
-        status.textContent += " Lengths are degrees at the " + Number(schObj.TDF) +
-            " MHz line design frequency, which Settings changes.";
+    var centre = Math.round((band.start + band.stop) / 2);
+    if (hasLine && schObj.LU === "Degrees" && Number(schObj.TDF) !== centre) {
+        status.textContent += " Lengths read in degrees at the " + Number(schObj.TDF) +
+            " MHz line design frequency; set that to " + centre +
+            " in Settings to read them at the band instead. Either way it is the " +
+            "same network.";
     }
 
     run.results.forEach(function (r) {

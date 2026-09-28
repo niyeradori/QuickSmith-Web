@@ -39,6 +39,9 @@ var QSMatch = (function () {
         L:  { lo: 1,   hi: 200, unit: "nH",  label: "inductor" },
         C:  { lo: 0.5, hi: 200, unit: "pF",  label: "capacitor" },
         Z:  { lo: 20,  hi: 150, unit: "Ω", label: "line impedance" },
+        /* Degrees at the centre of the band, not at the line design frequency.
+         * See thScaleFor(). 10 to 170 is then 0.03 to 0.47 wavelengths there,
+         * which is the range you would actually cut. */
         TH: { lo: 10,  hi: 170, unit: "°", label: "length" }
     };
 
@@ -97,7 +100,8 @@ var QSMatch = (function () {
     }
 
     /* Turn a parameter vector into the elements the solver wants. */
-    function elementsFor(topology, x, template) {
+    function elementsFor(topology, x, template, thScale) {
+        var s = (thScale > 0) ? thScale : 1;
         var els = [], i;
         for (i = 0; i <= 12; i++) {
             els.push({ index: i, type: "w", value1: 0, value2: 0, q: 1e6, tune: 1 });
@@ -105,13 +109,42 @@ var QSMatch = (function () {
         els[1] = template.elements[1];              // the load is not ours to change
         var at = 0;
         topology.parts.forEach(function (part) {
+            function val(j) {
+                return part.p[j] === "TH" ? x[at + j] * s : x[at + j];
+            }
             var e = { index: part.slot, type: part.type,
-                      value1: x[at], value2: 0, q: 1e6, tune: 1 };
-            if (part.p.length > 1) { e.value2 = x[at + 1]; }
+                      value1: val(0), value2: 0, q: 1e6, tune: 1 };
+            if (part.p.length > 1) { e.value2 = val(1); }
             at += part.p.length;
             els[part.slot] = e;
         });
         return els;
+    }
+
+    /*
+     * Lengths are searched in degrees at the centre of the band, and stored in
+     * whatever QuickSmith is set to, which for Degrees means degrees at the
+     * line design frequency. This is the factor between the two.
+     *
+     * The reason is that TDF is a way of writing lengths down, not a design
+     * decision, and it should not be able to change the answer. It could.
+     * A length bound of 10 to 170 degrees means "shorter than a half wave"
+     * when TDF sits at the band, and "up to several wavelengths" when it sits
+     * well below, and the optimiser will take the longer lines every time: on
+     * the 75 mm monopole over 850 to 1000 MHz, dropping TDF from 925 to 231
+     * improved the in-band worst case from 1.705 to 1.486 by reaching for a
+     * 1.77 wavelength stub. That network reads 35803 across 800 to 1050 MHz
+     * and 5.98 if the lines are cut 2% long. It wins the number being measured
+     * and loses everything else, which is what over-fitting looks like.
+     *
+     * Only the units that are referenced to TDF need this. A length already in
+     * millimetres is a length.
+     */
+    function thScaleFor(network, freqs) {
+        if (network.LU !== "Degrees") return 1;
+        var f0 = (freqs[0] + freqs[freqs.length - 1]) / 2;
+        var tdf = Number(network.TDF);
+        return (f0 > 0 && tdf > 0) ? tdf / f0 : 1;
     }
 
     /* ------------------------------------------------------------ the cost */
@@ -411,6 +444,7 @@ var QSMatch = (function () {
 
     function one(template, topology, freqs, opts) {
         var bounds = boundsFor(topology, opts.bounds);
+        var thScale = thScaleFor(template, freqs);
         var rand = seeded(opts.seed || 20260927);
         var restarts = opts.restarts || 25;
         var iterations = opts.iterations || 200;
@@ -420,7 +454,7 @@ var QSMatch = (function () {
             for (var i = 0; i < x.length; i++) {
                 if (!(x[i] >= bounds[i][0] && x[i] <= bounds[i][1])) return FAIL;
             }
-            return worstVSWR(template, elementsFor(topology, x, template), freqs);
+            return worstVSWR(template, elementsFor(topology, x, template, thScale), freqs);
         }
 
         var best = null;
@@ -459,7 +493,7 @@ var QSMatch = (function () {
             }
             var got = one(template, topology, freqs, opts);
             if (!got || got.value >= FAIL) return;
-            var els = elementsFor(topology, got.x, template);
+            var els = elementsFor(topology, got.x, template, thScaleFor(template, freqs));
             results.push({
                 id: topology.id,
                 name: topology.name,
