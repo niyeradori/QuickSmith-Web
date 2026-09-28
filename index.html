@@ -2020,8 +2020,11 @@ function runResponse() {
         xLabel: (which === "Frequency") ? "MHz" : which,
         at: (which === "Frequency") ? Number(schObj.ELEMENT[0].value1) : undefined,
         series: [
-            { label: "S21", data: s21, color: "var(--qs-a1)" },
-            { label: "S11", data: s11, color: "var(--qs-a2)" }
+            /* S11 takes the blue, because that is the colour its trace already
+               has on the chart above, and a reader should not have to relearn
+               which line is which between the two views. */
+            { label: "S21", data: s21, color: "var(--qs-a2)" },
+            { label: "S11", data: s11, color: "var(--qs-a1)" }
         ]
     });
 }
@@ -2618,6 +2621,34 @@ function showTerminationStatus() {
         }
     }
 
+    /*
+     * A length in degrees is degrees at the design frequency, so 62.10 degrees
+     * at 100 MHz and 93.14 at 150 are the same piece of line. Moving the design
+     * frequency without moving the numbers therefore swaps in different
+     * hardware: on the measured dipole that took a finished match from 1.63 to
+     * 3.77 with nothing on screen to say why.
+     *
+     * So the numbers move and the line stays put. Changing the design frequency
+     * changes how a length is written down, not what is built, which is what it
+     * has to mean now that the broadband search picks lengths against the band
+     * and leaves this free to be whatever reads best.
+     *
+     * Only stubs and lines carry such a length, and only while the unit is one
+     * that refers to the design frequency at all. A length already in
+     * millimetres is a length.
+     */
+    function retuneLengths(oldTDF, newTDF) {
+        var a = Number(oldTDF), b = Number(newTDF);
+        if (!(a > 0) || !(b > 0) || a === b) return;
+        if (schObj.LU !== "Degrees" && schObj.LU !== "Wave Lengths") return;
+        for (var i = 2; i <= 12; i++) {
+            var e = schObj.ELEMENT[i];
+            if (e.type !== "s" && e.type !== "o" && e.type !== "t") continue;
+            if (!Number(e.value2)) continue;
+            e.value2 = bbRound(Number(e.value2) * b / a);
+        }
+    }
+
     function optionValidate() {
         var val = document.querySelector(".modal-body #VF").value;
         if (isNumeric(val) && val > 0 && val <= 1) schObj.VF = val;
@@ -2626,7 +2657,10 @@ function showTerminationStatus() {
         val = document.querySelector(".modal-body #FREQ").value;
         if (isNumeric(val) && val > 0) { schObj.ELEMENT[0].value1 = val; document.getElementById("E0").value = Number(val).toFixed(2); }
         val = document.querySelector(".modal-body #TDF").value;
-        if (isNumeric(val) && val > 0) schObj.TDF = val;
+        if (isNumeric(val) && val > 0) {
+            retuneLengths(schObj.TDF, val);      // same line, written differently
+            schObj.TDF = val;
+        }
         val = document.querySelector(".modal-body #ST").value;
         if (isNumeric(val) && val > 0) schObj.ST = val;
         val = document.querySelector(".modal-body #SS").value;
@@ -3930,6 +3964,14 @@ function broadbandMatch_click() {
         return false;
     }
 
+    /*
+     * Commit the band the dialog opens with, not just one that gets edited.
+     * Without this the design frequency stays wherever it was, the lengths come
+     * out written at a frequency nowhere near the band, and correcting that
+     * afterwards in Settings silently rebuilds the network: the stored degrees
+     * keep their number and so become a different piece of line.
+     */
+    if (band.stop > band.start) bbUseBand(band.start, band.stop);
     showPicks();
     showVerdict();
     dlg = QSUI.open({
