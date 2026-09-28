@@ -462,6 +462,65 @@ var QSMatch = (function () {
         return { Q: Q, fbw: fbw, floor: bodeFano(Q, fbw) };
     }
 
+
+    /* -------------------------------------------------- bands worth trying
+     *
+     * An imported sweep is almost always far wider than anything anyone
+     * operates over. The 75 mm monopole was measured across 300 to 1500 MHz,
+     * and no network of any complexity matches a Q 7 antenna over 5:1, so the
+     * honest default band is also a useless one. These are the sub-bands worth
+     * trying: one per fractional bandwidth, placed where the antenna is
+     * already closest to matched.
+     *
+     * Placement is by bare worst-case VSWR, which is exact and costs nothing.
+     * Two other rules were tried. A cheap trial search agrees with it on every
+     * width that matters and costs six times more. The Bode-Fano floor
+     * disagrees and is wrong: the floor is lowest where Q is lowest, which on
+     * this antenna is around 1145 MHz, and that is also 6.9:1 away from 50
+     * ohms. Matchable in the limit of unlimited elements, not with three.
+     *
+     * Bands holding a frequency the measurement reads at or above |gamma| = 1
+     * are skipped, since nothing passive matches those at all.
+     */
+    var WIDTHS = [0.05, 0.10, 0.20, 0.30];
+
+    function suggestBands(network, widths) {
+        var g = network.gamData;
+        if (network.termination !== "Multiple" || !g || !g.dataX ||
+            g.dataX.length < 2) return [];
+        var lo = Number(g.dataX[0]), hi = Number(g.dataX[g.dataX.length - 1]);
+        var out = [];
+
+        (widths || WIDTHS).forEach(function (fbw) {
+            var cMin = lo / (1 - fbw / 2), cMax = hi / (1 + fbw / 2);
+            if (!(cMax > cMin)) return;                  // wider than the data
+            var best = null;
+            for (var k = 0; k <= 40; k++) {
+                var c = cMin + (cMax - cMin) * k / 40;
+                var band = { start: Math.round(c * (1 - fbw / 2)),
+                             stop:  Math.round(c * (1 + fbw / 2)), points: 21 };
+                if (band.start < lo || band.stop > hi) continue;
+                if (overUnity(network, band)) continue;
+                var v = worstVSWR(onBand(network, bandPoints(band)),
+                                  elementsFor(EMPTY, [], network), bandPoints(band));
+                if (!(v > 0) || v >= FAIL) continue;
+                if (!best || v < best.bare) {
+                    best = { start: band.start, stop: band.stop, bare: v };
+                }
+            }
+            if (!best) return;
+            // Q and the floor only for the one we keep, on the band as shown
+            var shown = { start: best.start, stop: best.stop, points: 61 };
+            var Q = loadQ(network, shown);
+            best.fbw = (best.stop - best.start) / ((best.start + best.stop) / 2);
+            best.centre = Math.round((best.start + best.stop) / 2);
+            best.Q = Q;
+            best.floor = Q ? bodeFano(Q, best.fbw) : null;
+            out.push(best);
+        });
+        return out;
+    }
+
     /* ------------------------------------------------------------- the API */
 
     function one(template, topology, freqs, opts) {
@@ -543,6 +602,7 @@ var QSMatch = (function () {
         bodeFano: bodeFano,
         loadQ: loadQ,
         overUnity: overUnity,
+        suggestBands: suggestBands,
         feasibility: feasibility,
         worstVSWR: worstVSWR,
         elementsFor: elementsFor,

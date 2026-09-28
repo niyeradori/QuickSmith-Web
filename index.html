@@ -268,7 +268,7 @@
       </ul>
       <span id="matchBtns">
         <button type="button" id="matchBtn" class="btn btn-primary navbar-btn" onclick="autoMatch_click()">Auto-match to 50 &#8486;</button>
-        <button type="button" id="bbMatchBtn" class="btn navbar-btn" onclick="broadbandMatch_click()" hidden>Broadband match</button>
+        <button type="button" id="bbMatchBtn" class="btn btn-primary navbar-btn" onclick="broadbandMatch_click()" hidden>Broadband match</button>
       </span>
 
       <ul class="nav navbar-nav navbar-right">
@@ -3759,6 +3759,10 @@ function broadbandMatch_click() {
     row.appendChild(toIn);
     wrap.appendChild(row);
 
+    /* ---- bands worth trying, since the measured range rarely is one */
+    var picks = document.createElement("div");
+    wrap.appendChild(picks);
+
     /* ---- what the band is asking for, before any searching */
     var verdict = document.createElement("p");
     verdict.style.cssText = "margin:10px 0 0;font-size:13px;line-height:1.5";
@@ -3828,8 +3832,61 @@ function broadbandMatch_click() {
         }
         verdict.textContent = said;
     }
-    fromIn.addEventListener("change", showVerdict);
-    toIn.addEventListener("change", showVerdict);
+    function bandChanged() {
+        var b = readBand();
+        if (b) bbUseBand(b.start, b.stop);
+        showVerdict();
+    }
+    fromIn.addEventListener("change", bandChanged);
+    toIn.addEventListener("change", bandChanged);
+
+    /*
+     * The measured range is almost never a band anyone operates over, so
+     * offer the ones that are. Each row is the best placement for that
+     * bandwidth, judged on how close the bare antenna already is.
+     */
+    function showPicks() {
+        var list = QSMatch.suggestBands(bbNetwork());
+        picks.innerHTML = "";
+        if (list.length < 2) return;
+
+        var head = document.createElement("div");
+        head.style.cssText = "margin:14px 0 4px;font-size:12px;letter-spacing:.04em;" +
+                             "text-transform:uppercase;color:var(--qs-text,#7b8496)";
+        head.textContent = "Bands worth trying";
+        picks.appendChild(head);
+
+        list.forEach(function (b) {
+            var row = document.createElement("div");
+            row.style.cssText = "display:flex;align-items:center;gap:10px;padding:5px 0;" +
+                                "border-top:1px solid var(--qs-rim,#e5e8ee);font-size:13px";
+
+            var name = document.createElement("span");
+            name.style.cssText = "font-family:ui-monospace,Menlo,monospace;min-width:108px";
+            name.textContent = b.start + " - " + b.stop;
+
+            var meta = document.createElement("span");
+            meta.style.cssText = "flex:1;color:var(--qs-text,#7b8496);font-size:12px";
+            meta.textContent = Math.round(100 * b.fbw) + "% wide  ·  unmatched " +
+                b.bare.toFixed(2) + (b.floor ? "  ·  floor " + b.floor.toFixed(2) : "");
+
+            var use = document.createElement("button");
+            use.type = "button";
+            use.className = "qs-btn";
+            use.textContent = "Use";
+            use.addEventListener("click", function () {
+                fromIn.value = b.start;
+                toIn.value = b.stop;
+                bbUseBand(b.start, b.stop);
+                showVerdict();
+            });
+
+            row.appendChild(name);
+            row.appendChild(meta);
+            row.appendChild(use);
+            picks.appendChild(row);
+        });
+    }
 
     var dlg = null, searching = false;
     function search() {
@@ -3856,6 +3913,7 @@ function broadbandMatch_click() {
         return false;
     }
 
+    showPicks();
     showVerdict();
     dlg = QSUI.open({
         title: "Broadband match",
@@ -3866,6 +3924,30 @@ function broadbandMatch_click() {
     dlg.addEventListener("close", function () {
         if (bbWorker) { bbWorker.terminate(); bbWorker = null; }
     });
+}
+
+/*
+ * Commit to a band: the sweep and the line design frequency both follow it.
+ *
+ * Moving the sweep is what clears the chart of everything outside the band.
+ * An imported sweep is usually far wider than the band being designed for,
+ * and on a small antenna most of the rest rides the rim where it reflects
+ * nearly everything, which is a lot of ink for frequencies nobody is
+ * designing to. Nothing is thrown away: schObj.gamData keeps every measured
+ * point, so a wider band brings them straight back.
+ *
+ * TDF goes to band centre so that 90 degrees reads as a quarter wave where
+ * the design actually lives. It no longer changes what the search finds, only
+ * how the lengths are written down.
+ */
+function bbUseBand(lo, hi) {
+    schObj.SS = lo;
+    schObj.ST = hi;
+    schObj.SST = Number((hi - lo) / 60).toFixed(4);
+    schObj.TDF = Math.round((lo + hi) / 2);
+    schObj.ELEMENT[0].value1 = Math.round((lo + hi) / 2);
+    updateUI();
+    if (schObj.SE === "Frequency") generateSweep();
 }
 
 /* The ladder as match.js wants it: the load, and nothing in front of it. */

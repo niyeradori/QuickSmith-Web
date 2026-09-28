@@ -314,6 +314,47 @@ near("what it scores is still what the solver reads back",
          QSMatch.bandPoints(band)),
      atLow.worst, 1e-9);
 
+/* ================================================ bands worth trying
+ *
+ * A measured sweep is rarely a band anyone operates over, so the dialog
+ * offers sub-bands. Placement is by bare worst-case VSWR: exact, free, and
+ * in agreement with a trial search on every width that matters. Explicitly
+ * NOT by the Bode-Fano floor, which prefers wherever Q is lowest even when
+ * that is nowhere near 50 ohms.
+ */
+var picks = QSMatch.suggestBands(dipole);
+ok("a measured antenna gets suggestions", picks.length >= 2);
+ok("every suggestion sits inside the measured data",
+   picks.every(function (b) { return b.start >= 100 && b.stop <= 200; }));
+ok("each is narrower than the whole sweep",
+   picks.every(function (b) { return b.stop - b.start < 100; }));
+ok("they are ordered narrowest first",
+   picks.every(function (b, i) { return !i || b.fbw >= picks[i - 1].fbw; }));
+ok("a narrower band is never harder to match than a wider one",
+   picks.every(function (b, i) { return !i || b.bare >= picks[i - 1].bare - 1e-9; }),
+   picks.map(function (b) { return b.bare.toFixed(2); }).join(" "));
+ok("each carries a Q and a floor",
+   picks.every(function (b) { return b.Q > 0 && b.floor >= 1; }));
+ok("and the floor is never above the bare antenna, or it says nothing",
+   picks.every(function (b) { return b.floor <= b.bare; }));
+
+/* the numbers shown must describe the band as shown, not some unrounded one */
+var shown = picks[0];
+near("the quoted VSWR is for the rounded band on screen",
+     QSMatch.worstVSWR(dipole, dipole.elements,
+         QSMatch.bandPoints({ start: shown.start, stop: shown.stop, points: 21 })),
+     shown.bare, 1e-9);
+
+eq("a typed R+jX load gets no suggestions", QSMatch.suggestBands(template).length, 0);
+
+/* the bad stretch is never suggested */
+var hotPicks = QSMatch.suggestBands(hotNet);
+ok("no suggestion straddles a frequency that reads over unity",
+   hotPicks.every(function (b) {
+       return !QSMatch.overUnity(hotNet, { start: b.start, stop: b.stop, points: 21 });
+   }),
+   hotPicks.map(function (b) { return b.start + "-" + b.stop; }).join(" "));
+
 out(failures
     ? "broadband matching: " + failures + " of " + checks + " checks FAILED"
     : "broadband matching: " + checks + " checks OK");
