@@ -73,6 +73,7 @@
   <ol>
     <li><a href="#match">Matching to 50 ohms</a></li>
     <li><a href="#automatch">Letting QuickSmith do it</a></li>
+    <li><a href="#broadband">Matching a whole band</a></li>
     <li><a href="#drag">Tuning by dragging</a></li>
     <li><a href="#other">Matching to something else</a></li>
     <li><a href="#readout">VSWR, return loss and Q</a></li>
@@ -264,6 +265,70 @@
   reach it. Try a transmission line, or add a third component by hand.
 </p>
 
+<h3 id="broadband">Can it match a whole band instead of one frequency?</h3>
+<p>
+  Yes, once a measurement is loaded. Import a sweep with
+  <strong>Data &rarr; Open Measurement</strong> and a
+  <strong>Broadband match</strong> button appears beside Auto-match. The two
+  answer the same question at different widths: Auto-match is exact at the
+  frequency on screen, this one looks for the best compromise across a band.
+</p>
+<p>
+  There is no closed form for that, so it is searched for. QuickSmith tries six
+  topologies, from a two part L-network up to a stub, a line and a second stub,
+  and reports the worst VSWR each one reaches anywhere in the band, best first.
+  It runs in the background, so the page stays live, and closing the dialog
+  gives up on it. <strong>Apply</strong> puts the network in the ladder.
+</p>
+<p>
+  <strong>The worst case is what gets minimised, not the average</strong>, so
+  the answers look wrong at first. None of them are centred. A network that is
+  perfect at band centre and poor at both edges is worse than one that is
+  mediocre everywhere, and a transmitter does not care how good the middle is
+  if an edge is 4:1. Expect a match that is deliberately worse at the centre
+  than a single-frequency design would be.
+</p>
+<p>
+  The dialog will not let you waste an afternoon. Before any searching it
+  reports what the band is asking for:
+</p>
+<blockquote>
+  Unmatched, the worst VSWR in this band is 3.88. The antenna is Q 1.8 here,
+  and no lossless network of any complexity can beat 1.15:1 across it.
+</blockquote>
+<p>
+  That second figure is the <strong>Bode-Fano limit</strong>, and it is a wall
+  rather than a target. It assumes an unlimited number of components, so
+  nothing with three or four parts will reach it. Its use is deciding whether
+  to bother: a floor of 1.05 says keep going, a floor of 2.5 says the band is
+  too wide for this antenna and no amount of cleverness will change that. It is
+  the only number in the dialog that describes the antenna rather than a
+  particular network.
+</p>
+<p>
+  An imported sweep is usually far wider than anything you would operate over,
+  so the dialog also offers <strong>bands worth trying</strong>, one per
+  bandwidth, placed where the antenna is already closest to matched. Pressing
+  <strong>Use</strong> moves the sweep, the chart and the line design frequency
+  onto that band. Nothing is thrown away, so a wider band brings the rest of
+  the measurement straight back.
+</p>
+<p>
+  Two things it will tell you rather than fail silently. If the measurement
+  reads a reflection coefficient of 1 or more anywhere in the band, it names
+  those frequencies and suggests where to start instead: that reading says the
+  antenna returns all the power it is given, nothing passive can match it, and
+  one such frequency is enough to sink the whole search. It is usually
+  calibration error where the antenna is electrically tiny, not a broken
+  measurement. And if a load is typed as a single R + jX rather than measured,
+  it declines, because a constant impedance has no band to compromise over and
+  Auto-match is already the exact answer.
+</p>
+<p>
+  <strong>Help &rarr; Guided examples</strong> has a worked one: a measured
+  dipole taken from 3.88:1 to 1.63:1 across 100 to 200 MHz with two components.
+</p>
+
 <h3 id="drag">Can I tune by dragging on the chart?</h3>
 <p>
   Yes, with a mouse or a finger. Every component puts a grab handle on its node.
@@ -307,6 +372,9 @@
   rebuilds it a component at a time, saying what each one does and why it goes
   where it does. Step back and forth with Back and Next. Nothing special happens
   while a tour runs, so you can stop at any step and carry on editing by hand.
+  One of them, <em>A measured antenna, across its whole band</em>, works on a
+  real measured dipole rather than a single impedance, and is the quickest way
+  to see what <a href="#broadband">matching a band</a> actually looks like.
 </p>
 <p>
   <strong>Help &rarr; Examples in full</strong> is the written version: the same
@@ -446,6 +514,11 @@
   measurement, it imports it rather than complaining. Open Design is for
   <code>.sch</code> design files, but nobody should have to know that to get their
   file in.
+</p>
+<p>
+  With a measurement loaded as the load you can match the whole band at once
+  rather than one frequency: see <a href="#broadband">matching a whole
+  band</a>.
 </p>
 <p>
   <strong>Data &rarr; Export Touchstone</strong> writes the network back out as a

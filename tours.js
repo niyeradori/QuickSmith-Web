@@ -14,6 +14,11 @@
  *
  * A step is one element. Slot numbers follow the ladder: even slots are in
  * series, odd slots are in shunt.
+ *
+ * A tour that carries `gamData` is matching a measured band rather than one
+ * frequency, and also sets `TDF` and `band`. The points are the ones in
+ * touchstone/dipole.s1p, with the phase already unwrapped the way the importer
+ * leaves it, so the tour needs no file and no network.
  */
 var QSTours = (function () {
     "use strict";
@@ -66,6 +71,50 @@ var QSTours = (function () {
             ],
             closing: "VSWR 1.006, from two pieces of 30 ohm line. At a gigahertz " +
                 "that is often easier to build than a capacitor."
+        },
+        {
+            id: "broadband-dipole",
+            title: "A measured antenna, across its whole band",
+            source: "Broadband match",
+            Z0: 50, frequency: 150, LU: "Degrees", TDF: 150,
+            band: [100, 200],
+            load: { type: "rx", value1: 50, value2: 0 },
+            gamData: {
+                dataX: [100, 105, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200],
+                dataM: [0.59, 0.53, 0.59, 0.581, 0.49, 0.372,
+                        0.236, 0.183, 0.187, 0.231, 0.244, 0.344],
+                dataQ: [-86.271, -61.987, -72.268, -56.456, -81.76, -102.622,
+                        -112.8, -119.753, -122.89, -117.12, -128, -140.98]
+            },
+            opening: "A real dipole, measured from 100 to 200 MHz, and the load " +
+                "now follows the measurement at every frequency instead of " +
+                "sitting at one point. Unmatched it is 3.88:1 at its worst " +
+                "somewhere in that band, and the worst is the number that " +
+                "matters: a transmitter does not care how good the middle is if " +
+                "an edge is 4:1. Before choosing anything, the Bode-Fano limit " +
+                "says what is possible here. This antenna is Q 1.8 across the " +
+                "band, and no lossless network of any complexity can beat " +
+                "1.15:1 over it. So there is room, and we know what to aim at.",
+            steps: [
+                { slot: 2, type: "l", value1: 39.8,
+                  say: "A series inductor, and the worst case falls from 3.88 to " +
+                       "3.11. Not much for a component, and it looks like a poor " +
+                       "start. It is not: this one is placing a resonance inside " +
+                       "the band, and what it sets up is what the next part " +
+                       "exploits. Judge it when the network is finished." },
+                { slot: 3, type: "s", value1: 32.03, value2: 93.14,
+                  say: "A shorted stub, 32 ohms and 93 degrees at the 150 MHz " +
+                       "design frequency. Worst case 1.63:1. Watch the trace " +
+                       "rather than the number: it has been folded so that both " +
+                       "edges of the band come in together, which is what the " +
+                       "search is actually doing. It never centres a match." }
+            ],
+            closing: "1.63 against a floor of 1.15, from two parts. Read the " +
+                "chart at 150 MHz alone and it says 1.56, which is worse than a " +
+                "single-frequency match would give you there, and that is the " +
+                "whole point: the centre was spent buying the edges. Broadband " +
+                "match does this search for you, over six topologies at once, " +
+                "once a measurement is loaded."
         },
         {
             id: "an721-input",

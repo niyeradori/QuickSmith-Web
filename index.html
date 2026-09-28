@@ -1816,9 +1816,28 @@ function startTour(id) {
     if (!tour) return;
     schObj.Z0 = smithObj.Z0 = tour.Z0;
     schObj.LU = tour.LU;
-    schObj.termination = "Single";
+    if (tour.TDF) schObj.TDF = tour.TDF;
+
+    /*
+     * A tour carrying gamData is matching a band, so the load has to follow the
+     * measurement and the chart has to show the band rather than a point. The
+     * data is in the tour itself, so this needs no file and no network.
+     */
+    if (tour.gamData && tour.band) {
+        schObj.termination = "Multiple";
+        schObj.gamData = { label: tour.title, color: "#000000",
+                           dataX: tour.gamData.dataX.slice(),
+                           dataM: tour.gamData.dataM.slice(),
+                           dataQ: tour.gamData.dataQ.slice() };
+        schObj.SS = tour.band[0];
+        schObj.ST = tour.band[1];
+        schObj.SST = Number((tour.band[1] - tour.band[0]) / 60).toFixed(4);
+    } else {
+        schObj.termination = "Single";
+    }
     tourAt = 0;
     showTourStep();
+    if (tour.gamData && schObj.SE === "Frequency") generateSweep();
 }
 
 function tourStep(by) {
@@ -1837,6 +1856,8 @@ function showTourStep() {
     designHistory.hold();
     updateUI();
     designHistory.release();
+    // a band tour is judged on the swept trace, so redraw it at every step
+    if (tour.gamData && schObj.SE === "Frequency") generateSweep();
 
     var panel = document.getElementById("tourPanel");
     panel.hidden = false;
