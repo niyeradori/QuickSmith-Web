@@ -230,6 +230,77 @@ var QSMatch = (function () {
         return (1 + g) / (1 - g);
     }
 
+
+    /* --------------------------------------------- the load, on the band
+     *
+     * Two reasons to pin the measurement to the band's own frequencies before
+     * searching anything.
+     *
+     * Speed. QSEngine.interpolate rebuilds its spline from scratch on every
+     * call, sort included, twice per solve, and a search is millions of
+     * solves. An 801 point VNA sweep is the ordinary case, not a large one,
+     * and it made the search take minutes. The band is only ever judged at a
+     * fixed set of frequencies, so the measurement only needs reading once.
+     *
+     * Exactness. A monotone cubic passes through its own knots, so reading the
+     * resampled set back at those same frequencies returns the identical
+     * numbers. This buys speed and costs no accuracy.
+     */
+    function resampleLoad(network, freqs) {
+        var g = network.gamData;
+        if (network.termination !== "Multiple" || !g || !g.dataX ||
+            g.dataX.length < 2) return null;
+        var M = [], Q = [];
+        for (var i = 0; i < freqs.length; i++) {
+            M.push(QSEngine.interpolate(freqs[i], g.dataX, g.dataM));
+            Q.push(QSEngine.interpolate(freqs[i], g.dataX, g.dataQ));
+        }
+        return { dataX: freqs.slice(), dataM: M, dataQ: Q };
+    }
+
+    /* The same network reading its load from a resampled copy. */
+    function onBand(network, freqs) {
+        var g = resampleLoad(network, freqs);
+        if (!g) return network;
+        return { Z0: network.Z0, VF: network.VF, TDF: network.TDF, LU: network.LU,
+                 termination: network.termination, gamData: g,
+                 elements: network.elements };
+    }
+
+    /*
+     * overUnity(network, band) -> { from, to, points, total } or null
+     *
+     * Where the measurement reads |gamma| >= 1, meaning more power coming back
+     * than went in. A VNA does this on a near total reflection, where its
+     * calibration error is bigger than the little the antenna absorbs: a 75 mm
+     * monopole at 300 MHz is electrically tiny and returns essentially
+     * everything, so the trace sits on the unit circle and noise pushes it
+     * over.
+     *
+     * Read literally it says the load is lossless, and nothing passive can
+     * match a lossless load. The solver clamps to 1, the resistance goes to
+     * zero, the VSWR is infinite, and every candidate scores the same failure.
+     * The search then has nothing to report. That is the right answer and a
+     * terrible way to deliver it, so this names the frequencies responsible.
+     *
+     * Measured on the band's own frequencies, which is exactly where the
+     * search will judge, so it predicts the failure rather than guessing at it.
+     */
+    function overUnity(network, band) {
+        var freqs = bandPoints(band);
+        var g = resampleLoad(network, freqs);
+        if (!g) return null;
+        var from = null, to = null, n = 0;
+        for (var i = 0; i < freqs.length; i++) {
+            if (g.dataM[i] >= 1) {
+                if (from === null) from = freqs[i];
+                to = freqs[i];
+                n++;
+            }
+        }
+        return n ? { from: from, to: to, points: n, total: freqs.length } : null;
+    }
+
     /* ------------------------------------------------------------ antenna Q
      *
      * The floor above needs one number for the load, its Q. The textbook
@@ -283,9 +354,10 @@ var QSMatch = (function () {
         var n = freqs.length;
         if (n < 2 * QWINDOW + 1) return null;
 
+        var on = onBand(network, freqs);
         var net = {
-            Z0: network.Z0, VF: network.VF, TDF: network.TDF, LU: network.LU,
-            termination: network.termination, gamData: network.gamData,
+            Z0: on.Z0, VF: on.VF, TDF: on.TDF, LU: on.LU,
+            termination: on.termination, gamData: on.gamData,
             elements: elementsFor(EMPTY, [], network), frequency: 0
         };
         var R = [], X = [], i, r;
@@ -370,8 +442,9 @@ var QSMatch = (function () {
      * VSWR first, each with the elements applyMatch() expects.
      */
     function optimise(opts) {
-        var template = opts.network;
         var freqs = bandPoints(opts.band);
+        // read the measurement once, not once per solve
+        var template = onBand(opts.network, freqs);
         var list = (opts.topologies && opts.topologies.length)
             ? TOPOLOGIES.filter(function (t) { return opts.topologies.indexOf(t.id) >= 0; })
             : TOPOLOGIES;
@@ -413,6 +486,7 @@ var QSMatch = (function () {
         optimise: optimise,
         bodeFano: bodeFano,
         loadQ: loadQ,
+        overUnity: overUnity,
         feasibility: feasibility,
         worstVSWR: worstVSWR,
         elementsFor: elementsFor,

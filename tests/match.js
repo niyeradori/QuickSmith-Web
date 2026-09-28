@@ -194,6 +194,72 @@ eq("a zero width band gets no floor",
 eq("and neither does a load typed as a single R+jX",
    QSMatch.feasibility(template, band), null);
 
+/* ================================ a measurement that reads |gamma| >= 1
+ *
+ * A VNA on a near total reflection reports a little more power coming back
+ * than went in, because its calibration error is larger than the little the
+ * antenna absorbs. The 75 mm monopole does it from 300 to 612 MHz. Read
+ * literally that load is lossless, nothing passive can match it, and every
+ * candidate fails identically. The search is right to find nothing; what it
+ * must not do is fail without saying why.
+ */
+var hot = { dataX: [], dataM: [], dataQ: [] };
+for (var k = 0; k <= 40; k++) {
+    var f = 300 + k * 10;
+    hot.dataX.push(f);
+    // over one below 400 MHz, sane above it
+    hot.dataM.push(f < 400 ? 1.02 : 0.6);
+    hot.dataQ.push(-90 - k);
+}
+var hotNet = { Z0: 50, VF: 1, TDF: 500, LU: "Degrees", termination: "Multiple",
+               gamData: hot, elements: template.elements.slice() };
+
+var flagged = QSMatch.overUnity(hotNet, { start: 300, stop: 700, points: 41 });
+ok("an over unity stretch is found", !!flagged);
+near("starting where the data does", flagged.from, 300, 1e-9);
+ok("and ending before the good data", flagged.to < 400, "got " + flagged.to);
+eq("a clean band is not flagged",
+   QSMatch.overUnity(hotNet, { start: 450, stop: 700, points: 41 }), null);
+eq("nor is a load with no measurement behind it",
+   QSMatch.overUnity(template, { start: 100, stop: 200, points: 41 }), null);
+
+/*
+ * The load itself is unmatchable there, which is the deterministic fact. What
+ * the search then reports is not: with the 75 mm monopole every candidate came
+ * back a failure and the list was empty, while here the finite component Q
+ * leaves a sliver of resistance and the best "match" is some absurd number
+ * just under the failure sentinel. Both are useless, which is why the dialog
+ * explains the cause rather than trying to interpret the result.
+ */
+var hotBand = { start: 300, stop: 700, points: 41 };
+eq("the bare load is unmatchable across the bad stretch",
+   QSMatch.worstVSWR(hotNet, hotNet.elements, QSMatch.bandPoints(hotBand)), 1e6);
+var hotRun = QSMatch.optimise({ network: hotNet, band: hotBand, restarts: 4 });
+ok("and nothing the search finds there is worth having",
+   !hotRun.results.length || hotRun.results[0].worst > 1000,
+   hotRun.results.length ? "best " + hotRun.results[0].worst : "empty");
+
+var clearBand = { start: 450, stop: 700, points: 41 };
+var clearRun = QSMatch.optimise({ network: hotNet, band: clearBand, restarts: 4 });
+ok("once the band clears it, the same antenna matches sensibly",
+   clearRun.results.length > 0 && clearRun.results[0].worst < 10,
+   clearRun.results.length ? "best " + clearRun.results[0].worst : "empty");
+
+/* ---- resampling the load onto the band must not move any answer ---- */
+var dense = { dataX: [], dataM: [], dataQ: [] };
+for (k = 0; k <= 400; k++) {                     // 401 points, as a VNA gives
+    var fr = 100 + k * 0.25;
+    dense.dataX.push(fr);
+    dense.dataM.push(QSEngine.interpolate(fr, gam.dataX, gam.dataM));
+    dense.dataQ.push(QSEngine.interpolate(fr, gam.dataX, gam.dataQ));
+}
+var denseNet = { Z0: 50, VF: 0.66, TDF: 150, LU: "Degrees", termination: "Multiple",
+                 gamData: dense, elements: dipole.elements.slice() };
+var denseRun = QSMatch.optimise({ network: denseNet, band: band, restarts: 20,
+                                  topologies: ["l-stub"] });
+near("a 401 point sweep of the same antenna gives the same answer",
+     denseRun.results[0].worst, byId["l-stub"].worst, 2e-3);
+
 out(failures
     ? "broadband matching: " + failures + " of " + checks + " checks FAILED"
     : "broadband matching: " + checks + " checks OK");
