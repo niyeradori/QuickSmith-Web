@@ -3798,13 +3798,22 @@ function broadbandMatch_click() {
          */
         var over = QSMatch.overUnity(net, b);
         if (over) {
+            /*
+             * Name a frequency that works, not the edge of the one that does
+             * not. Saying "above 600" when 600 itself is over unity sends you
+             * straight back here, and one bad frequency in sixty-one is enough
+             * to fail the whole band.
+             */
             verdict.textContent =
-                "Between " + Math.round(over.from) + " and " + Math.round(over.to) +
+                "From " + Math.round(over.from) + " to " + Math.round(over.to) +
                 " MHz this measurement reads |\u0393| of 1 or more, which has the " +
-                "antenna returning all the power that reaches it. Nothing passive " +
-                "can match that, so a search over this band finds nothing. On a " +
-                "near total reflection that is usually the calibrator rather than " +
-                "the antenna. Start the band above " + Math.round(over.to) + " MHz.";
+                "antenna handing back every bit of power that reaches it. Nothing " +
+                "passive can match that, and one such frequency fails the whole " +
+                "band. On a near total reflection it is usually the calibration " +
+                "rather than the antenna." +
+                (over.clearFrom
+                    ? " Start the band at " + Math.ceil(over.clearFrom) + " MHz."
+                    : " The whole of this band is affected.");
             return;
         }
 

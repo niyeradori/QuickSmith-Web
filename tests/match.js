@@ -218,6 +218,14 @@ var flagged = QSMatch.overUnity(hotNet, { start: 300, stop: 700, points: 41 });
 ok("an over unity stretch is found", !!flagged);
 near("starting where the data does", flagged.from, 300, 1e-9);
 ok("and ending before the good data", flagged.to < 400, "got " + flagged.to);
+near("and it names a frequency that actually works, not the edge of the bad one",
+     flagged.clearFrom, 400, 1e-9);
+ok("which is past the whole bad stretch", flagged.clearFrom > flagged.to);
+eq("a band starting exactly at the clear point is not flagged",
+   QSMatch.overUnity(hotNet, { start: 400, stop: 700, points: 41 }), null);
+ok("but one starting at the last bad frequency still is",
+   !!QSMatch.overUnity(hotNet, { start: 390, stop: 700, points: 41 }));
+
 eq("a clean band is not flagged",
    QSMatch.overUnity(hotNet, { start: 450, stop: 700, points: 41 }), null);
 eq("nor is a load with no measurement behind it",

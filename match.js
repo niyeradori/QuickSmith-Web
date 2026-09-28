@@ -316,22 +316,44 @@ var QSMatch = (function () {
      * The search then has nothing to report. That is the right answer and a
      * terrible way to deliver it, so this names the frequencies responsible.
      *
-     * Measured on the band's own frequencies, which is exactly where the
-     * search will judge, so it predicts the failure rather than guessing at it.
+     * Read from the measured points themselves rather than from the band's
+     * coarse grid. The first version of this scanned the grid, found the bad
+     * stretch ending at 600 MHz because that was simply the last 20 MHz grid
+     * point it looked at, and advised starting the band above 600. The true
+     * boundary was 612. Anyone following that advice landed on a band whose
+     * very first frequency was still over unity, and one bad frequency in
+     * sixty-one is enough to fail the lot.
+     *
+     * `clearFrom` is therefore a frequency known to work: the first measured
+     * point above the whole bad stretch, not the edge of it.
      */
     function overUnity(network, band) {
+        var g = network.gamData;
+        if (network.termination !== "Multiple" || !g || !g.dataX ||
+            g.dataX.length < 2) return null;
         var freqs = bandPoints(band);
-        var g = resampleLoad(network, freqs);
-        if (!g) return null;
-        var from = null, to = null, n = 0;
-        for (var i = 0; i < freqs.length; i++) {
-            if (g.dataM[i] >= 1) {
-                if (from === null) from = freqs[i];
-                to = freqs[i];
+        var lo = freqs[0], hi = freqs[freqs.length - 1];
+
+        var from = null, to = null, n = 0, inBand = 0, i, f;
+        for (i = 0; i < g.dataX.length; i++) {
+            f = Number(g.dataX[i]);
+            if (f < lo || f > hi) continue;
+            inBand++;
+            if (Number(g.dataM[i]) >= 1) {
+                if (from === null) from = f;
+                to = f;
                 n++;
             }
         }
-        return n ? { from: from, to: to, points: n, total: freqs.length } : null;
+        if (!n) return null;
+
+        // the first measured point above the bad stretch, wherever it ends
+        var clearFrom = null;
+        for (i = 0; i < g.dataX.length; i++) {
+            f = Number(g.dataX[i]);
+            if (f > to && Number(g.dataM[i]) < 1) { clearFrom = f; break; }
+        }
+        return { from: from, to: to, points: n, total: inBand, clearFrom: clearFrom };
     }
 
     /* ------------------------------------------------------------ antenna Q
