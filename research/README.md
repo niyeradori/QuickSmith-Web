@@ -10,7 +10,7 @@ because the next question will start from them.
 
 ## Data
 
-`measured/` holds the 75 mm monopole, swept 300 MHz to 1.5 GHz on two
+`../touchstone/` holds the 75 mm monopole, swept 300 MHz to 1.5 GHz on two
 instruments on the same afternoon: 801 points from an HP 8753C with an
 S-parameter test set, and 401 points from a NanoVNA. The antenna is 75 mm of
 1 mm wire through an SMA connector on a two foot square copper ground plane.

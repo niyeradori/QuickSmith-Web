@@ -15,7 +15,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-MEAS = os.path.join(HERE, "measured")
+MEAS = os.path.join(HERE, "..", "touchstone")   # the sample files live there
 FIGS = os.path.join(HERE, "figures")
 os.makedirs(FIGS, exist_ok=True)
 

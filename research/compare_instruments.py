@@ -1,7 +1,7 @@
 import cmath, math, random, os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-MEAS = os.path.join(HERE, "measured")
+MEAS = os.path.join(HERE, "..", "touchstone")   # the sample files live there
 
 def read(path):
     out=[]; unit=1.0; fmt='RI'
