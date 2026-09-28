@@ -1,0 +1,318 @@
+/*
+ * Matching a band rather than a point.
+ * =============================================================================
+ *
+ * Auto-match solves for a perfect match at one frequency, in closed form.
+ * There is no closed form for the best match across a band, so this searches
+ * for one: it proposes component values, asks the solver what the worst VSWR
+ * anywhere in the band would be, and walks downhill.
+ *
+ * Two things about that are worth stating plainly.
+ *
+ * The cost is the WORST case, not the average. A network that is perfect at
+ * band centre and dreadful at both edges is worse than one that is mediocre
+ * everywhere, and minimising the average would prefer the wrong one. This is
+ * also why the answers look odd to anyone used to designing by hand: the
+ * optimiser never centres the match, because the worst case always lives at
+ * an edge.
+ *
+ * Every candidate is evaluated through QSEngine.solve(), the same path the
+ * program uses to draw the chart. It would be faster to write the arithmetic
+ * out again here, and then the number promised by the optimiser could quietly
+ * drift from the number the program displays after applying it. One solver.
+ *
+ * No DOM and no dependencies beyond engine.js, so this runs equally in a Web
+ * Worker and in the headless test suite.
+ */
+
+var QSMatch = (function () {
+    "use strict";
+
+    /* ------------------------------------------------------------- bounds
+     *
+     * The optimiser will happily return a 6 ohm stub, which is electrically
+     * correct and not something you can fabricate. Bounds are part of the
+     * problem statement, not a detail: ask for the best answer and you get the
+     * best answer, buildable or not.
+     */
+    var KINDS = {
+        L:  { lo: 1,   hi: 200, unit: "nH",  label: "inductor" },
+        C:  { lo: 0.5, hi: 200, unit: "pF",  label: "capacitor" },
+        Z:  { lo: 20,  hi: 150, unit: "Ω", label: "line impedance" },
+        TH: { lo: 10,  hi: 170, unit: "°", label: "length" }
+    };
+
+    /* ---------------------------------------------------------- topologies
+     *
+     * Slot parity decides series or shunt: even slots are in series with the
+     * signal, odd slots are across it. Stubs are shunt by nature and so belong
+     * in odd slots; a transmission line is a series two-port and belongs in an
+     * even one. Each part names the parameter kinds it consumes, in order.
+     */
+    var TOPOLOGIES = [
+        { id: "l-lc", name: "L network, series L then shunt C",
+          parts: [ { slot: 2, type: "l", p: ["L"] },
+                   { slot: 3, type: "c", p: ["C"] } ] },
+
+        { id: "l-cl", name: "L network, series C then shunt L",
+          parts: [ { slot: 2, type: "c", p: ["C"] },
+                   { slot: 3, type: "l", p: ["L"] } ] },
+
+        { id: "l-stub", name: "Series L then a shorted stub",
+          parts: [ { slot: 2, type: "l", p: ["L"] },
+                   { slot: 3, type: "s", p: ["Z", "TH"] } ] },
+
+        { id: "l-stub-l", name: "Series L, stub, then series L",
+          parts: [ { slot: 2, type: "l", p: ["L"] },
+                   { slot: 3, type: "s", p: ["Z", "TH"] },
+                   { slot: 4, type: "l", p: ["L"] } ] },
+
+        { id: "stub-line-stub", name: "Stub, line, stub",
+          parts: [ { slot: 3, type: "s", p: ["Z", "TH"] },
+                   { slot: 4, type: "t", p: ["Z", "TH"] },
+                   { slot: 5, type: "s", p: ["Z", "TH"] } ] },
+
+        { id: "l-stub-line-stub", name: "Series L, stub, line, stub",
+          parts: [ { slot: 2, type: "l", p: ["L"] },
+                   { slot: 3, type: "s", p: ["Z", "TH"] },
+                   { slot: 4, type: "t", p: ["Z", "TH"] },
+                   { slot: 5, type: "s", p: ["Z", "TH"] } ] }
+    ];
+
+    var EMPTY = { id: "none", name: "no network", parts: [] };
+
+    function kindsOf(topology) {
+        var out = [];
+        topology.parts.forEach(function (part) {
+            part.p.forEach(function (k) { out.push(k); });
+        });
+        return out;
+    }
+
+    function boundsFor(topology, overrides) {
+        return kindsOf(topology).map(function (k) {
+            var b = (overrides && overrides[k]) || KINDS[k];
+            return [Number(b.lo), Number(b.hi)];
+        });
+    }
+
+    /* Turn a parameter vector into the elements the solver wants. */
+    function elementsFor(topology, x, template) {
+        var els = [], i;
+        for (i = 0; i <= 12; i++) {
+            els.push({ index: i, type: "w", value1: 0, value2: 0, q: 1e6, tune: 1 });
+        }
+        els[1] = template.elements[1];              // the load is not ours to change
+        var at = 0;
+        topology.parts.forEach(function (part) {
+            var e = { index: part.slot, type: part.type,
+                      value1: x[at], value2: 0, q: 1e6, tune: 1 };
+            if (part.p.length > 1) { e.value2 = x[at + 1]; }
+            at += part.p.length;
+            els[part.slot] = e;
+        });
+        return els;
+    }
+
+    /* ------------------------------------------------------------ the cost */
+
+    var FAIL = 1e6;
+
+    function worstVSWR(template, els, freqs) {
+        var net = {
+            Z0: template.Z0, VF: template.VF, TDF: template.TDF, LU: template.LU,
+            termination: template.termination, gamData: template.gamData,
+            elements: els, frequency: 0
+        };
+        var worst = 0;
+        for (var i = 0; i < freqs.length; i++) {
+            net.frequency = freqs[i];
+            var r;
+            try { r = QSEngine.solve(net); } catch (e) { return FAIL; }
+            var v = r && r.vswr;
+            if (!isFinite(v) || v < 1) return FAIL;
+            if (v > worst) worst = v;
+            if (worst >= FAIL) return FAIL;
+        }
+        return worst;
+    }
+
+    /* ---------------------------------------------------------- the search
+     *
+     * Nelder-Mead, because the worst case over a band is a maximum and
+     * therefore not smooth, so anything wanting derivatives is the wrong tool.
+     *
+     * The random restarts are seeded. Two runs on the same data give the same
+     * answer, which matters more for a tool people are asked to trust than the
+     * occasional better optimum a fresh seed might find.
+     */
+    function seeded(seed) {
+        var s = (seed >>> 0) || 1;
+        return function () {
+            s ^= s << 13; s >>>= 0;
+            s ^= s >> 17;
+            s ^= s << 5;  s >>>= 0;
+            return s / 4294967296;
+        };
+    }
+
+    function nelderMead(cost, x0, step, iterations) {
+        var n = x0.length, i, j;
+        var pts = [x0.slice()], vals;
+        for (i = 0; i < n; i++) {
+            var p = x0.slice();
+            p[i] += step[i];
+            pts.push(p);
+        }
+        vals = pts.map(cost);
+
+        for (var it = 0; it < iterations; it++) {
+            var order = [];
+            for (i = 0; i < pts.length; i++) order.push(i);
+            order.sort(function (a, b) { return vals[a] - vals[b]; });
+            pts = order.map(function (k) { return pts[k]; });
+            vals = order.map(function (k) { return vals[k]; });
+            if (Math.abs(vals[vals.length - 1] - vals[0]) < 1e-7) break;
+
+            var cen = [];
+            for (i = 0; i < n; i++) {
+                var sum = 0;
+                for (j = 0; j < pts.length - 1; j++) sum += pts[j][i];
+                cen.push(sum / n);
+            }
+            var last = pts[pts.length - 1];
+            var ref = cen.map(function (c, k) { return c + (c - last[k]); });
+            var fr = cost(ref);
+
+            if (fr < vals[0]) {
+                var exp = cen.map(function (c, k) { return c + 2 * (c - last[k]); });
+                var fe = cost(exp);
+                if (fe < fr) { pts[pts.length - 1] = exp; vals[vals.length - 1] = fe; }
+                else         { pts[pts.length - 1] = ref; vals[vals.length - 1] = fr; }
+            } else if (fr < vals[vals.length - 2]) {
+                pts[pts.length - 1] = ref; vals[vals.length - 1] = fr;
+            } else {
+                var con = cen.map(function (c, k) { return c + 0.5 * (last[k] - c); });
+                var fc = cost(con);
+                if (fc < vals[vals.length - 1]) {
+                    pts[pts.length - 1] = con; vals[vals.length - 1] = fc;
+                } else {
+                    for (i = 1; i < pts.length; i++) {
+                        pts[i] = pts[i].map(function (v, k) { return (v + pts[0][k]) / 2; });
+                        vals[i] = cost(pts[i]);
+                    }
+                }
+            }
+        }
+        var best = 0;
+        for (i = 1; i < vals.length; i++) if (vals[i] < vals[best]) best = i;
+        return { x: pts[best], value: vals[best] };
+    }
+
+    /* Frequencies to judge a candidate at. */
+    function bandPoints(band) {
+        if (Array.isArray(band)) return band.slice();
+        var n = Math.max(5, Math.min(401, band.points || 61));
+        var lo = Number(band.start), hi = Number(band.stop);
+        var out = [];
+        for (var i = 0; i < n; i++) out.push(lo + (hi - lo) * i / (n - 1));
+        return out;
+    }
+
+    /*
+     * The floor, for a given antenna Q and fractional bandwidth. Assumes an
+     * unlimited number of matching elements, so nothing with three parts will
+     * reach it; it is there to say how much is still on the table.
+     */
+    function bodeFano(Q, fbw) {
+        if (!(Q > 0) || !(fbw > 0)) return null;
+        var g = Math.exp(-Math.PI / (Q * fbw));
+        return (1 + g) / (1 - g);
+    }
+
+    /* ------------------------------------------------------------- the API */
+
+    function one(template, topology, freqs, opts) {
+        var bounds = boundsFor(topology, opts.bounds);
+        var rand = seeded(opts.seed || 20260927);
+        var restarts = opts.restarts || 25;
+        var iterations = opts.iterations || 200;
+        var step = bounds.map(function (b) { return (b[1] - b[0]) * 0.12; });
+
+        function cost(x) {
+            for (var i = 0; i < x.length; i++) {
+                if (!(x[i] >= bounds[i][0] && x[i] <= bounds[i][1])) return FAIL;
+            }
+            return worstVSWR(template, elementsFor(topology, x, template), freqs);
+        }
+
+        var best = null;
+        for (var r = 0; r < restarts; r++) {
+            var x0 = bounds.map(function (b) { return b[0] + rand() * (b[1] - b[0]); });
+            var got = nelderMead(cost, x0, step, iterations);
+            if (!best || got.value < best.value) best = got;
+        }
+        return best;
+    }
+
+    /*
+     * optimise({ network, band, bounds, topologies, restarts, seed, onProgress })
+     *
+     * `network` is a schObj-shaped object: the load in elements[1] and the
+     * context the solver needs. Slots 2 upward are replaced by each candidate.
+     *
+     * Returns the topologies that produced a usable network, best worst-case
+     * VSWR first, each with the elements applyMatch() expects.
+     */
+    function optimise(opts) {
+        var template = opts.network;
+        var freqs = bandPoints(opts.band);
+        var list = (opts.topologies && opts.topologies.length)
+            ? TOPOLOGIES.filter(function (t) { return opts.topologies.indexOf(t.id) >= 0; })
+            : TOPOLOGIES;
+
+        // the same load with nothing in the ladder, to measure improvement against
+        var bare = worstVSWR(template, elementsFor(EMPTY, [], template), freqs);
+        var results = [];
+
+        list.forEach(function (topology, i) {
+            if (opts.onProgress) {
+                opts.onProgress({ done: i, total: list.length, topology: topology.name });
+            }
+            var got = one(template, topology, freqs, opts);
+            if (!got || got.value >= FAIL) return;
+            var els = elementsFor(topology, got.x, template);
+            results.push({
+                id: topology.id,
+                name: topology.name,
+                worst: got.value,
+                improvement: bare > 0 ? (bare - got.value) / bare : 0,
+                params: got.x.slice(),
+                kinds: kindsOf(topology),
+                elements: els.filter(function (e) { return e.type !== "w" && e.index > 1; })
+                             .map(function (e) {
+                                 return { slot: e.index, type: e.type,
+                                          value1: e.value1, value2: e.value2 };
+                             })
+            });
+        });
+
+        if (opts.onProgress) {
+            opts.onProgress({ done: list.length, total: list.length, topology: null });
+        }
+        results.sort(function (a, b) { return a.worst - b.worst; });
+        return { bare: bare, band: [freqs[0], freqs[freqs.length - 1]], results: results };
+    }
+
+    return {
+        optimise: optimise,
+        bodeFano: bodeFano,
+        worstVSWR: worstVSWR,
+        elementsFor: elementsFor,
+        bandPoints: bandPoints,
+        TOPOLOGIES: TOPOLOGIES,
+        KINDS: KINDS
+    };
+})();
+
+if (typeof module !== "undefined" && module.exports) module.exports = QSMatch;
