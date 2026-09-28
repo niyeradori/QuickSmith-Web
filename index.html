@@ -83,6 +83,7 @@
   <script src="line.js"></script>
   <script src="designs.js"></script>
   <script src="sch.js"></script>
+  <script src="match.js"></script>
   <script src="js/DragDropTouch.js"></script>    
    <!-- ios-drag-drop.js does not trigger end ? -->
     <!-- <script src="js/ios-drag-drop.js"></script>   -->
@@ -245,6 +246,8 @@
           <ul class="dropdown-menu">
              <li><a href="#" onclick=generateSweep() >Generate</a></li>
             <li><a href="#"  onclick=clearSweep() >Clear</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#"  onclick=broadbandMatch_click() >Broadband match…</a></li>
             <!-- <li><a><input type="checkbox" name="checkbox1" style="float: right;">Show Sweep</a></li> -->
           </ul>
         </li> 
@@ -3667,9 +3670,262 @@ function applyMatch(option) {
         if (el.type === "w") return;          // the loop above already cleared it
         schObj.ELEMENT[el.slot].type = el.type;
         schObj.ELEMENT[el.slot].value1 = Number(el.value1).toFixed(4);
-        schObj.ELEMENT[el.slot].value2 = 0;
+        // stubs and lines carry a length in value2; lumped parts have none
+        schObj.ELEMENT[el.slot].value2 = el.value2 ? Number(el.value2).toFixed(4) : 0;
     });
     updateUI();
+}
+
+
+/* ==================================================== broadband matching
+ *
+ * Auto-match is exact at one frequency. This is the other question: the best
+ * compromise across a band, which has no closed form and so is searched for.
+ *
+ * It needs a load that varies with frequency, which means an imported
+ * measurement. A typed R+jX is the same impedance everywhere and the answer
+ * would be whatever auto-match already gives.
+ */
+var bbWorker = null;
+
+function broadbandMatch_click() {
+    if (schObj.termination !== "Multiple" || !schObj.gamData ||
+        !schObj.gamData.dataX || schObj.gamData.dataX.length < 2) {
+        ShowMessage_sm("Broadband match",
+            "This needs a load measured across frequency, so that there is a band " +
+            "to compromise over.\n\nUse Data › Open Measurement to read a .s1p, " +
+            "then come back. For a single impedance at one frequency, Auto-match is " +
+            "the exact answer.");
+        return;
+    }
+
+    var have = schObj.gamData.dataX.map(Number);
+    var lowest = have[0], highest = have[have.length - 1];
+    var band = { start: Math.max(lowest, Number(schObj.SS) || lowest),
+                 stop:  Math.min(highest, Number(schObj.ST) || highest) };
+
+    var wrap = document.createElement("div");
+
+    var intro = document.createElement("p");
+    intro.style.cssText = "margin:0 0 12px;font-size:13px;color:var(--qs-text,#7b8496)";
+    intro.textContent = "The worst VSWR anywhere in the band is what gets minimised, " +
+        "so the match will not look centred. Measured data covers " +
+        lowest + " to " + highest + " MHz.";
+    wrap.appendChild(intro);
+
+    /* ---- the band */
+    var row = document.createElement("div");
+    row.style.cssText = "display:flex;align-items:center;gap:8px;padding:8px 0;" +
+                        "border-top:1px solid var(--qs-rim,#e5e8ee)";
+    function num(value) {
+        var i = document.createElement("input");
+        i.type = "text";
+        i.value = value;
+        i.style.width = "72px";
+        return i;
+    }
+    var fromIn = num(band.start), toIn = num(band.stop);
+    var lab = document.createElement("label");
+    lab.style.cssText = "flex:1;font-size:13px";
+    lab.textContent = "Band, MHz";
+    row.appendChild(lab);
+    row.appendChild(fromIn);
+    var to = document.createElement("span");
+    to.textContent = "to";
+    to.style.fontSize = "13px";
+    row.appendChild(to);
+    row.appendChild(toIn);
+    wrap.appendChild(row);
+
+    /* ---- what the band is asking for, before any searching */
+    var verdict = document.createElement("p");
+    verdict.style.cssText = "margin:10px 0 0;font-size:13px;line-height:1.5";
+    wrap.appendChild(verdict);
+
+    var status = document.createElement("p");
+    status.style.cssText = "margin:12px 0 0;font-size:13px;color:var(--qs-text,#7b8496)";
+    wrap.appendChild(status);
+
+    var out = document.createElement("div");
+    wrap.appendChild(out);
+
+    function readBand() {
+        var a = parseFloat(fromIn.value), b = parseFloat(toIn.value);
+        if (!isFinite(a) || !isFinite(b) || b <= a) return null;
+        return { start: Math.max(a, lowest), stop: Math.min(b, highest), points: 61 };
+    }
+
+    /*
+     * The Bode-Fano floor: the best worst-case VSWR any lossless network could
+     * reach, however many parts it used. It is a wall, not a target, so it is
+     * phrased as what is impossible rather than as a score to be judged
+     * against. Its use is deciding whether the band is worth attempting.
+     */
+    function showVerdict() {
+        var b = readBand();
+        out.innerHTML = "";
+        status.textContent = "";
+        if (!b) { verdict.textContent = "That band reads backwards."; return; }
+        var net = bbNetwork();
+        var bare = QSMatch.worstVSWR(net, net.elements, QSMatch.bandPoints(b));
+        var f = QSMatch.feasibility(net, b);
+        var said = "Unmatched, the worst VSWR in this band is " +
+                   (bare < 1e5 ? bare.toFixed(2) : "very high") + ".";
+        if (f && f.floor) {
+            said += " The antenna is Q " + f.Q.toFixed(1) + " here, and no lossless " +
+                    "network of any complexity can beat " + f.floor.toFixed(2) + ":1 " +
+                    "across it.";
+        }
+        verdict.textContent = said;
+    }
+    fromIn.addEventListener("change", showVerdict);
+    toIn.addEventListener("change", showVerdict);
+
+    var dlg = null, searching = false;
+    function search() {
+        var b = readBand();
+        if (!b || searching) return false;
+        var go = dlg.querySelector(".qs-dialog-foot .qs-primary");
+        searching = true;
+        go.disabled = true;
+        out.innerHTML = "";
+        status.textContent = "Searching…";
+        runBroadband(bbNetwork(), b, function (p) {
+            // the names start with "L network" and "Series L", so they are left
+            // alone rather than case-folded into a sentence
+            status.textContent = p.topology
+                ? p.topology + "… (" + (p.done + 1) + " of " + p.total + ")"
+                : "Searching…";
+        }, function (err, run) {
+            searching = false;
+            go.disabled = false;
+            go.textContent = "Search again";
+            if (err) { status.textContent = "That search failed: " + err; return; }
+            showResults(out, status, run, b, function () { QSUI.close(dlg); });
+        });
+        return false;
+    }
+
+    showVerdict();
+    dlg = QSUI.open({
+        title: "Broadband match",
+        body: wrap,
+        buttons: [ { label: "Search", primary: true, action: search }, { label: "Close" } ]
+    });
+    // walking away from the dialog stops the search; it is of no use now
+    dlg.addEventListener("close", function () {
+        if (bbWorker) { bbWorker.terminate(); bbWorker = null; }
+    });
+}
+
+/* The ladder as match.js wants it: the load, and nothing in front of it. */
+function bbNetwork() {
+    var els = [];
+    for (var i = 0; i <= 12; i++) {
+        var e = schObj.ELEMENT[i];
+        els.push({ index: i, type: i === 1 ? e.type : "w",
+                   value1: Number(e.value1), value2: Number(e.value2),
+                   q: 1e6, tune: 1 });
+    }
+    return { Z0: Number(schObj.Z0), VF: Number(schObj.VF), TDF: Number(schObj.TDF),
+             LU: schObj.LU, termination: schObj.termination,
+             gamData: schObj.gamData, elements: els };
+}
+
+/*
+ * In a Worker if the browser has one, on the main thread if not. The fallback
+ * is not only for old browsers: opening index.html straight off the disk makes
+ * file:// the origin, and Workers are not allowed one.
+ */
+function runBroadband(net, band, onProgress, done) {
+    /*
+     * Twelve restarts, where match.js defaults to twenty-five. Across all six
+     * topologies on the measured dipole, twelve lands within 0.004 of what
+     * twenty-five finds and picks the same winner, for half the wait. The
+     * library keeps the higher default for scripted runs, where nobody is
+     * sitting watching a spinner.
+     */
+    var job = { network: net, band: band, restarts: 12 };
+    if (typeof Worker === "function" && location.protocol !== "file:") {
+        try {
+            if (bbWorker) bbWorker.terminate();
+            bbWorker = new Worker("match-worker.js");
+            bbWorker.onmessage = function (e) {
+                if (e.data.progress) { onProgress(e.data.progress); return; }
+                if (e.data.error) { done(e.data.error, null); return; }
+                done(null, e.data.done);
+            };
+            bbWorker.onerror = function () {
+                bbWorker = null;
+                inlineBroadband(job, onProgress, done);
+            };
+            bbWorker.postMessage(job);
+            return;
+        } catch (e) { /* fall through */ }
+    }
+    inlineBroadband(job, onProgress, done);
+}
+
+function inlineBroadband(job, onProgress, done) {
+    // let the "Searching..." paint before the main thread goes away for a second
+    setTimeout(function () {
+        try {
+            var run = QSMatch.optimise({ network: job.network, band: job.band,
+                                        restarts: job.restarts, onProgress: onProgress });
+            run.feasibility = QSMatch.feasibility(job.network, job.band);
+            done(null, run);
+        } catch (e) { done(e.message || String(e), null); }
+    }, 30);
+}
+
+function showResults(out, status, run, band, closeDialog) {
+    if (!run.results.length) {
+        status.textContent = "Nothing in the library of topologies could match this band " +
+            "with buildable values.";
+        return;
+    }
+    status.textContent = "Best first. Worst VSWR across " +
+        band.start + " to " + band.stop + " MHz, unmatched " + run.bare.toFixed(2) + ".";
+
+    run.results.forEach(function (r) {
+        var row = document.createElement("div");
+        row.style.cssText = "padding:10px 0;border-top:1px solid var(--qs-rim,#e5e8ee)";
+
+        var head = document.createElement("div");
+        head.style.cssText = "font-size:13px";
+        var big = document.createElement("strong");
+        big.textContent = r.worst.toFixed(3) + ":1";
+        head.appendChild(big);
+        head.appendChild(document.createTextNode("   ·   " + r.name));
+        row.appendChild(head);
+
+        var vals = document.createElement("div");
+        vals.style.cssText = "font-family:ui-monospace,Menlo,monospace;font-size:12px;" +
+                             "margin-top:3px;color:var(--qs-text,#7b8496)";
+        vals.textContent = r.elements.map(bbDescribe).join("   ·   ");
+        row.appendChild(vals);
+
+        var apply = document.createElement("button");
+        apply.type = "button";
+        apply.className = "qs-btn qs-primary";
+        apply.style.marginTop = "8px";
+        apply.textContent = "Apply";
+        apply.addEventListener("click", function () {
+            applyMatch({ elements: r.elements });
+            closeDialog();
+        });
+        row.appendChild(apply);
+        out.appendChild(row);
+    });
+}
+
+/* "L2 = 39.8 nH", "S3 = 32.0 Ω, 93.0°" */
+function bbDescribe(el) {
+    var name = el.type.toUpperCase() + el.slot + " = ";
+    if (el.type === "l") return name + Number(el.value1).toFixed(2) + " nH";
+    if (el.type === "c") return name + Number(el.value1).toFixed(2) + " pF";
+    return name + Number(el.value1).toFixed(1) + " Ω, " +
+           Number(el.value2).toFixed(1) + (schObj.LU === "Degrees" ? "°" : " " + schObj.LU);
 }
 
 /*
