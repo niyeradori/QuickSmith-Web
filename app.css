@@ -283,7 +283,15 @@ input[type="color"] { width: 46px; height: 28px; padding: 2px; border: 1px solid
     background: var(--qs-accent, #1f5fbf);
     border-color: var(--qs-accent, #1f5fbf);
 }
-.btn-info:hover, .btn-primary:hover { filter: brightness(1.12); }
+/* The background has to be restated here. .btn:hover carries two classes to
+   .btn-primary's one, so without this it wins on specificity and hands a
+   filled button the pale hover background while the label stays white: legible
+   in the dark theme, where that background is dark, and invisible in the
+   light one. */
+.btn-info:hover, .btn-primary:hover {
+    background: var(--qs-accent, #1f5fbf);
+    filter: brightness(1.12);
+}
 .navbar-btn { margin: 0 4px; }
 
 .close {

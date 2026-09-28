@@ -3634,7 +3634,7 @@ transmission line or a three-element network.");
         var parts = option.elements.filter(function (el) { return el.type !== "w"; })
             .map(function (el) {
                 return el.type.toUpperCase() + el.slot + " = " +
-                       Number(el.value1).toFixed(3) + (el.type === "l" ? " nH" : " pF");
+                       bbRound(el.value1) + (el.type === "l" ? " nH" : " pF");
             }).join("   \u00b7   ");
 
         var row = document.createElement("div");
@@ -3681,6 +3681,23 @@ transmission line or a three-element network.");
     dlg = QSUI.open({ title: "Match to " + Z0 + " \u03a9", body: wrap });
 }
 
+/*
+ * Four significant figures, which is finer than any of these parts can be
+ * built to and narrow enough to fit the box. The optimiser returns whatever
+ * digits the search happened to land on, and 149.9962 ohms is not a number
+ * anyone can cut. Rounding costs at most 0.0007 of VSWR across every topology,
+ * well under the three decimals the results are quoted to.
+ *
+ * Used for display as well as for applying, so the value read in the dialog is
+ * the value that lands in the slot.
+ */
+function bbRound(v) {
+    v = Number(v);
+    if (!isFinite(v) || v === 0) return 0;
+    var m = Math.pow(10, 3 - Math.floor(Math.log10(Math.abs(v))));
+    return Math.round(v * m) / m;
+}
+
 function applyMatch(option) {
     for (var i = 2; i <= 12; i++) {
         schObj.ELEMENT[i].type = "w";
@@ -3691,9 +3708,9 @@ function applyMatch(option) {
     option.elements.forEach(function (el) {
         if (el.type === "w") return;          // the loop above already cleared it
         schObj.ELEMENT[el.slot].type = el.type;
-        schObj.ELEMENT[el.slot].value1 = Number(el.value1).toFixed(4);
+        schObj.ELEMENT[el.slot].value1 = bbRound(el.value1);
         // stubs and lines carry a length in value2; lumped parts have none
-        schObj.ELEMENT[el.slot].value2 = el.value2 ? Number(el.value2).toFixed(4) : 0;
+        schObj.ELEMENT[el.slot].value2 = el.value2 ? bbRound(el.value2) : 0;
     });
     updateUI();
 }
@@ -4072,10 +4089,10 @@ function showResults(out, status, run, band, closeDialog) {
 /* "L2 = 39.8 nH", "S3 = 32.0 Ω, 93.0°" */
 function bbDescribe(el) {
     var name = el.type.toUpperCase() + el.slot + " = ";
-    if (el.type === "l") return name + Number(el.value1).toFixed(2) + " nH";
-    if (el.type === "c") return name + Number(el.value1).toFixed(2) + " pF";
-    return name + Number(el.value1).toFixed(1) + " Ω, " +
-           Number(el.value2).toFixed(1) + (schObj.LU === "Degrees" ? "°" : " " + schObj.LU);
+    if (el.type === "l") return name + bbRound(el.value1) + " nH";
+    if (el.type === "c") return name + bbRound(el.value1) + " pF";
+    return name + bbRound(el.value1) + " Ω, " +
+           bbRound(el.value2) + (schObj.LU === "Degrees" ? "°" : " " + schObj.LU);
 }
 
 /*
