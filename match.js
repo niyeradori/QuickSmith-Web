@@ -230,6 +230,111 @@ var QSMatch = (function () {
         return (1 + g) / (1 - g);
     }
 
+    /* ------------------------------------------------------------ antenna Q
+     *
+     * The floor above needs one number for the load, its Q. The textbook
+     * Q = (f0 / 2R) * dX/df needs a resonance, and a real antenna often has
+     * none inside the band you care about: the 75 mm monopole measured for
+     * the article never crosses zero between 100 and 200 MHz, so the textbook
+     * formula has nothing to work with. This is the Yaghjian-Best form, which
+     * is defined at every frequency and reduces to the textbook one where X
+     * does cross zero:
+     *
+     *     Q(f) = (f / 2R) * sqrt( (dR/df)^2 + (dX/df + |X|/f)^2 )
+     *
+     * Slopes come from a least squares line through a window of samples, not
+     * from the two neighbouring points. Measured data is noisy, and the
+     * difference of two noisy numbers is mostly noise.
+     *
+     * The load impedance is read by solving the network with an empty ladder,
+     * so a typed R+jX, a reflection coefficient and an imported Touchstone
+     * sweep all arrive down the same path the chart uses.
+     */
+    var QWINDOW = 2;                        // samples either side of the fit
+
+    function slopeAt(xs, ys, i) {
+        var lo = Math.max(0, i - QWINDOW), hi = Math.min(xs.length - 1, i + QWINDOW);
+        var n = hi - lo + 1, mx = 0, my = 0, j;
+        for (j = lo; j <= hi; j++) { mx += xs[j]; my += ys[j]; }
+        mx /= n; my /= n;
+        var num = 0, den = 0;
+        for (j = lo; j <= hi; j++) {
+            num += (xs[j] - mx) * (ys[j] - my);
+            den += (xs[j] - mx) * (xs[j] - mx);
+        }
+        return den ? num / den : 0;
+    }
+
+    /*
+     * loadQ(network, band) -> Q at the centre of the band, or null
+     *
+     * Band centre, not the worst point in the band. Q at a given frequency is
+     * steady to about a percent however densely the band is sampled, but the
+     * minimum and maximum over the band are not: they are extremes of a noisy
+     * curve, so they keep growing as you sample harder. One trustworthy number
+     * beats a range that is half sampling artefact.
+     *
+     * Q does genuinely vary across a band, and quite a lot. The 75 mm monopole
+     * runs Q 9.5 at 870 MHz and 6.9 at 960 MHz, because 870 is below its
+     * resonance. Narrow the band if you want to see that.
+     */
+    function loadQ(network, band) {
+        var freqs = bandPoints(band);
+        var n = freqs.length;
+        if (n < 2 * QWINDOW + 1) return null;
+
+        var net = {
+            Z0: network.Z0, VF: network.VF, TDF: network.TDF, LU: network.LU,
+            termination: network.termination, gamData: network.gamData,
+            elements: elementsFor(EMPTY, [], network), frequency: 0
+        };
+        var R = [], X = [], i, r;
+        for (i = 0; i < n; i++) {
+            net.frequency = freqs[i];
+            try { r = QSEngine.solve(net); } catch (e) { return null; }
+            if (!r || !isFinite(r.Zin.re) || !isFinite(r.Zin.im)) return null;
+            if (!(r.Zin.re > 0)) return null;   // no passive Q to speak of
+            R.push(r.Zin.re); X.push(r.Zin.im);
+        }
+
+        var m = (n - 1) >> 1;
+        var dR = slopeAt(freqs, R, m);
+        var dX = slopeAt(freqs, X, m) + Math.abs(X[m]) / freqs[m];
+        var Q = (freqs[m] / (2 * R[m])) * Math.sqrt(dR * dR + dX * dX);
+        return isFinite(Q) && Q > 0 ? Q : null;
+    }
+
+    /*
+     * feasibility(network, band) -> { Q, fbw, floor } or null
+     *
+     * What the band is asking for, before any topology is chosen. `floor` is
+     * the best worst-case VSWR any lossless network could reach, with no limit
+     * on how many elements it may use, so it is a wall and not a target: a
+     * three part network will not get near it. Its use is deciding whether to
+     * bother. A floor of 1.05 says keep going, a floor of 2.5 says the band is
+     * too wide for this antenna and no amount of cleverness will fix it.
+     */
+    function feasibility(network, band) {
+        /*
+         * Only for a load measured across frequency. A typed R+jX sits at the
+         * same impedance at every frequency, which has no resonance in it and
+         * so no Q worth the name: the formula returns |X|/2R and the floor
+         * comes out at 1.0000, cheerfully promising a perfect octave match.
+         * Better to say nothing than to say that.
+         */
+        if (network.termination !== "Multiple" || !network.gamData ||
+            !network.gamData.dataX || network.gamData.dataX.length < 2) return null;
+
+        var freqs = bandPoints(band);
+        var lo = freqs[0], hi = freqs[freqs.length - 1];
+        var centre = (lo + hi) / 2;
+        if (!(centre > 0) || !(hi > lo)) return null;
+        var Q = loadQ(network, band);
+        if (!Q) return null;
+        var fbw = (hi - lo) / centre;
+        return { Q: Q, fbw: fbw, floor: bodeFano(Q, fbw) };
+    }
+
     /* ------------------------------------------------------------- the API */
 
     function one(template, topology, freqs, opts) {
@@ -307,6 +412,8 @@ var QSMatch = (function () {
     return {
         optimise: optimise,
         bodeFano: bodeFano,
+        loadQ: loadQ,
+        feasibility: feasibility,
         worstVSWR: worstVSWR,
         elementsFor: elementsFor,
         bandPoints: bandPoints,

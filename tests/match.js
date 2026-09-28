@@ -136,6 +136,64 @@ ok("a stub impedance bound is respected", z >= 45 - 1e-9 && z <= 60 + 1e-9,
 ok("and constraining it costs performance, as it must",
    tight.results[0].worst > byId["l-stub"].worst);
 
+/* =========================================== the Bode-Fano floor, in use
+ *
+ * The floor is only worth showing if the Q behind it is trustworthy, so the
+ * anchor case is analytic rather than measured: a series RLC has
+ * Q = sqrt(L/C)/R in closed form, and Yaghjian-Best has to reproduce exactly
+ * that at resonance. Nothing here is captured from match.js output.
+ */
+var R0 = 5, L0 = 100e-9, C0 = 100e-12;
+var F0 = 1 / (2 * Math.PI * Math.sqrt(L0 * C0)) / 1e6;      // 50.3292 MHz
+var QRLC = Math.sqrt(L0 / C0) / R0;                          // 6.32456
+
+function rlcGam(lo, hi, n) {
+    var X = [], M = [], A = [];
+    for (var k = 0; k < n; k++) {
+        var f = lo + (hi - lo) * k / (n - 1), w = 2 * Math.PI * f * 1e6;
+        var zr = R0, zi = w * L0 - 1 / (w * C0);
+        var dr = zr - 50, br = zr + 50, d = br * br + zi * zi;
+        var gr = (dr * br + zi * zi) / d, gi = (zi * br - dr * zi) / d;
+        X.push(f); M.push(Math.sqrt(gr * gr + gi * gi));
+        A.push(Math.atan2(gi, gr) * 180 / Math.PI);
+    }
+    return { dataX: X, dataM: M, dataQ: QSEngine.unwrapPhase(A) };
+}
+function loadOf(gam) {
+    return { Z0: 50, VF: 1, TDF: F0, LU: "Degrees", termination: "Multiple",
+             gamData: gam, elements: template.elements.slice() };
+}
+
+var rlcBand = { start: F0 * 0.95, stop: F0 * 1.05, points: 61 };
+near("Yaghjian-Best recovers the Q of a series RLC",
+     QSMatch.loadQ(loadOf(rlcGam(F0 * 0.95, F0 * 1.05, 201)), rlcBand), QRLC, 1e-3);
+
+/* the same antenna sampled four times as hard must not move the answer */
+near("and does not depend on how densely the data was taken",
+     QSMatch.loadQ(loadOf(rlcGam(F0 * 0.95, F0 * 1.05, 801)), rlcBand), QRLC, 1e-3);
+
+/* a wider window sees more of the skirt, but must still land on the same Q */
+near("nor on how wide a band is asked about",
+     QSMatch.loadQ(loadOf(rlcGam(F0 * 0.8, F0 * 1.2, 401)),
+                   { start: F0 * 0.8, stop: F0 * 1.2, points: 61 }), QRLC, 5e-3);
+
+/* ---- the measured dipole, and the property that must never break */
+var feas = QSMatch.feasibility(dipole, band);
+near("the dipole runs Q 1.83 at band centre", feas.Q, 1.8289, 1e-3);
+near("over a 0.667 fractional bandwidth", feas.fbw, 2 / 3, 1e-9);
+near("which puts the floor at 1.1646", feas.floor, 1.16456, 1e-4);
+ok("no three part network beats the floor, ever",
+   byId["l-stub"].worst >= feas.floor,
+   "floor " + feas.floor + " vs best " + byId["l-stub"].worst);
+ok("and the floor is below the bare antenna, or it is telling us nothing",
+   feas.floor < 3.878);
+
+/* ---- it declines to answer where the answer would be meaningless */
+eq("a zero width band gets no floor",
+   QSMatch.feasibility(dipole, { start: 150, stop: 150, points: 41 }), null);
+eq("and neither does a load typed as a single R+jX",
+   QSMatch.feasibility(template, band), null);
+
 out(failures
     ? "broadband matching: " + failures + " of " + checks + " checks FAILED"
     : "broadband matching: " + checks + " checks OK");
