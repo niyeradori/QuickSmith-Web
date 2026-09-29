@@ -1632,12 +1632,7 @@ function handleFileOpen(e) {
                 var schObj1 =tryParseJSON(contents);
                 if( schObj1 && file.size < 65536 &&  schObj1.ver == "5")  // added a 64K requirement- to have some bounds
                    {
-                     //alert (" Verified");
-                     //var schObj1 =JSON.parse(contents);
-                     resetSteps();
-                     copy_schObj(schObj1);
-                     console.log(JSON.stringify(schObj));
-                     updateUI(); // update the ui elements
+                     applyDesign(schObj1);
                    }  
                 else if (looksLikeTouchstone(file.name, contents)) {
                     importTouchstoneFile(file);
@@ -1667,8 +1662,105 @@ function handleFileOpen(e) {
 
 }
 
+/*
+ * Designs that ship with the program.
+ *
+ * Same reason as the measurements: someone arriving at quicksmith.online has
+ * no .sch file, so Open Design went straight to a picker with nothing to pick.
+ * Two designs, chosen because each shows something no other way in does.
+ *
+ * Deliberately not here: example_6I and example_6O, the AN721 input and output
+ * matches, because Help > Guided examples rebuilds both a component at a time
+ * with the reasoning attached, which beats handing over the finished article.
+ * Nor test.sch, which holds one of every element type and is a fixture rather
+ * than a design; it solves to 2.669 and means nothing.
+ */
+var DESIGNS = [
+    { file: "sch/Dipole.sch",
+      name: "A dipole, matched by hand",
+      note: "An inductor and a stub, taking a measured antenna from 3.88:1 to " +
+            "1.84:1 across 100 to 200 MHz. Then press Broadband match and watch " +
+            "it beaten." },
+    { file: "sch/Filter.sch",
+      name: "A low-pass filter",
+      note: "Four parts at 27 MHz, 0.75 dB through the passband and 53 dB down " +
+            "at 100. Not a matching problem at all, which the ladder does not mind." }
+];
+
+/* A parsed design, put on the bench. */
+function applyDesign(d) {
+    resetSteps();
+    copy_schObj(d);
+    updateUI();
+    /*
+     * A design whose load is a measurement describes a band, so draw it. Open
+     * Measurement has always done this and Open Design never did, which left
+     * the dipole design looking like a single dot on the chart.
+     */
+    if (schObj.termination === "Multiple" && schObj.SE === "Frequency") generateSweep();
+}
+
+function openDesignSample(sample) {
+    fetch(sample.file)
+        .then(function (r) {
+            if (!r.ok) throw new Error("the server returned " + r.status);
+            return r.text();
+        })
+        .then(function (text) {
+            var d = tryParseJSON(text.replace(/^\uFEFF/, ""));
+            if (!d || String(d.ver) !== "5") {
+                ShowMessage_sm("Open design", sample.file + " did not read as a design.");
+                return;
+            }
+            applyDesign(d);
+        })
+        .catch(function (err) {
+            ShowMessage_sm("Open design",
+                "Could not fetch the design: " + err.message +
+                "\n\nIt lives at " + sample.file + " next to the program, so this " +
+                "usually means the page is open from a file rather than over the web.");
+        });
+}
+
 function load_click() {
-   document.getElementById('file-input').click();
+    var body = document.createElement("div");
+
+    var lead = document.createElement("p");
+    lead.className = "qs-meas-facts";
+    lead.textContent = "Open a design you saved earlier, or take one of these apart. " +
+        "Everything in them can be edited, swept and dragged like anything you build.";
+    body.appendChild(lead);
+
+    var dlg = null;
+    DESIGNS.forEach(function (sample) {
+        var row = document.createElement("button");
+        row.type = "button";
+        row.className = "btn qs-wide qs-tour-pick";
+        row.innerHTML = "<strong>" + sample.name + "</strong><br><span>" +
+            sample.note + "</span>";
+        row.addEventListener("click", function () {
+            QSUI.close(dlg);
+            openDesignSample(sample);
+        });
+        body.appendChild(row);
+    });
+
+    var more = document.createElement("p");
+    more.className = "qs-meas-why";
+    more.innerHTML = "<em>Help &rsaquo; Guided examples</em> builds several more one " +
+        "component at a time, saying why each goes where it does.";
+    body.appendChild(more);
+
+    dlg = QSUI.open({
+        title: "Open design",
+        body: body,
+        buttons: [
+            { label: "Cancel" },
+            { label: "Choose a file\u2026", primary: true, action: function () {
+                document.getElementById("file-input").click();
+            } }
+        ]
+    });
 }
 document.getElementById('file-input').addEventListener('change', handleFileOpen, false);
  
