@@ -1669,13 +1669,24 @@ function handleFileOpen(e) {
  * no .sch file, so Open Design went straight to a picker with nothing to pick.
  * Two designs, chosen because each shows something no other way in does.
  *
+ * The L-network is here even though a guided example also builds it, which
+ * looks like a contradiction of the next paragraph and is not quite one: a
+ * tour is a lesson, and this is a sandbox. It is the simplest complete design
+ * in the program, so it is the one to hand somebody who wants to change a
+ * number and see what happens rather than be told.
+ *
  * Deliberately not here: example_6I and example_6O, the AN721 input and output
- * matches, because Help > Guided examples rebuilds both a component at a time
- * with the reasoning attached, which beats handing over the finished article.
- * Nor test.sch, which holds one of every element type and is a fixture rather
- * than a design; it solves to 2.669 and means nothing.
+ * matches, because those genuinely need the narration Help > Guided examples
+ * puts on them, and a bare transistor match teaches nobody anything. Nor
+ * test.sch, which holds one of every element type and is a fixture rather than
+ * a design; it solves to 2.669 and means nothing.
  */
 var DESIGNS = [
+    { file: "sch/L_NetworkExample.sch",
+      name: "An L-network, the simplest thing that works",
+      note: "500 ohms walked in to 50 with two parts, VSWR 1.01 and a loaded Q of " +
+            "3. Change either value and watch it come apart; that is the quickest " +
+            "way to learn what each one does." },
     { file: "sch/Dipole.sch",
       name: "A dipole, matched by hand",
       note: "An inductor and a stub, taking a measured antenna from 3.88:1 to " +

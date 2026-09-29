@@ -278,7 +278,12 @@ input[type="color"] { width: 46px; height: 28px; padding: 2px; border: 1px solid
 /* a filled button uses --qs-accent, which is the same blue in the light theme
    but a deeper one in the dark, where the line blue behind white text left the
    label at 2.5:1 */
-.btn-info, .btn-primary {
+/* Two classes, not one, and deliberately so. A filled button has now been
+   overruled twice by rules that are broader but more specific: .btn:hover just
+   above, and .qs-panel .btn further down, which handed it the panel's muted
+   grey on a blue ground. Both were only visible in the light theme. Matching
+   their weight keeps the foreground with the button it belongs to. */
+.btn.btn-info, .btn.btn-primary {
     color: #fff;
     background: var(--qs-accent, #1f5fbf);
     border-color: var(--qs-accent, #1f5fbf);
@@ -288,7 +293,7 @@ input[type="color"] { width: 46px; height: 28px; padding: 2px; border: 1px solid
    filled button the pale hover background while the label stays white: legible
    in the dark theme, where that background is dark, and invisible in the
    light one. */
-.btn-info:hover, .btn-primary:hover {
+.btn.btn-info:hover, .btn.btn-primary:hover {
     background: var(--qs-accent, #1f5fbf);
     filter: brightness(1.12);
 }
@@ -867,7 +872,10 @@ th {
 
 /* A button inside a panel is a label too, so it sits at label weight with the
    rest of them. The values are what should catch the eye. */
-.qs-panel .btn { color: var(--qs-text, #6b7280); }
+/* Plain buttons only. A filled button carries its own foreground and must not
+   be handed the panel's muted grey, which on a blue ground is barely there.
+   Saying so here is better than another specificity race. */
+.qs-panel .btn:not(.btn-primary):not(.btn-info) { color: var(--qs-text, #6b7280); }
 
 /*
  * The input reading. Zin and S11 are what the network is judged by, and the
