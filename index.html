@@ -3507,7 +3507,39 @@ function handleTouchstoneImport(e) {
  * Now there is one door and it asks. Either format can go either way.
  */
 function openMeasurement_click() {
-    document.getElementById("file-input2").click();
+    var body = document.createElement("div");
+
+    var lead = document.createElement("p");
+    lead.className = "qs-meas-facts";
+    lead.textContent = "Open a Touchstone file from your analyser, or start with one " +
+        "of these. Any of them can be the load, so the circuit follows the " +
+        "measurement at every frequency.";
+    body.appendChild(lead);
+
+    var dlg = null;
+    SAMPLES.forEach(function (sample) {
+        var row = document.createElement("button");
+        row.type = "button";
+        row.className = "btn qs-wide qs-tour-pick";
+        row.innerHTML = "<strong>" + sample.name + "</strong><br><span>" +
+            sample.note + "</span>";
+        row.addEventListener("click", function () {
+            QSUI.close(dlg);
+            openSample(sample);
+        });
+        body.appendChild(row);
+    });
+
+    dlg = QSUI.open({
+        title: "Open measurement",
+        body: body,
+        buttons: [
+            { label: "Cancel" },
+            { label: "Choose a file\u2026", primary: true, action: function () {
+                document.getElementById("file-input2").click();
+            } }
+        ]
+    });
 }
 
 /* Both formats reduced to the one shape the rest of this cares about:
@@ -3561,11 +3593,55 @@ function useMeasurementAsTrace(m) {
 function importMeasurementFile(file) {
     if (!file) return;
     var reader = new FileReader();
-    reader.onload = function () {
+    reader.onload = function () { presentMeasurement(file.name, reader.result); };
+    reader.readAsText(file);
+}
+
+/*
+ * The samples that ship with the site.
+ *
+ * Almost nobody arriving at quicksmith.online has a Touchstone file to hand,
+ * and until now Open Measurement went straight to a file picker, which is a
+ * dead end if you have nothing to pick. These are served from the same origin
+ * as the page, so opening one is a fetch and needs no network beyond the one
+ * that delivered the program.
+ *
+ * Point counts and ranges are deliberately not quoted here. The dialog that
+ * follows reads them off the file itself, so there is nothing to drift.
+ */
+var SAMPLES = [
+    { file: "touchstone/dipole.s1p",
+      name: "A dipole, measured across an octave",
+      note: "The antenna from the guided example and the articles. Small enough to read." },
+    { file: "touchstone/75mm_HP8753.s1p",
+      name: "A 75 mm monopole, on an HP 8753C",
+      note: "A lab instrument, swept well past where the antenna is any use. Try Broadband match on it." },
+    { file: "touchstone/75MM_NanoVNA.s1p",
+      name: "The same monopole, on a NanoVNA",
+      note: "The same afternoon, the same antenna, a hundredth of the price. Worth comparing." }
+];
+
+function openSample(sample) {
+    fetch(sample.file)
+        .then(function (r) {
+            if (!r.ok) throw new Error("the server returned " + r.status);
+            return r.text();
+        })
+        .then(function (text) { presentMeasurement(sample.file.split("/").pop(), text); })
+        .catch(function (err) {
+            ShowMessage_sm("Open measurement",
+                "Could not fetch the sample: " + err.message +
+                "\n\nIt lives at " + sample.file + " next to the program, so this " +
+                "usually means the page is open from a file rather than over the web.");
+        });
+}
+
+/* A measurement, however it arrived: what it is, and what it should become. */
+function presentMeasurement(name, text) {
         var m;
-        try { m = readMeasurement(file, reader.result); }
+        try { m = readMeasurement({ name: name }, text); }
         catch (err) {
-            ShowMessage_sm("QuickSmith", "Could not read " + file.name + ":\n\n" + err.message);
+            ShowMessage_sm("QuickSmith", "Could not read " + name + ":\n\n" + err.message);
             return;
         }
 
@@ -3610,8 +3686,6 @@ function importMeasurementFile(file) {
                 "<em>A trace</em>: drawn on the chart for reference, leaving your load alone.";
             foot.parentNode.insertBefore(why, foot);
         }
-    };
-    reader.readAsText(file);
 }
 
 /* Kept because File \u203a Open hands Touchstone files here. */

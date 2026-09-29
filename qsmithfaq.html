@@ -489,6 +489,16 @@
 
 <h3 id="touchstone">How do I load a measurement from my network analyser?</h3>
 <p>
+  <strong>You do not need a file of your own to try this.</strong>
+  <strong>Data &rarr; Open Measurement</strong> offers three real measurements
+  that ship with the program: a dipole across an octave, and a 75 mm monopole
+  swept from 300 MHz to 1.5 GHz on both an HP 8753C and a NanoVNA. The last two
+  are the same antenna on the same afternoon, so they are worth loading one
+  after the other. Any of them can be the load, which is what
+  <a href="#broadband">matching a whole band</a> needs. The same dialog has
+  <strong>Choose a file&hellip;</strong> for your own.
+</p>
+<p>
   <strong>Data &rarr; Open Measurement</strong> reads a Touchstone file, the format
   every VNA exports. It takes <code>.s1p</code> and <code>.s2p</code>, and files with
   more ports than that as well, reading S11 and ignoring the rest, which is all a
@@ -524,7 +534,7 @@
   <strong>Data &rarr; Export Touchstone</strong> writes the network back out as a
   <code>.s1p</code>. If you have not run a sweep it runs one first, so the file is
   always a description of the circuit rather than of whatever happened to be on the
-  chart. There are sample files in the <code>touchstone</code> folder.
+  chart.
 </p>
 
 <h3 id="sharelink">How do I share a design with someone else?</h3>
