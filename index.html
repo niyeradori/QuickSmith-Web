@@ -354,6 +354,7 @@
                 <dl class="qs-readout">
                     <dt>Z<sub>in</sub> &#8486;</dt>  <dd id="ROzin">&mdash;</dd>
                     <dt>Y<sub>in</sub> mS</dt>       <dd id="ROyin">&mdash;</dd>
+                    <dt>&#915;<sub>in</sub></dt>     <dd id="ROgam">&mdash;</dd>
                     <dt>VSWR</dt>                    <dd id="ROvswr" class="qs-key">&mdash;</dd>
                     <dt>Return loss</dt>             <dd id="ROrl">&mdash;</dd>
                     <dt>Insertion loss</dt>          <dd id="ROil">&mdash;</dd>
@@ -2060,6 +2061,14 @@ function updateReadout() {
     text("ROzin", cplx(r.Zin.re, r.Zin.im));
     text("ROzinPort", cplx(r.Zin.re, r.Zin.im));   // the card at the terminal
     text("ROyin", cplx(r.Yin.re, r.Yin.im));
+    /*
+     * Gamma in magnitude and angle, which is the form a Touchstone file is
+     * written in, so the number on screen can be read straight off the file
+     * that produced it. Zin and Yin above are the same thing said twice more;
+     * everything below is derived from this one.
+     */
+    text("ROgam", Number(r.gamma.mag).toFixed(4) + " \u2220 " +
+                  Number(r.gamma.ang).toFixed(2) + "\u00b0");
     text("ROvswr", Number(r.vswr).toFixed(4));
     text("ROrl", formatdB(O[4].ReturnLoss) + " dB");
     text("ROil", formatdB(O[5].InsertionLoss) + " dB");
