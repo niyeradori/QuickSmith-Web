@@ -3647,7 +3647,7 @@ function openMeasurement_click() {
 
 /* Both formats reduced to the one shape the rest of this cares about:
    frequencies in MHz, magnitude, and angle in degrees. */
-function readMeasurement(file, text) {
+function readMeasurement(file, text, which) {
     var asJson = tryParseJSON(text);
     if (asJson && asJson.name === "QuickSmith GAM" && asJson.gamData) {
         var g = asJson.gamData;
@@ -3657,10 +3657,11 @@ function readMeasurement(file, text) {
     }
 
     var parsed = QSTouchstone.parse(text, QSTouchstone.portsFromFilename(file.name));
-    var gam = QSTouchstone.toGamData(parsed, parseFloat(schObj.Z0));
+    var gam = QSTouchstone.toGamData(parsed, parseFloat(schObj.Z0), which);
     if (gam.dataX.length < 2) throw new Error("that file has only one frequency, so there is nothing to interpolate");
-    return { label: file.name, R: parsed.R,
-             note: parsed.ports > 1 ? "Using S11; the other parameters are ignored." : "",
+    return { label: file.name, R: parsed.R, ports: parsed.ports,
+             parameter: gam.parameter,
+             note: parsed.ports > 2 ? "Only the first two ports are used." : "",
              dataX: gam.dataX, dataM: gam.dataM, dataQ: gam.dataQ };
 }
 
@@ -3740,9 +3741,9 @@ function openSample(sample) {
 }
 
 /* A measurement, however it arrived: what it is, and what it should become. */
-function presentMeasurement(name, text) {
+function presentMeasurement(name, text, which) {
         var m;
-        try { m = readMeasurement({ name: name }, text); }
+        try { m = readMeasurement({ name: name }, text, which); }
         catch (err) {
             ShowMessage_sm("QuickSmith", "Could not read " + name + ":\n\n" + err.message);
             return;
@@ -3758,6 +3759,41 @@ function presentMeasurement(name, text) {
             m.R + " \u2126" + (m.note ? ". " + m.note : "");
         body.appendChild(head);
         body.appendChild(facts);
+
+        /*
+         * A two-port carries both ends of the device. S11 is its input and S22
+         * its output, and an amplifier needs matching at both, so offer the
+         * choice rather than quietly taking S11 and apologising for the rest.
+         * Re-reading the file is cheaper than holding every parameter in case.
+         */
+        if (m.ports >= 2) {
+            var pick = document.createElement("div");
+            pick.style.cssText = "display:flex;align-items:center;gap:14px;padding:10px 0;" +
+                                 "border-top:1px solid var(--qs-rim,#e5e8ee);font-size:13px";
+            var pickLabel = document.createElement("span");
+            pickLabel.textContent = "Match at";
+            pick.appendChild(pickLabel);
+            [["S11", "the input"], ["S22", "the output"]].forEach(function (opt) {
+                var id = "measPort" + opt[0];
+                var wrap2 = document.createElement("label");
+                wrap2.setAttribute("for", id);
+                wrap2.style.cssText = "display:flex;align-items:center;gap:5px;font-weight:400";
+                var radio = document.createElement("input");
+                radio.type = "radio";
+                radio.name = "measPort";
+                radio.id = id;
+                radio.checked = (m.parameter || "S11") === opt[0];
+                radio.addEventListener("change", function () {
+                    if (!radio.checked) return;
+                    QSUI.close(dlg);
+                    presentMeasurement(name, text, opt[0]);
+                });
+                wrap2.appendChild(radio);
+                wrap2.appendChild(document.createTextNode(opt[0] + ", " + opt[1]));
+                pick.appendChild(wrap2);
+            });
+            body.appendChild(pick);
+        }
 
         var ask = document.createElement("p");
         ask.textContent = "What should it be?";
@@ -4060,10 +4096,10 @@ function broadbandMatch_click() {
             verdict.textContent =
                 "From " + Math.round(over.from) + " to " + Math.round(over.to) +
                 " MHz this measurement reads |\u0393| of 1 or more, which has the " +
-                "antenna handing back every bit of power that reaches it. Nothing " +
+                "load handing back every bit of power that reaches it. Nothing " +
                 "passive can match that, and one such frequency fails the whole " +
                 "band. On a near total reflection it is usually the calibration " +
-                "rather than the antenna." +
+                "rather than the load itself." +
                 (over.clearFrom
                     ? " Start the band at " + Math.ceil(over.clearFrom) + " MHz."
                     : " The whole of this band is affected.");
@@ -4075,7 +4111,7 @@ function broadbandMatch_click() {
         var said = "Unmatched, the worst VSWR in this band is " +
                    (bare < 1e5 ? bare.toFixed(2) : "very high") + ".";
         if (f && f.floor) {
-            said += " The antenna is Q " + f.Q.toFixed(1) + " here, and no lossless " +
+            said += " The load is Q " + f.Q.toFixed(1) + " here, and no lossless " +
                     "network of any complexity can beat " + f.floor.toFixed(2) + ":1 " +
                     "across it.";
         }
@@ -4271,7 +4307,7 @@ function showResults(out, status, run, band, closeDialog) {
     if (!run.results.length) {
         status.textContent = "Nothing in the library of topologies could match this " +
             "band with buildable values. A band this wide, or one holding a frequency " +
-            "the antenna reflects entirely, will do that.";
+            "the load reflects entirely, will do that.";
         return;
     }
     status.textContent = "Best first. Worst VSWR across " +

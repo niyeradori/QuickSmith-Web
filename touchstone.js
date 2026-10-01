@@ -42,7 +42,7 @@ var QSTouchstone = (function () {
         if (typeof text !== "string" || !text.length) throw new Error("empty file");
 
         var opts = { parameter: "S", format: "MA", R: 50, freqScale: FREQ_MULTIPLIER.GHZ };
-        var numbers = [];
+        var numbers = [], rows = [];
         var lines = text.split(/\r\n|\r|\n/);
         var sawOption = false;
 
@@ -60,17 +60,21 @@ var QSTouchstone = (function () {
             if (/^\[/.test(line)) continue;                 // v2 keyword, ignored
 
             var tokens = line.split(/[\s,]+/);
+            var row = [];
             for (var t = 0; t < tokens.length; t++) {
                 var v = parseFloat(tokens[t]);
                 if (isNaN(v)) throw new Error("not a number: \"" + tokens[t] + "\"");
-                numbers.push(v);
+                row.push(v);
             }
+            rows.push(row);
+            for (t = 0; t < row.length; t++) numbers.push(row[t]);
         }
 
         if (!numbers.length) throw new Error("no data rows");
 
         if (!ports) ports = inferPorts(numbers, lines);
         var stride = 1 + 2 * ports * ports;
+        numbers = numbers.slice(0, sParameterCount(rows, ports, stride));
         if (numbers.length % stride !== 0) {
             throw new Error("expected " + stride + " numbers per frequency for a " +
                             ports + "-port file, got " + numbers.length + " in total");
@@ -149,6 +153,40 @@ var QSTouchstone = (function () {
         return { re: mag * Math.cos(rad), im: mag * Math.sin(rad) };
     }
 
+    /*
+     * How many of the numbers are S-parameters.
+     *
+     * A two-port file may carry a block of noise parameters after its
+     * S-parameters: frequency, NFmin, the magnitude and angle of gamma-opt,
+     * and Rn over Z0. Five numbers a row against the nine an S-parameter row
+     * needs. Manufacturers ship transistor files this way as a matter of
+     * course, and QuickSmith rejected every one of them outright with a
+     * complaint about the column count, which is very likely what Steve
+     * Huettner hit the first time he tried to open one.
+     *
+     * Width alone is not enough to spot it. A two-port that wraps its rows can
+     * also put five numbers on a line, and land on a point boundary doing it,
+     * at which point a width test truncates the file and silently loses half
+     * the sweep. So two conditions have to hold together: the row is five
+     * numbers on a point boundary, and it restarts the sweep at a frequency
+     * the S-parameters have already passed. A noise block always does, because
+     * it is a second sweep over the same device; wrapped data never does,
+     * because it is the middle of a point that is still climbing.
+     */
+    function sParameterCount(rows, ports, stride) {
+        var all = rows.reduce(function (n, r) { return n + r.length; }, 0);
+        if (ports !== 2) return all;
+        var seen = 0, lastFreq = -Infinity;
+        for (var i = 0; i < rows.length; i++) {
+            var onBoundary = seen % stride === 0;
+            if (rows[i].length === 5 && seen > 0 && onBoundary &&
+                rows[i][0] <= lastFreq) return seen;
+            if (onBoundary) lastFreq = rows[i][0];       // this row opens a point
+            seen += rows[i].length;
+        }
+        return all;
+    }
+
     /* --------------------------------------------------------- into the app */
 
     /*
@@ -158,17 +196,27 @@ var QSTouchstone = (function () {
      * one QuickSmith is set to, the coefficient is renormalised through the
      * impedance it represents, which is exact for a one-port.
      */
-    function toGamData(parsed, Z0) {
+    function toGamData(parsed, Z0, which) {
+        /*
+         * `which` names the reflection coefficient to use, "S11" by default.
+         * A two-port lists its columns S11 S21 S12 S22, so S22 is index 3, and
+         * an amplifier's output match is read from it. Asked for a parameter
+         * the file does not carry, this falls back to S11 rather than
+         * inventing one.
+         */
+        var at = (which === "S22" && parsed.ports >= 2) ? 3 : 0;
+        var name = at === 3 ? "S22" : "S11";
         var dataX = [], dataM = [], dataQ = [];
         for (var i = 0; i < parsed.points.length; i++) {
             var pt = parsed.points[i];
-            var g = pt.s[0];
+            var g = pt.s[at];
+            if (!g) return toGamData(parsed, Z0, "S11");
             if (Z0 && Math.abs(Z0 - parsed.R) > 1e-9) g = renormalise(g, parsed.R, Z0);
             dataX.push(pt.f);
             dataM.push(Math.sqrt(g.re * g.re + g.im * g.im));
             dataQ.push(Math.atan2(g.im, g.re) * 180 / Math.PI);
         }
-        return { label: "Touchstone S11", color: "#000000",
+        return { label: "Touchstone " + name, parameter: name, color: "#000000",
                  dataX: dataX, dataM: dataM, dataQ: dataQ };
     }
 

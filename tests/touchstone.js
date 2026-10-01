@@ -186,8 +186,59 @@ near("round trip frequency", rg.dataX[1], 200, 1e-9);
 near("round trip magnitude", rg.dataM[0], 0.59, 1e-6);
 near("round trip angle", rg.dataQ[1], -140.98, 1e-4);
 
+/* ------------------------------------------- which end of a two-port
+ *
+ * S11 is a device's input and S22 its output, and an amplifier wants matching
+ * at both. hp-an970.s2p states its own values in the header, so these check
+ * against the file rather than against the reader: S11 0.641 at -171.3,
+ * S22 0.572 at -95.7.
+ */
+var amp = QSTouchstone.parse(slurp("touchstone/hp-an970.s2p"), 2);
+var in11 = QSTouchstone.toGamData(amp, 50, "S11");
+var out22 = QSTouchstone.toGamData(amp, 50, "S22");
+near("S11 is the input reflection", in11.dataM[0], 0.641, 1e-6);
+near("at its own angle", in11.dataQ[0], -171.3, 1e-4);
+near("S22 is the output reflection", out22.dataM[0], 0.572, 1e-6);
+near("at a different angle", out22.dataQ[0], -95.7, 1e-4);
+eq("and each says which it is", in11.parameter + "/" + out22.parameter, "S11/S22");
+near("asking for nothing still gives S11",
+     QSTouchstone.toGamData(amp, 50).dataM[0], 0.641, 1e-6);
+
+/* a one-port has no S22, and must not have one invented for it */
+var one = QSTouchstone.parse(slurp("touchstone/dipole.s1p"), 1);
+eq("a one-port asked for S22 falls back to S11",
+   QSTouchstone.toGamData(one, 50, "S22").parameter, "S11");
+eq("and keeps every point", QSTouchstone.toGamData(one, 50, "S22").dataX.length,
+   QSTouchstone.toGamData(one, 50, "S11").dataX.length);
+
+/* ------------------------------------------- noise parameters, skipped
+ *
+ * A two-port may carry a noise block after its S-parameters: five numbers a
+ * row where an S-parameter row needs nine. Vendors ship transistor files this
+ * way as a matter of course and the reader used to refuse all of them.
+ * touchstone/test.s2p has three S rows followed by three noise rows.
+ */
+var withNoise = QSTouchstone.parse(slurp("touchstone/test.s2p"), 2);
+eq("a file with noise parameters is read at all", withNoise.points.length, 3);
+near("and the noise block is not read as a fourth point",
+     withNoise.points[2].f, 10000, 1e-9);
+eq("both ends of it survive",
+   QSTouchstone.toGamData(withNoise, 50, "S11").dataX.length + "/" +
+   QSTouchstone.toGamData(withNoise, 50, "S22").dataX.length, "3/3");
+
+/* a five number row that is NOT on a point boundary is wrapped data, not
+   noise, and must not truncate the file */
+var wrapped = QSTouchstone.parse(
+    "# GHZ S RI R 50\n" +
+    "1.0 0.1 0.2 0.3 0.4\n" +      // five numbers, mid point
+    "0.5 0.6 0.7 0.8\n" +
+    "2.0 0.1 0.2 0.3 0.4\n" +
+    "0.5 0.6 0.7 0.8\n", 2);
+eq("a wrapped two-port row is not mistaken for noise", wrapped.points.length, 2);
+near("and its second point survives intact", wrapped.points[1].f, 2000, 1e-9);
+
 if (failures === 0) {
-    out("touchstone: reader, writer and both sample files OK");
+    out("touchstone: reader, writer, S11/S22, noise blocks and both samples OK");
 } else {
     out("touchstone: " + failures + " FAILED");
     if (typeof process !== "undefined") process.exitCode = 1;

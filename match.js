@@ -36,14 +36,41 @@ var QSMatch = (function () {
      * best answer, buildable or not.
      */
     var KINDS = {
-        L:  { lo: 1,   hi: 200, unit: "nH",  label: "inductor" },
-        C:  { lo: 0.5, hi: 200, unit: "pF",  label: "capacitor" },
+        /* Lumped parts are bounded by what they are worth in ohms, not by
+         * nanohenries and picofarads, because the same component is a different
+         * animal at each end of the spectrum. Fixed values of 1 to 200 nH and
+         * 0.5 to 200 pF are sensible at VHF and nonsense at X band: at
+         * 10.5 GHz a 200 pF capacitor is 0.08 ohms, which is a short, a 200 nH
+         * inductor is 13 kilohms, which is an open, and the smallest inductor
+         * on offer is already 66 ohms, so no small series inductance can be
+         * built at all. Steve Huettner found this by matching an amplifier at
+         * 9 to 12 GHz: four of six topologies came back useless and two of them
+         * were worse than fitting nothing.
+         *
+         * Reactance between Z0/25 and 10*Z0 instead, which for 50 ohms is 2 to
+         * 500. Outside that a part is a short or an open whatever the
+         * frequency. See lumpedBounds().
+         */
+        L:  { ohms: true, unit: "nH",  label: "inductor" },
+        C:  { ohms: true, unit: "pF",  label: "capacitor" },
         Z:  { lo: 20,  hi: 150, unit: "Ω", label: "line impedance" },
         /* Degrees at the centre of the band, not at the line design frequency.
          * See thScaleFor(). 10 to 170 is then 0.03 to 0.47 wavelengths there,
          * which is the range you would actually cut. */
         TH: { lo: 10,  hi: 170, unit: "°", label: "length" }
     };
+
+    /*
+     * The nH or pF that correspond to a useful reactance at band centre.
+     * An inductor grows with frequency and a capacitor shrinks, hence the
+     * swap: the smallest capacitor is the one with the largest reactance.
+     */
+    function lumpedBounds(kind, f0MHz, Z0) {
+        var w = 2 * Math.PI * f0MHz * 1e6;
+        var lo = (Number(Z0) || 50) / 25, hi = (Number(Z0) || 50) * 10;
+        if (kind === "L") return [lo / w * 1e9, hi / w * 1e9];
+        return [1 / (w * hi) * 1e12, 1 / (w * lo) * 1e12];
+    }
 
     /* ---------------------------------------------------------- topologies
      *
@@ -92,10 +119,12 @@ var QSMatch = (function () {
         return out;
     }
 
-    function boundsFor(topology, overrides) {
+    function boundsFor(topology, overrides, f0MHz, Z0) {
         return kindsOf(topology).map(function (k) {
-            var b = (overrides && overrides[k]) || KINDS[k];
-            return [Number(b.lo), Number(b.hi)];
+            var b = overrides && overrides[k];
+            if (b) return [Number(b.lo), Number(b.hi)];
+            if (KINDS[k].ohms) return lumpedBounds(k, f0MHz, Z0);
+            return [Number(KINDS[k].lo), Number(KINDS[k].hi)];
         });
     }
 
@@ -305,10 +334,10 @@ var QSMatch = (function () {
      *
      * Where the measurement reads |gamma| >= 1, meaning more power coming back
      * than went in. A VNA does this on a near total reflection, where its
-     * calibration error is bigger than the little the antenna absorbs: a 75 mm
+     * calibration error is bigger than the little the load absorbs: a 75 mm
      * monopole at 300 MHz is electrically tiny and returns essentially
      * everything, so the trace sits on the unit circle and noise pushes it
-     * over.
+     * over. Antennas are the common case, but nothing here assumes one.
      *
      * Read literally it says the load is lossless, and nothing passive can
      * match a lossless load. The solver clamps to 1, the resistance goes to
@@ -524,7 +553,8 @@ var QSMatch = (function () {
     /* ------------------------------------------------------------- the API */
 
     function one(template, topology, freqs, opts) {
-        var bounds = boundsFor(topology, opts.bounds);
+        var f0 = (freqs[0] + freqs[freqs.length - 1]) / 2;
+        var bounds = boundsFor(topology, opts.bounds, f0, template.Z0);
         var thScale = thScaleFor(template, freqs);
         var rand = seeded(opts.seed || 20260927);
         var restarts = opts.restarts || 25;
@@ -574,6 +604,14 @@ var QSMatch = (function () {
             }
             var got = one(template, topology, freqs, opts);
             if (!got || got.value >= FAIL) return;
+            /*
+             * A network that leaves the load worse off than no network at all
+             * is not a result. The search returns one whenever a topology
+             * cannot help and its best effort is still a step backwards, and
+             * listing it invites somebody to build it. Dropping these can empty
+             * the list, which is the honest answer when nothing on offer helps.
+             */
+            if (got.value >= bare) return;
             var els = elementsFor(topology, got.x, template, thScaleFor(template, freqs));
             results.push({
                 id: topology.id,
