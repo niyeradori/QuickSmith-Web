@@ -135,11 +135,19 @@
 
 <p>
   <strong>Enter Parameters &rarr; S-Parameters</strong> takes the four values,
-  and the stability figures appear with them. They are typed rather than
-  imported, which is no hardship: every circle on this page is drawn at one
-  frequency, so it is four numbers entered once. The device used here is in
-  <code>touchstone/hp-an970.s2p</code> in the repository if you would rather
-  read them off a file than off this page.
+  and the stability figures appear with them. Type them in, or read them from a
+  Touchstone file: the same dialog will open an <code>.s2p</code>, and it
+  offers this device as an example so you can follow along without finding a
+  file first.
+</p>
+<p>
+  If the file holds a swept measurement rather than one frequency, it asks
+  which frequency to read, and it checks <em>all</em> of them while it is
+  there. That matters more than the typing it saves. A device can be
+  unconditionally stable where you are designing and potentially unstable a
+  gigahertz away, which is the ordinary way an amplifier that measured
+  beautifully turns into an oscillator, and a single frequency cannot tell you
+  so. Frequencies that fail are marked in the list, with a count underneath.
 </p>
 
 <h2>Question two: how much gain</h2>
