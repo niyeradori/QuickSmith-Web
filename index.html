@@ -532,7 +532,7 @@
                                  <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
                         </div> <!--Component Zone 4 End-->
                     </div>   <!--Component Zone End--> 
-                    <p class="hint">Drag a part onto a slot &middot; drag the wire <svg class="qs-hint-sym" viewBox="0 0 61 20" width="40" height="13"><use href="#qs-sym-w-h"/></svg> onto one to clear it<span id="lengthRef"></span></p>
+                    <p class="hint">Drag a part onto a slot &middot; drag the wire <svg class="qs-hint-sym" viewBox="0 0 61 20" width="40" height="13"><use href="#qs-sym-w-h"/></svg> onto one to clear it</p>
                 </div>   <!--tray end-->
 
                 <div class="ladder-half half-b">
@@ -2296,8 +2296,9 @@ var end = function(e) {
     function showComponentdialog(dropElementType, shunt, mySrcElement, targetIdNum, context) {
         QSSym.set(document.getElementById("IMG"), dropElementType, shunt);
         document.getElementById("cmodalEnum").textContent = targetIdNum;
-        document.getElementById("cmodalType").textContent = dropElementType;
-        document.getElementById("imgLabel").textContent = dropElementType + " [" + getUnits(dropElementType) + "]:";
+        document.getElementById("cmodalType").textContent = dropElementType.toUpperCase();
+        document.getElementById("cmodalType").dataset.type = dropElementType;   // the capitals are for reading; the type is what gets stored
+        document.getElementById("imgLabel").textContent = dropElementType.toUpperCase() + " [" + getUnits(dropElementType) + "]:";
 
         var drpEleTOS = 0; if (dropElementType == "t" || dropElementType == "o" || dropElementType == "s") drpEleTOS = 1;
         var drpEleRXG = 0; if (dropElementType == "r" || dropElementType == "x" || dropElementType == "g" || dropElementType == "rx") drpEleRXG = 1; // for hiding Q label
@@ -2310,7 +2311,7 @@ var end = function(e) {
                 document.querySelector(".modal-body #V2").style.display = ""; document.querySelector(".modal-body #V2Label").style.display = "";    // value 2 show
                 document.querySelector(".modal-body #V2").value = mySrcElement.getAttribute('data-value2');   // value 2 place holder assign
                 if (drpEleTOS == 0) document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2'); // value 1 units label
-                else document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2') + schObj.LU + "]:"; // value 2 units display
+                else document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2') + lengthUnitLabel() + "]:"; // value 2 units display
             }
         }
         else 
@@ -2323,7 +2324,7 @@ var end = function(e) {
                 document.querySelector(".modal-body #V2").style.display = ""; document.querySelector(".modal-body #V2Label").style.display = "";    // value 2 show
                 document.querySelector(".modal-body #V2").value = schObj.ELEMENT[targetIdNum].value2;   // value 2 place holder assign
                 if (drpEleTOS == 0) document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2'); // value 1 units label
-                else document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2') + schObj.LU + "]:"; // value 2 units display
+                else document.getElementById("V2Label").textContent = mySrcElement.getAttribute('data-unit2') + lengthUnitLabel() + "]:"; // value 2 units display
             }
          }
 
@@ -2351,7 +2352,7 @@ var end = function(e) {
 
     function componentValidate() {
         var eleNum = document.getElementById("cmodalEnum").textContent;
-        var eleType = document.getElementById("cmodalType").textContent;
+        var eleType = document.getElementById("cmodalType").dataset.type;
       //  console.log("eleNum = " + eleNum);
       //  console.log("eleType = " + eleType);
         // if this is a two element type then show the second spin box
@@ -2569,6 +2570,13 @@ var LENGTH_LABELS = {
  * frequency being worked at. Degrees at the frequency on screen are what
  * everyone assumes anyway, and labelling that case would be noise.
  */
+function lengthUnitLabel() {
+    var tdf = Number(schObj.TDF);
+    if ((schObj.LU === "Degrees" || schObj.LU === "Wave Lengths") && tdf > 0)
+        return schObj.LU + " at " + tdf + " MHz";
+    return schObj.LU;
+}
+
 function lengthHintFor() {
     var unit = schObj.LU.toLowerCase();
     if (schObj.LU !== "Degrees" && schObj.LU !== "Wave Lengths") {
@@ -2581,26 +2589,6 @@ function lengthHintFor() {
         hint += " - not at the " + f + " MHz on screen. Settings changes it.";
     }
     return hint;
-}
-
-/*
- * Say where line lengths are referenced, when that is not the frequency on
- * screen. Shown on the ladder's own hint line because it is about the numbers
- * in the slots and because there is room there for words: the unit tag beside
- * the value is nine pixels wide and squeezes the value itself if anything is
- * added to it.
- */
-function showLengthReference() {
-    var out = document.getElementById("lengthRef");
-    if (!out) return;
-    var tdf = Number(schObj.TDF), f = Number(schObj.ELEMENT[0].value1);
-    var referenced = schObj.LU === "Degrees" || schObj.LU === "Wave Lengths";
-    if (!referenced || !(tdf > 0) || Math.abs(tdf - f) < 1e-9) {
-        out.textContent = "";
-        return;
-    }
-    out.innerHTML = " &middot; lengths are " + schObj.LU.toLowerCase() +
-        " at " + tdf + " MHz, not at " + f + " MHz";
 }
 
 function updateToolTip() {
@@ -2616,7 +2604,6 @@ function updateToolTip() {
         setUnit("E" + i, unit[0]);
         setUnit("E" + i + "a", unit[1] === "length" ? lengthLabel : unit[1]);
     }
-    showLengthReference();
 }
 
 /*

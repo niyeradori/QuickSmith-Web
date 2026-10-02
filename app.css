@@ -439,7 +439,10 @@ th {
 }
 
 .qs-hint-sym { vertical-align: middle; margin: 0 4px; }
-.qs-preview { width: 20px; height: 70px; padding: 3px; }
+/* Big enough to read, and shaped for both orientations: a series symbol is a
+   61x20 viewBox and a shunt one is 20x70, so the box has to suit the wider of
+   the two and let preserveAspectRatio scale each to fit. */
+.qs-preview { width: 150px; height: 96px; padding: 3px; }
 
 /* ================================================================= ladder
  *
