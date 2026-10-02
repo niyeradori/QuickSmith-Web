@@ -863,6 +863,47 @@ function  OperatingCirclesDialog (){
  * written; it returns exactly the eight fields this dialog holds, interpolated
  * to whichever frequency is asked for.
  */
+/*
+ * The file most recently read on this page, kept so the noise dialog can take
+ * its parameters from the same device without making you find the file twice.
+ * A Touchstone noise block sits in the same file as the S-parameters it
+ * belongs to, so they should not arrive by separate journeys.
+ */
+var lastTouchstone = null;
+
+/*
+ * Rollett's K and the magnitude of delta, from one frequency's S-parameters.
+ *
+ * calculateStabilityCircles does this already, but it reads and writes ampObj
+ * and goes on to work out four circles, so it cannot be asked the question
+ * about a frequency you have not committed to. This is the same arithmetic
+ * with nothing attached:
+ *
+ *     delta = S11 S22 - S12 S21
+ *     K     = (1 - |S11|^2 - |S22|^2 + |delta|^2) / (2 |S12 S21|)
+ *
+ * Unconditionally stable means K > 1 and |delta| < 1 together.
+ */
+function stabilityOf(p) {
+    function c(m, a) {
+        var r = Number(a) * Math.PI / 180;
+        return { re: Number(m) * Math.cos(r), im: Number(m) * Math.sin(r) };
+    }
+    function mul(x, y) { return { re: x.re * y.re - x.im * y.im,
+                                  im: x.re * y.im + x.im * y.re }; }
+    function mag(x) { return Math.sqrt(x.re * x.re + x.im * x.im); }
+
+    var S11 = c(p.S11M, p.S11A), S12 = c(p.S12M, p.S12A);
+    var S21 = c(p.S21M, p.S21A), S22 = c(p.S22M, p.S22A);
+    var prod = mul(S12, S21);
+    var d = mul(S11, S22);
+    d = { re: d.re - prod.re, im: d.im - prod.im };
+    var dm = mag(d), denom = 2 * mag(prod);
+    var K = denom === 0 ? Infinity
+          : (1 - mag(S11) * mag(S11) - mag(S22) * mag(S22) + dm * dm) / denom;
+    return { K: K, delta: dm, stable: (K > 1 && dm < 1) };
+}
+
 function wireSParamImport(content) {
     var note = content.querySelector("#sparamNote");
 
@@ -916,10 +957,45 @@ function wireSParamImport(content) {
             o.textContent = Number(pt.f).toFixed(pt.f < 100 ? 3 : 1) + " MHz";
             sel.appendChild(o);
         });
+        /*
+         * Stability at every frequency the file holds, not just the one being
+         * read. A device can be unconditionally stable where you are designing
+         * and potentially unstable somewhere else in the same file, which is
+         * the ordinary way amplifiers oscillate, and nothing on this page could
+         * tell you so before. Each frequency that fails is marked where it is
+         * chosen, and the count is summarised underneath.
+         */
+        var unstable = [];
+        pts.forEach(function (pt, i) {
+            var st = stabilityOf(QSTouchstone.sParamsAt(parsed, pt.f));
+            if (!st.stable) {
+                unstable.push(pt.f);
+                sel.options[i].textContent += "  potentially unstable";
+            }
+        });
+
         sel.addEventListener("change", function () { fill(parsed, pts[Number(sel.value)].f); });
         row.appendChild(document.createTextNode("Frequency:"));
         row.appendChild(sel);
         content.querySelector("#sparamFrom").appendChild(row);
+
+        var verdict = document.createElement("div");
+        verdict.style.cssText = "font-size:12px;margin-top:6px";
+        if (!unstable.length) {
+            verdict.style.color = "var(--qs-text,#6b7280)";
+            verdict.textContent = "Unconditionally stable at all " + pts.length +
+                " frequencies in this file.";
+        } else {
+            verdict.style.color = "var(--qs-r,#b5342b)";
+            verdict.textContent = "Potentially unstable at " + unstable.length +
+                " of " + pts.length + ": " +
+                unstable.slice(0, 6).map(function (f) {
+                    return Number(f).toFixed(f < 100 ? 3 : 1);
+                }).join(", ") + (unstable.length > 6 ? " and more" : "") +
+                " MHz. Matching into those is where an amplifier oscillates.";
+        }
+        row.appendChild(verdict);
+
         fill(parsed, pts[0].f);
     }
 
@@ -927,6 +1003,7 @@ function wireSParamImport(content) {
         var parsed;
         try { parsed = QSTouchstone.parse(text, QSTouchstone.portsFromFilename(label)); }
         catch (err) { say("Could not read " + label + ": " + err.message, true); return; }
+        lastTouchstone = { parsed: parsed, label: label };
         offer(parsed, label);
     }
 
@@ -1046,17 +1123,87 @@ function stability_dialog()
 
 
 
+/*
+ * Noise parameters out of the same file the S-parameters came from.
+ *
+ * Most Touchstone files carry none, so this says nothing at all unless there
+ * is something to offer, rather than presenting a button that usually fails.
+ * As on the S-parameter side it fills the boxes and leaves OK to commit them.
+ */
+function wireNoiseImport(content) {
+    var note = content.querySelector("#noiseNote");
+    /*
+     * parsed.noise is absent rather than empty if touchstone.js is older than
+     * this page, which happens for a few minutes after a deploy while a
+     * browser still holds the cached parser. Treat missing as none, so the
+     * worst case is that noise import is quietly unavailable until the cache
+     * turns over, rather than this dialog throwing.
+     */
+    var haveNoise = lastTouchstone && (lastTouchstone.parsed.noise || []).length;
+    if (!haveNoise) {
+        note.textContent = lastTouchstone
+            ? lastTouchstone.label + " carries no noise parameters, so these are typed in."
+            : "Open an S-parameter file first and any noise parameters in it can be read from here.";
+        return;
+    }
+
+    var parsed = lastTouchstone.parsed, n = parsed.noise || [];
+    var row = document.createElement("div");
+    row.style.cssText = "font-size:13px";
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn-sm";
+    btn.textContent = "Read from " + lastTouchstone.label;
+    row.appendChild(btn);
+
+    var sel = null;
+    if (n.length > 1) {
+        sel = document.createElement("select");
+        sel.className = "form-control";
+        sel.style.cssText = "width:auto;display:inline-block;margin-left:8px";
+        n.forEach(function (pt, i) {
+            var o = document.createElement("option");
+            o.value = String(i);
+            o.textContent = Number(pt.f).toFixed(pt.f < 100 ? 3 : 1) + " MHz";
+            sel.appendChild(o);
+        });
+        row.appendChild(sel);
+    }
+    content.querySelector("#noiseFrom").insertBefore(row, note);
+
+    function fill() {
+        var f = sel ? n[Number(sel.value)].f : n[0].f;
+        var v = QSTouchstone.noiseAt(parsed, f);
+        content.querySelector("#FM").value = Number(v.Fmin).toFixed(3);
+        content.querySelector("#GM").value = Number(v.G0M).toFixed(4);
+        content.querySelector("#GA").value = Number(v.G0A).toFixed(2);
+        content.querySelector("#RN").value = Number(v.RN).toFixed(2);
+        note.textContent = "Read at " + Number(f).toFixed(f < 100 ? 3 : 1) +
+            " MHz. Press OK to use them.";
+    }
+    btn.addEventListener("click", fill);
+    if (sel) sel.addEventListener("change", fill);
+    note.textContent = lastTouchstone.label + " carries noise parameters at " +
+        n.length + (n.length === 1 ? " frequency." : " frequencies.");
+}
+
 function noise_dialog()
 {  
     var Fmin = ampObj.Fmin;
     var G0M = ampObj.G0M;
     var G0A = ampObj.G0A;
     var RN = ampObj.RN;
-    var content = fragment('<div><label for="FM">Fmin [dB]: <input type="number" id="FM" value='+Fmin+'  style="width:100px" /> \
+    var content = fragment('<div>\
+        <div id="noiseFrom" style="padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--qs-rim,#e5e8ee)">\
+          <div id="noiseNote" style="font-size:12px;color:var(--qs-text,#6b7280)"></div>\
+        </div>\
+        <label for="FM">Fmin [dB]: <input type="number" id="FM" value='+Fmin+'  style="width:100px" /> \
         </label><br /><label for="GM">G0 [Mag]: <input type="number" id="GM" value='+G0M+' style="width:100px" />\
         </label><br /><label for="GA">G0 [Ang]: <input type="number" id="GA" value='+G0A+' style="width:100px" />\
         </label><br /><label for="RN">RN [Ohms]: <input type="number" id="RN" value='+RN+' style="width:100px" />\
         </label><br /></div>');
+    wireNoiseImport(content);
+
     QSUI.open({
     title: "Noise Parmeters Entry",
     small: true,

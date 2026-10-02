@@ -74,7 +74,9 @@ var QSTouchstone = (function () {
 
         if (!ports) ports = inferPorts(numbers, lines);
         var stride = 1 + 2 * ports * ports;
-        numbers = numbers.slice(0, sParameterCount(rows, ports, stride));
+        var sCount = sParameterCount(rows, ports, stride);
+        var noise = noisePoints(numbers.slice(sCount), opts);
+        numbers = numbers.slice(0, sCount);
         if (numbers.length % stride !== 0) {
             throw new Error("expected " + stride + " numbers per frequency for a " +
                             ports + "-port file, got " + numbers.length + " in total");
@@ -94,7 +96,8 @@ var QSTouchstone = (function () {
             parameter: opts.parameter,
             format: opts.format,
             R: opts.R,
-            points: points
+            points: points,
+            noise: noise          // empty unless the file carried a noise block
         };
     }
 
@@ -185,6 +188,57 @@ var QSTouchstone = (function () {
             seen += rows[i].length;
         }
         return all;
+    }
+
+    /*
+     * The noise block, now that we know where it starts.
+     *
+     * Five numbers a row: frequency, the minimum noise figure in dB, the two
+     * halves of gamma-opt, and Rn normalised to the reference impedance. Only
+     * gamma-opt follows the file's format; NFmin is always dB and Rn is always
+     * a ratio, which is why they are read straight rather than through
+     * toComplex. Rn is returned in ohms, because that is what anyone using it
+     * wants and the normalisation is an artefact of the file.
+     */
+    function noisePoints(rest, opts) {
+        if (rest.length < 5 || rest.length % 5 !== 0) return [];
+        var out = [];
+        for (var k = 0; k < rest.length; k += 5) {
+            var g = toComplex(rest[k + 2], rest[k + 3], opts.format);
+            var mag = Math.sqrt(g.re * g.re + g.im * g.im);
+            out.push({
+                f: rest[k] * opts.freqScale,
+                nfMin: rest[k + 1],
+                gOptM: mag,
+                gOptA: (mag === 0) ? 0 : Math.atan2(g.im, g.re) * 180 / Math.PI,
+                rn: rest[k + 4] * opts.R
+            });
+        }
+        return out;
+    }
+
+    /*
+     * The noise parameters at one frequency, in the shape the amplifier page
+     * holds them. Interpolated the same way sParamsAt interpolates, and null
+     * when the file carried no noise data at all, which most do not.
+     */
+    function noiseAt(parsed, fMHz) {
+        var n = parsed.noise;
+        if (!n || !n.length) return null;
+        var lo = 0;
+        while (lo < n.length - 2 && n[lo + 1].f < fMHz) lo++;
+        var a = n[lo], b = n[Math.min(lo + 1, n.length - 1)];
+        var span = b.f - a.f;
+        var t = (span === 0) ? 0 : Math.max(0, Math.min(1, (fMHz - a.f) / span));
+        function mix(k) { return a[k] + t * (b[k] - a[k]); }
+        return {
+            frequency: fMHz,
+            Fmin: mix("nfMin"),
+            G0M: mix("gOptM"),
+            G0A: mix("gOptA"),
+            RN: mix("rn"),
+            covers: [n[0].f, n[n.length - 1].f]
+        };
     }
 
     /* --------------------------------------------------------- into the app */
@@ -297,6 +351,7 @@ var QSTouchstone = (function () {
         parse: parse,
         toGamData: toGamData,
         sParamsAt: sParamsAt,
+        noiseAt: noiseAt,
         formatS1P: formatS1P,
         portsFromFilename: portsFromFilename,
         renormalise: renormalise

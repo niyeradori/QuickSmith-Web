@@ -237,8 +237,33 @@ var wrapped = QSTouchstone.parse(
 eq("a wrapped two-port row is not mistaken for noise", wrapped.points.length, 2);
 near("and its second point survives intact", wrapped.points[1].f, 2000, 1e-9);
 
+/* ---------------------------------------- noise parameters, kept this time
+ *
+ * The block is no longer only skipped, it is parsed. Rn comes back in ohms
+ * rather than normalised to Z0, because that is what anyone reading it wants
+ * and the normalisation is an artefact of the file format.
+ */
+var ns = QSTouchstone.parse(slurp("touchstone/test.s2p"), 2).noise;
+ok("the noise block is now returned, not just skipped", ns.length > 0);
+near("its first frequency", ns[0].f, 1000, 1e-9);
+near("NFmin is read straight, always dB", ns[0].nfMin, 2.0, 1e-9);
+near("Rn comes back in ohms, not normalised", ns[0].rn, 0.4 * 50, 1e-9);
+ok("gamma-opt is converted through the file's own format",
+   ns[0].gOptM > 0 && ns[0].gOptM <= 1.2, "got " + ns[0].gOptM);
+
+/* interpolation, and the shape the amplifier page wants */
+var half = QSTouchstone.noiseAt(QSTouchstone.parse(slurp("touchstone/test.s2p"), 2), 1500);
+near("noise interpolates between points, Fmin", half.Fmin, 2.25, 1e-9);
+near("and Rn with it", half.RN, 21.25, 1e-9);
+eq("a file with no noise block returns null rather than guessing",
+   QSTouchstone.noiseAt(QSTouchstone.parse(slurp("touchstone/dipole.s1p"), 1), 150), null);
+
+/* and the S-parameters are untouched by any of it */
+eq("keeping the noise block did not change the S-parameter count",
+   QSTouchstone.parse(slurp("touchstone/test.s2p"), 2).points.length, 3);
+
 if (failures === 0) {
-    out("touchstone: reader, writer, S11/S22, noise blocks and both samples OK");
+    out("touchstone: reader, writer, S11/S22, noise parameters and both samples OK");
 } else {
     out("touchstone: " + failures + " FAILED");
     if (typeof process !== "undefined") process.exitCode = 1;
