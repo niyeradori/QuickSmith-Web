@@ -35,6 +35,7 @@
   <script src="ui.js"></script>
   <script src="common.js"></script>
   <script src="smith.js"></script>
+  <script src="touchstone.js"></script>
   <script src="amp.js"></script>
   <style>
     /*body {
@@ -848,6 +849,116 @@ function  OperatingCirclesDialog (){
     }
 
 
+/*
+ * Reading S-parameters out of a Touchstone file.
+ *
+ * This fills the eight boxes and stops. It deliberately does not write to
+ * ampObj or compute anything: Calculate Stability already validates the
+ * numbers, stores them, works out K and delta and enables the circle menus,
+ * and there is no reason to have a second path that does the same thing
+ * slightly differently. Putting the values on screen first also means you see
+ * what came out of the file before committing to it.
+ *
+ * QSTouchstone.sParamsAt has been sitting in touchstone.js unused since it was
+ * written; it returns exactly the eight fields this dialog holds, interpolated
+ * to whichever frequency is asked for.
+ */
+function wireSParamImport(content) {
+    var note = content.querySelector("#sparamNote");
+
+    function say(msg, bad) {
+        note.textContent = msg;
+        note.style.color = bad ? "var(--qs-r,#b5342b)" : "var(--qs-text,#6b7280)";
+    }
+
+    function fill(parsed, fMHz) {
+        var p = QSTouchstone.sParamsAt(parsed, fMHz);
+        ["S11", "S21", "S12", "S22"].forEach(function (n) {
+            content.querySelector("#" + n + "M").value = Number(p[n + "M"]).toFixed(4);
+            content.querySelector("#" + n + "A").value = Number(p[n + "A"]).toFixed(2);
+        });
+        var msg = "Read at " + Number(fMHz).toFixed(fMHz < 100 ? 3 : 1) + " MHz.";
+        /*
+         * The page works in 50 ohms. A file referenced to anything else would
+         * need renormalising, and quietly using its numbers as if they were
+         * 50 ohm ones would be wrong, so say so rather than hide it.
+         */
+        if (Math.abs(Number(p.Z0) - 50) > 1e-9) {
+            msg += " Careful: this file is referenced to " + p.Z0 +
+                   " ohms, not 50, so these are not directly comparable.";
+            say(msg, true);
+        } else {
+            say(msg + " Press Calculate Stability to use them.");
+        }
+    }
+
+    /* A swept file holds many frequencies and this page works at one. */
+    function offer(parsed, label) {
+        if (parsed.ports !== 2) {
+            say(label + " is a " + parsed.ports + "-port file. S-parameters need two.", true);
+            return;
+        }
+        var pts = parsed.points;
+        var old = content.querySelector("#sparamFreq");
+        if (old) old.parentNode.removeChild(old);
+
+        if (pts.length === 1) { fill(parsed, pts[0].f); return; }
+
+        var row = document.createElement("div");
+        row.id = "sparamFreq";
+        row.style.cssText = "margin-top:8px;font-size:13px";
+        var sel = document.createElement("select");
+        sel.className = "form-control";
+        sel.style.cssText = "width:auto;display:inline-block;margin-left:6px";
+        pts.forEach(function (pt, i) {
+            var o = document.createElement("option");
+            o.value = String(i);
+            o.textContent = Number(pt.f).toFixed(pt.f < 100 ? 3 : 1) + " MHz";
+            sel.appendChild(o);
+        });
+        sel.addEventListener("change", function () { fill(parsed, pts[Number(sel.value)].f); });
+        row.appendChild(document.createTextNode("Frequency:"));
+        row.appendChild(sel);
+        content.querySelector("#sparamFrom").appendChild(row);
+        fill(parsed, pts[0].f);
+    }
+
+    function load(text, label) {
+        var parsed;
+        try { parsed = QSTouchstone.parse(text, QSTouchstone.portsFromFilename(label)); }
+        catch (err) { say("Could not read " + label + ": " + err.message, true); return; }
+        offer(parsed, label);
+    }
+
+    content.querySelector("#sparamSample").addEventListener("click", function () {
+        fetch("touchstone/hp-an970.s2p")
+            .then(function (r) {
+                if (!r.ok) throw new Error("the server returned " + r.status);
+                return r.text();
+            })
+            .then(function (t) { load(t, "hp-an970.s2p"); })
+            .catch(function (err) {
+                say("Could not fetch the example: " + err.message +
+                    ". It lives next to the program, so this usually means the " +
+                    "page was opened from a file rather than over the web.", true);
+            });
+    });
+
+    content.querySelector("#sparamFile").addEventListener("click", function () {
+        var input = document.getElementById("file-input");
+        input.accept = ".s2p,.S2P,.snp,.SNP,.ts,.txt";
+        input.onchange = function (e) {
+            var f = e.target.files[0];
+            if (!f) return;
+            var reader = new FileReader();
+            reader.onload = function () { load(reader.result, f.name); };
+            reader.readAsText(f);
+            input.value = "";
+        };
+        input.click();
+    });
+}
+
 function stability_dialog()
 {  
     var S11m = ampObj.S11M;
@@ -859,6 +970,12 @@ function stability_dialog()
     var S22m = ampObj.S22M;
     var S22a = ampObj.S22A;
     var content = fragment('<div>\
+        <div id="sparamFrom" style="padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--qs-rim,#e5e8ee)">\
+          <div style="font-size:12px;color:var(--qs-text,#6b7280);margin-bottom:6px">Read them from a Touchstone file, or type them in below.</div>\
+          <button type="button" class="btn btn-sm" id="sparamSample">HP AN970 example</button>\
+          <button type="button" class="btn btn-sm" id="sparamFile">Choose a file&hellip;</button>\
+          <div id="sparamNote" style="font-size:12px;color:var(--qs-text,#6b7280);margin-top:7px"></div>\
+        </div>\
         <label for="S11M">S11 [Mag/A]: <input type="number" id="S11M" value='+S11m+'  style="width:85px"/><input type="number" id="S11A" value='+S11a+' style="width:85px"/></label>\
         <br /><label for="S21M">S21 [Mag/A]: <input type="number" id="S21M" value='+S21m+' style="width:85px" /><input type="number" id="S21A" value='+S21a+' style="width:85px"</label>\
         <br /><label for="S12M">S12 [Mag/A]: <input type="number" id="S12M" value='+S12m+' style="width:85px" /><input type="number" id="S12A" value='+S12a+' style="width:85px" /></label>\
@@ -868,6 +985,8 @@ function stability_dialog()
           <br />\
         <br /><label for="RESULT">RESULT:<input type="text" id="RESULT"  readonly style="width:220px;  color:red"/>\
         </div>');
+    wireSParamImport(content);
+
     QSUI.open({
     title: "S-Parmeters Entry",
     small: true,
