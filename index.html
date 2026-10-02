@@ -532,7 +532,7 @@
                                  <span class="stretch" style="width:100%;  display: inline-block; font-size: 0; line-height: 0 "></span>   
                         </div> <!--Component Zone 4 End-->
                     </div>   <!--Component Zone End--> 
-                    <p class="hint">Drag a part onto a slot &middot; drag the wire <svg class="qs-hint-sym" viewBox="0 0 61 20" width="40" height="13"><use href="#qs-sym-w-h"/></svg> onto one to clear it</p>
+                    <p class="hint">Drag a part onto a slot &middot; drag the wire <svg class="qs-hint-sym" viewBox="0 0 61 20" width="40" height="13"><use href="#qs-sym-w-h"/></svg> onto one to clear it<span id="lengthRef"></span></p>
                 </div>   <!--tray end-->
 
                 <div class="ladder-half half-b">
@@ -2556,19 +2556,67 @@ var LENGTH_LABELS = {
     "Degrees": "\u00b0", "Wave Lengths": "\u03bb"
 };
 
+/*
+ * Degrees and wavelengths are referenced to the transmission line design
+ * frequency, and nothing on screen used to say so. Two people reported it in
+ * one week: one asked what the units referred to, the other set a frequency of
+ * 299.792 MHz, typed 90 degrees expecting a quarter wave there, and got a
+ * quarter wave at 100 MHz instead. Millimetres behaved, because a physical
+ * length has no reference to get wrong, which made it look like a bug in one
+ * browser rather than a setting.
+ *
+ * So the reference goes next to the number, but only when it is not the
+ * frequency being worked at. Degrees at the frequency on screen are what
+ * everyone assumes anyway, and labelling that case would be noise.
+ */
+function lengthHintFor() {
+    var unit = schObj.LU.toLowerCase();
+    if (schObj.LU !== "Degrees" && schObj.LU !== "Wave Lengths") {
+        return "length [" + unit + "]";
+    }
+    var tdf = Number(schObj.TDF), f = Number(schObj.ELEMENT[0].value1);
+    var at = (tdf > 0) ? tdf : f;
+    var hint = "length [" + unit + " at the " + at + " MHz design frequency]";
+    if (tdf > 0 && Math.abs(tdf - f) > 1e-9) {
+        hint += " - not at the " + f + " MHz on screen. Settings changes it.";
+    }
+    return hint;
+}
+
+/*
+ * Say where line lengths are referenced, when that is not the frequency on
+ * screen. Shown on the ladder's own hint line because it is about the numbers
+ * in the slots and because there is room there for words: the unit tag beside
+ * the value is nine pixels wide and squeezes the value itself if anything is
+ * added to it.
+ */
+function showLengthReference() {
+    var out = document.getElementById("lengthRef");
+    if (!out) return;
+    var tdf = Number(schObj.TDF), f = Number(schObj.ELEMENT[0].value1);
+    var referenced = schObj.LU === "Degrees" || schObj.LU === "Wave Lengths";
+    if (!referenced || !(tdf > 0) || Math.abs(tdf - f) < 1e-9) {
+        out.textContent = "";
+        return;
+    }
+    out.innerHTML = " &middot; lengths are " + schObj.LU.toLowerCase() +
+        " at " + tdf + " MHz, not at " + f + " MHz";
+}
+
 function updateToolTip() {
-    var lengthUnit = schObj.LU.toLowerCase();
+    var lengthHint = lengthHintFor();
     var lengthLabel = LENGTH_LABELS[schObj.LU] || "";
     for (var i = 1; i < 13; i++) {
         var type = schObj.ELEMENT[i].type;
         var hint = UNIT_HINTS[type] || [null, null];
         setHint("E" + i, hint[0]);
-        setHint("E" + i + "a", hint[1] === "length" ? "length [" + lengthUnit + "]" : hint[1]);
+        setHint("E" + i + "a", hint[1] === "length" ? lengthHint : hint[1]);
 
         var unit = UNIT_LABELS[type] || [null, null];
         setUnit("E" + i, unit[0]);
         setUnit("E" + i + "a", unit[1] === "length" ? lengthLabel : unit[1]);
     }
+    showLengthReference();
 }
 
 /*
