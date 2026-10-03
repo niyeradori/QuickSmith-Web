@@ -266,6 +266,38 @@ ok("region 4 is lower", getRegion(0, -900) === 4);
 ok("inside the chart", InSmith(0, 0) === true);
 ok("outside the chart", InSmith(900, 900) === false);
 
+/* ------------------------------------- 3. the exported chart's palette
+ *
+ * An exported SVG carries no :root, so toSVG() writes the resolved custom
+ * properties into the file from a fixed list of names. A name the stylesheet
+ * uses but the list omits falls back silently: --qs-card was missing, and a
+ * dark chart came out of Capture Chart with a white disc inside a dark
+ * margin. Read the source and hold the list to what the CSS actually asks
+ * for, since nothing at runtime will complain.
+ */
+var smithSrc = (typeof process !== "undefined" && process.versions && process.versions.node)
+    ? fs.readFileSync(ROOT + "smith.js", "utf8")
+    : read("smith.js");
+
+var declared = {};
+(smithSrc.match(/var VAR_NAMES = \(([\s\S]*?)\)\.split/) || [, ""])[1]
+    .replace(/[+"\s]+/g, " ").trim().split(" ")
+    .forEach(function (n) { if (n) declared[n] = true; });
+
+var usedOnce = {};
+/* Require the closing bracket or the fallback comma, or this picks up the
+   literal prefix of "var(--qs-a" + n + ")", which the gain circles build a
+   colour name with at run time. */
+var useRe = /var\(--qs-([a-z0-9]+)\s*[,)]/g, hit;
+while ((hit = useRe.exec(smithSrc)) !== null) usedOnce[hit[1]] = true;
+
+ok("the exported palette list is not empty", Object.keys(declared).length > 10,
+   Object.keys(declared).join(","));
+Object.keys(usedOnce).forEach(function (n) {
+    ok("--qs-" + n + " travels with an exported chart", declared[n] === true,
+       "smith.js reads it but VAR_NAMES omits it, so an export falls back");
+});
+
 if (failures === 0) {
     out("chart renderer: geometry and a full render OK (" +
         (grid.rMajor.length + 2 * grid.xMajor.length) + " grid curves checked)");
