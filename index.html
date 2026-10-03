@@ -3254,6 +3254,14 @@ function loadFromHash() {
             schObj.gamData.dataQ = phase_unwrap(schObj.gamData.dataQ);
         }
         if (decoded.chart) copy_smithObj(decoded.chart);
+        /*
+         * A measured load is shared for its band, so put the locus back on the
+         * chart. The swept points are not in the link and should not be: they
+         * are derived from the measurement and the band, both of which are.
+         * Without this the response plot showed the band and the chart showed
+         * a single dot, which is how a correct link looked broken.
+         */
+        if (schObj.termination === "Multiple") generateSweep();
         return true;
     } catch (e) {
         ShowMessage_sm("QuickSmith", "That link could not be read: " + e.message);
