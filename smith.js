@@ -126,6 +126,11 @@ var QSChart = (function () {
         // before it starts. A finger could only ever tune sideways.
         ".qs-grab{fill:transparent;cursor:grab;touch-action:none}",
         ".qs-scrub{fill:transparent;cursor:ew-resize;touch-action:none}",
+        // a halo in the chart face colour, because the dot is on the swept
+        // curve and the label would otherwise be read through it
+        ".qs-at{fill:var(--qs-dot);font:600 38px ui-monospace,SFMono-Regular,Menlo,"
+        + "monospace;paint-order:stroke;stroke:var(--qs-card,#fff);stroke-width:10;"
+        + "stroke-linejoin:round}",
         ".qs-grab:active{cursor:grabbing}",
         ".qs-hover{fill:none;stroke:var(--qs-ui);stroke-width:1.4;opacity:.7}",
         ".qs-hover-text{fill:var(--qs-text);font:500 30px ui-monospace,SFMono-Regular,Menlo,monospace}",
@@ -289,6 +294,7 @@ var QSChart = (function () {
             // the last node's tune handle, and the dot is what was aimed at
             if (e.target.closest && e.target.closest(".qs-scrub")) {
                 scrubbing = true;
+                view.scrubbing = true;
                 try { svg.setPointerCapture(e.pointerId); } catch (err) { /* no capture */ }
                 e.preventDefault();
                 return;
@@ -368,6 +374,7 @@ var QSChart = (function () {
                 view.owner.onScrubEnd();
             }
             scrubbing = false;
+            view.scrubbing = false;
         }
         svg.addEventListener("pointerup", release);
         svg.addEventListener("pointercancel", release);
@@ -475,10 +482,29 @@ var QSChart = (function () {
             var scrub = el("circle", { "class": "qs-scrub",
                                        cx: pt.x, cy: -pt.y, r: 22 }, view.root);
             el("title", {}, scrub).textContent = "Drag along the sweep to change frequency";
+            if (view.scrubbing && me.atLabel) atLabel(view.root, pt, me.atLabel);
         }
 
         view.hoverLayer = el("g", { "class": "qs-hoverlayer" }, view.root);
         renderHover(view);
+    }
+
+    /*
+     * The frequency, written beside the operating point. Placed on whichever
+     * side keeps it inside the chart, since the dot reaches the rim.
+     */
+    function atLabel(parent, pt, text) {
+        // above the dot, unless the dot is near the top of the chart, and
+        // pulled in from the rim so a long number stays inside the circle
+        var lim = R * 0.74;
+        var x = pt.x < -lim ? -lim : (pt.x > lim ? lim : pt.x);
+        var t = el("text", {
+            "class": "qs-at", x: x,
+            y: -pt.y + (pt.y < R * 0.8 ? -46 : 62),
+            "text-anchor": "middle"
+        }, parent);
+        t.textContent = text;
+        return t;
     }
 
     function traceLength(ds) {
@@ -823,6 +849,13 @@ var QSChart = (function () {
         clone.setAttribute("xmlns", NS);
         Array.prototype.forEach.call(clone.querySelectorAll(".qs-grab, .qs-scrub, .qs-hoverlayer"),
             function (n) { n.parentNode.removeChild(n); });
+
+        var owner = view.owner, dot = clone.querySelector(".qs-dot"),
+            root = clone.querySelector(".qs-root");
+        if (owner && owner.atLabel && dot && root) {
+            var x = Number(dot.getAttribute("cx")), y = Number(dot.getAttribute("cy"));
+            atLabel(root, { x: x, y: -y }, owner.atLabel);
+        }
 
         var style = document.createElementNS(NS, "style");
         style.textContent = CSS + resolvedVars(view);

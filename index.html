@@ -1808,6 +1808,10 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         // update SMITH CHART
         smithObj.dataM = resultsObj.OUTPUT[2].GAMMag ; 
         smithObj.dataQ = resultsObj.OUTPUT[2].GAMAng ;
+        // the frequency the dot is at, for the chart to write beside it while
+        // it is being dragged and to carry into an exported picture, which
+        // leaves here without the readout panel
+        smithObj.atLabel = freqLabel(schObj.ELEMENT[0].value1);
         smithObj.drawSmith();
         updateReadout();
         runResponse();
@@ -2048,6 +2052,7 @@ smithObj.onScrubEnd = function () {
     sweepHeld = false;
     responseHeld = false;
     runResponse();
+    smithObj.redrawSmith();     // takes the drag label back off
 };
 
 smithObj.onTuneEnd = function () {
@@ -2076,6 +2081,13 @@ function syncSlotEditable(i) {
 
 /* Put a slot's own numbers back in its boxes, the way updateUI would, but
    without the full rebuild: this runs on every step of a drag. */
+/* 146 rather than 146.00, but 172.24 rather than 172.2369955. */
+function freqLabel(mhz) {
+    var f = Number(mhz);
+    if (!isFinite(f)) return "";
+    return f.toFixed(2).replace(/\.00$/, "") + " MHz";
+}
+
 function showSlotValue(i) {
     var box = document.getElementById("E" + i);
     if (box) box.value = Number(schObj.ELEMENT[i].value1).toFixed(2);
