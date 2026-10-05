@@ -125,6 +125,7 @@ var QSChart = (function () {
         // vertical component to the page scroller, which cancels the drag
         // before it starts. A finger could only ever tune sideways.
         ".qs-grab{fill:transparent;cursor:grab;touch-action:none}",
+        ".qs-scrub{fill:transparent;cursor:ew-resize;touch-action:none}",
         ".qs-grab:active{cursor:grabbing}",
         ".qs-hover{fill:none;stroke:var(--qs-ui);stroke-width:1.4;opacity:.7}",
         ".qs-hover-text{fill:var(--qs-text);font:500 30px ui-monospace,SFMono-Regular,Menlo,monospace}",
@@ -275,6 +276,7 @@ var QSChart = (function () {
     function addInteraction(view) {
         var svg = view.el, drag = null, pointers = {}, pinch = null;
         var tuning = null;      // the slot whose node is being dragged
+        var scrubbing = false;  // the operating point is being dragged along the sweep
 
         svg.addEventListener("wheel", function (e) {
             e.preventDefault();
@@ -283,6 +285,14 @@ var QSChart = (function () {
         }, { passive: false });
 
         svg.addEventListener("pointerdown", function (e) {
+            // the operating point claims the gesture first: it is drawn over
+            // the last node's tune handle, and the dot is what was aimed at
+            if (e.target.closest && e.target.closest(".qs-scrub")) {
+                scrubbing = true;
+                try { svg.setPointerCapture(e.pointerId); } catch (err) { /* no capture */ }
+                e.preventDefault();
+                return;
+            }
             // a node handle claims the gesture before panning can have it
             var handle = e.target.closest && e.target.closest(".qs-grab");
             if (handle) {
@@ -306,6 +316,14 @@ var QSChart = (function () {
         });
 
         svg.addEventListener("pointermove", function (e) {
+            if (scrubbing) {
+                var s = pointerToChart(view, e);
+                if (view.owner && typeof view.owner.onScrub === "function") {
+                    view.owner.onScrub(
+                        nearestOnTrace(view.owner.sweepDatasets[0], s.x, s.y));
+                }
+                return;
+            }
             if (tuning !== null) {
                 var t = pointerToChart(view, e);
                 if (view.owner && typeof view.owner.onTune === "function") {
@@ -346,6 +364,10 @@ var QSChart = (function () {
                 view.owner.onTuneEnd(tuning);
             }
             tuning = null;
+            if (scrubbing && view.owner && typeof view.owner.onScrubEnd === "function") {
+                view.owner.onScrubEnd();
+            }
+            scrubbing = false;
         }
         svg.addEventListener("pointerup", release);
         svg.addEventListener("pointercancel", release);
@@ -438,8 +460,54 @@ var QSChart = (function () {
         var pt = polar(me.dataM, me.dataQ);
         el("circle", { "class": "qs-dot", cx: pt.x, cy: -pt.y, r: 22 }, view.root);
 
+        /*
+         * The operating point can only ever sit on the swept locus, so where
+         * along that curve it sits is the frequency and nothing else. That
+         * makes the dot draggable, which is what people reach for first.
+         *
+         * The handle is the size of the dot and no larger. The last element's
+         * node is at this same point and carries a tune handle of its own,
+         * drawn underneath and wider, so the centre scrubs frequency and the
+         * ring around it still tunes. Before this the dot simply covered that
+         * handle and left about two pixels of it reachable.
+         */
+        if (me.sweep && me.canScrub !== false && traceLength(me.sweepDatasets[0]) > 1) {
+            var scrub = el("circle", { "class": "qs-scrub",
+                                       cx: pt.x, cy: -pt.y, r: 22 }, view.root);
+            el("title", {}, scrub).textContent = "Drag along the sweep to change frequency";
+        }
+
         view.hoverLayer = el("g", { "class": "qs-hoverlayer" }, view.root);
         renderHover(view);
+    }
+
+    function traceLength(ds) {
+        return ds ? Math.min((ds.dataM || []).length, (ds.dataQ || []).length) : 0;
+    }
+
+    /*
+     * Where a pointer falls on the swept locus, as a fractional index: 3.5 is
+     * halfway between the fourth and fifth swept points. Fractional rather
+     * than snapped, so a twelve point measurement still scrubs smoothly; the
+     * caller turns the index back into a frequency, since the sweep variable
+     * is the page's business and not the chart's.
+     */
+    function nearestOnTrace(ds, x, y) {
+        var n = traceLength(ds), best = 0, bestD = Infinity, px = 0, py = 0;
+        for (var i = 0; i < n; i++) {
+            var p = polar(ds.dataM[i], ds.dataQ[i]);
+            if (i > 0) {
+                var dx = p.x - px, dy = p.y - py;
+                var len2 = dx * dx + dy * dy;
+                var t = len2 > 0 ? ((x - px) * dx + (y - py) * dy) / len2 : 0;
+                t = t < 0 ? 0 : (t > 1 ? 1 : t);
+                var qx = px + t * dx, qy = py + t * dy;
+                var d = (x - qx) * (x - qx) + (y - qy) * (y - qy);
+                if (d < bestD) { bestD = d; best = (i - 1) + t; }
+            }
+            px = p.x; py = p.y;
+        }
+        return best;
     }
 
     function polar(mag, angDeg) {
@@ -684,9 +752,21 @@ var QSChart = (function () {
             // A node you can drag gets a handle far bigger than the dot: at
             // this zoom the dot itself is about three pixels across.
             if (QSEngine.canTune(nodes[k].type, nodes[k].slot)) {
+                /*
+                 * The last node is the input, which is where the operating
+                 * point is drawn, over the top of this handle. Widen it so a
+                 * usable ring is left outside the dot: on a large chart the
+                 * dot is nearly as wide as the default handle and left only a
+                 * couple of pixels of it to aim at.
+                 */
+                var r = grabRadius(me.view);
+                if (k === nodes.length - 1) {
+                    var sc = svgScale(me.view);
+                    if (sc > 0) r = Math.max(r, 22 + 7 / sc);
+                }
                 var grab = el("circle", {
                     "class": "qs-grab", "data-slot": nodes[k].slot,
-                    cx: c.re * R, cy: -c.im * R, r: grabRadius(me.view)
+                    cx: c.re * R, cy: -c.im * R, r: r
                 }, g);
                 el("title", {}, grab).textContent = "Drag to tune " + name;
             }
@@ -741,7 +821,7 @@ var QSChart = (function () {
         clone.setAttribute("width", px);
         clone.setAttribute("height", px);
         clone.setAttribute("xmlns", NS);
-        Array.prototype.forEach.call(clone.querySelectorAll(".qs-grab, .qs-hoverlayer"),
+        Array.prototype.forEach.call(clone.querySelectorAll(".qs-grab, .qs-scrub, .qs-hoverlayer"),
             function (n) { n.parentNode.removeChild(n); });
 
         var style = document.createElementNS(NS, "style");
@@ -829,6 +909,7 @@ var QSChart = (function () {
         toSVG: toSVG,
         pointerToChart: pointerToChart,
         currentTheme: currentTheme,
+        nearestOnTrace: nearestOnTrace,
         rCircleGeometry: rCircleGeometry,
         xCircleGeometry: xCircleGeometry,
         xRimAngle: xRimAngle,

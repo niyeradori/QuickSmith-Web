@@ -266,7 +266,42 @@ ok("region 4 is lower", getRegion(0, -900) === 4);
 ok("inside the chart", InSmith(0, 0) === true);
 ok("outside the chart", InSmith(900, 900) === false);
 
-/* ------------------------------------- 3. the exported chart's palette
+/* ------------------------------ 3. dragging the dot along the sweep
+ *
+ * The operating point sits on the swept locus and nowhere else, so its
+ * position along that curve is the frequency. nearestOnTrace turns a pointer
+ * into a fractional index into the sweep; the page turns that into megahertz.
+ * Fractional, so a twelve point measurement still scrubs smoothly.
+ *
+ * The dataset is magnitude and angle in degrees, the same arrays the trace is
+ * drawn from, and chart space is 1000 units to the rim.
+ */
+function ds(points) {                       // [[mag, angle], ...]
+    return { dataM: points.map(function (p) { return p[0]; }),
+             dataQ: points.map(function (p) { return p[1]; }) };
+}
+/* Three points along the real axis: gamma 0, 0.5 and 1, so x = 0, 500, 1000. */
+var line = ds([[0, 0], [0.5, 0], [1, 0]]);
+
+near("on the first sample reads index 0", QSChart.nearestOnTrace(line, 0, 0), 0, 1e-9);
+near("on the middle sample reads index 1", QSChart.nearestOnTrace(line, 500, 0), 1, 1e-9);
+near("on the last sample reads index 2", QSChart.nearestOnTrace(line, 1000, 0), 2, 1e-9);
+near("between two samples is fractional", QSChart.nearestOnTrace(line, 250, 0), 0.5, 1e-9);
+near("three quarters along the second span",
+     QSChart.nearestOnTrace(line, 875, 0), 1.75, 1e-9);
+/* Off the curve, it projects onto it rather than refusing. */
+near("a point beside the curve projects onto it",
+     QSChart.nearestOnTrace(line, 250, 300), 0.5, 1e-9);
+/* Past either end it clamps, so a drag cannot run off the swept band. */
+near("past the start clamps to the first sample",
+     QSChart.nearestOnTrace(line, -900, 0), 0, 1e-9);
+near("past the end clamps to the last sample",
+     QSChart.nearestOnTrace(line, 9000, 0), 2, 1e-9);
+/* Angle is honoured, not just magnitude: 0.5 at 90 degrees is straight up. */
+near("the angle places the sample",
+     QSChart.nearestOnTrace(ds([[0, 0], [0.5, 90]]), 0, 500), 1, 1e-9);
+
+/* ------------------------------------- 4. the exported chart's palette
  *
  * An exported SVG carries no :root, so toSVG() writes the resolved custom
  * properties into the file from a fixed list of names. A name the stylesheet

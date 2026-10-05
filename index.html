@@ -2013,6 +2013,43 @@ smithObj.onTune = function (slotIndex, gamma) {
     Zcalsweep();
 };
 
+/*
+ * Drag the operating point along the sweep to change frequency.
+ *
+ * Watching someone use this, the first thing they reached for was the dot,
+ * not the Frequency box. The dot can only sit on the swept locus, so a
+ * position along that curve is a frequency and nothing else: the chart hands
+ * back a fractional index into the sweep and the frequency comes from the
+ * same list generateSweep walked, so the two cannot disagree.
+ *
+ * The circuit does not change, only the frequency, so the locus itself is
+ * left exactly where it is for the length of the gesture.
+ */
+smithObj.onScrub = function (at) {
+    var start = Number(schObj.SS);
+    if (start < 0) start = 0.000000000000001;
+    var values = sweepFrequencies(start, Number(schObj.ST), Number(schObj.SST));
+    if (values.length < 2) return;
+    var i = Math.max(0, Math.min(values.length - 2, Math.floor(at)));
+    var f = values[i] + (at - i) * (values[i + 1] - values[i]);
+    if (!(f > 0)) return;
+
+    schObj.ELEMENT[0].value1 = f;
+    showSlotValue(0);
+    designHistory.hold();
+    sweepHeld = true;
+    responseHeld = true;
+    Zcalsweep();
+};
+
+smithObj.onScrubEnd = function () {
+    designHistory.release();
+    recordHistory();
+    sweepHeld = false;
+    responseHeld = false;
+    runResponse();
+};
+
 smithObj.onTuneEnd = function () {
     designHistory.release();
     recordHistory();
@@ -2117,6 +2154,7 @@ function cplx(re, im) {
  * and S11 at each point, and puts the schematic back the way it found it.
  */
 function runResponse() {
+    if (responseHeld) return;
     var host = document.getElementById("respPlot");
     if (!host || typeof QSPlot === "undefined") return;
 
@@ -3134,6 +3172,7 @@ function generateSweep() {
     Zcalsweep1();
 
     smithObj.sweep = true;
+    smithObj.canScrub = (schObj.SE === "Frequency");
     smithObj.redrawSmith();
 }
 
@@ -3154,6 +3193,7 @@ function generateSweep() {
  */
 var sweepHeld = false;
 var sweepRunning = false;      // generateSweep solves in a loop; never re-enter it
+var responseHeld = false;      // the plot's own band sweep, held during a drag
 
 function refreshSweep() {
     if (sweepHeld || sweepRunning) return;
