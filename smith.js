@@ -101,7 +101,9 @@ var QSChart = (function () {
         ".qs-axis{stroke:var(--qs-x);stroke-width:1.6;opacity:.85}",
         ".qs-adm{stroke:var(--qs-adm);stroke-width:1.2;opacity:.55;",
         "stroke-dasharray:6 7;fill:none;vector-effect:non-scaling-stroke}",
-        ".qs-label{fill:var(--qs-text);font:500 34px ui-monospace,SFMono-Regular,Menlo,monospace}",
+        // the reference impedance, and the one label an exported chart is read
+        // by at a glance, so it carries more weight than the grid numbers
+        ".qs-label{fill:var(--qs-text);font:500 46px ui-monospace,SFMono-Regular,Menlo,monospace}",
         ".qs-label-sm{fill:var(--qs-text);font:500 28px ui-monospace,SFMono-Regular,Menlo,monospace}",
         ".qs-overlay{fill:none;vector-effect:non-scaling-stroke}",
         ".qs-vswr{stroke:var(--qs-vswr);stroke-width:2;stroke-dasharray:10 8}",
@@ -128,7 +130,7 @@ var QSChart = (function () {
         ".qs-scrub{fill:transparent;cursor:ew-resize;touch-action:none}",
         // a halo in the chart face colour, because the dot is on the swept
         // curve and the label would otherwise be read through it
-        ".qs-at{fill:var(--qs-dot);font:600 38px ui-monospace,SFMono-Regular,Menlo,"
+        ".qs-at{fill:var(--qs-dot);font:600 46px ui-monospace,SFMono-Regular,Menlo,"
         + "monospace;paint-order:stroke;stroke:var(--qs-card,#fff);stroke-width:10;"
         + "stroke-linejoin:round}",
         ".qs-grab:active{cursor:grabbing}",
