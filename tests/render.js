@@ -310,9 +310,23 @@ near("the angle places the sample",
  * margin. Read the source and hold the list to what the CSS actually asks
  * for, since nothing at runtime will complain.
  */
-var smithSrc = (typeof process !== "undefined" && process.versions && process.versions.node)
-    ? fs.readFileSync(ROOT + "smith.js", "utf8")
-    : read("smith.js");
+function source(name) {
+    return (typeof process !== "undefined" && process.versions && process.versions.node)
+        ? fs.readFileSync(ROOT + name, "utf8") : read(name);
+}
+var smithSrc = source("smith.js");
+
+/*
+ * Everything whose styling ends up inside an exported drawing, not just the
+ * chart's own stylesheet. sheet.js reads --qs-ink and nothing embedded it, so
+ * a dark design sheet fell back to near black text on a near black page while
+ * the light one looked perfect, because there the fallback happens to be
+ * right. Only the .qp- rules of app.css travel, so only those are scanned.
+ */
+var travels = smithSrc + source("sheet.js") +
+    source("app.css").split("\n").filter(function (line) {
+        return line.indexOf(".qp-") === 0;
+    }).join("\n");
 
 var declared = {};
 (smithSrc.match(/var VAR_NAMES = \(([\s\S]*?)\)\.split/) || [, ""])[1]
@@ -324,7 +338,7 @@ var usedOnce = {};
    literal prefix of "var(--qs-a" + n + ")", which the gain circles build a
    colour name with at run time. */
 var useRe = /var\(--qs-([a-z0-9]+)\s*[,)]/g, hit;
-while ((hit = useRe.exec(smithSrc)) !== null) usedOnce[hit[1]] = true;
+while ((hit = useRe.exec(travels)) !== null) usedOnce[hit[1]] = true;
 
 ok("the exported palette list is not empty", Object.keys(declared).length > 10,
    Object.keys(declared).join(","));

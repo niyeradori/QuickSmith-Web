@@ -906,7 +906,7 @@ var QSChart = (function () {
      * disc inside a dark margin. tests/render.js now reads CSS and checks
      * this list covers it.
      */
-    var VAR_NAMES = ("bg face card rim r x adm vswr q marker dot trace plot text ui " +
+    var VAR_NAMES = ("bg face card ink rim r x adm vswr q marker dot trace plot text ui " +
                      "a1 a2 a3 a4 a5 a6").split(" ");
 
     function resolvedVars(view) {
