@@ -1819,6 +1819,7 @@ function Zcalsweep() // this function simply calls Zcalsweep with the same argum
         // leaves here without the readout panel
         smithObj.atLabel = freqLabel(schObj.ELEMENT[0].value1);
         smithObj.drawSmith();
+        tintSlots();            // the ladder follows the arcs
         updateReadout();
         runResponse();
         recordHistory();
@@ -2092,6 +2093,39 @@ function freqLabel(mhz) {
     var f = Number(mhz);
     if (!isFinite(f)) return "";
     return f.toFixed(2).replace(/\.00$/, "") + " MHz";
+}
+
+/*
+ * Tint each part in the ladder to match its arc on the chart.
+ *
+ * The arcs exist to say which part did what, and until now you answered that
+ * by counting along the ladder or by hovering an arc for its tooltip. The
+ * symbols are drawn in currentColor for exactly this, so a slot takes its
+ * colour from one assignment.
+ *
+ * The colour has to come from the solved nodes and not from the slot number.
+ * A wire makes no node, so slot 5 can be the second arc, and computing the
+ * colour from the slot would quietly put the ladder and the chart out of step
+ * the moment anyone dropped a wire in the middle. Matching on node.slot keeps
+ * the two definitions in one place.
+ *
+ * Node 0 is the load. It is where the path starts rather than a step along
+ * it, so it has no arc and stays the colour it was. The palette runs to six
+ * and then repeats, the same way the chart's does; a seventh part shares the
+ * first part's colour on both.
+ */
+function tintSlots() {
+    for (var i = 1; i < 13; i++) {
+        var sym = document.getElementById("D" + i);
+        if (sym) sym.style.color = "";
+    }
+    var solution = resultsObj && resultsObj.solution;
+    var nodes = solution && solution.nodes;
+    if (!nodes) return;
+    for (var k = 1; k < nodes.length; k++) {
+        var el = document.getElementById("D" + nodes[k].slot);
+        if (el) el.style.color = "var(--qs-a" + (((k - 1) % 6) + 1) + ")";
+    }
 }
 
 /* A palette entry as a hex string the colour input will accept. */
