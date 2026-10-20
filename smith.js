@@ -678,7 +678,14 @@ var QSChart = (function () {
             pts.push(p.x.toFixed(1) + "," + (-p.y).toFixed(1));
         }
         var node = el("polyline", { "class": cls, points: pts.join(" ") }, g);
-        if (color) node.setAttribute("stroke", color);
+        /*
+         * As an inline style, not a stroke attribute. A presentation
+         * attribute sits below every author stylesheet rule in the cascade,
+         * so .qs-trace's own stroke beat it and the Sweep Color picker in
+         * Settings changed nothing at all. The element arcs never hit this
+         * because .qs-arc does not set a stroke of its own.
+         */
+        if (color) node.style.stroke = color;
     }
 
     /*

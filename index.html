@@ -759,7 +759,7 @@ var smithObj = {
               "sweepDatasets" : [
                           {
                             "label": "Frequency Sweep",
-                            "color" : "#0000FF",
+                            "color" : "",      // empty: the theme's own trace colour
                             "dataM" : [],
                             "dataQ" : []
                           },
@@ -775,7 +775,7 @@ var smithObj = {
               "plotDatasets" : [
                           {
                             "label": "Data Plot",
-                            "color" : "#000000",
+                            "color" : "",      // empty: the theme's own plot colour
                             "dataM" : [],
                             "dataQ" : []
                           }
@@ -919,8 +919,14 @@ function onMouseClick(e) {
         }
     }
 
-document.getElementById("sweepColor").addEventListener("change", function () {
+/*
+ * Sweep Color. On input rather than change, so the trace follows the picker
+ * while it is open, and with a redraw, because setting the value on the
+ * dataset was never going to repaint anything on its own.
+ */
+document.getElementById("sweepColor").addEventListener("input", function () {
   smithObj.sweepDatasets[0].color = this.value;
+  smithObj.redrawSmith();
 });
 
     // called by redrawSmith function
@@ -2088,6 +2094,12 @@ function freqLabel(mhz) {
     return f.toFixed(2).replace(/\.00$/, "") + " MHz";
 }
 
+/* A palette entry as a hex string the colour input will accept. */
+function themeColour(name) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return /^#[0-9a-f]{6}$/i.test(v) ? v : "";
+}
+
 function showSlotValue(i) {
     var box = document.getElementById("E" + i);
     if (box) box.value = Number(schObj.ELEMENT[i].value1).toFixed(2);
@@ -2732,7 +2744,11 @@ function setHint(id, text) {
         //   alert("Your are a - " + radioValue);
         //  }
         
-        document.getElementById("sweepColor").value = smithObj.sweepDatasets[0].color;
+        // an <input type=color> has to show some colour, and until one is
+        // picked the trace is whatever the theme makes it, so show that
+        // rather than the black an empty value falls back to
+        document.getElementById("sweepColor").value =
+            smithObj.sweepDatasets[0].color || themeColour("--qs-trace") || "#3b6ea8";
 
         document.getElementById("SE").value = schObj.SE;
  
