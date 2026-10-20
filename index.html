@@ -77,6 +77,7 @@
   <script src="common.js"></script>
   <script src="smith.js"></script>
   <script src="plot.js"></script>
+  <script src="sheet.js"></script>
   <script src="symbols.js"></script>
   <script src="tours.js"></script>
   <script src="history.js"></script>
@@ -231,6 +232,7 @@
                 <li class="" ><a href="#" onclick ="save_click()" >Save Design…</a></li>
                 <li class=""><a href="#" onclick ="saveCanvas_click()" >Capture Chart (PNG)</a></li>
                 <li class=""><a href="#" onclick ="saveSVG_click()" >Chart as SVG</a></li>
+                <li class=""><a href="#" onclick ="saveSheet_click()" >Design Sheet (SVG)</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="#" onclick ="shareLink_click()" >Copy Share Link</a></li> 
                 <!-- <li class=""><a href="#">Import</a></li>
@@ -1426,6 +1428,85 @@ function saveCanvas_click(){
 function saveSVG_click(){
     var markup = QSChart.toSVG(smithObj.view, 900);
     saveAs(new Blob([markup], { type: "image/svg+xml;charset=utf-8" }), "QuickSmith.svg");
+}
+
+/*
+ * Everything on screen as one page: chart, numbers, network and response.
+ *
+ * Not a screenshot. Every panel is already SVG or already data, so this
+ * composes them rather than photographing the application, which means no
+ * rasterising of form controls and no third party library. The layout work
+ * lives in sheet.js; what belongs here is the part sheet.js must not guess
+ * at, namely units, formatting, and which slot is a shunt.
+ */
+function partValues(i) {
+    var el = schObj.ELEMENT[i], u = UNIT_LABELS[el.type] || [null, null];
+    var one = Number(el.value1).toFixed(2) + " " + (u[0] === "length" ? "" : (u[0] || ""));
+    if (!u[1]) return one.trim();
+    var second = u[1] === "length" ? (LENGTH_LABELS[schObj.LU] || "") : u[1];
+    return (one + " / " + Number(el.value2).toFixed(2) + " " + second).trim();
+}
+
+/* The page's own rules for a class prefix, so the sheet carries the styling
+   the live plot has instead of a second copy of it drifting out of date. */
+function cssRulesFor(prefix) {
+    var out = [];
+    for (var i = 0; i < document.styleSheets.length; i++) {
+        var rules;
+        try { rules = document.styleSheets[i].cssRules; } catch (e) { continue; }
+        for (var j = 0; j < rules.length; j++) {
+            var r = rules[j];
+            if (r.selectorText && r.selectorText.indexOf(prefix) === 0) out.push(r.cssText);
+        }
+    }
+    return out.join("");
+}
+
+function readoutRow(id, label) {
+    var el = document.getElementById(id);
+    return el ? [label, el.textContent.trim()] : null;
+}
+
+function saveSheet_click() {
+    var nodes = (resultsObj && resultsObj.solution && resultsObj.solution.nodes) || [];
+    var parts = [];
+    for (var k = 1; k < nodes.length; k++) {
+        var n = nodes[k];
+        parts.push({
+            label: String(n.type).toUpperCase() + n.slot,
+            type: n.type, shunt: !!n.shunt,
+            values: partValues(n.slot),
+            color: "var(--qs-a" + (((k - 1) % 6) + 1) + ")"
+        });
+    }
+    var loadType = schObj.ELEMENT[1].type;
+
+    var plot = document.querySelector("#respPlot svg");
+    var sheet = QSSheet.build({
+        title: "QuickSmith",
+        subtitle: schObj.termination === "Multiple" && schObj.gamData
+            ? "Measured load: " + (schObj.gamData.label || "imported") : "",
+        // two rows only: a third runs into the rule under the header, and the
+        // date reads better next to the source than beside the frequency
+        meta: [["FREQUENCY", freqLabel(schObj.ELEMENT[0].value1)],
+               ["REFERENCE", Number(schObj.Z0).toFixed(1) + " \u03a9"]],
+        readout: [readoutRow("ROzin", "Zin \u03a9"), readoutRow("ROyin", "Yin mS"),
+                  readoutRow("ROgam", "\u0393in"), readoutRow("ROvswr", "VSWR"),
+                  readoutRow("ROrl", "Return loss"), readoutRow("ROil", "Insertion loss"),
+                  readoutRow("ROq", "Loaded Q"),
+                  readoutRow("RObw", (document.getElementById("RObwLabel") || {}).textContent
+                                     || "Bandwidth")].filter(Boolean),
+        parts: parts,
+        load: { label: String(loadType).toUpperCase() + "1", type: loadType,
+                values: partValues(1) },
+        chartSVG: QSChart.toSVG(smithObj.view, 540),
+        plotSVG: plot ? plot.outerHTML : "",
+        sprite: QSSym.sprite(),
+        extraCSS: cssRulesFor(".qp-"),
+        footer: "quicksmith.online  \u00b7  " + new Date().toISOString().slice(0, 10)
+    });
+    saveAs(new Blob([sheet], { type: "image/svg+xml;charset=utf-8" }),
+           "QuickSmith-design-sheet.svg");
 }
 
 /*

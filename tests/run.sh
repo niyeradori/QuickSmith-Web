@@ -19,6 +19,7 @@ if command -v node >/dev/null 2>&1; then
     node tests/permalink.js
     node tests/render.js
     node tests/plot.js
+    node tests/sheet.js
     node tests/symbols.js
     node tests/tune.js
     node tests/tours.js
@@ -33,6 +34,7 @@ elif [ -x "$JSC" ]; then
     "$JSC" tests/permalink.js
     "$JSC" tests/render.js
     "$JSC" tests/plot.js
+    "$JSC" tests/sheet.js
     "$JSC" tests/symbols.js
     "$JSC" tests/tune.js
     "$JSC" tests/tours.js
